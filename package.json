@@ -9,14 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@formatjs/intl-localematcher": "0.5.7",
     "@auth/core": "^0.40.0",
     "@auth/upstash-redis-adapter": "^2.9.1",
-    "@upstash/redis": "^1.34.9",
+    "@formatjs/intl-localematcher": "0.5.7",
+    "@heroicons/react": "^2.2.0",
     "@marsidev/react-turnstile": "^1.1.0",
-    "next-auth": "5.0.0-beta.28",
+    "@upstash/redis": "^1.34.9",
     "negotiator": "1.0.0",
     "next": "latest",
+    "next-auth": "5.0.0-beta.28",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "resend": "^4.6.0",

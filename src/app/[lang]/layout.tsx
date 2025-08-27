@@ -7,7 +7,7 @@ import { i18n, Locale } from "../../../i18n-config";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "API Base Router",
+  title: "FlexiProxy - AI",
   description: "A service that provides API Base URLs and acts as a backend proxy for clients like Claude Code.",
 };
 

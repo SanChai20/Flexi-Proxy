@@ -12,20 +12,9 @@ import { UpstashRedisAdapter } from "@auth/upstash-redis-adapter";
 function html(params: { url: string; host: string; theme: Theme }) {
     const { url, host, theme } = params
     const escapedHost = host.replace(/\./g, "&#8203;.")
-    const brandColor = theme.brandColor || "#4F46E5"
-    const color = {
-        background: "#F8FAFC",
-        text: "#1E293B",
-        secondaryText: "#64748B",
-        mainBackground: "#FFFFFF",
-        buttonBackground: `linear-gradient(135deg, ${brandColor} 0%, #7C3AED 100%)`,
-        buttonBorder: brandColor,
-        buttonText: "#FFFFFF",
-        cardShadow: "0 10px 25px rgba(0, 0, 0, 0.1)",
-        accent: "#F1F5F9"
-    }
- 
-  return `
+    const brandColor = theme.brandColor || "#3B82F6"
+    
+    return `
 <!DOCTYPE html>
 <html>
 <head>
@@ -33,8 +22,6 @@ function html(params: { url: string; host: string; theme: Theme }) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign in to ${escapedHost}</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    
     * {
       margin: 0;
       padding: 0;
@@ -42,264 +29,131 @@ function html(params: { url: string; host: string; theme: Theme }) {
     }
     
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
       line-height: 1.6;
-      color: ${color.text};
-      background: ${color.background};
+      color: #374151;
+      background-color: #F9FAFB;
+      padding: 20px 0;
     }
     
     .container {
       max-width: 600px;
-      margin: 40px auto;
-      background: ${color.mainBackground};
-      border-radius: 16px;
-      box-shadow: ${color.cardShadow};
+      margin: 30px auto;
+      background: #FFFFFF;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
       overflow: hidden;
     }
     
     .header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 40px 30px;
+      background: ${brandColor};
+      padding: 30px 20px;
       text-align: center;
-      position: relative;
     }
     
-    .header::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="1" fill="white" opacity="0.1"/><circle cx="10" cy="90" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-      opacity: 0.6;
-    }
-    
-    .logo {
-      width: 64px;
-      height: 64px;
-      background: white;
-      border-radius: 16px;
-      margin: 0 auto 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      position: relative;
-      z-index: 1;
-    }
-    
-    .logo::before {
-      content: '🔐';
-      font-size: 28px;
-    }
-    
-    .header-title {
+    .header h1 {
       color: white;
-      font-size: 28px;
-      font-weight: 700;
-      margin-bottom: 8px;
-      position: relative;
-      z-index: 1;
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0 0 8px;
     }
     
-    .header-subtitle {
+    .header p {
       color: rgba(255, 255, 255, 0.9);
-      font-size: 16px;
-      font-weight: 400;
-      position: relative;
-      z-index: 1;
+      font-size: 15px;
+      margin: 0;
     }
     
     .content {
-      padding: 50px 40px;
+      padding: 40px 30px;
       text-align: center;
     }
     
-    .welcome-text {
+    .content h2 {
       font-size: 20px;
       font-weight: 600;
-      color: ${color.text};
-      margin-bottom: 12px;
+      color: #1F2937;
+      margin: 0 0 20px;
     }
     
-    .description {
+    .content p {
       font-size: 16px;
-      color: ${color.secondaryText};
-      margin-bottom: 40px;
-      line-height: 1.6;
+      color: #6B7280;
+      margin: 0 0 30px;
     }
     
-    .button-container {
-      margin: 40px 0;
-    }
-    
-    .signin-button {
+    .button {
       display: inline-block;
-      background: ${color.buttonBackground};
-      color: ${color.buttonText};
+      background: ${brandColor};
+      color: white;
       text-decoration: none;
-      padding: 16px 40px;
-      border-radius: 12px;
+      padding: 14px 28px;
+      border-radius: 6px;
       font-size: 16px;
-      font-weight: 600;
+      font-weight: 500;
       border: none;
-      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(59, 130, 246, 0.2);
+      transition: background 0.2s;
     }
     
-    .signin-button::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: left 0.5s;
-    }
-    
-    .signin-button:hover::before {
-      left: 100%;
+    .button:hover {
+      background: #2563EB;
     }
     
     .security-note {
-      background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
-      border: 1px solid #F59E0B;
-      border-radius: 16px;
-      padding: 24px;
-      margin: 40px 0;
-      position: relative;
-      overflow: hidden;
+      background: #EFF6FF;
+      border-radius: 6px;
+      padding: 20px;
+      margin: 30px 0;
+      text-align: left;
     }
     
-    .security-note::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 4px;
-      height: 100%;
-      background: linear-gradient(to bottom, #F59E0B, #D97706);
-    }
-    
-    .security-note-header {
+    .security-note h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1E40AF;
+      margin: 0 0 10px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      margin-bottom: 12px;
     }
     
-    .security-note .icon {
-      font-size: 24px;
+    .security-note h3::before {
+      content: '🔒';
       margin-right: 8px;
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
     }
     
-    .security-note .title {
-      font-size: 16px;
-      font-weight: 700;
-      color: #92400E;
-      margin: 0;
-    }
-    
-    .security-note .text {
+    .security-note p {
       font-size: 14px;
-      color: #A16207;
-      line-height: 1.6;
-      text-align: center;
+      color: #374151;
       margin: 0;
-    }
-    
-    .security-features {
-      display: flex;
-      justify-content: space-around;
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid rgba(245, 158, 11, 0.2);
-    }
-    
-    .security-feature {
-      text-align: center;
-      flex: 1;
-    }
-    
-    .security-feature-icon {
-      font-size: 18px;
-      margin-bottom: 4px;
-      display: block;
-    }
-    
-    .security-feature-text {
-      font-size: 11px;
-      color: #A16207;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      line-height: 1.5;
     }
     
     .footer {
-      background: ${color.accent};
-      padding: 25px 40px;
+      background: #F9FAFB;
+      padding: 20px 30px;
       text-align: center;
-      border-top: 1px solid #E2E8F0;
+      border-top: 1px solid #E5E7EB;
     }
     
-    .footer-text {
-      font-size: 14px;
-      color: ${color.secondaryText};
-      margin-bottom: 8px;
+    .footer p {
+      font-size: 13px;
+      color: #9CA3AF;
+      margin: 0;
     }
     
-    .footer-link {
-      font-size: 12px;
-      color: ${brandColor};
-      text-decoration: none;
-    }
-    
-    @media (max-width: 640px) {
+    @media (max-width: 600px) {
       .container {
-        margin: 20px auto;
-        border-radius: 12px;
-      }
-      
-      .header {
-        padding: 30px 20px;
+        margin: 20px 15px;
       }
       
       .content {
-        padding: 40px 20px;
+        padding: 30px 20px;
       }
       
-      .header-title {
-        font-size: 24px;
-      }
-      
-      .welcome-text {
-        font-size: 18px;
-      }
-      
-      .signin-button {
-        padding: 14px 30px;
+      .button {
+        padding: 12px 24px;
         font-size: 15px;
-      }
-      
-      .security-features {
-        flex-direction: column;
-        gap: 12px;
-      }
-      
-      .security-feature {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-      }
-      
-      .security-feature-icon {
-        margin-bottom: 0;
       }
     }
   </style>
@@ -307,51 +161,27 @@ function html(params: { url: string; host: string; theme: Theme }) {
 <body>
   <div class="container">
     <div class="header">
-      <div class="logo"></div>
-      <h1 class="header-title">Secure Sign In</h1>
-      <p class="header-subtitle">Verify your identity to continue</p>
+      <h1>Sign In</h1>
+      <p>${escapedHost}</p>
     </div>
     
     <div class="content">
-      <h2 class="welcome-text">Welcome back to <strong>${escapedHost}</strong></h2>
-      <p class="description">
-        Click the button below to complete your secure sign-in. This link will expire in 24 hours.
-      </p>
+      <h2>Welcome back!</h2>
+      <p>Click the button below to securely sign in to your account. This link will expire in 24 hours.</p>
       
-      <div class="button-container">
-        <a href="${url}" class="signin-button" target="_blank">
-          Sign In Securely →
-        </a>
-      </div>
+      <a href="${url}" class="button" target="_blank">
+        Sign In
+      </a>
       
       <div class="security-note">
-        <div class="security-note-header">
-          <span class="icon">🛡️</span>
-          <h3 class="title">Security Notice</h3>
-        </div>
-        <p class="text">
-          This is an automated security verification. If you didn't request this sign-in, you can safely ignore this email.
-        </p>
-        <div class="security-features">
-          <div class="security-feature">
-            <span class="security-feature-icon">⏰</span>
-            <span class="security-feature-text">24h Expiry</span>
-          </div>
-          <div class="security-feature">
-            <span class="security-feature-icon">🔒</span>
-            <span class="security-feature-text">Encrypted</span>
-          </div>
-          <div class="security-feature">
-            <span class="security-feature-icon">✅</span>
-            <span class="security-feature-text">Verified</span>
-          </div>
-        </div>
+        <h3>Security Notice</h3>
+        <p>If you didn't request this sign-in, you can safely ignore this email. This is an automated message to verify your identity.</p>
       </div>
     </div>
     
     <div class="footer">
-      <p class="footer-text">This email was sent automatically. Please do not reply.</p>
-      <p class="footer-text">© ${new Date().getFullYear()} ${host}</p>
+      <p>This email was sent automatically. Please do not reply.</p>
+      <p>© ${new Date().getFullYear()} ${host}</p>
     </div>
   </div>
 </body>
@@ -361,22 +191,20 @@ function html(params: { url: string; host: string; theme: Theme }) {
  
 // Email Text body (fallback for email clients that don't render HTML, e.g. feature phones)
 function text({ url, host }: { url: string; host: string }) {
-    return `🔐 Secure Sign-In Verification
+    return `Sign In to ${host}
 
-Welcome back to ${host}!
+Welcome back!
 
-To ensure your account security, please click the following link to complete your sign-in verification:
-
+To sign in to your account, please click the link below:
 ${url}
 
-🛡️ Security Notice:
-• This verification link will automatically expire in 24 hours
-• If you didn't request this sign-in, you can safely ignore this email
-• Please confirm this is your own sign-in request
+This link will expire in 24 hours.
+
+Security Notice:
+If you didn't request this sign-in, you can safely ignore this email. This is an automated message to verify your identity.
 
 ---
 This email was sent automatically. Please do not reply.
-
 © ${new Date().getFullYear()} ${host}
 `
 }
