@@ -22,6 +22,15 @@
         "retry": "Retry"
     },
     "contact": {
-        
+        "title": "Contact Us",
+        "subtitle": "Have questions or feedback? We'd love to hear from you.",
+        "name": "Name",
+        "email": "Email",
+        "subject": "Subject",
+        "message": "Message",
+        "send": "Send Message",
+        "sending": "Sending...",
+        "success": "Thank you for your message! We'll get back to you soon.",
+        "error": "Failed to send message. Please try again later."
     }
 }

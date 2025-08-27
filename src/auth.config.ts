@@ -161,22 +161,16 @@ function html(params: { url: string; host: string; theme: Theme }) {
 <body>
   <div class="container">
     <div class="header">
-      <h1>Sign In</h1>
       <p>${escapedHost}</p>
     </div>
     
     <div class="content">
       <h2>Welcome back!</h2>
-      <p>Click the button below to securely sign in to your account. This link will expire in 24 hours.</p>
+      <p>Click the button below to securely sign in to your account.</p>
       
       <a href="${url}" class="button" target="_blank">
         Sign In
       </a>
-      
-      <div class="security-note">
-        <h3>Security Notice</h3>
-        <p>If you didn't request this sign-in, you can safely ignore this email. This is an automated message to verify your identity.</p>
-      </div>
     </div>
     
     <div class="footer">
