@@ -1,0 +1,317 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1rem;
+  background-color: #f8f9fa;
+}
+
+.wrapper {
+  width: 100%;
+  max-width: 450px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #212529;
+  margin-bottom: 0.75rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #495057;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.card {
+  padding: 2.5rem;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e9ecef;
+  margin-bottom: 1.5rem;
+}
+
+.emailForm {
+  width: 100%;
+}
+
+.inputGroup {
+  margin-bottom: 1.5rem;
+}
+
+.label {
+  display: block;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #212529;
+  margin-bottom: 0.5rem;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #212529;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: 0;
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.input::placeholder {
+  color: #6c757d;
+}
+
+.primaryButton {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #ffffff;
+  background-color: #0d6efd;
+  border: 1px solid #0d6efd;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+.primaryButton:hover {
+  background-color: #0b5ed7;
+  border-color: #0a58ca;
+}
+
+.primaryButton:focus {
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.divider {
+  position: relative;
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+.divider::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #e9ecef;
+  transform: translateY(-50%);
+}
+
+.dividerLabel {
+  position: relative;
+  display: inline-block;
+  color: #6c757d;
+  font-size: 0.875rem;
+  background-color: #ffffff;
+  padding: 0 1rem;
+}
+
+.socialButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.socialButton {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #212529;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+.socialButton:hover {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+}
+
+.socialButton:focus {
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.socialButtonContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.providerIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.socialButtonText {
+  flex: 1;
+  text-align: center;
+}
+
+.footer {
+  text-align: center;
+}
+
+.footerText {
+  font-size: 0.875rem;
+  color: #6c757d;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.footerLink {
+  color: #0d6efd;
+  text-decoration: none;
+}
+
+.footerLink:hover {
+  text-decoration: underline;
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+  .container {
+    background-color: #121212;
+  }
+
+  .title {
+    color: #f8f9fa;
+  }
+
+  .subtitle {
+    color: #e9ecef;
+  }
+
+  .card {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .label {
+    color: #f8f9fa;
+  }
+
+  .input {
+    background-color: #2d2d2d;
+    border: 1px solid #495057;
+    color: #f8f9fa;
+  }
+
+  .input::placeholder {
+    color: #adb5bd;
+  }
+
+  .input:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  }
+
+  .primaryButton {
+    color: #ffffff;
+    background-color: #0d6efd;
+    border: 1px solid #0d6efd;
+  }
+
+  .primaryButton:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+  }
+
+  .primaryButton:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  }
+
+  .dividerBorder {
+    border-top: 1px solid #495057;
+  }
+
+  .dividerLabel {
+    color: #adb5bd;
+    background-color: #1e1e1e;
+  }
+
+  .socialButton {
+    color: #f8f9fa;
+    background-color: #2d2d2d;
+    border: 1px solid #495057;
+  }
+
+  .socialButton:hover {
+    background-color: #3d3d3d;
+    border-color: #5a6268;
+  }
+
+  .socialButton:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  }
+
+  .footerText {
+    color: #adb5bd;
+  }
+
+  .footerLink {
+    color: #6ea8fe;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .card {
+    padding: 1.5rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .input {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  .primaryButton {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  .socialButton {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  .providerIcon {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .footerText {
+    font-size: 0.8rem;
+  }
+}

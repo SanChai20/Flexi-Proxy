@@ -69,8 +69,8 @@ export default async function LoginPage(props: {
             <div className={styles.wrapper}>
             {/* Logo and Title */}
             <div className={styles.header}>
-                <div className={styles.title}>API Base Router</div>
-                <p className={styles.subtitle}>Sign in to access your API Base Url</p>
+                <div className={styles.title}>FlexiProxy AI</div>
+                <p className={styles.subtitle}>Sign in to access your OpenAI-compatible Base Url</p>
             </div>
 
             {/* Login Card */}
@@ -106,9 +106,6 @@ export default async function LoginPage(props: {
 
                 {/* Divider */}
                 <div className={styles.divider}>
-                    <div className={styles.dividerLine}>
-                        <div className={styles.dividerBorder}></div>
-                    </div>
                     <div className={styles.dividerText}>
                         <span className={styles.dividerLabel}>or</span>
                     </div>
