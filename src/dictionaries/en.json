@@ -15,5 +15,11 @@
         "title": "Security Verification",
         "description": "This helps us protect your account and ensure a secure experience",
         "footer": "This verification is powered by Cloudflare Turnstile, a privacy-focused alternative to traditional CAPTCHAs."
+    },
+    "unauthorized": {
+        "title": "Unauthorized Access",
+        "subtitle": "You don't have permission to access this page.",
+        "description": "Please sign in with a valid account or contact administrator if you believe this is an error.",
+        "retry": "Retry"
     }
 }

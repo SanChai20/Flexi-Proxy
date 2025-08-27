@@ -1,13 +1,21 @@
-import { useRouter } from "next/navigation";
+"use client";
+
 import styles from "@/components/ui/unauthorized.module.css";
-import { LockIcon, HomeIcon } from "@/components/ui/icons";
+import { LockIcon } from "@/components/ui/icons";
+import { redirect } from "next/navigation";
 
-export default async function Unauthorized() {
-    const router = useRouter();
-    const handleGoHome = () => {
-        router.push(HOME_PAGE_URL);
+export default function Unauthorized({ 
+    dict 
+}: { 
+    dict: { 
+        unauthorized: { 
+            title: string, 
+            subtitle: string, 
+            description: string,
+            retry: string
+        } 
     };
-
+}) {
     return (
         <div className={styles.container}>
             <div className={styles.content}>
@@ -18,22 +26,21 @@ export default async function Unauthorized() {
                 </div>
                 
                 <div className={styles.textContainer}>
-                    <h1 className={styles.title}>Unauthorized Access</h1>
+                    <h1 className={styles.title}>{dict.unauthorized.title}</h1>
                     <p className={styles.subtitle}>
-                        You don't have permission to access this page.
+                        {dict.unauthorized.subtitle}
                     </p>
                     <p className={styles.description}>
-                        Please sign in with a valid account or contact administrator if you believe this is an error.
+                        {dict.unauthorized.description}
                     </p>
                 </div>
-                
+
                 <div className={styles.buttonContainer}>
                     <button
-                        onClick={handleGoHome}
+                        onClick={() => redirect("/login")}
                         className={styles.homeButton}
                     >
-                        <HomeIcon />
-                        Go to Home
+                        {dict.unauthorized.retry}
                     </button>
                 </div>
             </div>
