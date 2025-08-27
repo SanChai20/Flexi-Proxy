@@ -1,0 +1,19 @@
+{
+    "login": {
+        "title": "Sign in to your account",
+        "email": "Email address",
+        "password": "Password",
+        "rememberMe": "Remember me",
+        "forgotPassword": "Forgot your password?",
+        "signIn": "Sign in",
+        "noAccount": "Don't have an account?",
+        "signUp": "Sign up",
+        "invalidCredentials": "Invalid email or password",
+        "fillAllFields": "Please fill in all fields"
+    },
+    "verification": {
+        "title": "Security Verification",
+        "description": "This helps us protect your account and ensure a secure experience",
+        "footer": "This verification is powered by Cloudflare Turnstile, a privacy-focused alternative to traditional CAPTCHAs."
+    }
+}

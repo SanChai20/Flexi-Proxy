@@ -1,0 +1,58 @@
+{
+  "login": {
+    "title": "Sign in to your account",
+    "email": "Email address",
+    "password": "Password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot your password?",
+    "signIn": "Sign in",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up",
+    "invalidCredentials": "Invalid email or password",
+    "fillAllFields": "Please fill in all fields"
+  },
+  "signup": {
+    "title": "Create your account",
+    "name": "Full Name",
+    "email": "Email address",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "signUp": "Sign up",
+    "hasAccount": "Already have an account?",
+    "signIn": "Sign in",
+    "passwordMismatch": "Passwords do not match",
+    "fillAllFields": "Please fill in all fields",
+    "signupFailed": "Failed to create account"
+  },
+  "dashboard": {
+    "userInfo": "User Info",
+    "subscription": "Subscription",
+    "routing": "Routing",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "userInfo": {
+    "title": "User Information",
+    "name": "Name",
+    "email": "Email",
+    "save": "Save Changes"
+  },
+  "subscription": {
+    "title": "Subscription",
+    "plan": "Current Plan",
+    "upgrade": "Upgrade Plan",
+    "cancel": "Cancel Subscription"
+  },
+  "routing": {
+    "title": "Routing Configuration",
+    "addRoute": "Add New Route",
+    "save": "Save Routing"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "notifications": "Notifications",
+    "save": "Save Settings"
+  }
+}
