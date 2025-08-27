@@ -57,7 +57,7 @@ export default auth(async function middleware(req: NextRequest) {
     } else if (actual_route === "") {
       return NextResponse.redirect(new URL(`/${actual_locale}/login`, req.url));
     }
-    const protectedRoutes = ["dashboard"];
+    const protectedRoutes = ["dashboard", "contact"];
     if (!isLoggedIn && protectedRoutes.some(routeName => actual_route === routeName)) {
         return NextResponse.redirect(new URL(`/${actual_locale}/verification`, req.url));
     }

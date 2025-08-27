@@ -20,5 +20,8 @@
         "subtitle": "您没有权限访问此页面。",
         "description": "请使用有效账户登录。",
         "retry": "重试"
+    },
+    "contact": {
+        
     }
 }
