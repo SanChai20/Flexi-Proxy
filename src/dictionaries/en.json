@@ -1,15 +1,14 @@
 {
     "login": {
-        "title": "Sign in to your account",
-        "email": "Email address",
-        "password": "Password",
-        "rememberMe": "Remember me",
-        "forgotPassword": "Forgot your password?",
-        "signIn": "Sign in",
-        "noAccount": "Don't have an account?",
-        "signUp": "Sign up",
-        "invalidCredentials": "Invalid email or password",
-        "fillAllFields": "Please fill in all fields"
+        "title": "FlexiProxy AI",
+        "subtitle": "Sign in to access your OpenAI-compatible Base Urls",
+        "email": "Email Address",
+        "emailLogin": "Sign in with Email",
+        "use": "Sign in with",
+        "terms": "Terms of Service",
+        "policy": "Privacy Policy",
+        "and": "and",
+        "agree": "By continuing, you agree to our"
     },
     "verification": {
         "title": "Security Verification",

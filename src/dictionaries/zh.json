@@ -1,15 +1,14 @@
 {
     "login": {
-        "title": "登录您的账户",
-        "email": "邮箱地址",
-        "password": "密码",
-        "rememberMe": "记住我",
-        "forgotPassword": "忘记密码？",
-        "signIn": "登录",
-        "noAccount": "没有账户？",
-        "signUp": "注册",
-        "invalidCredentials": "无效的邮箱或密码",
-        "fillAllFields": "请填写所有字段"
+        "title": "FlexiProxy AI",
+        "subtitle": "登录以访问您的OpenAI兼容的接口地址",
+        "email": "电子邮箱地址",
+        "emailLogin": "通过邮箱登录",
+        "use": "使用",
+        "terms": "服务条款",
+        "policy": "隐私政策",
+        "and": "和",
+        "agree": "继续使用即表示您同意我们的"
     },
     "verification": {
         "title": "安全验证",

@@ -69,8 +69,8 @@ export default async function LoginPage(props: {
             <div className={styles.wrapper}>
             {/* Logo and Title */}
             <div className={styles.header}>
-                <div className={styles.title}>FlexiProxy AI</div>
-                <p className={styles.subtitle}>Sign in to access your OpenAI-compatible Base Url</p>
+                <div className={styles.title}>{dict.login.title}</div>
+                <p className={styles.subtitle}>{dict.login.subtitle}</p>
             </div>
 
             {/* Login Card */}
@@ -85,7 +85,7 @@ export default async function LoginPage(props: {
                 >
                     <div className={styles.inputGroup}>
                         <label htmlFor="email" className={styles.label}>
-                            Email Address
+                            {dict.login.email}
                         </label>
                         <input 
                             type="email" 
@@ -100,7 +100,7 @@ export default async function LoginPage(props: {
                         type="submit"
                         className={styles.primaryButton}  
                     >
-                        Sign in with Email
+                        {dict.login.emailLogin}
                     </OnceButton>
                 </form>
 
@@ -132,7 +132,7 @@ export default async function LoginPage(props: {
                                 <div className={styles.socialButtonContent}>
                                     {/* Provider Icon */}
                                     <AuthProviderIcon providerId={provider.id} className={styles.providerIcon} />
-                                    <span className={styles.socialButtonText}>Sign in with {provider.name}</span>
+                                    <span className={styles.socialButtonText}>{dict.login.use} {provider.name}</span>
                                 </div>
                             </OnceButton>
                         </form>
@@ -143,10 +143,10 @@ export default async function LoginPage(props: {
             {/* Footer */}
             <div className={styles.footer}>
                 <p className={styles.footerText}>
-                    By continuing, you agree to our{' '}
-                    <Link href="/terms" className={styles.footerLink}>Terms of Service</Link>
-                    {' '}and{' '}
-                    <Link href="/policy" className={styles.footerLink}>Privacy Policy</Link>
+                    {dict.login.agree}{' '}
+                    <Link href="/terms" className={styles.footerLink}>{dict.login.terms}</Link>
+                    {' '}{dict.login.and}{' '}
+                    <Link href="/policy" className={styles.footerLink}>{dict.login.policy}</Link>
                 </p>
             </div>
             </div>
