@@ -35,7 +35,6 @@ export function OnceButton({
             type={type}
             className={className}
             disabled={isDisabled}
-            // aria-disabled={isDisabled}
             {...props}
         >
             {isDisabled ? (

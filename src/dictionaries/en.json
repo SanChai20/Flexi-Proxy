@@ -19,7 +19,7 @@
     "unauthorized": {
         "title": "Unauthorized Access",
         "subtitle": "You don't have permission to access this page.",
-        "description": "Please sign in with a valid account or contact administrator if you believe this is an error.",
+        "description": "Please sign in with a valid account.",
         "retry": "Retry"
     }
 }

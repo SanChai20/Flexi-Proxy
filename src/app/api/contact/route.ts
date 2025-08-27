@@ -39,7 +39,7 @@ const createEmailTemplate = (data: ContactFormData) => `
     <div class="container">
         <div class="header">
             <h2>🔔 New Contact Form Submit</h2>
-            <p>You have received a new message from Lumicon AI website</p>
+            <p>You have received a new message from router.fit website</p>
         </div>
         
         <div class="content">
@@ -78,7 +78,7 @@ const createEmailTemplate = (data: ContactFormData) => `
         </div>
         
         <div class="footer">
-            <p>This email was automatically sent by Lumicon AI contact form system</p>
+            <p>This email was automatically sent by API Base Router contact form system</p>
             <p>To reply, please respond directly to the user's email: ${data.email}</p>
         </div>
     </div>
