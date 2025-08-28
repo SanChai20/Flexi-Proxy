@@ -25,7 +25,6 @@ export const metadata: Metadata = {
 
 const verifyToken = async (token: string | null) : Promise<boolean> => {
     if (!token) {
-        alert('CAPTCHA verification failed');
         return false;
     }
     const validateResponse = await fetch([process.env.BASE_URL || 'https://router.fit', 'api/verify'].join('/'), {
@@ -36,12 +35,10 @@ const verifyToken = async (token: string | null) : Promise<boolean> => {
         body: JSON.stringify({ token })
     });
     if (!validateResponse.ok) {
-        alert('CAPTCHA verification failed');
         return false;
     }
     const data = await validateResponse.json();
     if (data.success === false) {
-        alert(`Token validation failed - ${data.message}`);
         return false;
     } else {
         return true;
