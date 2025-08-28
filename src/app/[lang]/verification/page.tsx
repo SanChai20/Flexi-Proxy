@@ -10,14 +10,14 @@ export default async function VerificationPage(props: {
   const dictionary = await getDictionary(lang);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md space-y-6 rounded-2xl bg-white p-8 shadow-lg">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      <div className="w-full max-w-md space-y-6 rounded-2xl bg-card p-8 shadow-lg border border-border">
         {/* Header */}
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-2xl font-bold text-card-foreground">
             {dictionary.verification.title}
           </h2>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-muted-foreground">
             {dictionary.verification.description}
           </p>
         </div>
@@ -43,7 +43,7 @@ export default async function VerificationPage(props: {
 
         {/* Footer */}
         <div className="text-center">
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-muted-foreground">
             {dictionary.verification.footer}
           </p>
         </div>
