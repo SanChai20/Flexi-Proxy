@@ -10,15 +10,12 @@ import { Locale } from "../../../../i18n-config";
 import { getDictionary } from "@/lib/get-dictionary";
 
 export const metadata: Metadata = {
-  title: "Login - API Base Router",
+  title: "Login - FlexiProxy",
   description: "Sign in to your account",
   robots: {
     index: false,
     follow: false,
-    googleBot: {
-      index: false,
-      follow: false,
-    },
+    googleBot: { index: false, follow: false },
   },
 };
 
@@ -29,9 +26,7 @@ const verifyToken = async (token: string | null): Promise<boolean> => {
     [process.env.BASE_URL || "https://router.fit", "api/verify"].join("/"),
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token }),
     }
   );
@@ -49,21 +44,17 @@ export default async function LoginPage(props: {
   const { from } = await props.searchParams;
   const dict = await getDictionary(lang);
 
-  if (!from || typeof from !== "string") {
-    return <Unauthorized dict={dict} />;
-  }
+  if (!from || typeof from !== "string") return <Unauthorized dict={dict} />;
   const isVerified = await verifyToken(from);
-  if (!isVerified) {
-    return <Unauthorized dict={dict} />;
-  }
+  if (!isVerified) return <Unauthorized dict={dict} />;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md space-y-8 rounded-2xl bg-white p-8 shadow-xl">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      <div className="w-full max-w-md space-y-8 rounded-2xl bg-card p-8 shadow-lg border border-border">
         {/* Logo and Title */}
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900">{dict.login.title}</h2>
-          <p className="mt-2 text-sm text-gray-500">{dict.login.subtitle}</p>
+          <h2 className="text-2xl font-bold text-card-foreground">{dict.login.title}</h2>
+          <p className="mt-2 text-sm text-muted-foreground">{dict.login.subtitle}</p>
         </div>
 
         {/* Login Card */}
@@ -79,7 +70,7 @@ export default async function LoginPage(props: {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-muted-foreground"
               >
                 {dict.login.email}
               </label>
@@ -88,13 +79,13 @@ export default async function LoginPage(props: {
                 name="email"
                 id="email"
                 placeholder="Enter your email"
-                className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                className="mt-1 block w-full rounded-lg border border-input px-3 py-2 text-card-foreground shadow-sm focus:border-ring focus:ring-ring sm:text-sm bg-card"
                 required
               />
             </div>
             <OnceButton
               type="submit"
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2 text-white transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1"
+              className="w-full rounded-lg bg-primary text-primary-foreground px-4 py-2 transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-ring"
             >
               {dict.login.emailLogin}
             </OnceButton>
@@ -103,10 +94,10 @@ export default async function LoginPage(props: {
           {/* Divider */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-gray-300" />
+              <span className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="bg-white px-2 text-gray-500">or</span>
+              <span className="bg-card px-2 text-muted-foreground">or</span>
             </div>
           </div>
 
@@ -122,15 +113,10 @@ export default async function LoginPage(props: {
               >
                 <OnceButton
                   type="submit"
-                  className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 shadow-sm transition hover:bg-gray-50"
+                  className="flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-card-foreground shadow-sm transition hover:opacity-90"
                 >
-                  <AuthProviderIcon
-                    providerId={provider.id}
-                    className="h-5 w-5"
-                  />
-                  <span>
-                    {dict.login.use} {provider.name}
-                  </span>
+                  <AuthProviderIcon providerId={provider.id} className="h-5 w-5" />
+                  <span>{dict.login.use} {provider.name}</span>
                 </OnceButton>
               </form>
             ))}
@@ -138,19 +124,13 @@ export default async function LoginPage(props: {
         </div>
 
         {/* Footer */}
-        <p className="mt-6 text-center text-xs text-gray-500">
+        <p className="mt-6 text-center text-xs text-muted-foreground">
           {dict.login.agree}{" "}
-          <Link
-            href="/terms"
-            className="font-medium text-indigo-600 hover:text-indigo-500"
-          >
+          <Link href="/terms" className="font-medium text-primary hover:opacity-90">
             {dict.login.terms}
           </Link>{" "}
           {dict.login.and}{" "}
-          <Link
-            href="/policy"
-            className="font-medium text-indigo-600 hover:text-indigo-500"
-          >
+          <Link href="/policy" className="font-medium text-primary hover:opacity-90">
             {dict.login.policy}
           </Link>
         </p>

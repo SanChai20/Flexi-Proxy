@@ -67,18 +67,18 @@ export function ContactForm({
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50 p-4">
-      <div className="w-full max-w-lg rounded-2xl bg-white p-8 shadow-lg">
+    <div className="flex justify-center items-center min-h-screen bg-background p-4">
+      <div className="w-full max-w-lg rounded-2xl bg-card p-8 shadow-md border border-border">
         {/* Header */}
         <div className="mb-6 text-center">
-          <h2 className="text-2xl font-bold text-gray-900">{dict.contact.title}</h2>
-          <p className="mt-2 text-sm text-gray-500">{dict.contact.subtitle}</p>
+          <h2 className="text-2xl font-bold text-card-foreground">{dict.contact.title}</h2>
+          <p className="mt-2 text-sm text-muted-foreground">{dict.contact.subtitle}</p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex flex-col">
-            <label htmlFor="subject" className="mb-1 text-sm font-medium text-gray-700">
+            <label htmlFor="subject" className="mb-1 text-sm font-medium text-muted-foreground">
               {dict.contact.subject}
             </label>
             <input
@@ -86,14 +86,14 @@ export function ContactForm({
               id="subject"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              className="rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="rounded-lg border border-input px-3 py-2 text-card-foreground shadow-sm focus:border-ring focus:ring-ring sm:text-sm bg-card"
               required
               disabled={isSubmitting}
             />
           </div>
 
           <div className="flex flex-col">
-            <label htmlFor="message" className="mb-1 text-sm font-medium text-gray-700">
+            <label htmlFor="message" className="mb-1 text-sm font-medium text-muted-foreground">
               {dict.contact.message}
             </label>
             <textarea
@@ -101,7 +101,7 @@ export function ContactForm({
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={6}
-              className="rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+              className="rounded-lg border border-input px-3 py-2 text-card-foreground shadow-sm focus:border-ring focus:ring-ring sm:text-sm bg-card"
               required
               disabled={isSubmitting}
             />
@@ -110,17 +110,21 @@ export function ContactForm({
           <div className="mt-4">
             <OnceButton
               type="submit"
-              className="w-full rounded-lg bg-indigo-600 px-4 py-2 text-white transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1"
+              className="w-full rounded-lg bg-primary text-primary-foreground px-4 py-2 transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-ring"
             >
               {isSubmitting ? dict.contact.sending : dict.contact.send}
             </OnceButton>
           </div>
 
           {submitStatus === "success" && (
-            <p className="mt-2 text-center text-green-600">{dict.contact.success}</p>
+            <p className="mt-2 text-center text-destructive-foreground bg-destructive rounded px-2 py-1">
+              {dict.contact.success}
+            </p>
           )}
           {submitStatus === "error" && (
-            <p className="mt-2 text-center text-red-600">{dict.contact.error}</p>
+            <p className="mt-2 text-center text-destructive-foreground bg-destructive rounded px-2 py-1">
+              {dict.contact.error}
+            </p>
           )}
         </form>
       </div>

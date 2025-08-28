@@ -14,7 +14,7 @@ export function ContentDisplay({
       <div className="w-full max-w-4xl rounded-2xl bg-white p-8 shadow-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{title}</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-900">{title}</h1>
           {subtitle && (
             <p className="mt-2 text-gray-600 dark:text-gray-300">{subtitle}</p>
           )}
