@@ -1,4 +1,4 @@
-import { getDictionary } from "@/utils/get-dictionary";
+import { getDictionary } from "@/lib/get-dictionary";
 import { Locale } from "../../../../i18n-config";
 import { auth } from "@/auth";
 import { ContactForm } from "@/components/ui/contactform";

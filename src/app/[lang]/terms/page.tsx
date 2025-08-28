@@ -1,5 +1,5 @@
 import { Locale } from "../../../../i18n-config";
-import { getDictionary } from "@/utils/get-dictionary";
+import { getDictionary } from "@/lib/get-dictionary";
 import { ContentDisplay } from "@/components/ui/contentdisplay";
 
 export default async function TermsPage(props: {
