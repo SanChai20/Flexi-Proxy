@@ -1,6 +1,4 @@
-import { auth } from "@/auth";
 import { Redis } from "@upstash/redis";
-
 import { NextRequest, NextResponse } from "next/server";
 import { Resend, CreateEmailResponse } from 'resend';
 
