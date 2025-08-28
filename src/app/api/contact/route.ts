@@ -87,21 +87,21 @@ const createEmailTemplate = (data: ContactFormData) => `
 `;
 
 export async function POST(req: NextRequest) {
-    const userId = req.headers.get('user-id') as string;
+    const data = await req.json();
+    const userId = data["userId"] as string
     if (!userId) {
         return NextResponse.json({ error: 'Missing user-id header' }, { status: 400 });
     }
-    const userName = req.headers.get('user-name') || 'Anonymous';
-    const userEmail = req.headers.get('user-email') || '';
     const ipSubmittedExpiryInSeconds: number = await redis.ttl([USER_CONTACT_PREFIX, userId].join(':'));
     if (ipSubmittedExpiryInSeconds > 0) {
         return NextResponse.json({ 
             message: "Only one message is allowed per day. Please try again tomorrow."
         }, { status: 429 }); // Using 429 Too Many Requests status code
     }
-    const data= await req.formData();
-    const subject = data?.get("subject")?.toString().trim();
-    const message = data?.get("message")?.toString().trim();
+    const userName = data["userName"] as string || 'Anonymous'
+    const userEmail = data["userEmail"] as string || ''
+    const subject = data["subject"] as string
+    const message = data["message"] as string
     if (!subject || !message) {
         return NextResponse.json({ message: "All fields are required" }, { status: 400 });
     }

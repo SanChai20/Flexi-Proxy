@@ -28,66 +28,10 @@ export function ContactForm({
         }
     }
 }) {
-    const [subject, setSubject] = useState<string | null>(null);
-    const [message, setMessage] = useState<string | null>(null);
+    const [subject, setSubject] = useState<string>("");
+    const [message, setMessage] = useState<string>("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(null);
-
-    // async function handleSubmit(formData: FormData) {
-    //     try {
-    //         setIsSubmitting(true);
-    //         setMessage(null);
-    //         setSubmitStatus(null);
-            
-    //         // Send the data to the API endpoint
-    //         const response = await fetch([process.env.BASE_URL, 'api/contact'].join('/'), {
-    //             method: 'POST',
-    //             headers: {
-    //                 'user-id': userId,
-    //                 'user-name': userName,
-    //                 'user-email': userEmail
-    //             },
-    //             body: formData
-    //         });
-            
-    //         const data = await response.json();
-            
-    //         if (response.ok) {
-    //             setMessage({
-    //                 type: 'success',
-    //                 text: "Thank you for your message! We have received your information and will get back to you as soon as possible."
-    //             });
-                
-    //             // Reset the form
-    //             const form = document.querySelector('form') as HTMLFormElement;
-    //             if (form) form.reset();
-    //         } else {
-    //             // Handle specific error cases
-    //             if (response.status === 429) {
-    //                 // Rate limit error - only one message per day
-    //                 setMessage({
-    //                     type: 'error',
-    //                     text: data.message || "You can only send one message per day. Please try again tomorrow."
-    //                 });
-    //             } else {
-    //                 // General error
-    //                 setMessage({
-    //                     type: 'error',
-    //                     text: data.message || "Submission failed, please try again later"
-    //                 });
-    //             }
-    //             //console.error("Form submission failed:", data);
-    //         }
-    //     } catch (err) {
-    //         setMessage({
-    //             type: 'error',
-    //             text: "An error occurred during submission, please try again later"
-    //         });
-    //         //console.error("Form submission error:", err);
-    //     } finally {
-    //         setIsSubmitting(false);
-    //     }
-    // }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -163,10 +107,10 @@ export function ContactForm({
                     </div>
 
                     <div className={styles.formActions}>
+
                         <OnceButton
                             type="submit"
                             className={styles.submitButton}
-                            disabled={isSubmitting}
                         >
                             {isSubmitting ? dict.contact.sending : dict.contact.send}
                         </OnceButton>
