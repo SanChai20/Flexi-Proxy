@@ -1,6 +1,4 @@
 
-import styles from "@/components/ui/icons.module.css";
-
 export const LightIcon = ({ className = '' }: { className?: string }) => (
     <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
         <path d="M12 17C14.7614 17 17 14.7614 17 12C17 9.23858 14.7614 7 12 7C9.23858 7 7 9.23858 7 12C7 14.7614 9.23858 17 12 17Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -409,21 +407,23 @@ export const ClockIcon = ({ className = '' }: { className?: string }) => (
 );
 
 export const LoadingIcon = ({ className = '' }: { className?: string }) => (
-    <svg
-        width="1em" height="1em"
-        xmlns="http://www.w3.org/2000/svg" 
-        viewBox="0 0 24 24" 
-        fill="none" 
-        stroke="currentColor" 
-        strokeWidth="2" 
-        strokeLinecap="round" 
-        strokeLinejoin="round"
-        className={`${styles.loadingIcon} ${className}`}
-    >
-        <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
-        <path d="M12 2a10 10 0 0 1 10 10" />
-    </svg>
+  <svg
+    width="1em"
+    height="1em"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={`animate-spin ${className}`}
+  >
+    <circle cx="12" cy="12" r="10" strokeOpacity="0.25" />
+    <path d="M12 2a10 10 0 0 1 10 10" />
+  </svg>
 );
+
 
 export const ModelFeaturesIcon = ({ className = '' }: { className?: string }) => (
     <svg

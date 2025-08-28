@@ -10,7 +10,7 @@ export function ContentDisplay({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex justify-center px-4 py-8">
+    <div className="flex justify-center items-center min-h-screen px-4 py-8">
       <div className="w-full max-w-4xl rounded-2xl bg-white p-8 shadow-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
         {/* Header */}
         <div className="mb-6">
