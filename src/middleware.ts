@@ -50,33 +50,33 @@ function routeCompletion(req: NextRequest): string | NextResponse {
 // Navigate to auth page if not logged in
 function navigateRoutes(pathName: string, isLoggedIn: boolean, req: NextRequest): NextResponse<unknown> {
 
-    const parts = pathName.replace(/^\/+|\/+$/g, "").split("/");
-    console.log(`[PARTS] ${parts}`)
-    if (parts.length < 1 || !parts[0] || !i18n.locales.includes(parts[0] as any)) 
-        return NextResponse.next();
+    // const parts = pathName.replace(/^\/+|\/+$/g, "").split("/");
+    // console.log(`[PARTS] ${parts}`)
+    // if (parts.length < 1 || !parts[0] || !i18n.locales.includes(parts[0] as any)) 
+    //     return NextResponse.next();
 
-    const locale = parts[0]
-    let redirectPath: string | null = null
-    if (parts.length === 1) { // Home Page
-        if (!isLoggedIn) {
-            redirectPath = `/${locale}/verification`
-        }
-    } else {
-        const section = parts[1]
-        if (section === "login") {
-            const fromParam = req.nextUrl.searchParams.get('from');
-            if (!fromParam) {
-                redirectPath = `/${locale}/verification`
-            } else if (isLoggedIn) {
-                redirectPath = `/${locale}`
-            }
-        } else if (protectedRouteList.includes(section) && !isLoggedIn) {
-            redirectPath = `/${locale}/verification`
-        }
-    } 
-    if (redirectPath) {
-        return NextResponse.redirect(new URL(redirectPath, req.url))
-    }
+    // const locale = parts[0]
+    // let redirectPath: string | null = null
+    // if (parts.length === 1) { // Home Page
+    //     if (!isLoggedIn) {
+    //         redirectPath = `/${locale}/verification`
+    //     }
+    // } else {
+    //     const section = parts[1]
+    //     if (section === "login") {
+    //         const fromParam = req.nextUrl.searchParams.get('from');
+    //         if (!fromParam) {
+    //             redirectPath = `/${locale}/verification`
+    //         } else if (isLoggedIn) {
+    //             redirectPath = `/${locale}`
+    //         }
+    //     } else if (protectedRouteList.includes(section) && !isLoggedIn) {
+    //         redirectPath = `/${locale}/verification`
+    //     }
+    // } 
+    // if (redirectPath) {
+    //     return NextResponse.redirect(new URL(redirectPath, req.url))
+    // }
     return NextResponse.next();
 }
 

@@ -23,11 +23,11 @@ export async function User() {
           className="overflow-hidden rounded-full"
         >
           <Image
-            src={user?.image ?? '/user-solid.svg'}
-            width={36}
-            height={36}
+            src={user?.image ?? '/user-solid-full.svg'}
+            width={28}
+            height={28}
             alt="Avatar"
-            className="overflow-hidden rounded-full"
+            className="overflow-hidden rounded-full dark:invert"
           />
         </Button>
       </DropdownMenuTrigger>
