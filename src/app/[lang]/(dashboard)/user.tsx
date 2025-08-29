@@ -8,7 +8,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import Link from 'next/link';
 import { auth, signOut } from '@/auth';
 
 export async function User() {
@@ -38,22 +37,16 @@ export async function User() {
         <DropdownMenuItem>Settings</DropdownMenuItem>
         <DropdownMenuItem>Support</DropdownMenuItem>
         <DropdownMenuSeparator />
-        {user ? (
-          <DropdownMenuItem>
-            <form
-              action={async () => {
-                'use server';
-                await signOut();
-              }}
-            >
-              <button type="submit">Sign Out</button>
-            </form>
-          </DropdownMenuItem>
-        ) : (
-          <DropdownMenuItem>
-            <Link href="/login">Sign In</Link>
-          </DropdownMenuItem>
-        )}
+        <DropdownMenuItem>
+        <form
+            action={async () => {
+            'use server';
+            await signOut();
+            }}
+        >
+            <button type="submit">Sign Out</button>
+        </form>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

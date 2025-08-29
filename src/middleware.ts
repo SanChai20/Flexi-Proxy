@@ -27,21 +27,21 @@ function getLocale(request: NextRequest): string | undefined {
 }
 
 export default auth(async function middleware(req: NextRequest) {
-    // const session = await auth();
-    // const pathName = req.nextUrl.pathname;
-    // const isLoggedIn = !!(session && session.user && session.user.id);
+    const session = await auth();
+    const pathName = req.nextUrl.pathname;
+    const isLoggedIn = !!(session && session.user && session.user.id);
 
-    // // Check if there is any supported locale in the pathname
-    // const pathnameIsMissingLocale = i18n.locales.every(
-    //   (locale) =>
-    //     !pathName.startsWith(`/${locale}/`) && pathName !== `/${locale}`,
-    // );
-    // let fullPath = pathName
-    // if (pathnameIsMissingLocale) {
-    //   const locale = getLocale(req);
-    //   fullPath = `/${locale}${pathName.startsWith("/") ? "" : "/"}${pathName}`
-    // }
-
+    // Check if there is any supported locale in the pathname
+    const pathnameIsMissingLocale = i18n.locales.every(
+      (locale) =>
+        !pathName.startsWith(`/${locale}/`) && pathName !== `/${locale}`,
+    );
+    let fullPath = pathName
+    if (pathnameIsMissingLocale) {
+      const locale = getLocale(req);
+      fullPath = `/${locale}${pathName.startsWith("/") ? "" : "/"}${pathName}`
+    }
+    
     // const splits: string[] = fullPath.split("/")
     // const actual_route : string = splits[splits.length - 1] //e.g. login
     // const actual_locale: string = splits[splits.length - 2] //e.g. en
@@ -61,9 +61,9 @@ export default auth(async function middleware(req: NextRequest) {
     // if (!isLoggedIn && protectedRoutes.some(routeName => actual_route === routeName)) {
     //     return NextResponse.redirect(new URL(`/${actual_locale}/verification`, req.url));
     // }
-    // if (fullPath !== pathName) {
-    //   return NextResponse.redirect(new URL(fullPath, req.url));
-    // }
+    if (fullPath !== pathName) {
+      return NextResponse.redirect(new URL(fullPath, req.url));
+    }
     return NextResponse.next();
 });
 
