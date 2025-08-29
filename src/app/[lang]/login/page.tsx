@@ -53,8 +53,12 @@ export default async function LoginPage(props: {
       <div className="w-full max-w-md space-y-8 rounded-2xl bg-card p-8 shadow-lg border border-border">
         {/* Logo and Title */}
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-card-foreground">{dict.login.title}</h2>
-          <p className="mt-2 text-sm text-muted-foreground">{dict.login.subtitle}</p>
+          <h2 className="text-2xl font-bold text-card-foreground">
+            {dict.login.title}
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {dict.login.subtitle}
+          </p>
         </div>
 
         {/* Login Card */}
@@ -115,8 +119,13 @@ export default async function LoginPage(props: {
                   type="submit"
                   className="flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-card-foreground shadow-sm transition hover:opacity-90"
                 >
-                  <AuthProviderIcon providerId={provider.id} className="h-5 w-5" />
-                  <span>{dict.login.use} {provider.name}</span>
+                  <AuthProviderIcon
+                    providerId={provider.id}
+                    className="h-5 w-5"
+                  />
+                  <span>
+                    {dict.login.use} {provider.name}
+                  </span>
                 </OnceButton>
               </form>
             ))}
@@ -126,11 +135,17 @@ export default async function LoginPage(props: {
         {/* Footer */}
         <p className="mt-6 text-center text-xs text-muted-foreground">
           {dict.login.agree}{" "}
-          <Link href="/terms" className="font-medium text-primary hover:opacity-90">
+          <Link
+            href="/terms"
+            className="font-medium text-primary hover:opacity-90"
+          >
             {dict.login.terms}
           </Link>{" "}
           {dict.login.and}{" "}
-          <Link href="/policy" className="font-medium text-primary hover:opacity-90">
+          <Link
+            href="/policy"
+            className="font-medium text-primary hover:opacity-90"
+          >
             {dict.login.policy}
           </Link>
         </p>

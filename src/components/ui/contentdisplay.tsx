@@ -15,15 +15,11 @@ export function ContentDisplay({
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-card-foreground">{title}</h1>
-          {subtitle && (
-            <p className="mt-2 text-muted-foreground">{subtitle}</p>
-          )}
+          {subtitle && <p className="mt-2 text-muted-foreground">{subtitle}</p>}
         </div>
 
         {/* Content */}
-        <div className="space-y-4">
-          {children}
-        </div>
+        <div className="space-y-4">{children}</div>
       </div>
     </div>
   );

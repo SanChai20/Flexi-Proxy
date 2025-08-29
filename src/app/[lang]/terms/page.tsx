@@ -7,9 +7,9 @@ export default async function TermsPage(props: {
 }) {
   const { lang } = await props.params;
   const dictionary = await getDictionary(lang);
-  
+
   return (
-    <ContentDisplay 
+    <ContentDisplay
       title={dictionary.terms.title}
       subtitle={dictionary.terms.subtitle}
     >

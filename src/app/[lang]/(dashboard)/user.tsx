@@ -1,16 +1,16 @@
-import { Button } from '@/components/ui/button';
-import Image from 'next/image';
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu';
-import { auth, signOut } from '@/auth';
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { auth, signOut } from "@/auth";
 
-export async function User() {
+export async function User({ dict }: { dict: any }) {
   let session = await auth();
   let user = session?.user;
 
@@ -23,7 +23,7 @@ export async function User() {
           className="overflow-hidden rounded-full"
         >
           <Image
-            src={user?.image ?? '/user-solid-full.svg'}
+            src={user?.image ?? "/user-solid-full.svg"}
             width={28}
             height={28}
             alt="Avatar"
@@ -38,14 +38,14 @@ export async function User() {
         <DropdownMenuItem>Support</DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-        <form
+          <form
             action={async () => {
-            'use server';
-            await signOut();
+              "use server";
+              await signOut();
             }}
-        >
-            <button type="submit">Sign Out</button>
-        </form>
+          >
+            <button type="submit">{dict["user"]["signout"]}</button>
+          </form>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

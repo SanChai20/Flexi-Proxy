@@ -4,8 +4,8 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98%;              /* 纯白 → 微灰白，减少刺眼感 */
-    --foreground: 222.2 60% 12%;         /* 深灰蓝，文字更优雅 */
+    --background: 0 0% 98%; /* 纯白 → 微灰白，减少刺眼感 */
+    --foreground: 222.2 60% 12%; /* 深灰蓝，文字更优雅 */
 
     --card: 0 0% 100%;
     --card-foreground: 222.2 60% 12%;
@@ -13,24 +13,24 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 60% 12%;
 
-    --primary: 220 70% 45%;              /* 主色：更现代的蓝色 */
-    --primary-foreground: 0 0% 100%;     /* 前景：纯白文字 */
+    --primary: 220 70% 45%; /* 主色：更现代的蓝色 */
+    --primary-foreground: 0 0% 100%; /* 前景：纯白文字 */
 
-    --secondary: 210 30% 96%;            /* 浅灰蓝背景（更温和） */
+    --secondary: 210 30% 96%; /* 浅灰蓝背景（更温和） */
     --secondary-foreground: 222.2 60% 12%;
 
-    --muted: 210 25% 95%;                /* muted 区块柔和灰 */
-    --muted-foreground: 215 15% 45%;     /* 次要文字：中灰 */
+    --muted: 210 25% 95%; /* muted 区块柔和灰 */
+    --muted-foreground: 215 15% 45%; /* 次要文字：中灰 */
 
-    --accent: 210 40% 94%;               /* 提示背景，接近白灰 */
+    --accent: 210 40% 94%; /* 提示背景，接近白灰 */
     --accent-foreground: 222.2 60% 12%;
 
-    --destructive: 0 72% 50%;            /* 错误/警告：偏柔和红 */
+    --destructive: 0 72% 50%; /* 错误/警告：偏柔和红 */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 214 20% 86%;               /* 边框更柔和灰 */
+    --border: 214 20% 86%; /* 边框更柔和灰 */
     --input: 214 20% 86%;
-    --ring: 220 70% 45%;                 /* 焦点呼应主色 */
+    --ring: 220 70% 45%; /* 焦点呼应主色 */
 
     --radius: 0.5rem;
   }
@@ -38,39 +38,38 @@
   @media (prefers-color-scheme: dark) {
     :root {
       /* 背景与文字 */
-      --background: 0 0% 10%;       /* 深灰背景，低亮度但柔和 */
-      --foreground: 0 0% 92%;       /* 明亮文字，高可读性 */
+      --background: 0 0% 10%; /* 深灰背景，低亮度但柔和 */
+      --foreground: 0 0% 92%; /* 明亮文字，高可读性 */
 
       /* 卡片与弹窗 */
-      --card: 0 0% 15%;             /* 卡片略浅于背景 */
+      --card: 0 0% 15%; /* 卡片略浅于背景 */
       --card-foreground: 0 0% 92%;
       --popover: 0 0% 15%;
       --popover-foreground: 0 0% 92%;
 
       /* 主色与辅助色 */
-      --primary: 0 0% 80%;          /* 主操作色为浅灰色 */
+      --primary: 0 0% 80%; /* 主操作色为浅灰色 */
       --primary-foreground: 0 0% 10%; /* 按钮文字深色 */
-      --secondary: 0 0% 25%;        /* 辅助区块深灰 */
+      --secondary: 0 0% 25%; /* 辅助区块深灰 */
       --secondary-foreground: 0 0% 92%;
-      --muted: 0 0% 20%;            /* 次要区块背景 */
+      --muted: 0 0% 20%; /* 次要区块背景 */
       --muted-foreground: 0 0% 70%; /* 次要文字灰色柔和 */
-      --accent: 0 0% 18%;           /* 提示/轻背景 */
+      --accent: 0 0% 18%; /* 提示/轻背景 */
       --accent-foreground: 0 0% 92%;
 
       /* 危险色 */
-      --destructive: 0 65% 50%;     /* 柔和红色，警告/错误 */
+      --destructive: 0 65% 50%; /* 柔和红色，警告/错误 */
       --destructive-foreground: 0 0% 92%;
 
       /* 边框 / 输入 / ring */
       --border: 0 0% 25%;
       --input: 0 0% 25%;
-      --ring: 0 0% 80%;             /* 浅灰呼应焦点 */
+      --ring: 0 0% 80%; /* 浅灰呼应焦点 */
 
       /* 圆角 */
       --radius: 0.5rem;
     }
   }
-
 }
 
 @layer base {
@@ -83,17 +82,17 @@
 }
 
 /* Chrome, Safari, Edge, Opera */
-input[type='search']::-webkit-search-cancel-button {
+input[type="search"]::-webkit-search-cancel-button {
   -webkit-appearance: none;
   appearance: none;
 }
 
 /* Firefox */
-input[type='search']::-moz-search-cancel-button {
+input[type="search"]::-moz-search-cancel-button {
   display: none;
 }
 
 /* Microsoft Edge */
-input[type='search']::-ms-clear {
+input[type="search"]::-ms-clear {
   display: none;
 }

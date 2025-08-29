@@ -1,40 +1,51 @@
-import Link from 'next/link';
+import Link from "next/link";
 import {
   Home,
+  LayoutDashboard,
   LineChart,
   Package,
-  Package2,
   PanelLeft,
   Settings,
   ShoppingCart,
-  Users2
-} from 'lucide-react';
+  Users2,
+} from "lucide-react";
 
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import {
   Tooltip,
   TooltipContent,
-  TooltipTrigger
-} from '@/components/ui/tooltip';
-import { User } from './user';
-import Providers from './providers';
-import { NavItem } from './nav-item';
-import DashboardBreadcrumb from './bread';
-export default function DashboardLayout({
-  children
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { User } from "./user";
+import Providers from "./providers";
+import { NavItem } from "./nav-item";
+import DashboardBreadcrumb from "./breadcrumb";
+import { Locale } from "i18n-config";
+import { getDictionary } from "@/lib/get-dictionary";
+
+export default async function DashboardLayout({
+  params,
+  children,
 }: {
+  params: Promise<{ lang: Locale }>;
   children: React.ReactNode;
 }) {
+  const { lang } = await params;
+  const dictionary = await getDictionary(lang);
   return (
     <Providers>
       <main className="flex min-h-screen w-full flex-col bg-muted/40">
-        <DesktopNav />
+        <DesktopNav dict={dictionary} />
         <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
           <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-            <MobileNav />
-            <DashboardBreadcrumb />
-            {/* <User /> */}
+            <MobileNav dict={dictionary} />
+            <DashboardBreadcrumb dict={dictionary} />
           </header>
           <main className="grid flex-1 items-start gap-2 p-4 sm:px-6 sm:py-0 md:gap-4 bg-muted/40">
             {children}
@@ -45,14 +56,14 @@ export default function DashboardLayout({
   );
 }
 
-function DesktopNav() {
+function DesktopNav({ dict }: { dict: any }) {
   return (
     <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
       <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
-        <User />
+        <User dict={dict} />
 
-        <NavItem href="#" label="Dashboard">
-          <Home className="h-5 w-5" />
+        <NavItem href="#" label={dict["navigation"]["dashboard"]}>
+          <LayoutDashboard className="h-5 w-5" />
         </NavItem>
 
         <NavItem href="#" label="Orders">
@@ -89,7 +100,7 @@ function DesktopNav() {
   );
 }
 
-function MobileNav() {
+function MobileNav({ dict }: { dict: any }) {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -101,7 +112,7 @@ function MobileNav() {
       <SheetContent side="left" className="w-64 sm:max-w-xs">
         <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
         <nav className="grid gap-6 text-lg font-medium pt-6">
-          <User />
+          <User dict={dict} />
           <Link
             href="#"
             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
@@ -142,4 +153,3 @@ function MobileNav() {
     </Sheet>
   );
 }
-

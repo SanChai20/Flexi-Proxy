@@ -30,12 +30,7 @@ export function OnceButton({
   const isDisabled = pending || wasPending;
 
   return (
-    <button
-      type={type}
-      disabled={isDisabled}
-      className={className}
-      {...props}
-    >
+    <button type={type} disabled={isDisabled} className={className} {...props}>
       {isDisabled ? (
         <span className="flex items-center gap-2">
           <LoadingIcon className="animate-spin h-4 w-4" />

@@ -6,7 +6,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "FlexiProxy - AI",
-  description: "A service that provides API Base URLs and acts as a backend proxy for clients like Claude Code.",
+  description:
+    "A service that provides API Base URLs and acts as a backend proxy for clients like Claude Code.",
 };
 
 export async function generateStaticParams() {
@@ -17,13 +18,11 @@ export default async function RootLayout(props: {
   children: React.ReactNode;
   params: Promise<{ lang: Locale }>;
 }) {
-  const params = await props.params
+  const params = await props.params;
   const { children } = props;
   return (
     <html lang={params.lang}>
-      <body className={inter.className}>
-        {children}
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }

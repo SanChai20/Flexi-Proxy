@@ -30,7 +30,9 @@ export function ContactForm({
   const [subject, setSubject] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(null);
+  const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(
+    null
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,19 +40,22 @@ export function ContactForm({
     setSubmitStatus(null);
 
     try {
-      const response = await fetch([process.env.BASE_URL, "api/contact"].join("/"), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId,
-          userName,
-          userEmail,
-          subject,
-          message,
-        }),
-      });
+      const response = await fetch(
+        [process.env.BASE_URL, "api/contact"].join("/"),
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId,
+            userName,
+            userEmail,
+            subject,
+            message,
+          }),
+        }
+      );
 
       if (response.ok) {
         setSubmitStatus("success");
@@ -71,14 +76,21 @@ export function ContactForm({
       <div className="w-full max-w-lg rounded-2xl bg-card p-8 shadow-md border border-border">
         {/* Header */}
         <div className="mb-6 text-center">
-          <h2 className="text-2xl font-bold text-card-foreground">{dict.contact.title}</h2>
-          <p className="mt-2 text-sm text-muted-foreground">{dict.contact.subtitle}</p>
+          <h2 className="text-2xl font-bold text-card-foreground">
+            {dict.contact.title}
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {dict.contact.subtitle}
+          </p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex flex-col">
-            <label htmlFor="subject" className="mb-1 text-sm font-medium text-muted-foreground">
+            <label
+              htmlFor="subject"
+              className="mb-1 text-sm font-medium text-muted-foreground"
+            >
               {dict.contact.subject}
             </label>
             <input
@@ -93,7 +105,10 @@ export function ContactForm({
           </div>
 
           <div className="flex flex-col">
-            <label htmlFor="message" className="mb-1 text-sm font-medium text-muted-foreground">
+            <label
+              htmlFor="message"
+              className="mb-1 text-sm font-medium text-muted-foreground"
+            >
               {dict.contact.message}
             </label>
             <textarea

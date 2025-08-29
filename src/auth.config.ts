@@ -1,4 +1,3 @@
-
 import { Provider } from "next-auth/providers";
 import type { NextAuthConfig } from "next-auth";
 import GitHub from "next-auth/providers/github";
@@ -10,11 +9,11 @@ import { Theme } from "@auth/core/types";
 import { UpstashRedisAdapter } from "@auth/upstash-redis-adapter";
 
 function html(params: { url: string; host: string; theme: Theme }) {
-    const { url, host, theme } = params
-    const escapedHost = host.replace(/\./g, "&#8203;.")
-    const brandColor = theme.brandColor || "#3B82F6"
-    
-    return `
+  const { url, host, theme } = params;
+  const escapedHost = host.replace(/\./g, "&#8203;.");
+  const brandColor = theme.brandColor || "#3B82F6";
+
+  return `
 <!DOCTYPE html>
 <html>
 <head>
@@ -180,12 +179,12 @@ function html(params: { url: string; host: string; theme: Theme }) {
   </div>
 </body>
 </html>
-`
+`;
 }
- 
+
 // Email Text body (fallback for email clients that don't render HTML, e.g. feature phones)
 function text({ url, host }: { url: string; host: string }) {
-    return `Sign In to ${host}
+  return `Sign In to ${host}
 
 Welcome back!
 
@@ -200,78 +199,80 @@ If you didn't request this sign-in, you can safely ignore this email. This is an
 ---
 This email was sent automatically. Please do not reply.
 © ${new Date().getFullYear()} ${host}
-`
+`;
 }
 
 const providers: Provider[] = [
-    Resend({
-        apiKey: process.env.AUTH_RESEND_KEY,
-        from: process.env.AUTH_RESEND_FROM,
-        async sendVerificationRequest({
-            identifier: to,
-            url,
-            provider: { from, apiKey },
-            theme
-        }) {
-            const { host } = new URL(url)
-            const res = await fetch("https://api.resend.com/emails", {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${apiKey}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    from,
-                    to,
-                    subject: `Sign in to ${host}`,
-                    html: html({ url, host, theme }),
-                    text: text({ url, host }),
-                }),
-            })
-
-            if (!res.ok)
-                throw new Error("Resend error: " + JSON.stringify(await res.json()))
+  Resend({
+    apiKey: process.env.AUTH_RESEND_KEY,
+    from: process.env.AUTH_RESEND_FROM,
+    async sendVerificationRequest({
+      identifier: to,
+      url,
+      provider: { from, apiKey },
+      theme,
+    }) {
+      const { host } = new URL(url);
+      const res = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
         },
-    }), 
-    Google({
-        clientId: process.env.AUTH_GOOGLE_ID,
-        clientSecret: process.env.AUTH_GOOGLE_SECRET,
-    }),
-    GitHub({
-        clientId: process.env.AUTH_GITHUB_ID,
-        clientSecret: process.env.AUTH_GITHUB_SECRET,
-    }),
-    WeChat({
-        clientId: process.env.AUTH_WECHAT_APP_ID,
-        clientSecret: process.env.AUTH_WECHAT_APP_SECRET,
-        platformType: "OfficialAccount",
-    })
+        body: JSON.stringify({
+          from,
+          to,
+          subject: `Sign in to ${host}`,
+          html: html({ url, host, theme }),
+          text: text({ url, host }),
+        }),
+      });
+
+      if (!res.ok)
+        throw new Error("Resend error: " + JSON.stringify(await res.json()));
+    },
+  }),
+  Google({
+    clientId: process.env.AUTH_GOOGLE_ID,
+    clientSecret: process.env.AUTH_GOOGLE_SECRET,
+  }),
+  GitHub({
+    clientId: process.env.AUTH_GITHUB_ID,
+    clientSecret: process.env.AUTH_GITHUB_SECRET,
+  }),
+  WeChat({
+    clientId: process.env.AUTH_WECHAT_APP_ID,
+    clientSecret: process.env.AUTH_WECHAT_APP_SECRET,
+    platformType: "OfficialAccount",
+  }),
 ];
 
 export const providerMap = providers
-.map((provider) => {
+  .map((provider) => {
     if (typeof provider === "function") {
-        const providerData = provider()
-        return { id: providerData.id, name: providerData.name }
+      const providerData = provider();
+      return { id: providerData.id, name: providerData.name };
     } else {
-        return { id: provider.id, name: provider.name }
+      return { id: provider.id, name: provider.name };
     }
-})
-.filter((provider) => provider.id !== "resend");
+  })
+  .filter((provider) => provider.id !== "resend");
 
-export default { 
-    providers: providers,
-    adapter: UpstashRedisAdapter(new Redis({
-        url: process.env.UPSTASH_REDIS_REST_URL,
-        token: process.env.UPSTASH_REDIS_REST_TOKEN,
-    })),
-    session: {
-        maxAge: 86400 * 3, // 设置session的最大有效期（秒为单位）3 day - 24 * 60 * 60 * 3
+export default {
+  providers: providers,
+  adapter: UpstashRedisAdapter(
+    new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    })
+  ),
+  session: {
+    maxAge: 86400 * 3, // 设置session的最大有效期（秒为单位）3 day - 24 * 60 * 60 * 3
+  },
+  callbacks: {
+    session({ session, user }) {
+      session.user.id = user.id;
+      return session;
     },
-    callbacks: {
-        session({session, user}) {
-            session.user.id = user.id;
-            return session;
-        }
-    } 
-} satisfies NextAuthConfig
+  },
+} satisfies NextAuthConfig;

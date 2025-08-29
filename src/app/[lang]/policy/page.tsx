@@ -7,9 +7,9 @@ export default async function PolicyPage(props: {
 }) {
   const { lang } = await props.params;
   const dictionary = await getDictionary(lang);
-  
+
   return (
-    <ContentDisplay 
+    <ContentDisplay
       title={dictionary.policy.title}
       subtitle={dictionary.policy.subtitle}
     >
