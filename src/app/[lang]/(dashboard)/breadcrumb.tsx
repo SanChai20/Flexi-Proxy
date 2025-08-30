@@ -16,6 +16,22 @@ const DashboardPathWhitelist = ["", "contact", "settings", "subscription", "docu
 
 export default function DashboardBreadcrumb({ dict }: { dict: any }) {
   const pathname = usePathname();
+
+
+  // const [wasPending, setWasPending] = useState(false);
+
+  //   useEffect(() => {
+  //     if (pending) setWasPending(true);
+  //     if (!pending && wasPending) {
+  //       const timer = setTimeout(() => setWasPending(false), coolDown);
+  //       return () => clearTimeout(timer);
+  //     }
+  //   }, [pending, wasPending, coolDown]);
+
+
+
+
+
   console.log("Original pathname:", pathname);
   const localesPattern = i18n.locales.join("|");
   const pathNameWithoutLocale = pathname.replace(

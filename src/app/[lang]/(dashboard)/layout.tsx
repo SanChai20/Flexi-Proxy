@@ -64,7 +64,7 @@ function DesktopNav({ dict }: { dict: any }) {
       <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
         <User dict={dict} />
 
-        <NavItem href="#" label={dict["navigation"]["dashboard"]}>
+        <NavItem href="/" label={dict["navigation"]["dashboard"]}>
           <Home className="h-5 w-5" />
         </NavItem>
 
@@ -112,7 +112,7 @@ function MobileNav({ dict }: { dict: any }) {
         <nav className="grid gap-6 text-lg font-medium pt-6">
           <User dict={dict} />
           <Link
-            href="#"
+            href="/"
             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
           >
             <Home className="h-5 w-5" />

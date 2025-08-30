@@ -19,7 +19,7 @@ export function NavItem({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-
+  console.log()
   return (
     <Tooltip>
       <TooltipTrigger asChild>
