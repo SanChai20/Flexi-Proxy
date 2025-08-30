@@ -11,36 +11,32 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-
-const DashboardPathWhitelist = ["", "contact", "settings", "subscription", "documentation"]
+import { useEffect, useState } from "react";
+import { dashboardRouteWhitelist } from "@/lib/whitelist";
 
 export default function DashboardBreadcrumb({ dict }: { dict: any }) {
   const pathname = usePathname();
+  const [pathNames, setPathNames] = useState<string[]>([]);
+  useEffect(() => {
+    const localesPattern = i18n.locales.join("|");
+    const pathNameWithoutLocale = pathname.replace(
+      new RegExp(`^\\/(${localesPattern})(\\/|$)`),
+      "/"
+    );
+    const pathSplits: string[] = pathNameWithoutLocale
+      .split("/")
+      .filter((x) => x);
 
+    const allowed = pathSplits.some((path) =>
+      dashboardRouteWhitelist.includes(path)
+    );
+    if (allowed) {
+      setPathNames(pathSplits);
+    } else {
+      setPathNames([]);
+    }
+  }, [pathname]);
 
-  // const [wasPending, setWasPending] = useState(false);
-
-  //   useEffect(() => {
-  //     if (pending) setWasPending(true);
-  //     if (!pending && wasPending) {
-  //       const timer = setTimeout(() => setWasPending(false), coolDown);
-  //       return () => clearTimeout(timer);
-  //     }
-  //   }, [pending, wasPending, coolDown]);
-
-
-
-
-
-  console.log("Original pathname:", pathname);
-  const localesPattern = i18n.locales.join("|");
-  const pathNameWithoutLocale = pathname.replace(
-    new RegExp(`^\\/(${localesPattern})(\\/|$)`),
-    "/"
-  );
-  console.log("Pathname without locale:", pathNameWithoutLocale);
-  const pathNames = pathNameWithoutLocale.split("/").filter((x) => x);
-  console.log("Path names array:", pathNames);
   return (
     <Breadcrumb className="hidden md:flex">
       <BreadcrumbList>

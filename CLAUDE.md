@@ -1,1 +1,3 @@
 - https://zh-hans.react.dev/reference/react
+- tailwind.config.ts
+- src/app/globals.css

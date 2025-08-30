@@ -5,22 +5,9 @@ import { match as matchLocale } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
 import NextAuth from "next-auth";
 import authConfig from "./auth.config";
+import { i18nRouteWhitelist, protectedRouteList } from "@/lib/whitelist";
 
 const { auth } = NextAuth(authConfig);
-
-// Route Whitelist for i18n
-const i18nRouteWhitelist = [
-  "",
-  "login",
-  "policy",
-  "terms",
-  "verification",
-  "contact",
-  "document",
-  "subscription",
-];
-// Access after verification(login)
-const protectedRouteList = ["contact", "document", "subscription"];
 
 // Add locale if necessary
 function routeCompletion(req: NextRequest): string | NextResponse {
@@ -75,31 +62,34 @@ function navigateRoutes(
   req: NextRequest
 ): NextResponse<unknown> {
   // const parts = pathName.replace(/^\/+|\/+$/g, "").split("/");
-  // console.log(`[PARTS] ${parts}`)
+  // console.log(`[PARTS] ${parts}`);
   // if (parts.length < 1 || !parts[0] || !i18n.locales.includes(parts[0] as any))
-  //     return NextResponse.next();
-
-  // const locale = parts[0]
-  // let redirectPath: string | null = null
-  // if (parts.length === 1) { // Home Page
-  //     if (!isLoggedIn) {
-  //         redirectPath = `/${locale}/verification`
-  //     }
+  //   return NextResponse.next();
+  // const locale = parts[0];
+  // let redirectPath: string | null = null;
+  // if (parts.length === 1) {
+  //   // Home Page
+  //   if (!isLoggedIn) {
+  //     redirectPath = `/${locale}/verification`;
+  //   }
   // } else {
-  //     const section = parts[1]
-  //     if (section === "login") {
-  //         const fromParam = req.nextUrl.searchParams.get('from');
-  //         if (!fromParam) {
-  //             redirectPath = `/${locale}/verification`
-  //         } else if (isLoggedIn) {
-  //             redirectPath = `/${locale}`
-  //         }
-  //     } else if (protectedRouteList.includes(section) && !isLoggedIn) {
-  //         redirectPath = `/${locale}/verification`
-  //     }
+  //   const section = parts[1];
+  //   if (protectedRouteList.includes(section) && !isLoggedIn) {
+  //     redirectPath = `/${locale}/verification`;
+  //   }
+  //   // Some overrides, navigations
+  //   if (section === "login" && isLoggedIn) {
+  //     //const fromParam = req.nextUrl.searchParams.get("from");
+  //     // if (!fromParam) {
+  //     //   redirectPath = `/${locale}/verification`;
+  //     // } else if (isLoggedIn) {
+  //     //   redirectPath = `/${locale}`;
+  //     // }
+  //     redirectPath = `/${locale}`;
+  //   }
   // }
   // if (redirectPath) {
-  //     return NextResponse.redirect(new URL(redirectPath, req.url))
+  //   return NextResponse.redirect(new URL(redirectPath, req.url));
   // }
   return NextResponse.next();
 }
