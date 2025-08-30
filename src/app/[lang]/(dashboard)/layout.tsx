@@ -3,6 +3,7 @@ import {
   BookText,
   Home,
   LayoutDashboard,
+  LayoutList,
   LineChart,
   Mails,
   Package,
@@ -64,15 +65,25 @@ function DesktopNav({ dict }: { dict: any }) {
       <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
         <User dict={dict} />
 
-        <NavItem href="/" label={dict["navigation"]["dashboard"]}>
+        <NavItem href="/" label={dict["navigation"]["home"]}>
           <Home className="h-5 w-5" />
         </NavItem>
 
-        <NavItem href="/documentation" label={dict["navigation"]["documentation"]}>
+        <NavItem href="/management" label={dict["navigation"]["dashboard"]}>
+          <LayoutDashboard className="h-5 w-5" />
+        </NavItem>
+
+        <NavItem
+          href="/documentation"
+          label={dict["navigation"]["documentation"]}
+        >
           <BookText className="h-5 w-5" />
         </NavItem>
 
-        <NavItem href="/subscription" label={dict["navigation"]["subscription"]}>
+        <NavItem
+          href="/subscription"
+          label={dict["navigation"]["subscription"]}
+        >
           <ShoppingCart className="h-5 w-5" />
         </NavItem>
 
@@ -91,7 +102,9 @@ function DesktopNav({ dict }: { dict: any }) {
               <span className="sr-only">Settings</span>
             </Link>
           </TooltipTrigger>
-          <TooltipContent side="right">{dict["navigation"]["settings"]}</TooltipContent>
+          <TooltipContent side="right">
+            {dict["navigation"]["settings"]}
+          </TooltipContent>
         </Tooltip>
       </nav>
     </aside>
@@ -116,6 +129,13 @@ function MobileNav({ dict }: { dict: any }) {
             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
           >
             <Home className="h-5 w-5" />
+            {dict["navigation"]["home"]}
+          </Link>
+          <Link
+            href="/management"
+            className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+          >
+            <LayoutDashboard className="h-5 w-5" />
             {dict["navigation"]["dashboard"]}
           </Link>
           <Link
@@ -127,7 +147,7 @@ function MobileNav({ dict }: { dict: any }) {
           </Link>
           <Link
             href="/subscription"
-            className="flex items-center gap-4 px-2.5 text-foreground"
+            className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
           >
             <ShoppingCart className="h-5 w-5" />
             {dict["navigation"]["subscription"]}

@@ -13,16 +13,13 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { dashboardRouteWhitelist } from "@/lib/whitelist";
+import { pathCullLocale } from "@/lib/utils";
 
 export default function DashboardBreadcrumb({ dict }: { dict: any }) {
   const pathname = usePathname();
   const [pathNames, setPathNames] = useState<string[]>([]);
   useEffect(() => {
-    const localesPattern = i18n.locales.join("|");
-    const pathNameWithoutLocale = pathname.replace(
-      new RegExp(`^\\/(${localesPattern})(\\/|$)`),
-      "/"
-    );
+    const pathNameWithoutLocale = pathCullLocale(pathname);
     const pathSplits: string[] = pathNameWithoutLocale
       .split("/")
       .filter((x) => x);
@@ -42,7 +39,7 @@ export default function DashboardBreadcrumb({ dict }: { dict: any }) {
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link href="/">{dict["navigation"]["dashboard"]}</Link>
+            <Link href="/">{dict["navigation"]["home"]}</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
         {pathNames.length > 0 && <BreadcrumbSeparator />}

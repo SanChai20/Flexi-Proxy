@@ -5,9 +5,13 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { pathCullLocale } from "@/lib/utils";
+import { dashboardRouteWhitelist } from "@/lib/whitelist";
 import clsx from "clsx";
+import { i18n } from "i18n-config";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export function NavItem({
   href,
@@ -19,7 +23,11 @@ export function NavItem({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  console.log()
+  const [pathNameWithoutLocale, setPathNameWithoutLocale] =
+    useState<string>("");
+  useEffect(() => {
+    setPathNameWithoutLocale(pathCullLocale(pathname));
+  }, [pathname]);
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -28,7 +36,7 @@ export function NavItem({
           className={clsx(
             "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8",
             {
-              "bg-accent text-black": pathname === href,
+              "bg-accent text-black": pathNameWithoutLocale === href,
             }
           )}
         >
