@@ -47,6 +47,10 @@
     "signout": "Sign Out"
   },
   "navigation": {
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "subscription": "Subscriptions",
+    "documentation": "Documentation",
+    "contact": "Contact Us",
+    "settings": "Settings"
   }
 }

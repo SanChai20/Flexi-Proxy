@@ -12,22 +12,25 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 
+const DashboardPathWhitelist = ["", "contact", "settings", "subscription", "documentation"]
+
 export default function DashboardBreadcrumb({ dict }: { dict: any }) {
   const pathname = usePathname();
+  console.log("Original pathname:", pathname);
   const localesPattern = i18n.locales.join("|");
   const pathNameWithoutLocale = pathname.replace(
     new RegExp(`^\\/(${localesPattern})(\\/|$)`),
     "/"
   );
-
+  console.log("Pathname without locale:", pathNameWithoutLocale);
   const pathNames = pathNameWithoutLocale.split("/").filter((x) => x);
-  console.log(pathNames);
+  console.log("Path names array:", pathNames);
   return (
     <Breadcrumb className="hidden md:flex">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link href="/">{dict["breadcrumb"]["dashboard"]}</Link>
+            <Link href="/">{dict["navigation"]["dashboard"]}</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
         {pathNames.length > 0 && <BreadcrumbSeparator />}
@@ -38,12 +41,12 @@ export default function DashboardBreadcrumb({ dict }: { dict: any }) {
             <BreadcrumbItem key={pathname}>
               {isLast ? (
                 <BreadcrumbPage>
-                  {pathname.charAt(0).toUpperCase() + pathname.slice(1)}
+                  {dict["navigation"][pathname.toLowerCase()]}
                 </BreadcrumbPage>
               ) : (
                 <BreadcrumbLink asChild>
                   <Link href={routeTo}>
-                    {pathname.charAt(0).toUpperCase() + pathname.slice(1)}
+                    {dict["navigation"][pathname.toLowerCase()]}
                   </Link>
                 </BreadcrumbLink>
               )}

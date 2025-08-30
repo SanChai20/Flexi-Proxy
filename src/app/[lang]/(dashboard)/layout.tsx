@@ -1,8 +1,10 @@
 import Link from "next/link";
 import {
+  BookText,
   Home,
   LayoutDashboard,
   LineChart,
+  Mails,
   Package,
   PanelLeft,
   Settings,
@@ -63,37 +65,33 @@ function DesktopNav({ dict }: { dict: any }) {
         <User dict={dict} />
 
         <NavItem href="#" label={dict["navigation"]["dashboard"]}>
-          <LayoutDashboard className="h-5 w-5" />
+          <Home className="h-5 w-5" />
         </NavItem>
 
-        <NavItem href="#" label="Orders">
+        <NavItem href="/documentation" label={dict["navigation"]["documentation"]}>
+          <BookText className="h-5 w-5" />
+        </NavItem>
+
+        <NavItem href="/subscription" label={dict["navigation"]["subscription"]}>
           <ShoppingCart className="h-5 w-5" />
         </NavItem>
 
-        <NavItem href="/contact" label="Products">
-          <Package className="h-5 w-5" />
-        </NavItem>
-
-        <NavItem href="/customers" label="Customers">
-          <Users2 className="h-5 w-5" />
-        </NavItem>
-
-        <NavItem href="/terms" label="Analytics">
-          <LineChart className="h-5 w-5" />
+        <NavItem href="/contact" label={dict["navigation"]["contact"]}>
+          <Mails className="h-5 w-5" />
         </NavItem>
       </nav>
       <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
         <Tooltip>
           <TooltipTrigger asChild>
             <Link
-              href="#"
+              href="/settings"
               className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
             >
               <Settings className="h-5 w-5" />
               <span className="sr-only">Settings</span>
             </Link>
           </TooltipTrigger>
-          <TooltipContent side="right">Settings</TooltipContent>
+          <TooltipContent side="right">{dict["navigation"]["settings"]}</TooltipContent>
         </Tooltip>
       </nav>
     </aside>
@@ -118,35 +116,35 @@ function MobileNav({ dict }: { dict: any }) {
             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
           >
             <Home className="h-5 w-5" />
-            Dashboard
+            {dict["navigation"]["dashboard"]}
           </Link>
           <Link
-            href="#"
+            href="/documentation"
             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
           >
-            <ShoppingCart className="h-5 w-5" />
-            Orders
+            <BookText className="h-5 w-5" />
+            {dict["navigation"]["documentation"]}
           </Link>
           <Link
-            href="#"
+            href="/subscription"
             className="flex items-center gap-4 px-2.5 text-foreground"
           >
-            <Package className="h-5 w-5" />
-            Products
+            <ShoppingCart className="h-5 w-5" />
+            {dict["navigation"]["subscription"]}
           </Link>
           <Link
-            href="#"
+            href="/contact"
             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
           >
-            <Users2 className="h-5 w-5" />
-            Customers
+            <Mails className="h-5 w-5" />
+            {dict["navigation"]["contact"]}
           </Link>
           <Link
-            href="#"
+            href="/settings"
             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
           >
-            <LineChart className="h-5 w-5" />
-            Settings
+            <Settings className="h-5 w-5" />
+            {dict["navigation"]["settings"]}
           </Link>
         </nav>
       </SheetContent>
