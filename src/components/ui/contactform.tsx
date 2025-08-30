@@ -72,77 +72,105 @@ export function ContactForm({
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-background p-4">
-      <div className="w-full max-w-lg rounded-2xl bg-card p-8 shadow-md border border-border">
-        {/* Header */}
-        {/* <div className="mb-6 text-center">
-          <h2 className="text-2xl font-bold text-card-foreground">
-            {dict.contact.title}
-          </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {dict.contact.subtitle}
-          </p>
-        </div> */}
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex flex-col">
-            <label
-              htmlFor="subject"
-              className="mb-1 text-sm font-medium text-muted-foreground"
-            >
-              {dict.contact.subject}
-            </label>
-            <input
-              type="text"
-              id="subject"
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              className="rounded-lg border border-input px-3 py-2 text-card-foreground shadow-sm focus:border-ring focus:ring-ring sm:text-sm bg-card"
-              required
-              disabled={isSubmitting}
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <label
-              htmlFor="message"
-              className="mb-1 text-sm font-medium text-muted-foreground"
-            >
-              {dict.contact.message}
-            </label>
-            <textarea
-              id="message"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              rows={6}
-              className="rounded-lg border border-input px-3 py-2 text-card-foreground shadow-sm focus:border-ring focus:ring-ring sm:text-sm bg-card"
-              required
-              disabled={isSubmitting}
-            />
-          </div>
-
-          <div className="mt-4">
-            <OnceButton
-              type="submit"
-              className="w-full rounded-lg bg-primary text-primary-foreground px-4 py-2 transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-ring"
-            >
-              {isSubmitting ? dict.contact.sending : dict.contact.send}
-            </OnceButton>
-          </div>
-
-          {submitStatus === "success" && (
-            <p className="mt-2 text-center text-destructive-foreground bg-destructive rounded px-2 py-1">
-              {dict.contact.success}
-            </p>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {userName && (
+            <div className="flex flex-col">
+              <label
+                htmlFor="name"
+                className="mb-2 text-sm font-medium text-muted-foreground"
+              >
+                {dict.contact.name}
+              </label>
+              <input
+                type="text"
+                id="name"
+                value={userName}
+                readOnly
+                className="rounded-lg border border-input px-4 py-3 text-card-foreground shadow-sm focus:border-ring focus:ring-ring sm:text-sm bg-muted cursor-not-allowed"
+              />
+            </div>
           )}
-          {submitStatus === "error" && (
-            <p className="mt-2 text-center text-destructive-foreground bg-destructive rounded px-2 py-1">
-              {dict.contact.error}
-            </p>
+          {userEmail && (
+            <div className="flex flex-col">
+              <label
+                htmlFor="email"
+                className="mb-2 text-sm font-medium text-muted-foreground"
+              >
+                {dict.contact.email}
+              </label>
+              <input
+                type="email"
+                id="email"
+                value={userEmail}
+                readOnly
+                className="rounded-lg border border-input px-4 py-3 text-card-foreground shadow-sm focus:border-ring focus:ring-ring sm:text-sm bg-muted cursor-not-allowed"
+              />
+            </div>
           )}
-        </form>
+        </div>
+
+        <div className="flex flex-col">
+          <label
+            htmlFor="subject"
+            className="mb-2 text-sm font-medium text-muted-foreground"
+          >
+            {dict.contact.subject}
+          </label>
+          <input
+            type="text"
+            id="subject"
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            className="rounded-lg border border-input px-4 py-3 text-card-foreground shadow-sm focus:border-ring focus:ring-ring sm:text-sm bg-card"
+            required
+            disabled={isSubmitting}
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <label
+            htmlFor="message"
+            className="mb-2 text-sm font-medium text-muted-foreground"
+          >
+            {dict.contact.message}
+          </label>
+          <textarea
+            id="message"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            rows={8}
+            className="rounded-lg border border-input px-4 py-3 text-card-foreground shadow-sm focus:border-ring focus:ring-ring sm:text-sm bg-card"
+            required
+            disabled={isSubmitting}
+          />
+        </div>
       </div>
-    </div>
+
+      <div className="flex justify-end">
+        <OnceButton
+          type="submit"
+          className="rounded-lg bg-primary text-primary-foreground px-6 py-3 transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-ring"
+        >
+          {isSubmitting ? dict.contact.sending : dict.contact.send}
+        </OnceButton>
+      </div>
+
+      {submitStatus === "success" && (
+        <div className="flex justify-center">
+          <div className="rounded-lg bg-green-100 border border-green-400 text-green-700 px-4 py-3 max-w-md w-full dark:bg-green-900 dark:border-green-700 dark:text-green-100">
+            <p className="text-center font-medium">{dict.contact.success}</p>
+          </div>
+        </div>
+      )}
+      {submitStatus === "error" && (
+        <div className="flex justify-center">
+          <div className="rounded-lg bg-red-100 border border-red-400 text-red-700 px-4 py-3 max-w-md w-full dark:bg-red-900 dark:border-red-700 dark:text-red-100">
+            <p className="text-center font-medium">{dict.contact.error}</p>
+          </div>
+        </div>
+      )}
+    </form>
   );
 }

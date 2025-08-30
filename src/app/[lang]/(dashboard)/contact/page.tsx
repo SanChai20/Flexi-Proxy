@@ -17,20 +17,23 @@ export default async function ContactPage(props: {
   const { lang } = await props.params;
   const dict = await getDictionary(lang);
   return (
-    <>
-      <Card>
+    <div className="w-full">
+      <Card className="w-full">
         <CardHeader>
-          <CardTitle>{dict.contact.title}</CardTitle>
-          <CardDescription>{dict.contact.subtitle}</CardDescription>
+          <CardTitle className="text-2xl">{dict.contact.title}</CardTitle>
+          <CardDescription className="text-base">
+            {dict.contact.subtitle}
+          </CardDescription>
         </CardHeader>
-        {/* <CardContent> asd</CardContent> */}
+        <CardContent>
+          <ContactForm
+            userId={session?.user?.id}
+            userName={session?.user?.name}
+            userEmail={session?.user?.email}
+            dict={dict}
+          />
+        </CardContent>
       </Card>
-      <ContactForm
-        userId={session?.user?.id}
-        userName={session?.user?.name}
-        userEmail={session?.user?.email}
-        dict={dict}
-      />
-    </>
+    </div>
   );
 }
