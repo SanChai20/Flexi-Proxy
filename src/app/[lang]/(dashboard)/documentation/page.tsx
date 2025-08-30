@@ -1,3 +1,6 @@
+import { getDictionary } from "@/lib/get-dictionary";
+import { auth } from "@/auth";
+import { Locale } from "i18n-config";
 import {
   Card,
   CardContent,
@@ -6,14 +9,23 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export default function DocumentationPage() {
+export default async function DocumentationPage(props: {
+  params: Promise<{ lang: Locale }>;
+}) {
+  const session = await auth();
+  const { lang } = await props.params;
+  const dict = await getDictionary(lang);
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Customers</CardTitle>
-        <CardDescription>View all customers and their orders.</CardDescription>
-      </CardHeader>
-      <CardContent> asd</CardContent>
-    </Card>
+    <div className="w-full">
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="text-2xl">{dict.contact.title}</CardTitle>
+          <CardDescription className="text-base">
+            {dict.contact.subtitle}
+          </CardDescription>
+        </CardHeader>
+        <CardContent></CardContent>
+      </Card>
+    </div>
   );
 }

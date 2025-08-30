@@ -53,5 +53,9 @@
     "contact": "Contact Us",
     "settings": "Settings",
     "home": "Home"
+  },
+  "documentation": {
+    "title": "",
+    "subtitle": ""
   }
 }

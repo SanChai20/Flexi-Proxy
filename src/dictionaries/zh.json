@@ -53,5 +53,9 @@
     "contact": "联系我们",
     "settings": "设置",
     "home": "主页"
+  },
+  "documentation": {
+    "title": "用户使用说明文档",
+    "subtitle": "这里包括如何"
   }
 }

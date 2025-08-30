@@ -6,6 +6,7 @@ import {
   LayoutList,
   LineChart,
   Mails,
+  MessageCircleQuestionMark,
   Package,
   PanelLeft,
   Settings,
@@ -87,6 +88,10 @@ function DesktopNav({ dict }: { dict: any }) {
           <ShoppingCart className="h-5 w-5" />
         </NavItem>
 
+        <NavItem href="/faq" label={dict["navigation"]["faq"]}>
+          <MessageCircleQuestionMark className="h-5 w-5" />
+        </NavItem>
+
         <NavItem href="/contact" label={dict["navigation"]["contact"]}>
           <Mails className="h-5 w-5" />
         </NavItem>
@@ -151,6 +156,13 @@ function MobileNav({ dict }: { dict: any }) {
           >
             <ShoppingCart className="h-5 w-5" />
             {dict["navigation"]["subscription"]}
+          </Link>
+          <Link
+            href="/faq"
+            className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+          >
+            <MessageCircleQuestionMark className="h-5 w-5" />
+            {dict["navigation"]["faq"]}
           </Link>
           <Link
             href="/contact"
