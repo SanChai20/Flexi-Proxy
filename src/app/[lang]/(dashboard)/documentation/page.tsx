@@ -3,10 +3,10 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
-} from '@/components/ui/card';
+  CardTitle,
+} from "@/components/ui/card";
 
-export default function DocumentPage() {
+export default function DocumentationPage() {
   return (
     <Card>
       <CardHeader>

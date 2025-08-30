@@ -75,14 +75,14 @@ export function ContactForm({
     <div className="flex justify-center items-center min-h-screen bg-background p-4">
       <div className="w-full max-w-lg rounded-2xl bg-card p-8 shadow-md border border-border">
         {/* Header */}
-        <div className="mb-6 text-center">
+        {/* <div className="mb-6 text-center">
           <h2 className="text-2xl font-bold text-card-foreground">
             {dict.contact.title}
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
             {dict.contact.subtitle}
           </p>
-        </div>
+        </div> */}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
