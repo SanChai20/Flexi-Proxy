@@ -47,15 +47,32 @@
     "signout": "Sign Out"
   },
   "navigation": {
-    "dashboard": "Dashboard",
+    "management": "Management",
     "subscription": "Subscriptions",
     "documentation": "Documentation",
     "contact": "Contact Us",
     "settings": "Settings",
+    "faq": "FAQ",
     "home": "Home"
   },
   "documentation": {
-    "title": "",
-    "subtitle": ""
+    "title": "Documentation",
+    "subtitle": "Guiding you through the configuration process"
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "We've compiled answers to common questions about our service"
+  },
+  "management": {
+    "title": "Base URL Management",
+    "subtitle": "Manage your OpenAI-compatible Base URLs"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Configure your account and preferences"
+  },
+  "subscription": {
+    "title": "Subscriptions",
+    "subtitle": "Manage your subscription plans and billing"
   }
 }

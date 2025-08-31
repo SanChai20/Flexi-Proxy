@@ -51,7 +51,7 @@ export default async function DashboardLayout({
             <MobileNav dict={dictionary} />
             <DashboardBreadcrumb dict={dictionary} />
           </header>
-          <main className="grid flex-1 items-start gap-2 p-4 sm:px-6 sm:py-0 md:gap-4 bg-muted/40">
+          <main className="grid flex-1 items-start gap-2 p-4 sm:px-6 sm:py-0 md:gap-4">
             {children}
           </main>
         </div>
@@ -70,7 +70,7 @@ function DesktopNav({ dict }: { dict: any }) {
           <Home className="h-5 w-5" />
         </NavItem>
 
-        <NavItem href="/management" label={dict["navigation"]["dashboard"]}>
+        <NavItem href="/management" label={dict["navigation"]["management"]}>
           <LayoutDashboard className="h-5 w-5" />
         </NavItem>
 
@@ -141,7 +141,7 @@ function MobileNav({ dict }: { dict: any }) {
             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
           >
             <LayoutDashboard className="h-5 w-5" />
-            {dict["navigation"]["dashboard"]}
+            {dict["navigation"]["management"]}
           </Link>
           <Link
             href="/documentation"

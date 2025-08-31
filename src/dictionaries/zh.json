@@ -47,15 +47,32 @@
     "signout": "登出"
   },
   "navigation": {
-    "dashboard": "控制台",
+    "management": "管理面板",
     "subscription": "订阅计划",
     "documentation": "说明文档",
     "contact": "联系我们",
     "settings": "设置",
+    "faq": "常见问题",
     "home": "主页"
   },
   "documentation": {
-    "title": "用户使用说明文档",
-    "subtitle": "这里包括如何"
+    "title": "说明文档",
+    "subtitle": "指导用户完成配置流程"
+  },
+  "faq": {
+    "title": "常见问题",
+    "subtitle": "我们对使用前后的诸多问题进行了整理"
+  },
+  "management": {
+    "title": "基础URL管理",
+    "subtitle": "管理您的OpenAI兼容的Base Urls"
+  },
+  "settings": {
+    "title": "设置",
+    "subtitle": "配置您的账户和偏好设置"
+  },
+  "subscription": {
+    "title": "订阅计划",
+    "subtitle": "管理您的订阅计划和账单"
   }
 }

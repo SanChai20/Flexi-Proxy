@@ -17,8 +17,8 @@ export default async function ContactPage(props: {
   const { lang } = await props.params;
   const dict = await getDictionary(lang);
   return (
-    <div className="w-full">
-      <Card className="w-full">
+    <div>
+      <Card>
         <CardHeader>
           <CardTitle className="text-2xl">{dict.contact.title}</CardTitle>
           <CardDescription className="text-base">
