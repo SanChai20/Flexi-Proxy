@@ -16,7 +16,7 @@ export default async function DocumentationPage(props: {
     const { lang } = await props.params;
     const dict = await getDictionary(lang);
     return (
-        <div>
+        <div className="flex flex-col gap-4">
             <Card>
                 <CardHeader>
                     <CardTitle className="text-2xl">{dict.documentation.title}</CardTitle>
@@ -24,9 +24,14 @@ export default async function DocumentationPage(props: {
                         {dict.documentation.subtitle}
                     </CardDescription>
                 </CardHeader>
-                <CardContent>
-
-                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-2xl">{dict.documentation.title}</CardTitle>
+                    <CardDescription className="text-base">
+                        {dict.documentation.subtitle}
+                    </CardDescription>
+                </CardHeader>
             </Card>
         </div>
     );

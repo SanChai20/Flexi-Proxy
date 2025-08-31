@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { auth, signOut } from "@/auth";
+import Link from "next/link";
 
 export async function User({ dict }: { dict: any }) {
   let session = await auth();
@@ -32,10 +33,10 @@ export async function User({ dict }: { dict: any }) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuLabel>{user?.name ?? user?.email ?? "User"}</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Settings</DropdownMenuItem>
-        <DropdownMenuItem>Support</DropdownMenuItem>
+        <Link href="/settings"><DropdownMenuItem>{dict["navigation"]["settings"]}</DropdownMenuItem></Link>
+        <Link href="/contact"><DropdownMenuItem>{dict["navigation"]["contact"]}</DropdownMenuItem></Link>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <form
