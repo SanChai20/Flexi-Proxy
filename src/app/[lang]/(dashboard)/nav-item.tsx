@@ -6,9 +6,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { pathCullLocale } from "@/lib/utils";
-import { dashboardRouteWhitelist } from "@/lib/whitelist";
 import clsx from "clsx";
-import { i18n } from "i18n-config";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";

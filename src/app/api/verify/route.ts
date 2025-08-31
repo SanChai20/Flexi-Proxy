@@ -19,7 +19,7 @@ export async function POST(req: Request) {
       token
     )}`,
   }).then((res) => res.json())) as TurnstileServerValidationResponse;
-  //console.log(`verifyResponseData - ${JSON.stringify(verifyResponseData)}`);
+
   if (!verifyResponseData.success) {
     return NextResponse.json(JSON.stringify(verifyResponseData), {
       status: 400,
