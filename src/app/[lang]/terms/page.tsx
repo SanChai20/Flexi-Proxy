@@ -1,19 +1,24 @@
-import { Locale } from "../../../../i18n-config";
 import { getDictionary } from "@/lib/get-dictionary";
 import { ContentDisplay } from "@/components/ui/contentdisplay";
+import path from "path";
+import { promises as fs } from "fs";
+import Markdown from "react-markdown";
+import { Locale } from "i18n-config";
 
 export default async function TermsPage(props: {
   params: Promise<{ lang: Locale }>;
 }) {
   const { lang } = await props.params;
   const dictionary = await getDictionary(lang);
-
+  // Read the terms of service markdown file
+  const termsPath = path.join(process.cwd(), dictionary.legal.termsPage);
+  const termsContent = await fs.readFile(termsPath, "utf8");
   return (
     <ContentDisplay
-      title={dictionary.terms.title}
-      subtitle={dictionary.terms.subtitle}
+      title={dictionary.legal.termsTitle}
+      subtitle={dictionary.legal.termsSubtitle}
     >
-      <div dangerouslySetInnerHTML={{ __html: dictionary.terms.content }} />
+      <Markdown children={termsContent} />
     </ContentDisplay>
   );
 }

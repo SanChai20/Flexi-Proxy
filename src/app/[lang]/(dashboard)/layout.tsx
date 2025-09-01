@@ -32,6 +32,7 @@ import { NavItem } from "./nav-item";
 import DashboardBreadcrumb from "./breadcrumb";
 import { Locale } from "i18n-config";
 import { getDictionary } from "@/lib/get-dictionary";
+import { Footer } from "@/components/ui/footer";
 
 export default async function DashboardLayout({
   params,
@@ -46,7 +47,7 @@ export default async function DashboardLayout({
     <Providers>
       <main className="flex min-h-screen w-full flex-col bg-muted/40">
         <DesktopNav dict={dictionary} />
-        <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+        <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14 flex-1">
           <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
             <MobileNav dict={dictionary} />
             <DashboardBreadcrumb dict={dictionary} />
@@ -55,6 +56,7 @@ export default async function DashboardLayout({
             {children}
           </main>
         </div>
+        <Footer dict={dictionary} />
       </main>
     </Providers>
   );
