@@ -14,6 +14,7 @@ import {
 import { ProxyList } from "@/components/ProxyList";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@/components/ui/icons";
+import ProviderTable from "@/components/ui/providertable";
 
 // Define the proxy type
 interface Proxy {
@@ -72,9 +73,9 @@ export default function ManagementPage(props: {
       proxies.map((proxy) =>
         proxy.id === id
           ? {
-              ...proxy,
-              status: proxy.status === "active" ? "inactive" : "active",
-            }
+            ...proxy,
+            status: proxy.status === "active" ? "inactive" : "active",
+          }
           : proxy
       )
     );
@@ -85,7 +86,7 @@ export default function ManagementPage(props: {
   };
 
   return (
-    <div>
+    <section className="w-full max-w-5xl mx-auto p-4">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Base URL Management</CardTitle>
@@ -93,15 +94,12 @@ export default function ManagementPage(props: {
             Manage your OpenAI-compatible Base URLs
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <ProxyList
-            proxies={proxies}
-            onAdd={handleAddProxy}
-            onEdit={handleEditProxy}
-            onDelete={handleDeleteProxy}
-          />
-        </CardContent>
+        {/* <CardContent>
+
+          
+        </CardContent> */}
       </Card>
-    </div>
+      <ProviderTable />
+    </section>
   );
 }

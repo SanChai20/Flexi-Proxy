@@ -34,15 +34,9 @@ import { Locale } from "i18n-config";
 import { getDictionary } from "@/lib/get-dictionary";
 import { Footer } from "@/components/ui/footer";
 
-export default async function DashboardLayout({
-  params,
-  children,
-}: {
-  params: Promise<{ lang: Locale }>;
-  children: React.ReactNode;
-}) {
-  const { lang } = await params;
-  const dictionary = await getDictionary(lang);
+export default async function DashboardLayout(props: LayoutProps<'/[lang]'>) {
+  const { lang } = await props.params
+  const dictionary = await getDictionary(lang as any);
   return (
     <Providers>
       <main className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -53,7 +47,7 @@ export default async function DashboardLayout({
             <DashboardBreadcrumb dict={dictionary} />
           </header>
           <main className="grid flex-1 items-start gap-2 p-4 sm:px-6 sm:py-0 md:gap-4">
-            {children}
+            {props.children}
           </main>
         </div>
         <Footer dict={dictionary} />

@@ -1,0 +1,6 @@
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "http://127.0.0.1:8082",
+    "ANTHROPIC_AUTH_TOKEN": "3313"
+  }
+}
