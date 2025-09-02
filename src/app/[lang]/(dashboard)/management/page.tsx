@@ -12,7 +12,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@/components/ui/icons";
-import ProxyTable from "@/components/ui/proxy";
+import ManagedTable from "@/components/managed/table";
 
 // Define the proxy type
 // interface Proxy {
@@ -37,7 +37,7 @@ export default async function ManagementPage(props: LayoutProps<"/[lang]">) {
           </CardDescription>
         </CardHeader>
       </Card>
-      <ProxyTable dict={dict} />
+      <ManagedTable dict={dict} />
     </section>
   );
 }

@@ -2,22 +2,39 @@
 
 import { useState } from "react";
 import { Cog6ToothIcon, PlusIcon } from "@heroicons/react/24/outline";
-import ProxyModal from "@/components/ui/proxymodal";
+import ManagedModal from "@/components/managed/modal";
+
+export type ProviderType =
+  | "OpenAI"
+  | "Anthropic"
+  | "Google"
+  | "Azure OpenAI"
+  | "Custom Provider"
+  | string;
 
 export interface ProviderRow {
   id: string;
-  provider: string;
+  provider: ProviderType;
   baseUrl: string;
   authToken: string;
   status: "active" | "inactive";
 }
 
+export const PROVIDER_OPTIONS = [
+  { id: "openai", name: "OpenAI", support: false },
+  { id: "anthropic", name: "Anthropic" },
+  { id: "google", name: "Google" },
+  { id: "azure", name: "Azure OpenAI" },
+  { id: "custom", name: "Custom Provider" },
+];
+
 /**
  * Provider 表格（含添加按钮、行设置图标）
  */
-export default function ProxyTable({ dict }: { dict: any }) {
+export default function ManagedTable({ dict }: { dict: any }) {
   const [rows, setRows] = useState<ProviderRow[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [mode, setMode] = useState<"proxy" | "hosted">("proxy");
 
   /** 简单的“新增行”实现（真实项目请改成弹窗收集信息） */
   const handleAdd = () => {
@@ -59,17 +76,19 @@ export default function ProxyTable({ dict }: { dict: any }) {
           onClick={handleAdd}
           className="inline-flex items-center rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm font-medium hover:bg-primary/90 transition"
         >
-          <PlusIcon className="h-4 w-4 mr-1" />
+          {/* <PlusIcon className="h-4 w-4 mr-1" /> */}
           Add Provider
         </button>
       </div>
 
       {/* ---------- Proxy Modal ---------- */}
-      <ProxyModal
+      <ManagedModal
         isOpen={isModalOpen}
         onClose={handleModalClose}
         onSubmit={handleModalSubmit}
         dict={dict}
+        mode={mode}
+        onModeChange={setMode}
       />
 
       {/* ---------- 表格容器 ---------- */}

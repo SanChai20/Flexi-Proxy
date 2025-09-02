@@ -63,7 +63,9 @@
   },
   "management": {
     "title": "Base URL Management",
-    "subtitle": "Manage your OpenAI-compatible Base URLs"
+    "subtitle": "Manage your OpenAI-compatible Base URLs",
+    "proxyMode": "Proxy Mode",
+    "hostedMode": "Hosted Endpoint Mode"
   },
   "settings": {
     "title": "Settings",

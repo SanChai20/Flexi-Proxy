@@ -63,7 +63,9 @@
   },
   "management": {
     "title": "基础URL管理",
-    "subtitle": "管理您的OpenAI兼容的Base Urls"
+    "subtitle": "管理您的OpenAI兼容的Base Urls",
+    "proxyMode": "中转站模式",
+    "hostedMode": "全托管模式"
   },
   "settings": {
     "title": "设置",
