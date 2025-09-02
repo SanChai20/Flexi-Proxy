@@ -23,7 +23,9 @@ import ManagedTable from "@/components/managed/table";
 //   status: string;
 // }
 
-export default async function ManagementPage(props: LayoutProps<"/[lang]">) {
+export default async function ManagementPage(
+  props: PageProps<"/[lang]/management">
+) {
   let session = await auth();
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);

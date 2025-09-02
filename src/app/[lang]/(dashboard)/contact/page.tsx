@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export default async function ContactPage(props: LayoutProps<"/[lang]">) {
+export default async function ContactPage(props: PageProps<"/[lang]/contact">) {
   const session = await auth();
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);

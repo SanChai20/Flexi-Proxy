@@ -9,7 +9,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export default async function DocumentationPage(props: LayoutProps<"/[lang]">) {
+export default async function DocumentationPage(
+  props: PageProps<"/[lang]/documentation">
+) {
   const session = await auth();
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
