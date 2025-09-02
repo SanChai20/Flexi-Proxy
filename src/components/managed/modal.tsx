@@ -45,7 +45,7 @@ export default function ManagedModal({
     <Dialog.Root open={isOpen} onOpenChange={onClose}>
       <Dialog.Portal>
         <Dialog.Overlay className="bg-black/50 data-[state=open]:animate-overlayShow fixed inset-0 z-50" />
-        <Dialog.Content className="data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-md translate-x-[-50%] translate-y-[-50%] rounded-lg bg-card border border-border shadow-lg focus:outline-none z-50 flex flex-col">
+        <Dialog.Content className="data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] w-[95vw] max-w-lg translate-x-[-50%] translate-y-[-50%] rounded-lg bg-card border border-border shadow-lg focus:outline-none z-50 flex flex-col">
           <div className="flex items-center justify-between pb-4 border-b border-border p-6">
             <Dialog.Title className="text-xl font-bold text-foreground">
               {dict.proxy?.addProvider || "Add Provider"}
@@ -72,19 +72,18 @@ export default function ManagedModal({
                   <p className="text-sm text-muted-foreground mt-1">
                     {mode === "proxy"
                       ? dict.proxyMode?.description ||
-                        "Route requests through a proxy server"
+                      "Route requests through a proxy server"
                       : dict.hostedMode?.description ||
-                        "Connect directly to a hosted service"}
+                      "Connect directly to a hosted service"}
                   </p>
                 </div>
 
                 <div className="flex items-center">
                   <span
-                    className={`text-sm font-medium ${
-                      mode === "proxy"
-                        ? "text-foreground"
-                        : "text-muted-foreground"
-                    }`}
+                    className={`text-sm font-medium ${mode === "proxy"
+                      ? "text-foreground"
+                      : "text-muted-foreground"
+                      }`}
                   >
                     {dict.mode?.proxy || "Proxy"}
                   </span>
@@ -100,17 +99,15 @@ export default function ManagedModal({
                       {dict.mode?.switchMode || "Switch mode"}
                     </span>
                     <span
-                      className={`${
-                        mode === "hosted" ? "translate-x-6" : "translate-x-1"
-                      } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                      className={`${mode === "hosted" ? "translate-x-6" : "translate-x-1"
+                        } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
                     />
                   </button>
                   <span
-                    className={`text-sm font-medium ${
-                      mode === "hosted"
-                        ? "text-foreground"
-                        : "text-muted-foreground"
-                    }`}
+                    className={`text-sm font-medium ${mode === "hosted"
+                      ? "text-foreground"
+                      : "text-muted-foreground"
+                      }`}
                   >
                     {dict.mode?.hosted || "Hosted"}
                   </span>
@@ -125,17 +122,6 @@ export default function ManagedModal({
                 )}
               </div>
             </div>
-          </div>
-
-          <div className="flex justify-end space-x-3 p-6 pt-0">
-            <Dialog.Close asChild>
-              <button
-                type="button"
-                className="px-4 py-2 text-sm font-medium rounded-md bg-muted text-foreground hover:bg-muted/80 transition"
-              >
-                {dict.proxy?.cancel || "Cancel"}
-              </button>
-            </Dialog.Close>
           </div>
         </Dialog.Content>
       </Dialog.Portal>
