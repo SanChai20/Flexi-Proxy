@@ -3,7 +3,9 @@ import { redirect } from "next/navigation";
 import { Locale } from "../../../../i18n-config";
 import { getDictionary } from "@/lib/get-dictionary";
 
-export default async function VerificationPage(props: LayoutProps<"/[lang]">) {
+export default async function VerificationPage(
+  props: PageProps<"/[lang]/verification">
+) {
   const { lang } = await props.params;
   const dictionary = await getDictionary(lang as Locale);
 

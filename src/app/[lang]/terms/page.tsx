@@ -5,7 +5,7 @@ import { promises as fs } from "fs";
 import Markdown from "react-markdown";
 import { Locale } from "i18n-config";
 
-export default async function TermsPage(props: LayoutProps<"/[lang]">) {
+export default async function TermsPage(props: PageProps<"/[lang]/terms">) {
   const { lang } = await props.params;
   const dictionary = await getDictionary(lang as Locale);
   // Read the terms of service markdown file

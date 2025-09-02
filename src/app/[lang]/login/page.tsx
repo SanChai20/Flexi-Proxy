@@ -36,13 +36,10 @@ const verifyToken = async (token: string | null): Promise<boolean> => {
   return data.success !== false;
 };
 
-export default async function LoginPage(props: {
-  params: Promise<{ lang: Locale }>;
-  searchParams: Promise<{ from: string | undefined }>;
-}) {
+export default async function LoginPage(props: PageProps<"/[lang]/login">) {
   const { lang } = await props.params;
   const { from } = await props.searchParams;
-  const dict = await getDictionary(lang);
+  const dict = await getDictionary(lang as Locale);
 
   if (!from || typeof from !== "string") return <Unauthorized dict={dict} />;
   const isVerified = await verifyToken(from);

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { getDictionary } from "@/lib/get-dictionary";
 
-export default async function HomePage(props: LayoutProps<"/[lang]">) {
+export default async function HomePage(props: PageProps<"/[lang]">) {
   let session = await auth();
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
