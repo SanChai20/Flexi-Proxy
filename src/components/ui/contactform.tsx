@@ -148,7 +148,7 @@ export function ContactForm({
         </div>
       </div>
 
-      <div className="flex flex-col items-end">
+      <div className="flex flex-col">
         <OnceButton
           type="submit"
           className="rounded-lg bg-primary text-primary-foreground px-6 py-3 transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-ring"
@@ -157,14 +157,14 @@ export function ContactForm({
         </OnceButton>
 
         {submitStatus === "success" && (
-          <div className="mt-4 w-full max-w-md">
+          <div className="mt-4 w-full max-w-md mx-auto">
             <div className="rounded-lg bg-green-100 border border-green-400 text-green-700 px-4 py-3 dark:bg-green-900 dark:border-green-700 dark:text-green-100">
               <p className="text-center font-medium">{dict.contact.success}</p>
             </div>
           </div>
         )}
         {submitStatus === "error" && (
-          <div className="mt-4 w-full max-w-md">
+          <div className="mt-4 w-full max-w-md mx-auto">
             <div className="rounded-lg bg-red-100 border border-red-400 text-red-700 px-4 py-3 dark:bg-red-900 dark:border-red-700 dark:text-red-100">
               <p className="text-center font-medium">{dict.contact.error}</p>
             </div>

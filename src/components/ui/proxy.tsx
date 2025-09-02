@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Cog6ToothIcon, PlusIcon } from "@heroicons/react/24/outline";
+import ProxyModal from "@/components/ui/proxymodal";
 
 export interface ProviderRow {
   id: string;
@@ -14,19 +15,33 @@ export interface ProviderRow {
 /**
  * Provider 表格（含添加按钮、行设置图标）
  */
-export default function ProxyTable() {
+export default function ProxyTable({ dict }: { dict: any }) {
   const [rows, setRows] = useState<ProviderRow[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   /** 简单的“新增行”实现（真实项目请改成弹窗收集信息） */
   const handleAdd = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleModalSubmit = (data: {
+    provider: string;
+    baseUrl: string;
+    authToken: string;
+  }) => {
     const newRow: ProviderRow = {
       id: crypto.randomUUID(),
-      provider: "New Provider",
-      baseUrl: "https://api.example.com",
-      authToken: "********",
+      provider: data.provider,
+      baseUrl: data.baseUrl,
+      authToken: data.authToken,
       status: "inactive",
     };
     setRows((prev) => [...prev, newRow]);
+    setIsModalOpen(false);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
   };
 
   /** 删除行 */
@@ -48,6 +63,14 @@ export default function ProxyTable() {
           Add Provider
         </button>
       </div>
+
+      {/* ---------- Proxy Modal ---------- */}
+      <ProxyModal
+        isOpen={isModalOpen}
+        onClose={handleModalClose}
+        onSubmit={handleModalSubmit}
+        dict={dict}
+      />
 
       {/* ---------- 表格容器 ---------- */}
       <div className="overflow-x-auto rounded-lg border border-border bg-card">
