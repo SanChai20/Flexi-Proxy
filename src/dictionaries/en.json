@@ -62,8 +62,8 @@
     "subtitle": "We've compiled answers to common questions about our service"
   },
   "management": {
-    "title": "Base URL Management",
-    "subtitle": "Manage your OpenAI-compatible Base URLs",
+    "title": "Adapter Management",
+    "subtitle": "Connect and manage AI service adapters for unified access",
     "proxyMode": "Proxy Mode",
     "hostedMode": "Hosted Endpoint Mode"
   },
