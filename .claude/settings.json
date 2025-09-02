@@ -1,6 +1,6 @@
 {
   "env": {
-    "ANTHROPIC_BASE_URL": "http://127.0.0.1:8082",
-    "ANTHROPIC_AUTH_TOKEN": "3313"
+    "ANTHROPIC_BASE_URL": "https://dashscope.aliyuncs.com/compatible-mode/v1",//"http://127.0.0.1:8082",
+    "ANTHROPIC_AUTH_TOKEN": "sk-6a9cb37795a941fb86ce21d163b43681"//"3313"
   }
 }

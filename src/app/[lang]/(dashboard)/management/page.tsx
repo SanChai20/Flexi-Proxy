@@ -14,7 +14,7 @@ import {
 import { ProxyList } from "@/components/ProxyList";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@/components/ui/icons";
-import ProviderTable from "@/components/ui/providertable";
+import ProxyTable from "@/components/ui/proxy";
 
 // Define the proxy type
 interface Proxy {
@@ -25,9 +25,7 @@ interface Proxy {
   status: string;
 }
 
-export default function ManagementPage(props: {
-  params: Promise<{ lang: Locale }>;
-}) {
+export default function ManagementPage(props: LayoutProps<"/[lang]">) {
   // Sample data - in a real app, this would come from an API
   const [proxies, setProxies] = useState<Proxy[]>([
     {
@@ -73,9 +71,9 @@ export default function ManagementPage(props: {
       proxies.map((proxy) =>
         proxy.id === id
           ? {
-            ...proxy,
-            status: proxy.status === "active" ? "inactive" : "active",
-          }
+              ...proxy,
+              status: proxy.status === "active" ? "inactive" : "active",
+            }
           : proxy
       )
     );
@@ -86,7 +84,7 @@ export default function ManagementPage(props: {
   };
 
   return (
-    <section className="w-full max-w-5xl mx-auto p-4">
+    <section className="w-full max-w-4xl mx-auto p-4">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Base URL Management</CardTitle>
@@ -99,7 +97,7 @@ export default function ManagementPage(props: {
           
         </CardContent> */}
       </Card>
-      <ProviderTable />
+      <ProxyTable />
     </section>
   );
 }

@@ -34,9 +34,9 @@ import { Locale } from "i18n-config";
 import { getDictionary } from "@/lib/get-dictionary";
 import { Footer } from "@/components/ui/footer";
 
-export default async function DashboardLayout(props: LayoutProps<'/[lang]'>) {
-  const { lang } = await props.params
-  const dictionary = await getDictionary(lang as any);
+export default async function DashboardLayout(props: LayoutProps<"/[lang]">) {
+  const { lang } = await props.params;
+  const dictionary = await getDictionary(lang as Locale);
   return (
     <Providers>
       <main className="flex min-h-screen w-full flex-col bg-muted/40">

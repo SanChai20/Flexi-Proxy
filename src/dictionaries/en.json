@@ -78,5 +78,9 @@
     "rights": "All rights reserved.",
     "terms": "Terms of Service",
     "policy": "Privacy Policy"
+  },
+  "home": {
+    "title": "",
+    "subtitle": ""
   }
 }

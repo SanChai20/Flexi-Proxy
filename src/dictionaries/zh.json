@@ -78,5 +78,9 @@
     "rights": "版权所有",
     "terms": "服务条款",
     "policy": "隐私政策"
+  },
+  "home": {
+    "title": "",
+    "subtitle": ""
   }
 }

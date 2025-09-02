@@ -10,14 +10,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export default async function ContactPage(props: {
-  params: Promise<{ lang: Locale }>;
-}) {
+export default async function ContactPage(props: LayoutProps<"/[lang]">) {
   const session = await auth();
   const { lang } = await props.params;
-  const dict = await getDictionary(lang);
+  const dict = await getDictionary(lang as Locale);
   return (
-    <div>
+    <section className="w-full max-w-4xl mx-auto p-4">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">{dict.contact.title}</CardTitle>
@@ -34,6 +32,6 @@ export default async function ContactPage(props: {
           />
         </CardContent>
       </Card>
-    </div>
+    </section>
   );
 }

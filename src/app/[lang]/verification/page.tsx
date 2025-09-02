@@ -3,11 +3,9 @@ import { redirect } from "next/navigation";
 import { Locale } from "../../../../i18n-config";
 import { getDictionary } from "@/lib/get-dictionary";
 
-export default async function VerificationPage(props: {
-  params: Promise<{ lang: Locale }>;
-}) {
+export default async function VerificationPage(props: LayoutProps<"/[lang]">) {
   const { lang } = await props.params;
-  const dictionary = await getDictionary(lang);
+  const dictionary = await getDictionary(lang as Locale);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
