@@ -23,11 +23,8 @@ export interface ProviderRow {
 }
 
 export const PROVIDER_OPTIONS = [
-  { id: "openai", name: "OpenAI", support: false },
   { id: "anthropic", name: "Anthropic" },
-  { id: "google", name: "Google" },
-  { id: "azure", name: "Azure OpenAI" },
-  { id: "custom", name: "Custom Provider" },
+  { id: "gemini", name: "Google" },
 ];
 
 /**

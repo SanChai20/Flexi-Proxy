@@ -19,7 +19,7 @@ interface AdapterModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: {
-    provider: string;
+    providerId: string;
     baseUrl: string;
     apiKey: string;
     modelId: string;
@@ -38,7 +38,7 @@ export default function ManagedModal({
   mode,
   onModeChange,
 }: AdapterModalProps) {
-  const [provider, setProvider] = useState("");
+  const [provider, setProvider] = useState<number>(0);
   const [baseUrl, setBaseUrl] = useState("");
   const [apiKey, setApiKey] = useState("");
   const [modelId, setModelId] = useState("");
@@ -63,17 +63,6 @@ export default function ManagedModal({
     const newHeaders = [...headers];
     newHeaders[index][field] = value;
     setHeaders(newHeaders);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit({ provider, baseUrl, apiKey, modelId, headers });
-    // Reset form
-    setProvider("");
-    setBaseUrl("");
-    setApiKey("");
-    setModelId("");
-    setHeaders([{ key: "", value: "" }]);
   };
 
   return (
@@ -102,205 +91,226 @@ export default function ManagedModal({
           </div>
 
           <div className="flex-1 overflow-y-auto p-6 pt-4">
-            <div className="space-y-4">
-              <div className="pt-2">
-                <div className="space-y-6">
-                  {/* Source Section (OpenAI-Compatible) */}
-                  <div className="bg-card border border-border rounded-lg p-6 mb-6">
-                    <h3 className="text-md font-semibold text-foreground mb-4 flex items-center">
-                      <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2">
-                        {dict?.management?.adapterSource || "SOURCE"}
-                      </span>
-                      {dict?.management?.sourceTitle ||
-                        "OpenAI-Compatible Endpoint"}
-                    </h3>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <div className="flex items-center">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                onSubmit({
+                  provider,
+                  baseUrl,
+                  apiKey,
+                  modelId,
+                  headers,
+                });
+              }}
+              className="space-y-6"
+            >
+              <div className="space-y-4">
+                <div className="pt-2">
+                  <div className="space-y-6">
+                    {/* Source Section (OpenAI-Compatible) */}
+                    <div className="bg-card border border-border rounded-lg p-6 mb-6">
+                      <h3 className="text-md font-semibold text-foreground mb-4 flex items-center">
+                        <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2">
+                          {dict?.management?.adapterSource || "SOURCE"}
+                        </span>
+                        {dict?.management?.sourceTitle ||
+                          "OpenAI-Compatible Endpoint"}
+                      </h3>
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <div className="flex items-center">
+                              <label
+                                htmlFor="baseUrl"
+                                className="block text-sm font-medium text-foreground"
+                              >
+                                {dict?.management?.baseUrl || "Base URL"}
+                              </label>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <HelpCircleIcon className="h-4 w-4 ml-2 text-muted-foreground cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="max-w-xs">
+                                  <p>
+                                    {dict?.management?.baseUrlTip ||
+                                      "Enter the base URL for the API endpoint\n aaaaa"}
+                                  </p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </div>
+                            <input
+                              type="url"
+                              id="baseUrl"
+                              value={baseUrl}
+                              onChange={(e) => setBaseUrl(e.target.value)}
+                              className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
+                              placeholder={
+                                dict?.management?.baseUrlPlaceHolder ||
+                                "https://api.deepseek.com/v1"
+                              }
+                              required
+                            />
+                          </div>
+
+                          <div className="space-y-2">
                             <label
-                              htmlFor="baseUrl"
+                              htmlFor="apiKey"
                               className="block text-sm font-medium text-foreground"
                             >
-                              {dict?.management?.baseUrl || "Base URL"}
+                              {dict?.management?.apiKey || "API Key"}
                             </label>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <HelpCircleIcon className="h-4 w-4 ml-2 text-muted-foreground cursor-help" />
-                              </TooltipTrigger>
-                              <TooltipContent side="top" className="max-w-xs">
-                                <p>
-                                  {dict?.management?.baseUrlTip ||
-                                    "Enter the base URL for the API endpoint\n aaaaa"}
-                                </p>
-                              </TooltipContent>
-                            </Tooltip>
+                            <input
+                              type="password"
+                              id="apiKey"
+                              value={apiKey}
+                              onChange={(e) => setApiKey(e.target.value)}
+                              className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
+                              placeholder={
+                                dict?.management?.apiKeyPlaceHolder ||
+                                "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                              }
+                              required
+                            />
                           </div>
-                          <input
-                            type="url"
-                            id="baseUrl"
-                            value={baseUrl}
-                            onChange={(e) => setBaseUrl(e.target.value)}
-                            className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
-                            placeholder={
-                              dict?.management?.baseUrlPlaceHolder ||
-                              "https://api.deepseek.com/v1"
-                            }
-                            required
-                          />
                         </div>
+
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {dict?.management?.notice ||
+                            "The API key is only used to make API requests by adapter."}
+                        </p>
 
                         <div className="space-y-2">
                           <label
-                            htmlFor="apiKey"
+                            htmlFor="modelId"
                             className="block text-sm font-medium text-foreground"
                           >
-                            {dict?.management?.apiKey || "API Key"}
+                            {dict?.management?.modelId || "Model ID"}
                           </label>
                           <input
-                            type="password"
-                            id="apiKey"
-                            value={apiKey}
-                            onChange={(e) => setApiKey(e.target.value)}
+                            type="text"
+                            id="modelId"
+                            value={modelId}
+                            onChange={(e) => setModelId(e.target.value)}
                             className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
                             placeholder={
-                              dict?.management?.apiKeyPlaceHolder ||
-                              "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                              dict?.management?.modelIdPlaceHolder ||
+                              "deepseek-chat"
                             }
                             required
                           />
                         </div>
-                      </div>
 
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {dict?.management?.notice ||
-                          "The API key is only used to make API requests by adapter."}
-                      </p>
-
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="modelId"
-                          className="block text-sm font-medium text-foreground"
-                        >
-                          {dict?.management?.modelId || "Model ID"}
-                        </label>
-                        <input
-                          type="text"
-                          id="modelId"
-                          value={modelId}
-                          onChange={(e) => setModelId(e.target.value)}
-                          className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
-                          placeholder={
-                            dict?.management?.modelIdPlaceHolder ||
-                            "deepseek-chat"
-                          }
-                          required
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <label className="block text-sm font-medium text-foreground">
-                            {dict?.management?.customHeaders ||
-                              "Custom Headers"}
-                          </label>
-                          <button
-                            type="button"
-                            onClick={handleAddHeader}
-                            className="inline-flex items-center text-sm text-primary hover:text-primary/80"
-                          >
-                            <PlusIcon className="h-4 w-4 mr-1" />
-                            {dict?.management?.addHeader || "Add"}
-                          </button>
-                        </div>
-
-                        {headers.map((header, index) => (
-                          <div key={index} className="flex gap-2">
-                            <input
-                              type="text"
-                              value={header.key}
-                              onChange={(e) =>
-                                handleHeaderChange(index, "key", e.target.value)
-                              }
-                              className="flex-1 px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
-                              placeholder={
-                                dict?.management?.headerKey || "Header Key"
-                              }
-                            />
-                            <input
-                              type="text"
-                              value={header.value}
-                              onChange={(e) =>
-                                handleHeaderChange(
-                                  index,
-                                  "value",
-                                  e.target.value
-                                )
-                              }
-                              className="flex-1 px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
-                              placeholder={
-                                dict?.management?.headerValue || "Header Value"
-                              }
-                            />
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <label className="block text-sm font-medium text-foreground">
+                              {dict?.management?.customHeaders ||
+                                "Custom Headers"}
+                            </label>
                             <button
                               type="button"
-                              onClick={() => handleRemoveHeader(index)}
-                              className="p-2.5 text-muted-foreground hover:text-destructive transition"
-                              disabled={headers.length <= 1}
+                              onClick={handleAddHeader}
+                              className="inline-flex items-center text-sm text-primary hover:text-primary/80"
                             >
-                              <TrashIcon className="h-5 w-5" />
+                              <PlusIcon className="h-4 w-4 mr-1" />
+                              {dict?.management?.addHeader || "Add"}
                             </button>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* Target Section (API Provider) */}
-                  <div className="bg-card border border-border rounded-lg p-6 mb-6">
-                    <h3 className="text-md font-semibold text-foreground mb-4 flex items-center">
-                      <span className="bg-secondary text-secondary-foreground text-xs font-bold px-2 py-1 rounded mr-2">
-                        {dict?.management?.adapterTarget || "TARGET"}
-                      </span>
-                      {dict?.management?.targetTitle || "Target API Provider"}
-                    </h3>
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <label
-                          htmlFor="provider"
-                          className="block text-sm font-medium text-foreground"
-                        >
-                          {dict?.management?.provider || "Provider"}
-                        </label>
-                        <select
-                          id="provider"
-                          value={provider}
-                          onChange={(e) => setProvider(e.target.value)}
-                          className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI0IDI0IiBzdHJva2U9IiNjY2NjY2MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJtNiA5IDYgNiA2LTYiLz48L3N2Zz4=')] bg-no-repeat bg-[right_12px_center] bg-[length:16px_16px] appearance-none"
-                          required
-                        >
-                          {PROVIDER_OPTIONS.map((option) => (
-                            <option key={option.id} value={option.name}>
-                              {option.name}
-                            </option>
+                          {headers.map((header, index) => (
+                            <div key={index} className="flex gap-2">
+                              <input
+                                type="text"
+                                value={header.key}
+                                onChange={(e) =>
+                                  handleHeaderChange(
+                                    index,
+                                    "key",
+                                    e.target.value
+                                  )
+                                }
+                                className="flex-1 px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
+                                placeholder={
+                                  dict?.management?.headerKey || "Header Key"
+                                }
+                              />
+                              <input
+                                type="text"
+                                value={header.value}
+                                onChange={(e) =>
+                                  handleHeaderChange(
+                                    index,
+                                    "value",
+                                    e.target.value
+                                  )
+                                }
+                                className="flex-1 px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
+                                placeholder={
+                                  dict?.management?.headerValue ||
+                                  "Header Value"
+                                }
+                              />
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveHeader(index)}
+                                className="p-2.5 text-muted-foreground hover:text-destructive transition"
+                                disabled={headers.length <= 1}
+                              >
+                                <TrashIcon className="h-5 w-5" />
+                              </button>
+                            </div>
                           ))}
-                        </select>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Submit Button */}
-                  <div className="mt-4">
-                    <button
-                      type="submit"
-                      className="w-full px-4 py-2.5 text-sm font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition"
-                    >
-                      {dict?.management?.confirm || "Confirm"}
-                    </button>
+                    {/* Target Section (API Provider) */}
+                    <div className="bg-card border border-border rounded-lg p-6 mb-6">
+                      <h3 className="text-md font-semibold text-foreground mb-4 flex items-center">
+                        <span className="bg-secondary text-secondary-foreground text-xs font-bold px-2 py-1 rounded mr-2">
+                          {dict?.management?.adapterTarget || "TARGET"}
+                        </span>
+                        {dict?.management?.targetTitle || "Target API Provider"}
+                      </h3>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <label
+                            htmlFor="provider"
+                            className="block text-sm font-medium text-foreground"
+                          >
+                            {dict?.management?.provider || "Provider"}
+                          </label>
+                          <select
+                            id="provider"
+                            value={provider}
+                            onChange={(e) =>
+                              setProvider(Number(e.target.value))
+                            }
+                            className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI0IDI0IiBzdHJva2U9IiNjY2NjY2MiIgc3Rva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0ibTYgOSA2IDYgNi02Ii8+PC9zdmc+')] bg-no-repeat bg-[right_12px_center] bg-[length:16px_16px] appearance-none"
+                            required
+                          >
+                            {PROVIDER_OPTIONS.map((option) => (
+                              <option key={option.id} value={option.id}>
+                                {option.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Submit Button */}
+                    <div className="mt-4">
+                      <button
+                        type="submit"
+                        className="w-full px-4 py-2.5 text-sm font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition"
+                      >
+                        {dict?.management?.confirm || "Confirm"}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </form>
           </div>
         </Dialog.Content>
       </Dialog.Portal>
