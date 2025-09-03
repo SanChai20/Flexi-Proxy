@@ -154,6 +154,11 @@ export default function ManagedModal({
                         </div>
                       </div>
 
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {dict?.management?.notice ||
+                          "The API key is only used to make API requests by adapter."}
+                      </p>
+
                       <div className="space-y-2">
                         <label
                           htmlFor="modelId"

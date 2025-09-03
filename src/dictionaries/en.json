@@ -82,7 +82,8 @@
     "confirm": "Confirm",
     "baseUrlPlaceHolder": "https://api.x.ai/v1",
     "apiKeyPlaceHolder": "xai-xxxxxxxxxxxxxxxxxxxxxxxxxx",
-    "modelIdPlaceHolder": "grok-3"
+    "modelIdPlaceHolder": "grok-3",
+    "notice": "*The API key is only used to make API requests by adapter"
   },
   "settings": {
     "title": "Settings",
