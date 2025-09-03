@@ -80,7 +80,7 @@ export default function ManagedModal({
             <Dialog.Title className="text-xl font-bold text-foreground">
               {dict.management.adapterTitle}
             </Dialog.Title>
-            <Dialog.Description className="text-sm text-muted-foreground">
+            <Dialog.Description className="text-sm text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap">
               {dict.management.adapterSubtitle}
             </Dialog.Description>
           </div>
@@ -103,10 +103,9 @@ export default function ManagedModal({
                   <div className="bg-card border border-border rounded-lg p-6 mb-6">
                     <h3 className="text-md font-semibold text-foreground mb-4 flex items-center">
                       <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2">
-                        SOURCE
+                        {dict.management.adapterSource}
                       </span>
-                      {dict.adapter?.sourceTitle ||
-                        "OpenAI-Compatible Endpoint"}
+                      {dict.management.sourceTitle}
                     </h3>
                     <div className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -168,7 +167,7 @@ export default function ManagedModal({
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <label className="block text-sm font-medium text-foreground">
-                            {dict.adapter?.customHeaders || "Custom Headers"}
+                            {dict.management.customHeaders}
                           </label>
                           <button
                             type="button"
@@ -189,7 +188,7 @@ export default function ManagedModal({
                                 handleHeaderChange(index, "key", e.target.value)
                               }
                               className="flex-1 px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
-                              placeholder="Header Key"
+                              placeholder={dict.management.headerKey}
                             />
                             <input
                               type="text"
@@ -202,7 +201,7 @@ export default function ManagedModal({
                                 )
                               }
                               className="flex-1 px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
-                              placeholder="Header Value"
+                              placeholder={dict.management.headerValue}
                             />
                             <button
                               type="button"
@@ -222,9 +221,9 @@ export default function ManagedModal({
                   <div className="bg-card border border-border rounded-lg p-6 mb-6">
                     <h3 className="text-md font-semibold text-foreground mb-4 flex items-center">
                       <span className="bg-secondary text-secondary-foreground text-xs font-bold px-2 py-1 rounded mr-2">
-                        TARGET
+                        {dict.management.adapterTarget}
                       </span>
-                      {dict.adapter?.targetTitle || "Target API Provider"}
+                      {dict.management.targetTitle}
                     </h3>
                     <div className="space-y-4">
                       <div className="space-y-2">
