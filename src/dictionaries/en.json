@@ -79,7 +79,10 @@
     "apiKey": "API Key",
     "modelId": "Model ID",
     "provider": "Provider",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "baseUrlPlaceHolder": "https://api.x.ai/v1",
+    "apiKeyPlaceHolder": "xai-xxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "modelIdPlaceHolder": "grok-3"
   },
   "settings": {
     "title": "Settings",

@@ -124,7 +124,10 @@ export default function ManagedModal({
                             value={baseUrl}
                             onChange={(e) => setBaseUrl(e.target.value)}
                             className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
-                            placeholder="https://api.openai.com/v1"
+                            placeholder={
+                              dict?.management?.baseUrlPlaceHolder ||
+                              "https://api.deepseek.com/v1"
+                            }
                             required
                           />
                         </div>
@@ -142,7 +145,10 @@ export default function ManagedModal({
                             value={apiKey}
                             onChange={(e) => setApiKey(e.target.value)}
                             className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
-                            placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                            placeholder={
+                              dict?.management?.apiKeyPlaceHolder ||
+                              "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                            }
                             required
                           />
                         </div>
@@ -161,7 +167,10 @@ export default function ManagedModal({
                           value={modelId}
                           onChange={(e) => setModelId(e.target.value)}
                           className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
-                          placeholder="gpt-3.5-turbo"
+                          placeholder={
+                            dict?.management?.modelIdPlaceHolder ||
+                            "deepseek-chat"
+                          }
                           required
                         />
                       </div>
