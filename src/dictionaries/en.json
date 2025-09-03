@@ -66,7 +66,7 @@
     "subtitle": "Adapt the OpenAI-Compatible API to the target provider's API service",
     "adapterAdd": "Add Adapter",
     "adapterTitle": "Create Adapter",
-    "adapterSubtitle": "Obtain a Base URL adapted to the Target Provider API and the corresponding provider's API Key",
+    "adapterSubtitle": "Obtain a Base URL adapted to the Target Provider API",
     "adapterSource": "SOURCE",
     "adapterTarget": "TARGET",
     "targetTitle": "Select Target API Provider",

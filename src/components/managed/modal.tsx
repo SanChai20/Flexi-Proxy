@@ -7,15 +7,15 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { XIcon, PlusIcon, TrashIcon, HelpCircleIcon } from "lucide-react";
+import { XIcon, HelpCircleIcon } from "lucide-react";
 import { PROVIDER_OPTIONS } from "@/components/managed/table";
 
-interface Header {
-  key: string;
-  value: string;
-}
-
-interface AdapterModalProps {
+export default function ManagedModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  dict
+}: {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: {
@@ -23,47 +23,13 @@ interface AdapterModalProps {
     baseUrl: string;
     apiKey: string;
     modelId: string;
-    headers: Header[];
   }) => void;
   dict: any;
-  mode: "proxy" | "hosted";
-  onModeChange: (mode: "proxy" | "hosted") => void;
-}
-
-export default function ManagedModal({
-  isOpen,
-  onClose,
-  onSubmit,
-  dict,
-  mode,
-  onModeChange,
-}: AdapterModalProps) {
-  const [provider, setProvider] = useState("");
-  const [baseUrl, setBaseUrl] = useState("");
-  const [apiKey, setApiKey] = useState("");
-  const [modelId, setModelId] = useState("");
-  const [headers, setHeaders] = useState<Header[]>([{ key: "", value: "" }]);
-
-  const handleAddHeader = () => {
-    setHeaders([...headers, { key: "", value: "" }]);
-  };
-
-  const handleRemoveHeader = (index: number) => {
-    if (headers.length <= 1) return;
-    const newHeaders = [...headers];
-    newHeaders.splice(index, 1);
-    setHeaders(newHeaders);
-  };
-
-  const handleHeaderChange = (
-    index: number,
-    field: "key" | "value",
-    value: string
-  ) => {
-    const newHeaders = [...headers];
-    newHeaders[index][field] = value;
-    setHeaders(newHeaders);
-  };
+}) {
+  const [provider, setProvider] = useState<string>("");
+  const [baseUrl, setBaseUrl] = useState<string>("");
+  const [apiKey, setApiKey] = useState<string>("");
+  const [modelId, setModelId] = useState<string>("");
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={onClose}>
@@ -98,8 +64,7 @@ export default function ManagedModal({
                   provider,
                   baseUrl,
                   apiKey,
-                  modelId,
-                  headers,
+                  modelId
                 });
               }}
               className="space-y-6"
@@ -199,74 +164,13 @@ export default function ManagedModal({
                             required
                           />
                         </div>
-
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <label className="block text-sm font-medium text-foreground">
-                              {dict?.management?.customHeaders ||
-                                "Custom Headers"}
-                            </label>
-                            <button
-                              type="button"
-                              onClick={handleAddHeader}
-                              className="inline-flex items-center text-sm text-primary hover:text-primary/80"
-                            >
-                              <PlusIcon className="h-4 w-4 mr-1" />
-                              {dict?.management?.addHeader || "Add"}
-                            </button>
-                          </div>
-
-                          {headers.map((header, index) => (
-                            <div key={index} className="flex gap-2">
-                              <input
-                                type="text"
-                                value={header.key}
-                                onChange={(e) =>
-                                  handleHeaderChange(
-                                    index,
-                                    "key",
-                                    e.target.value
-                                  )
-                                }
-                                className="flex-1 px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
-                                placeholder={
-                                  dict?.management?.headerKey || "Header Key"
-                                }
-                              />
-                              <input
-                                type="text"
-                                value={header.value}
-                                onChange={(e) =>
-                                  handleHeaderChange(
-                                    index,
-                                    "value",
-                                    e.target.value
-                                  )
-                                }
-                                className="flex-1 px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
-                                placeholder={
-                                  dict?.management?.headerValue ||
-                                  "Header Value"
-                                }
-                              />
-                              <button
-                                type="button"
-                                onClick={() => handleRemoveHeader(index)}
-                                className="p-2.5 text-muted-foreground hover:text-destructive transition"
-                                disabled={headers.length <= 1}
-                              >
-                                <TrashIcon className="h-5 w-5" />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
                       </div>
                     </div>
 
                     {/* Target Section (API Provider) */}
                     <div className="bg-card border border-border rounded-lg p-6 mb-6">
                       <h3 className="text-md font-semibold text-foreground mb-4 flex items-center">
-                        <span className="bg-secondary text-secondary-foreground text-xs font-bold px-2 py-1 rounded mr-2">
+                        <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2">
                           {dict?.management?.adapterTarget || "TARGET"}
                         </span>
                         {dict?.management?.targetTitle || "Target API Provider"}

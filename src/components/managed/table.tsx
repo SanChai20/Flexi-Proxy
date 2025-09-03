@@ -22,7 +22,7 @@ export interface ProviderRow {
   status: "active" | "inactive";
 }
 
-export const PROVIDER_OPTIONS = [{ id: 0, name: "Anthropic" }];
+export const PROVIDER_OPTIONS = [{ id: "anthropic", name: "Anthropic" }];
 
 /**
  * Provider 表格（含添加按钮、行设置图标）
@@ -165,11 +165,10 @@ export default function ManagedTable({ dict }: { dict: any }) {
                         <span
                           className={`
                       inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium
-                      ${
-                        row.status === "active"
-                          ? "bg-success/20 text-success"
-                          : "bg-destructive/20 text-destructive"
-                      }
+                      ${row.status === "active"
+                              ? "bg-success/20 text-success"
+                              : "bg-destructive/20 text-destructive"
+                            }
                     `}
                         >
                           {row.status}
