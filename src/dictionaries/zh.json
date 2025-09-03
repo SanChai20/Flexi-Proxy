@@ -63,9 +63,10 @@
   },
   "management": {
     "title": "适配器管理",
-    "subtitle": "连接和管理AI服务适配器以实现统一访问",
-    "proxyMode": "代理模式",
-    "hostedMode": "全托管模式"
+    "subtitle": "将 OpenAI-Compatible API 适配为目标供应商的 API 服务",
+    "adapterAdd": "添加适配器",
+    "adapterTitle": "适配器配置",
+    "adapterSubtitle": "获取一个适配目标提供商 API 的基础 URL 以及 API 密钥"
   },
   "settings": {
     "title": "设置",

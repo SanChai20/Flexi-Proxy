@@ -63,9 +63,10 @@
   },
   "management": {
     "title": "Adapter Management",
-    "subtitle": "Connect and manage AI service adapters for unified access",
-    "proxyMode": "Proxy Mode",
-    "hostedMode": "Hosted Endpoint Mode"
+    "subtitle": "Adapt the OpenAI-Compatible API to the target provider's API service",
+    "adapterAdd": "Add Adapter",
+    "adapterTitle": "Adapter Configuration",
+    "adapterSubtitle": "Obtain a Base URL adapted to the Target Provider API and the corresponding provider's API Key"
   },
   "settings": {
     "title": "Settings",
