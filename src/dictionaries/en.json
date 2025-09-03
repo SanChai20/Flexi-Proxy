@@ -80,6 +80,7 @@
     "modelId": "Model ID",
     "provider": "Provider",
     "confirm": "Confirm",
+    "baseUrlTip": "Base URLs can be obtained from the official websites of various vendor platforms",
     "baseUrlPlaceHolder": "https://api.x.ai/v1",
     "apiKeyPlaceHolder": "xai-xxxxxxxxxxxxxxxxxxxxxxxxxx",
     "modelIdPlaceHolder": "grok-3",

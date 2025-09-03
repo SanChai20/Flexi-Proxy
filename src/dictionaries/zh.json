@@ -80,6 +80,7 @@
     "modelId": "模型 ID",
     "provider": "供应商",
     "confirm": "确认",
+    "baseUrlTip": "在各个供应商平台官网可获得兼容OpenAI的Base URL",
     "baseUrlPlaceHolder": "https://api.deepseek.com/v1",
     "apiKeyPlaceHolder": "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     "modelIdPlaceHolder": "deepseek-chat",

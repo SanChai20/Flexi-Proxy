@@ -2,7 +2,12 @@
 
 import { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { XIcon, PlusIcon, TrashIcon } from "lucide-react";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import { XIcon, PlusIcon, TrashIcon, HelpCircleIcon } from "lucide-react";
 import { PROVIDER_OPTIONS } from "@/components/managed/table";
 
 interface Header {
@@ -112,12 +117,25 @@ export default function ManagedModal({
                     <div className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <label
-                            htmlFor="baseUrl"
-                            className="block text-sm font-medium text-foreground"
-                          >
-                            {dict?.management?.baseUrl || "Base URL"}
-                          </label>
+                          <div className="flex items-center">
+                            <label
+                              htmlFor="baseUrl"
+                              className="block text-sm font-medium text-foreground"
+                            >
+                              {dict?.management?.baseUrl || "Base URL"}
+                            </label>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <HelpCircleIcon className="h-4 w-4 ml-2 text-muted-foreground cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-xs">
+                                <p>
+                                  {dict?.management?.baseUrlTip ||
+                                    "Enter the base URL for the API endpoint\n aaaaa"}
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
                           <input
                             type="url"
                             id="baseUrl"
