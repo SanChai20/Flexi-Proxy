@@ -84,7 +84,8 @@
     "baseUrlPlaceHolder": "https://api.x.ai/v1",
     "apiKeyPlaceHolder": "xai-xxxxxxxxxxxxxxxxxxxxxxxxxx",
     "modelIdPlaceHolder": "grok-3",
-    "notice": "*The API key is only used to make API requests by adapter"
+    "notice": "*The API key is only used to make API requests by adapter",
+    "selectProvider": "Select a provider"
   },
   "settings": {
     "title": "Settings",

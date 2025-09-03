@@ -19,7 +19,7 @@ interface AdapterModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: {
-    providerId: string;
+    provider: string;
     baseUrl: string;
     apiKey: string;
     modelId: string;
@@ -38,7 +38,7 @@ export default function ManagedModal({
   mode,
   onModeChange,
 }: AdapterModalProps) {
-  const [provider, setProvider] = useState<number>(0);
+  const [provider, setProvider] = useState("");
   const [baseUrl, setBaseUrl] = useState("");
   const [apiKey, setApiKey] = useState("");
   const [modelId, setModelId] = useState("");
@@ -282,12 +282,14 @@ export default function ManagedModal({
                           <select
                             id="provider"
                             value={provider}
-                            onChange={(e) =>
-                              setProvider(Number(e.target.value))
-                            }
+                            onChange={(e) => setProvider(e.target.value)}
                             className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI0IDI0IiBzdHJva2U9IiNjY2NjY2MiIgc3Rva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0ibTYgOSA2IDYgNi02Ii8+PC9zdmc+')] bg-no-repeat bg-[right_12px_center] bg-[length:16px_16px] appearance-none"
                             required
                           >
+                            <option value="">
+                              {dict.management?.selectProvider ||
+                                "Select a provider"}
+                            </option>
                             {PROVIDER_OPTIONS.map((option) => (
                               <option key={option.id} value={option.id}>
                                 {option.name}

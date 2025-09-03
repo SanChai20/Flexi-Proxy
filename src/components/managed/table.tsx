@@ -22,10 +22,7 @@ export interface ProviderRow {
   status: "active" | "inactive";
 }
 
-export const PROVIDER_OPTIONS = [
-  { id: "anthropic", name: "Anthropic" },
-  { id: "gemini", name: "Google" },
-];
+export const PROVIDER_OPTIONS = [{ id: 0, name: "Anthropic" }];
 
 /**
  * Provider 表格（含添加按钮、行设置图标）

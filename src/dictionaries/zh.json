@@ -84,7 +84,8 @@
     "baseUrlPlaceHolder": "https://api.deepseek.com/v1",
     "apiKeyPlaceHolder": "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     "modelIdPlaceHolder": "deepseek-chat",
-    "notice": "*API Key 仅用于适配器发起 API 请求"
+    "notice": "*API Key 仅用于适配器发起 API 请求",
+    "selectProvider": "选择一个供应商"
   },
   "settings": {
     "title": "设置",
