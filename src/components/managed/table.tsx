@@ -18,7 +18,6 @@ export interface ProviderRow {
   baseUrl: string;
   authToken: string;
   modelId: string;
-  headers: { key: string; value: string }[];
   status: "active" | "inactive";
 }
 
@@ -42,7 +41,6 @@ export default function ManagedTable({ dict }: { dict: any }) {
     baseUrl: string;
     apiKey: string;
     modelId: string;
-    headers: { key: string; value: string }[];
   }) => {
     const newRow: ProviderRow = {
       id: crypto.randomUUID(),
@@ -50,7 +48,6 @@ export default function ManagedTable({ dict }: { dict: any }) {
       baseUrl: data.baseUrl,
       authToken: data.apiKey,
       modelId: data.modelId,
-      headers: data.headers,
       status: "inactive",
     };
     setRows((prev) => [...prev, newRow]);
@@ -89,9 +86,8 @@ export default function ManagedTable({ dict }: { dict: any }) {
           isOpen={isModalOpen}
           onClose={handleModalClose}
           onSubmit={handleModalSubmit}
+          targetProviders={[{ id: "1", name: "a" }]}
           dict={dict}
-          mode={mode}
-          onModeChange={setMode}
         />
 
         {rows.length === 0 ? (
@@ -154,12 +150,12 @@ export default function ManagedTable({ dict }: { dict: any }) {
                       <td className="p-3 font-mono">{row.authToken}</td>
                       <td className="p-3">{row.modelId}</td>
                       <td className="p-3">
-                        {row.headers.map((header, index) => (
+                        {/* {row.headers.map((header, index) => (
                           <div key={index} className="text-xs">
                             <span className="font-medium">{header.key}:</span>{" "}
                             {header.value}
                           </div>
-                        ))}
+                        ))} */}
                       </td>
                       <td className="p-3">
                         <span

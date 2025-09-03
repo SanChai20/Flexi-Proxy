@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
   Tooltip,
@@ -8,12 +7,12 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { XIcon, HelpCircleIcon } from "lucide-react";
-import { PROVIDER_OPTIONS } from "@/components/managed/table";
 
 export default function ManagedModal({
   isOpen,
   onClose,
   onSubmit,
+  targetProviders,
   dict
 }: {
   isOpen: boolean;
@@ -24,13 +23,9 @@ export default function ManagedModal({
     apiKey: string;
     modelId: string;
   }) => void;
+  targetProviders: { id: string; name: string }[];
   dict: any;
 }) {
-  const [provider, setProvider] = useState<string>("");
-  const [baseUrl, setBaseUrl] = useState<string>("");
-  const [apiKey, setApiKey] = useState<string>("");
-  const [modelId, setModelId] = useState<string>("");
-
   return (
     <Dialog.Root open={isOpen} onOpenChange={onClose}>
       <Dialog.Portal>
@@ -38,11 +33,11 @@ export default function ManagedModal({
         <Dialog.Content className="data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] w-[95vw] max-w-2xl translate-x-[-50%] translate-y-[-50%] rounded-lg bg-card border border-border shadow-lg focus:outline-none z-50 flex flex-col">
           <div className="flex flex-col space-y-1 pb-4 border-b border-border p-6">
             <Dialog.Title className="text-xl font-bold text-foreground">
-              {dict?.management?.adapterTitle || "Adapter Configuration"}
+              {dict?.management?.adapterTitle || "Create Adapter"}
             </Dialog.Title>
             <Dialog.Description className="text-sm text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap">
               {dict?.management?.adapterSubtitle ||
-                "Obtain a Base URL adapted to the Target Provider API and the corresponding provider's API Key"}
+                "Obtain a Base URL adapted to the Target Provider API"}
             </Dialog.Description>
           </div>
           <div className="absolute top-6 right-6">
@@ -60,12 +55,12 @@ export default function ManagedModal({
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                onSubmit({
-                  provider,
-                  baseUrl,
-                  apiKey,
-                  modelId
-                });
+                const formData = new FormData(e.target as HTMLFormElement);
+                const provider = formData.get('provider') as string;
+                const baseUrl = formData.get('baseUrl') as string;
+                const apiKey = formData.get('apiKey') as string;
+                const modelId = formData.get('modelId') as string;
+                onSubmit({ provider, baseUrl, apiKey, modelId });
               }}
               className="space-y-6"
             >
@@ -78,8 +73,10 @@ export default function ManagedModal({
                         <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2">
                           {dict?.management?.adapterSource || "SOURCE"}
                         </span>
-                        {dict?.management?.sourceTitle ||
-                          "OpenAI-Compatible Endpoint"}
+                        <span className="truncate">
+                          {dict?.management?.sourceTitle ||
+                            "OpenAI-Compatible Endpoint"}
+                        </span>
                       </h3>
                       <div className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -106,8 +103,7 @@ export default function ManagedModal({
                             <input
                               type="url"
                               id="baseUrl"
-                              value={baseUrl}
-                              onChange={(e) => setBaseUrl(e.target.value)}
+                              name="baseUrl"
                               className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
                               placeholder={
                                 dict?.management?.baseUrlPlaceHolder ||
@@ -127,8 +123,7 @@ export default function ManagedModal({
                             <input
                               type="password"
                               id="apiKey"
-                              value={apiKey}
-                              onChange={(e) => setApiKey(e.target.value)}
+                              name="apiKey"
                               className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
                               placeholder={
                                 dict?.management?.apiKeyPlaceHolder ||
@@ -154,8 +149,7 @@ export default function ManagedModal({
                           <input
                             type="text"
                             id="modelId"
-                            value={modelId}
-                            onChange={(e) => setModelId(e.target.value)}
+                            name="modelId"
                             className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
                             placeholder={
                               dict?.management?.modelIdPlaceHolder ||
@@ -173,7 +167,9 @@ export default function ManagedModal({
                         <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2">
                           {dict?.management?.adapterTarget || "TARGET"}
                         </span>
-                        {dict?.management?.targetTitle || "Target API Provider"}
+                        <span className="truncate">
+                          {dict?.management?.targetTitle || "Select Target API Provider"}
+                        </span>
                       </h3>
                       <div className="space-y-4">
                         <div className="space-y-2">
@@ -185,8 +181,7 @@ export default function ManagedModal({
                           </label>
                           <select
                             id="provider"
-                            value={provider}
-                            onChange={(e) => setProvider(e.target.value)}
+                            name="provider"
                             className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI0IDI0IiBzdHJva2U9IiNjY2NjY2MiIgc3Rva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0ibTYgOSA2IDYgNi02Ii8+PC9zdmc+')] bg-no-repeat bg-[right_12px_center] bg-[length:16px_16px] appearance-none"
                             required
                           >
@@ -194,7 +189,7 @@ export default function ManagedModal({
                               {dict.management?.selectProvider ||
                                 "Select a provider"}
                             </option>
-                            {PROVIDER_OPTIONS.map((option) => (
+                            {targetProviders.map((option) => (
                               <option key={option.id} value={option.id}>
                                 {option.name}
                               </option>
