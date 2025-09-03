@@ -78,10 +78,11 @@ export default function ManagedModal({
         <Dialog.Content className="data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] w-[95vw] max-w-2xl translate-x-[-50%] translate-y-[-50%] rounded-lg bg-card border border-border shadow-lg focus:outline-none z-50 flex flex-col">
           <div className="flex flex-col space-y-1 pb-4 border-b border-border p-6">
             <Dialog.Title className="text-xl font-bold text-foreground">
-              {dict.management.adapterTitle}
+              {dict?.management?.adapterTitle || "Adapter Configuration"}
             </Dialog.Title>
             <Dialog.Description className="text-sm text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap">
-              {dict.management.adapterSubtitle}
+              {dict?.management?.adapterSubtitle ||
+                "Obtain a Base URL adapted to the Target Provider API and the corresponding provider's API Key"}
             </Dialog.Description>
           </div>
           <div className="absolute top-6 right-6">
@@ -103,9 +104,10 @@ export default function ManagedModal({
                   <div className="bg-card border border-border rounded-lg p-6 mb-6">
                     <h3 className="text-md font-semibold text-foreground mb-4 flex items-center">
                       <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2">
-                        {dict.management.adapterSource}
+                        {dict?.management?.adapterSource || "SOURCE"}
                       </span>
-                      {dict.management.sourceTitle}
+                      {dict?.management?.sourceTitle ||
+                        "OpenAI-Compatible Endpoint"}
                     </h3>
                     <div className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -114,7 +116,7 @@ export default function ManagedModal({
                             htmlFor="baseUrl"
                             className="block text-sm font-medium text-foreground"
                           >
-                            {dict.adapter?.baseUrl || "Base URL"}
+                            {dict?.management?.baseUrl || "Base URL"}
                           </label>
                           <input
                             type="url"
@@ -132,7 +134,7 @@ export default function ManagedModal({
                             htmlFor="apiKey"
                             className="block text-sm font-medium text-foreground"
                           >
-                            {dict.adapter?.apiKey || "API Key"}
+                            {dict?.management?.apiKey || "API Key"}
                           </label>
                           <input
                             type="password"
@@ -151,7 +153,7 @@ export default function ManagedModal({
                           htmlFor="modelId"
                           className="block text-sm font-medium text-foreground"
                         >
-                          {dict.adapter?.modelId || "Model ID"}
+                          {dict?.management?.modelId || "Model ID"}
                         </label>
                         <input
                           type="text"
@@ -167,7 +169,8 @@ export default function ManagedModal({
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
                           <label className="block text-sm font-medium text-foreground">
-                            {dict.management.customHeaders}
+                            {dict?.management?.customHeaders ||
+                              "Custom Headers"}
                           </label>
                           <button
                             type="button"
@@ -175,7 +178,7 @@ export default function ManagedModal({
                             className="inline-flex items-center text-sm text-primary hover:text-primary/80"
                           >
                             <PlusIcon className="h-4 w-4 mr-1" />
-                            {dict.adapter?.addHeader || "Add"}
+                            {dict?.management?.addHeader || "Add"}
                           </button>
                         </div>
 
@@ -188,7 +191,9 @@ export default function ManagedModal({
                                 handleHeaderChange(index, "key", e.target.value)
                               }
                               className="flex-1 px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
-                              placeholder={dict.management.headerKey}
+                              placeholder={
+                                dict?.management?.headerKey || "Header Key"
+                              }
                             />
                             <input
                               type="text"
@@ -201,7 +206,9 @@ export default function ManagedModal({
                                 )
                               }
                               className="flex-1 px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
-                              placeholder={dict.management.headerValue}
+                              placeholder={
+                                dict?.management?.headerValue || "Header Value"
+                              }
                             />
                             <button
                               type="button"
@@ -221,9 +228,9 @@ export default function ManagedModal({
                   <div className="bg-card border border-border rounded-lg p-6 mb-6">
                     <h3 className="text-md font-semibold text-foreground mb-4 flex items-center">
                       <span className="bg-secondary text-secondary-foreground text-xs font-bold px-2 py-1 rounded mr-2">
-                        {dict.management.adapterTarget}
+                        {dict?.management?.adapterTarget || "TARGET"}
                       </span>
-                      {dict.management.targetTitle}
+                      {dict?.management?.targetTitle || "Target API Provider"}
                     </h3>
                     <div className="space-y-4">
                       <div className="space-y-2">
@@ -231,7 +238,7 @@ export default function ManagedModal({
                           htmlFor="provider"
                           className="block text-sm font-medium text-foreground"
                         >
-                          {dict.adapter?.provider || "Provider"}
+                          {dict?.management?.provider || "Provider"}
                         </label>
                         <select
                           id="provider"
@@ -240,10 +247,6 @@ export default function ManagedModal({
                           className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
                           required
                         >
-                          <option value="">
-                            {dict.adapter?.selectProvider ||
-                              "Select a provider"}
-                          </option>
                           {PROVIDER_OPTIONS.map((option) => (
                             <option key={option.id} value={option.name}>
                               {option.name}
@@ -260,7 +263,7 @@ export default function ManagedModal({
                       type="submit"
                       className="w-full px-4 py-2.5 text-sm font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition"
                     >
-                      {dict.adapter?.save || "Confirm"}
+                      {dict?.management?.confirm || "Confirm"}
                     </button>
                   </div>
                 </div>
