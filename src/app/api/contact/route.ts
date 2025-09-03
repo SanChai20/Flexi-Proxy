@@ -1,6 +1,7 @@
 import { Redis } from "@upstash/redis";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend, CreateEmailResponse } from "resend";
+import { escapeHtml, validateEmail, sanitizeString } from "@/lib/security";
 
 interface ContactFormData {
   name: string;
@@ -20,7 +21,7 @@ const createEmailTemplate = (data: ContactFormData) => `
 <html>
 <head>
     <meta charset="utf-8">
-    <title>New Contact Form Submit - ${data.subject}</title>
+    <title>New Contact Form Submit - ${escapeHtml(data.subject)}</title>
     <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
@@ -43,46 +44,45 @@ const createEmailTemplate = (data: ContactFormData) => `
         <div class="content">
             <div class="field">
                 <div class="label">📧 Sender Email:</div>
-                <div class="value">${data.email}</div>
+                <div class="value">${escapeHtml(data.email)}</div>
             </div>
             
             <div class="field">
                 <div class="label">👤 Name:</div>
-                <div class="value">${data.name}</div>
+                <div class="value">${escapeHtml(data.name)}</div>
             </div>
             
             <div class="field">
                 <div class="label">📝 Subject:</div>
-                <div class="value">${data.subject}</div>
+                <div class="value">${escapeHtml(data.subject)}</div>
             </div>
             
             <div class="field">
                 <div class="label">💬 Message Content:</div>
-                <div class="value message-value">${data.message}</div>
+                <div class="value message-value">${escapeHtml(data.message)}</div>
             </div>
             
             <div class="field">
                 <div class="label">⏰ Submission Time:</div>
                 <div class="value">${new Date(data.submitTime).toLocaleString(
-                  "zh-CN",
-                  {
-                    timeZone: "Asia/Shanghai",
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit",
-                  }
-                )}</div>
+  "zh-CN",
+  {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }
+)}</div>
             </div>
         </div>
         
         <div class="footer">
             <p>This email was automatically sent by API Base Router contact form system</p>
-            <p>To reply, please respond directly to the user's email: ${
-              data.email
-            }</p>
+            <p>To reply, please respond directly to the user's email: ${escapeHtml(data.email)
+  }</p>
         </div>
     </div>
 </body>
@@ -110,10 +110,20 @@ export async function POST(req: NextRequest) {
       { status: 429 }
     ); // Using 429 Too Many Requests status code
   }
-  const userName = (data["userName"] as string) || "Anonymous";
-  const userEmail = (data["userEmail"] as string) || "";
-  const subject = data["subject"] as string;
-  const message = data["message"] as string;
+  const userName = sanitizeString((data["userName"] as string) || "Anonymous");
+  const userEmail = sanitizeString((data["userEmail"] as string) || "");
+  const subject = sanitizeString(data["subject"] as string);
+  const message = sanitizeString(data["message"] as string);
+
+  // Validate email if provided
+  if (userEmail && !validateEmail(userEmail)) {
+    return NextResponse.json(
+      { message: "Invalid email format" },
+      { status: 400 }
+    );
+  }
+
+  // Check required fields
   if (!subject || !message) {
     return NextResponse.json(
       { message: "All fields are required" },
@@ -130,7 +140,7 @@ export async function POST(req: NextRequest) {
   try {
     const sendResponse: CreateEmailResponse = await resend.emails.send({
       from: process.env.AUTH_RESEND_FROM || "no-reply@router.fit",
-      to: [process.env.ADMIN_EMAIL as string, "dauberiverferryman@gmail.com"],
+      to: [process.env.ADMIN_EMAIL as string],
       subject: `🔔 New Contact Form Submit: ${subject}`,
       html: createEmailTemplate(contactData),
       replyTo: userEmail,

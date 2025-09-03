@@ -1,8 +1,7 @@
 import type { TurnstileServerValidationResponse } from "@marsidev/react-turnstile";
 import { NextResponse } from "next/server";
 
-const TURNSTILE_VERIFY_URL =
-  "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+const TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 const responseHeaders = {
   "content-type": "application/json",
 };
@@ -15,9 +14,7 @@ export async function POST(req: Request) {
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
-    body: `secret=${encodeURIComponent(secret)}&response=${encodeURIComponent(
-      token
-    )}`,
+    body: `secret=${encodeURIComponent(secret)}&response=${encodeURIComponent(token)}`,
   }).then((res) => res.json())) as TurnstileServerValidationResponse;
 
   if (!verifyResponseData.success) {

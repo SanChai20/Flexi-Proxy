@@ -23,13 +23,23 @@ export interface ProviderRow {
 
 export const PROVIDER_OPTIONS = [{ id: "anthropic", name: "Anthropic" }];
 
+
+
+
+
+
+
+
+
+
+
 /**
  * Provider 表格（含添加按钮、行设置图标）
  */
 export default function ManagedTable({ dict }: { dict: any }) {
   const [rows, setRows] = useState<ProviderRow[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [mode, setMode] = useState<"proxy" | "hosted">("proxy");
+
 
   /** 简单的“新增行”实现（真实项目请改成弹窗收集信息） */
   const handleAdd = () => {
