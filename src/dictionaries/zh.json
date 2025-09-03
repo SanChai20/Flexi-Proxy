@@ -66,7 +66,7 @@
     "subtitle": "将 OpenAI-Compatible API 适配为目标供应商的 API 服务",
     "adapterAdd": "添加适配器",
     "adapterTitle": "适配器配置",
-    "adapterSubtitle": "获取一个适配目标提供商 API 的基础 URL 以及 API 密钥"
+    "adapterSubtitle": "获取可适配目标供应商 API 的基础 URL 及密钥"
   },
   "settings": {
     "title": "设置",

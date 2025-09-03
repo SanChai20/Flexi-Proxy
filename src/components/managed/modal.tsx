@@ -80,7 +80,7 @@ export default function ManagedModal({
             <Dialog.Title className="text-xl font-bold text-foreground">
               {dict.management.adapterTitle}
             </Dialog.Title>
-            <Dialog.Description className="text-lg text-muted-foreground">
+            <Dialog.Description className="text-sm text-muted-foreground">
               {dict.management.adapterSubtitle}
             </Dialog.Description>
           </div>
