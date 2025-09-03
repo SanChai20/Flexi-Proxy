@@ -23,7 +23,7 @@ const verifyToken = async (token: string | null): Promise<boolean> => {
   if (!token) return false;
 
   const validateResponse = await fetch(
-    [process.env.BASE_URL || "https://router.fit", "api/verify"].join("/"),
+    [process.env.BASE_URL, "api/verify"].join("/"),
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },

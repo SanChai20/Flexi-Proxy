@@ -27,6 +27,7 @@ export function ContactForm({
     };
   };
 }) {
+
   const [subject, setSubject] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,7 +42,7 @@ export function ContactForm({
 
     try {
       const response = await fetch(
-        [process.env.BASE_URL, "api/contact"].join("/"),
+        "/api/contact",
         {
           method: "POST",
           headers: {

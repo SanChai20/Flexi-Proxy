@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Cog6ToothIcon, PlusIcon } from "@heroicons/react/24/outline";
 import ManagedModal from "@/components/managed/modal";
-
+import { useAsyncFn } from "@/hooks/useAsyncFn";
 export type ProviderType =
   | "OpenAI"
   | "Anthropic"
@@ -30,15 +30,50 @@ export const PROVIDER_OPTIONS = [{ id: "anthropic", name: "Anthropic" }];
 
 
 
-
-
-
 /**
  * Provider 表格（含添加按钮、行设置图标）
  */
-export default function ManagedTable({ dict }: { dict: any }) {
+export default function ManagedTable({ dict, targetAvailableProviders }: { dict: any, targetAvailableProviders: { id: string; name: string }[] }) {
+
+
+  // const { execute, loading, error } = useAsyncFn(async (param: string) => {
+  //   const response = await fetch([process.env.BACKEND_URL, "v1/adapter"].join("/"), {
+  //     method: 'POST',
+  //     headers: {
+  //       "Authorization": `Bearer ${}`,
+  //       "Content-Type": "application/json"
+  //     },
+  //     body: JSON.stringify({ param })
+  //   })
+  //   return response.json()
+  // })
+
+  const { execute: GetSecurityToken } = useAsyncFn(async (user_id: string) => {
+    const response = await fetch("/api/token", {
+      method: 'POST'
+    })
+    return response.json()
+  })
+
+
+
+
+
+
+
+
+
+
+
+
   const [rows, setRows] = useState<ProviderRow[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+
+
+
+
+
 
 
   /** 简单的“新增行”实现（真实项目请改成弹窗收集信息） */

@@ -14,14 +14,9 @@ import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@/components/ui/icons";
 import ManagedTable from "@/components/managed/table";
 
-// Define the proxy type
-// interface Proxy {
-//   id: string;
-//   provider: string;
-//   baseUrl: string;
-//   authToken: string;
-//   status: string;
-// }
+async function GetAvailableTargetProviders(): Promise<{ id: string; name: string }[]> {
+  return []
+}
 
 export default async function ManagementPage(
   props: PageProps<"/[lang]/management">
@@ -29,6 +24,7 @@ export default async function ManagementPage(
   let session = await auth();
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
+  const providers = await GetAvailableTargetProviders();
   return (
     <section className="w-full max-w-4xl mx-auto p-4">
       <Card>
@@ -39,7 +35,7 @@ export default async function ManagementPage(
           </CardDescription>
         </CardHeader>
       </Card>
-      <ManagedTable dict={dict} />
+      <ManagedTable dict={dict} targetAvailableProviders={providers} />
     </section>
   );
 }
