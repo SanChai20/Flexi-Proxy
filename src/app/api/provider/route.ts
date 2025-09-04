@@ -6,6 +6,15 @@ import { NextResponse } from "next/server";
 const ADAPTER_PROVIDER_KEY = "registered:target:providers";
 
 export async function GET(req: Request) {
+  const authHeader = req.headers.get("authorization");
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  const token = authHeader.split(" ")[1];
+  const { payload, error } = await verify(token);
+  if (!payload) {
+    return NextResponse.json({ error }, { status: 401 });
+  }
   const results: TargetProvider[] = (
     await redis.lrange<string>(ADAPTER_PROVIDER_KEY, 0, -1)
   ).map((item) => JSON.parse(item));

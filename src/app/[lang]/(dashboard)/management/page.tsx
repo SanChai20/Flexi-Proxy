@@ -16,27 +16,27 @@ import ManagedTable from "@/components/managed/table";
 import { BaseAdapter } from "@/lib/utils";
 import { sign } from "@/lib/security";
 
-async function GetAvailableTargetProviders(): Promise<
-  { id: string; name: string }[]
-> {
+async function GetAvailableTargetProviders(
+  token: string
+): Promise<{ id: string; name: string }[]> {
   const response = await fetch(
-    [process.env.BACKEND_URL, "v1/provider"].join("/"),
-    { method: "GET" }
+    [process.env.BASE_URL, "api/provider"].join("/"),
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   );
   if (response.ok) {
-    const reqBody = await response.json(); //TODO...
+    const reqBody = await response.json();
     return reqBody;
   } else {
     return [];
   }
 }
 
-async function GetUserAvailableAdapters(): Promise<BaseAdapter[]> {
-  const { token, error } = await sign(undefined, 60);
-  if (!token) {
-    console.error(error);
-    return [];
-  }
+async function GetUserAvailableAdapters(token: string): Promise<BaseAdapter[]> {
   const response = await fetch(
     [process.env.BASE_URL, "api/adapter"].join("/"),
     {
@@ -59,7 +59,15 @@ export default async function ManagementPage(
 ) {
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
-  const providers = await GetAvailableTargetProviders();
+  const { token, error } = await sign(undefined, 60);
+  if (!token) {
+    return null;
+  }
+  const [targetProviders, userAdapters] = await Promise.all([
+    GetAvailableTargetProviders(token),
+    GetUserAvailableAdapters(token),
+  ]);
+
   return (
     <section className="w-full max-w-4xl mx-auto p-4">
       <Card>
@@ -70,7 +78,11 @@ export default async function ManagementPage(
           </CardDescription>
         </CardHeader>
       </Card>
-      <ManagedTable dict={dict} targetAvailableProviders={providers} />
+      <ManagedTable
+        dict={dict}
+        targetAvailableProviders={targetProviders}
+        userAvailableAdapters={userAdapters}
+      />
     </section>
   );
 }
