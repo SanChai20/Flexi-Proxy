@@ -1,7 +1,7 @@
+import { verify } from "@/lib/security";
 import { Redis } from "@upstash/redis";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend, CreateEmailResponse } from "resend";
-import { escapeHtml, validateEmail, sanitizeString } from "@/lib/security";
 
 interface ContactFormData {
   name: string;
@@ -16,6 +16,23 @@ const redis = new Redis({
 });
 const resend = new Resend(process.env.AUTH_RESEND_KEY);
 const USER_CONTACT_PREFIX = "user:contact";
+const escapeHtml = (unsafe: string) => {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+};
+const validateEmail = (email: string) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+const sanitizeString = (str: string) => {
+  // Remove any HTML tags and escape special characters
+  return escapeHtml(str.trim());
+};
+
 const createEmailTemplate = (data: ContactFormData) => `
 <!DOCTYPE html>
 <html>
@@ -59,30 +76,33 @@ const createEmailTemplate = (data: ContactFormData) => `
             
             <div class="field">
                 <div class="label">💬 Message Content:</div>
-                <div class="value message-value">${escapeHtml(data.message)}</div>
+                <div class="value message-value">${escapeHtml(
+                  data.message
+                )}</div>
             </div>
             
             <div class="field">
                 <div class="label">⏰ Submission Time:</div>
                 <div class="value">${new Date(data.submitTime).toLocaleString(
-  "zh-CN",
-  {
-    timeZone: "Asia/Shanghai",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  }
-)}</div>
+                  "zh-CN",
+                  {
+                    timeZone: "Asia/Shanghai",
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                  }
+                )}</div>
             </div>
         </div>
         
         <div class="footer">
             <p>This email was automatically sent by API Base Router contact form system</p>
-            <p>To reply, please respond directly to the user's email: ${escapeHtml(data.email)
-  }</p>
+            <p>To reply, please respond directly to the user's email: ${escapeHtml(
+              data.email
+            )}</p>
         </div>
     </div>
 </body>
@@ -90,14 +110,20 @@ const createEmailTemplate = (data: ContactFormData) => `
 `;
 
 export async function POST(req: NextRequest) {
-  const data = await req.json();
-  const userId = data["userId"] as string;
-  if (!userId) {
-    return NextResponse.json(
-      { error: "Missing user-id header" },
-      { status: 400 }
-    );
+  const authHeader = req.headers.get("authorization");
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const token = authHeader.split(" ")[1];
+  const { payload, error } = await verify(token);
+  if (!payload) {
+    return NextResponse.json({ error }, { status: 401 });
+  }
+
+  const userId = payload["user_id"];
+
   const ipSubmittedExpiryInSeconds: number = await redis.ttl(
     [USER_CONTACT_PREFIX, userId].join(":")
   );
@@ -110,10 +136,11 @@ export async function POST(req: NextRequest) {
       { status: 429 }
     ); // Using 429 Too Many Requests status code
   }
-  const userName = sanitizeString((data["userName"] as string) || "Anonymous");
-  const userEmail = sanitizeString((data["userEmail"] as string) || "");
-  const subject = sanitizeString(data["subject"] as string);
-  const message = sanitizeString(data["message"] as string);
+  const reqBody = await req.json();
+  const subject = sanitizeString(reqBody["subject"] as string);
+  const message = sanitizeString(reqBody["message"] as string);
+  const userName = sanitizeString(payload["user_name"]);
+  const userEmail = sanitizeString(payload["user_email"]);
 
   // Validate email if provided
   if (userEmail && !validateEmail(userEmail)) {
@@ -139,7 +166,7 @@ export async function POST(req: NextRequest) {
   };
   try {
     const sendResponse: CreateEmailResponse = await resend.emails.send({
-      from: process.env.AUTH_RESEND_FROM || "no-reply@router.fit",
+      from: process.env.AUTH_RESEND_FROM as string,
       to: [process.env.ADMIN_EMAIL as string],
       subject: `🔔 New Contact Form Submit: ${subject}`,
       html: createEmailTemplate(contactData),

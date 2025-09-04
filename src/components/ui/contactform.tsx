@@ -2,16 +2,12 @@
 
 import { useState } from "react";
 import { OnceButton } from "@/components/ui/oncebutton";
+import { sign } from "@/lib/security";
+import { useAsyncFn } from "@/hooks/useAsyncFn";
 
 export function ContactForm({
-  userId,
-  userName,
-  userEmail,
   dict,
 }: {
-  userId?: string | null;
-  userName?: string | null;
-  userEmail?: string | null;
   dict: {
     contact: {
       title: string;
@@ -27,91 +23,56 @@ export function ContactForm({
     };
   };
 }) {
-
   const [subject, setSubject] = useState<string>("");
   const [message, setMessage] = useState<string>("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(
     null
   );
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitStatus(null);
-
-    try {
-      const response = await fetch(
-        "/api/contact",
-        {
+  const { execute: submitContact, loading: isSubmitting } = useAsyncFn<
+    boolean,
+    [string, string]
+  >(
+    // exec Func
+    async (subject: string, message: string) => {
+      const { success, token, error } = await sign(undefined, 30);
+      if (success) {
+        const response = await fetch("/api/contact", {
           method: "POST",
           headers: {
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            userId,
-            userName,
-            userEmail,
-            subject,
-            message,
-          }),
-        }
-      );
-
-      if (response.ok) {
+          body: JSON.stringify({ subject, message }),
+        });
+        return response.ok;
+      } else {
+        return false;
+      }
+    },
+    // onComplete
+    (result?: boolean) => {
+      if (!!result) {
         setSubmitStatus("success");
         setSubject("");
         setMessage("");
       } else {
         setSubmitStatus("error");
       }
-    } catch (error) {
-      setSubmitStatus("error");
-    } finally {
-      setIsSubmitting(false);
+    },
+    // onPrepare
+    () => {
+      setSubmitStatus(null);
     }
+  );
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await submitContact(subject, message);
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {userName && (
-            <div className="flex flex-col">
-              <label
-                htmlFor="name"
-                className="mb-2 text-sm font-medium text-muted-foreground"
-              >
-                {dict.contact.name}
-              </label>
-              <input
-                type="text"
-                id="name"
-                value={userName}
-                readOnly
-                className="rounded-lg border border-input px-4 py-3 text-card-foreground shadow-sm focus:border-ring focus:ring-ring sm:text-sm bg-muted cursor-not-allowed"
-              />
-            </div>
-          )}
-          {userEmail && (
-            <div className="flex flex-col">
-              <label
-                htmlFor="email"
-                className="mb-2 text-sm font-medium text-muted-foreground"
-              >
-                {dict.contact.email}
-              </label>
-              <input
-                type="email"
-                id="email"
-                value={userEmail}
-                readOnly
-                className="rounded-lg border border-input px-4 py-3 text-card-foreground shadow-sm focus:border-ring focus:ring-ring sm:text-sm bg-muted cursor-not-allowed"
-              />
-            </div>
-          )}
-        </div>
-
         <div className="flex flex-col">
           <label
             htmlFor="subject"

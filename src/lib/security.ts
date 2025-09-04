@@ -1,18 +1,92 @@
-export function escapeHtml(unsafe: string): string {
-  return unsafe
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+"use server";
+
+import jwt, { JwtPayload } from "jsonwebtoken";
+import crypto from "crypto";
+import { auth } from "@/auth";
+
+export async function sign(
+  payload?: Record<string, any>,
+  expiresIn?: number //seconds
+): Promise<{
+  success: boolean;
+  token?: string;
+  error?: string;
+}> {
+  // Validate environment variables
+  if (!process.env.JWT_SECRET_KEY) {
+    return { success: false, error: "Internal error" };
+  }
+
+  if (!process.env.JWT_ISSUER) {
+    return { success: false, error: "Internal error" };
+  }
+
+  if (!process.env.JWT_AUDIENCE) {
+    return { success: false, error: "Internal error" };
+  }
+
+  // Get session
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    return { success: false, error: "Invalid session" };
+  }
+
+  try {
+    // Create JWT payload with user information
+    const jwtPayload = {
+      ...(payload || {}),
+      user_id: session.user.id,
+      user_name: session.user.name || "Unknown",
+      user_email: session.user.email || "",
+      jti: crypto.randomUUID(),
+    };
+
+    // Sign the token
+    const token: string = jwt.sign(jwtPayload, process.env.JWT_SECRET_KEY, {
+      expiresIn,
+      issuer: process.env.JWT_ISSUER,
+      audience: process.env.JWT_AUDIENCE,
+    });
+
+    return { success: true, token };
+  } catch (error: any) {
+    console.error("JWT signing error:", error);
+    return { success: false, error: "Token signing failed" };
+  }
 }
 
-export function validateEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
+export async function verify(token: string): Promise<{
+  payload?: JwtPayload;
+  error?: string;
+}> {
+  // Validate environment variables
+  if (!process.env.JWT_SECRET_KEY) {
+    return { payload: undefined, error: "Internal error" };
+  }
 
-export function sanitizeString(str: string): string {
-  // Remove any HTML tags and escape special characters
-  return escapeHtml(str.trim());
+  if (!process.env.JWT_ISSUER) {
+    return { payload: undefined, error: "Internal error" };
+  }
+
+  if (!process.env.JWT_AUDIENCE) {
+    return { payload: undefined, error: "Internal error" };
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY, {
+      issuer: process.env.JWT_ISSUER,
+      audience: process.env.JWT_AUDIENCE,
+    }) as JwtPayload;
+
+    return { payload: decoded };
+  } catch (error: any) {
+    console.error("JWT verification error:", error);
+    if (error.name === "TokenExpiredError") {
+      return { payload: undefined, error: "Token has expired" };
+    } else if (error.name === "JsonWebTokenError") {
+      return { payload: undefined, error: "Invalid token" };
+    } else {
+      return { payload: undefined, error: "Token verification failed" };
+    }
+  }
 }
