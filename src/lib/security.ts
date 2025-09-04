@@ -9,27 +9,26 @@ export async function sign(
   payload?: Record<string, any>,
   expiresIn?: number //seconds
 ): Promise<{
-  success: boolean;
   token?: string;
   error?: string;
 }> {
   // Validate environment variables
   if (!process.env.JWT_SECRET_KEY) {
-    return { success: false, error: "Internal error" };
+    return { token: undefined, error: "Internal error" };
   }
 
   if (!process.env.JWT_ISSUER) {
-    return { success: false, error: "Internal error" };
+    return { token: undefined, error: "Internal error" };
   }
 
   if (!process.env.JWT_AUDIENCE) {
-    return { success: false, error: "Internal error" };
+    return { token: undefined, error: "Internal error" };
   }
 
   // Get session
   const session = await auth();
   if (!(session && session.user && session.user.id)) {
-    return { success: false, error: "Invalid session" };
+    return { token: undefined, error: "Invalid session" };
   }
 
   try {
@@ -49,10 +48,10 @@ export async function sign(
       audience: process.env.JWT_AUDIENCE,
     });
 
-    return { success: true, token };
+    return { token };
   } catch (error: any) {
     console.error("JWT signing error:", error);
-    return { success: false, error: "Token signing failed" };
+    return { token: undefined, error: "Token signing failed" };
   }
 }
 

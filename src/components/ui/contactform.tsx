@@ -32,10 +32,10 @@ export function ContactForm({
     boolean,
     [string, string]
   >(
-    // exec Func
+    // exec
     async (subject: string, message: string) => {
-      const { success, token, error } = await sign(undefined, 30);
-      if (success) {
+      const { token, error } = await sign(undefined, 30);
+      if (token !== undefined) {
         const response = await fetch("/api/contact", {
           method: "POST",
           headers: {
@@ -46,6 +46,7 @@ export function ContactForm({
         });
         return response.ok;
       } else {
+        console.error;
         return false;
       }
     },

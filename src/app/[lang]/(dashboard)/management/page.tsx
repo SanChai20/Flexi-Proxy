@@ -14,14 +14,29 @@ import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@/components/ui/icons";
 import ManagedTable from "@/components/managed/table";
 
-async function GetAvailableTargetProviders(): Promise<{ id: string; name: string }[]> {
-  return []
+async function GetAvailableTargetProviders(): Promise<
+  { id: string; name: string }[]
+> {
+  const response = await fetch(
+    [process.env.BACKEND_URL, "v1/provider"].join("/"),
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  if (response.ok) {
+    const reqBody = await response.json(); //TODO...
+    return reqBody;
+  } else {
+    return [];
+  }
 }
 
 export default async function ManagementPage(
   props: PageProps<"/[lang]/management">
 ) {
-  let session = await auth();
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
   const providers = await GetAvailableTargetProviders();
