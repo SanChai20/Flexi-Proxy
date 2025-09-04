@@ -1,4 +1,5 @@
 import { verify } from "@/lib/security";
+import { BaseAdapter } from "@/lib/utils";
 import { Redis } from "@upstash/redis";
 import { NextResponse } from "next/server";
 const redis = new Redis({
@@ -7,12 +8,6 @@ const redis = new Redis({
 });
 
 const USER_ADAPTER_PREFIX = "user:adapter:list";
-
-interface Adapter {
-  provider: string;
-  token: string;
-  url: string;
-}
 
 // Create Adapter
 export async function POST(req: Request) {
@@ -46,7 +41,7 @@ export async function POST(req: Request) {
     token: responseData.token,
     url: responseData.url,
   };
-  await redis.rpush<Adapter>(
+  await redis.rpush<BaseAdapter>(
     [USER_ADAPTER_PREFIX, payload["user_id"]].join(":"),
     adapter
   );
@@ -64,7 +59,7 @@ export async function GET(req: Request) {
   if (!payload) {
     return NextResponse.json({ error }, { status: 401 });
   }
-  const results: Adapter[] = await redis.lrange<Adapter>(
+  const results: BaseAdapter[] = await redis.lrange<BaseAdapter>(
     [USER_ADAPTER_PREFIX, payload["user_id"]].join(":"),
     0,
     -1
@@ -84,11 +79,11 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error }, { status: 401 });
   }
   const delete_index = payload["delete_index"] as number;
-  const delete_item: Adapter = await redis.lindex(
+  const delete_item: BaseAdapter = await redis.lindex(
     [USER_ADAPTER_PREFIX, payload["user_id"]].join(":"),
     delete_index
   );
-  const removed_count = await redis.lrem<Adapter>(
+  const removed_count = await redis.lrem<BaseAdapter>(
     [USER_ADAPTER_PREFIX, payload["user_id"]].join(":"),
     1,
     delete_item

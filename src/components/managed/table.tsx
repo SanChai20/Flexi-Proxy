@@ -4,13 +4,7 @@ import { useState } from "react";
 import { Cog6ToothIcon, PlusIcon } from "@heroicons/react/24/outline";
 import ManagedModal from "@/components/managed/modal";
 import { useAsyncFn } from "@/hooks/useAsyncFn";
-export type ProviderType =
-  | "OpenAI"
-  | "Anthropic"
-  | "Google"
-  | "Azure OpenAI"
-  | "Custom Provider"
-  | string;
+import { BaseAdapter } from "@/lib/utils";
 
 export interface ProviderRow {
   id: string;
@@ -23,19 +17,21 @@ export interface ProviderRow {
 
 export const PROVIDER_OPTIONS = [{ id: "anthropic", name: "Anthropic" }];
 
-
-
-
-
-
-
-
 /**
  * Provider 表格（含添加按钮、行设置图标）
  */
-export default function ManagedTable({ dict, targetAvailableProviders }: { dict: any, targetAvailableProviders: { id: string; name: string }[] }) {
-
-
+export default function ManagedTable({
+  dict,
+  targetAvailableProviders,
+  userAvailableAdapters,
+}: {
+  dict: any;
+  targetAvailableProviders: {
+    id: string;
+    name: string;
+  }[];
+  userAvailableAdapters: BaseAdapter[];
+}) {
   // const { execute, loading, error } = useAsyncFn(async (param: string) => {
   //   const response = await fetch([process.env.BACKEND_URL, "v1/adapter"].join("/"), {
   //     method: 'POST',
@@ -50,31 +46,13 @@ export default function ManagedTable({ dict, targetAvailableProviders }: { dict:
 
   const { execute: GetSecurityToken } = useAsyncFn(async (user_id: string) => {
     const response = await fetch("/api/token", {
-      method: 'POST'
-    })
-    return response.json()
-  })
-
-
-
-
-
-
-
-
-
-
-
+      method: "POST",
+    });
+    return response.json();
+  });
 
   const [rows, setRows] = useState<ProviderRow[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-
-
-
-
-
-
 
   /** 简单的“新增行”实现（真实项目请改成弹窗收集信息） */
   const handleAdd = () => {
@@ -206,10 +184,11 @@ export default function ManagedTable({ dict, targetAvailableProviders }: { dict:
                         <span
                           className={`
                       inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium
-                      ${row.status === "active"
-                              ? "bg-success/20 text-success"
-                              : "bg-destructive/20 text-destructive"
-                            }
+                      ${
+                        row.status === "active"
+                          ? "bg-success/20 text-success"
+                          : "bg-destructive/20 text-destructive"
+                      }
                     `}
                         >
                           {row.status}

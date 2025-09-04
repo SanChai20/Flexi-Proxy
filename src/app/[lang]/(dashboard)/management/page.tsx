@@ -13,21 +13,41 @@ import {
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@/components/ui/icons";
 import ManagedTable from "@/components/managed/table";
+import { BaseAdapter } from "@/lib/utils";
+import { sign } from "@/lib/security";
 
 async function GetAvailableTargetProviders(): Promise<
   { id: string; name: string }[]
 > {
   const response = await fetch(
     [process.env.BACKEND_URL, "v1/provider"].join("/"),
+    { method: "GET" }
+  );
+  if (response.ok) {
+    const reqBody = await response.json(); //TODO...
+    return reqBody;
+  } else {
+    return [];
+  }
+}
+
+async function GetUserAvailableAdapters(): Promise<BaseAdapter[]> {
+  const { token, error } = await sign();
+  if (!token) {
+    console.error(error);
+    return [];
+  }
+  const response = await fetch(
+    [process.env.BASE_URL, "api/adapter"].join("/"),
     {
       method: "GET",
       headers: {
-        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
     }
   );
   if (response.ok) {
-    const reqBody = await response.json(); //TODO...
+    const reqBody = await response.json();
     return reqBody;
   } else {
     return [];
