@@ -32,7 +32,7 @@ async function GetAvailableTargetProviders(): Promise<
 }
 
 async function GetUserAvailableAdapters(): Promise<BaseAdapter[]> {
-  const { token, error } = await sign();
+  const { token, error } = await sign(undefined, 60);
   if (!token) {
     console.error(error);
     return [];

@@ -7,6 +7,7 @@ import WeChat from "next-auth/providers/wechat";
 import { Redis } from "@upstash/redis";
 import { Theme } from "@auth/core/types";
 import { UpstashRedisAdapter } from "@auth/upstash-redis-adapter";
+import { redis } from "@/lib/database";
 
 function html(params: { url: string; host: string; theme: Theme }) {
   const { url, host, theme } = params;
@@ -273,12 +274,7 @@ export const providerMap = providers
 
 export default {
   providers: providers,
-  adapter: UpstashRedisAdapter(
-    new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN,
-    })
-  ),
+  adapter: UpstashRedisAdapter(redis),
   session: {
     maxAge: 86400 * 3, // 设置session的最大有效期（秒为单位）3 day - 24 * 60 * 60 * 3
   },

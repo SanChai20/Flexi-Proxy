@@ -11,8 +11,6 @@ export interface ProviderRow {
   provider: ProviderType;
   baseUrl: string;
   authToken: string;
-  modelId: string;
-  status: "active" | "inactive";
 }
 
 export const PROVIDER_OPTIONS = [{ id: "anthropic", name: "Anthropic" }];
@@ -32,17 +30,34 @@ export default function ManagedTable({
   }[];
   userAvailableAdapters: BaseAdapter[];
 }) {
-  // const { execute, loading, error } = useAsyncFn(async (param: string) => {
-  //   const response = await fetch([process.env.BACKEND_URL, "v1/adapter"].join("/"), {
-  //     method: 'POST',
-  //     headers: {
-  //       "Authorization": `Bearer ${}`,
-  //       "Content-Type": "application/json"
-  //     },
-  //     body: JSON.stringify({ param })
-  //   })
-  //   return response.json()
-  // })
+
+  const { execute: createAdapter, loading: isCreatingAdapter } = useAsyncFn(async (param: string) => {
+    const response = await fetch("/api/adapter", {
+      method: 'POST',
+      headers: {
+        "Authorization": `Bearer ${}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ param })
+    })
+    return response.json()
+  })
+
+  const { execute: deleteAdapter, loading: isDeletingAdapter } = useAsyncFn(async (param: string) => {
+    const response = await fetch("/api/adapter", {
+      method: 'DELETE',
+      headers: {
+        "Authorization": `Bearer ${}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ param })
+    })
+    return response.json()
+  })
+
+
+
+
 
   const { execute: GetSecurityToken } = useAsyncFn(async (user_id: string) => {
     const response = await fetch("/api/token", {

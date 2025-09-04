@@ -1,3 +1,4 @@
+import { redis } from "@/lib/database";
 import { verify } from "@/lib/security";
 import { Redis } from "@upstash/redis";
 import { NextRequest, NextResponse } from "next/server";
@@ -10,10 +11,7 @@ interface ContactFormData {
   message: string;
   submitTime: string;
 }
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
+
 const resend = new Resend(process.env.AUTH_RESEND_KEY);
 const USER_CONTACT_PREFIX = "user:contact";
 const escapeHtml = (unsafe: string) => {

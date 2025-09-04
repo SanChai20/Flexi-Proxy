@@ -1,11 +1,7 @@
+import { redis } from "@/lib/database";
 import { verify } from "@/lib/security";
 import { BaseAdapter } from "@/lib/utils";
-import { Redis } from "@upstash/redis";
 import { NextResponse } from "next/server";
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
 
 const USER_ADAPTER_PREFIX = "user:adapter:list";
 
@@ -36,14 +32,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }
   // Save
-  const adapter = {
+  const adapter: BaseAdapter = {
     provider: payload["provider"] as string,
     token: responseData.token,
     url: responseData.url,
   };
-  await redis.rpush<BaseAdapter>(
+  await redis.rpush<string>(
     [USER_ADAPTER_PREFIX, payload["user_id"]].join(":"),
-    adapter
+    JSON.stringify(adapter)
   );
   return NextResponse.json(adapter);
 }
@@ -59,11 +55,13 @@ export async function GET(req: Request) {
   if (!payload) {
     return NextResponse.json({ error }, { status: 401 });
   }
-  const results: BaseAdapter[] = await redis.lrange<BaseAdapter>(
-    [USER_ADAPTER_PREFIX, payload["user_id"]].join(":"),
-    0,
-    -1
-  );
+  const results: BaseAdapter[] = (
+    await redis.lrange<string>(
+      [USER_ADAPTER_PREFIX, payload["user_id"]].join(":"),
+      0,
+      -1
+    )
+  ).map((item) => JSON.parse(item));
   return NextResponse.json(results);
 }
 
@@ -79,11 +77,11 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error }, { status: 401 });
   }
   const delete_index = payload["delete_index"] as number;
-  const delete_item: BaseAdapter = await redis.lindex(
+  const delete_item: string = await redis.lindex(
     [USER_ADAPTER_PREFIX, payload["user_id"]].join(":"),
     delete_index
   );
-  const removed_count = await redis.lrem<BaseAdapter>(
+  const removed_count = await redis.lrem<string>(
     [USER_ADAPTER_PREFIX, payload["user_id"]].join(":"),
     1,
     delete_item

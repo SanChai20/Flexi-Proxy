@@ -16,3 +16,8 @@ export interface BaseAdapter {
   token: string;
   url: string;
 }
+
+export interface TargetProvider {
+  id: string;
+  name: string;
+}
