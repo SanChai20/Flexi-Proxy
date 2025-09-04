@@ -79,12 +79,6 @@ function navigateRoutes(
   //   }
   //   // Some overrides, navigations
   //   if (section === "login" && isLoggedIn) {
-  //     //const fromParam = req.nextUrl.searchParams.get("from");
-  //     // if (!fromParam) {
-  //     //   redirectPath = `/${locale}/verification`;
-  //     // } else if (isLoggedIn) {
-  //     //   redirectPath = `/${locale}`;
-  //     // }
   //     redirectPath = `/${locale}`;
   //   }
   // }

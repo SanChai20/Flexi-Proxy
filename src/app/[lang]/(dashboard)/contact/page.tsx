@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/card";
 
 export default async function ContactPage(props: PageProps<"/[lang]/contact">) {
-  const session = await auth();
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
   return (
@@ -24,12 +23,7 @@ export default async function ContactPage(props: PageProps<"/[lang]/contact">) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ContactForm
-            userId={session?.user?.id}
-            userName={session?.user?.name}
-            userEmail={session?.user?.email}
-            dict={dict}
-          />
+          <ContactForm dict={dict} />
         </CardContent>
       </Card>
     </section>

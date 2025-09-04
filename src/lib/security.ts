@@ -1,8 +1,9 @@
 "use server";
 
-import jwt, { JwtPayload } from "jsonwebtoken";
 import crypto from "crypto";
 import { auth } from "@/auth";
+import { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
 export async function sign(
   payload?: Record<string, any>,

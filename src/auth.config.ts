@@ -232,20 +232,33 @@ const providers: Provider[] = [
         throw new Error("Resend error: " + JSON.stringify(await res.json()));
     },
   }),
-  Google({
-    clientId: process.env.AUTH_GOOGLE_ID,
-    clientSecret: process.env.AUTH_GOOGLE_SECRET,
-  }),
-  GitHub({
-    clientId: process.env.AUTH_GITHUB_ID,
-    clientSecret: process.env.AUTH_GITHUB_SECRET,
-  }),
-  WeChat({
-    clientId: process.env.AUTH_WECHAT_APP_ID,
-    clientSecret: process.env.AUTH_WECHAT_APP_SECRET,
-    platformType: "OfficialAccount",
-  }),
 ];
+
+if (!!(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET)) {
+  providers.push(
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+    })
+  );
+}
+if (!!(process.env.AUTH_GITHUB_ID && process.env.AUTH_GITHUB_SECRET)) {
+  providers.push(
+    GitHub({
+      clientId: process.env.AUTH_GITHUB_ID,
+      clientSecret: process.env.AUTH_GITHUB_SECRET,
+    })
+  );
+}
+if (!!(process.env.AUTH_WECHAT_APP_ID && process.env.AUTH_WECHAT_APP_SECRET)) {
+  providers.push(
+    WeChat({
+      clientId: process.env.AUTH_WECHAT_APP_ID,
+      clientSecret: process.env.AUTH_WECHAT_APP_SECRET,
+      platformType: "OfficialAccount",
+    })
+  );
+}
 
 export const providerMap = providers
   .map((provider) => {
