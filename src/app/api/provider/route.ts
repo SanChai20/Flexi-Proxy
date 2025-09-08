@@ -35,6 +35,7 @@ export async function POST(req: Request) {
   const target_provider: TargetProvider = {
     id: payload["id"],
     name: payload["name"],
+    url: payload["url"]
   };
   const push_count: number = await redis.rpush<string>(
     ADAPTER_PROVIDER_KEY,
@@ -57,6 +58,7 @@ export async function DELETE(req: Request) {
   const target_provider: TargetProvider = {
     id: payload["id"],
     name: payload["name"],
+    url: payload["url"]
   };
   const remove_count: number = await redis.lrem<string>(
     ADAPTER_PROVIDER_KEY,

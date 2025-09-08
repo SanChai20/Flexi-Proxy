@@ -1,6 +1,6 @@
 import { redis } from "@/lib/database";
 import { verify } from "@/lib/security";
-import { BaseAdapter } from "@/lib/utils";
+import { BaseAdapter, TargetProvider } from "@/lib/utils";
 import { NextResponse } from "next/server";
 
 const USER_ADAPTER_PREFIX = "user:adapter:list";
@@ -16,17 +16,18 @@ export async function POST(req: Request) {
   if (!payload) {
     return NextResponse.json({ error }, { status: 401 });
   }
-  const responseData = (await fetch(
-    [process.env.BACKEND_URL, "v1/adapter"].join("/"),
+
+  const provider_id = payload["provider"] as string
+  const provider_array = (await fetch(
+    [process.env.BASE_URL, "api/provider"].join("/"),
     {
-      method: "POST",
+      method: "GET",
       headers: { Authorization: authHeader },
     }
-  ).then((res) => res.json())) as {
-    success: boolean;
-    token: string;
-    url: string;
-  };
+  ).then((res) => res.json())) as TargetProvider[];
+
+  const check_provider: TargetProvider | undefined = provider_array.map(item => item.id === provider_id)
+
 
   if (!responseData.success) {
     return NextResponse.json({ error: "Internal error" }, { status: 500 });

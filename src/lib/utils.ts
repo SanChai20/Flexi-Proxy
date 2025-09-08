@@ -20,4 +20,5 @@ export interface BaseAdapter {
 export interface TargetProvider {
   id: string;
   name: string;
+  url: string;
 }
