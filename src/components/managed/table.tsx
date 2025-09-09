@@ -71,8 +71,8 @@ export default function ManagedTable({
     }
   );
 
-  const { execute: deleteAdapter, loading: isDeletingAdapter } = useAsyncFn<{ target: string, token: string, url: string } | undefined, [string, number]>(
-    async (token: string, delete_index: number) => {
+  const { execute: deleteAdapter, loading: isDeletingAdapter } = useAsyncFn<{ token: string } | undefined, [string, string]>(
+    async (token: string, adapter_token: string) => {
       const response = await fetch("/api/adapters", {
         method: "DELETE",
         headers: {
@@ -80,7 +80,7 @@ export default function ManagedTable({
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          delete_index
+          adapter_token
         })
       });
       if (response.ok) {
@@ -89,7 +89,7 @@ export default function ManagedTable({
         return undefined;
       }
     },
-    (result?: { target: string, token: string, url: string }) => {
+    (result?: { token: string }) => {
       if (result !== undefined) {
         setRows((prev) => prev.filter((r) => r.token !== result.token));
       } else {
@@ -109,8 +109,8 @@ export default function ManagedTable({
     setIsModalOpen(false);
   };
 
-  const handleDeleteRow = async (index: number) => {
-    await deleteAdapter(token, index);
+  const handleDeleteRow = async (adapter_token: string) => {
+    await deleteAdapter(token, adapter_token);
   };
 
   const handleModalSubmit = async (data: { provider: string; baseUrl: string; apiKey: string; modelId: string; }) => {
@@ -227,7 +227,7 @@ export default function ManagedTable({
                               </li>
                               <li>
                                 <button
-                                  onClick={() => handleDeleteRow(index)}
+                                  onClick={() => handleDeleteRow(row.token)}
                                   className="block w-full text-left px-4 py-2 text-sm text-destructive hover:bg-muted"
                                 >
                                   Delete
