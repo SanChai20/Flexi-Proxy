@@ -1,22 +1,21 @@
 import { redis } from "@/lib/database";
-import { BaseAdapter } from "@/lib/utils";
 import { PayloadRequest, withAuth } from "@/lib/with-auth";
 import { NextResponse } from "next/server";
 import { REGISTERED_PROVIDER_PREFIX } from "@/app/api/providers/route";
 
 const USER_ADAPTER_PREFIX = "user:adapter:list";
 
-// Create Adapter
+// [Internal] Create Adapter
 async function protectedPOST(req: PayloadRequest) {
   if (
     !req.payload ||
     !req.token ||
-    typeof req.payload["provider"] !== "string" ||
+    typeof req.payload["provider_id"] !== "string" ||
     typeof req.payload["user_id"] !== "string"
   ) {
     return NextResponse.json({ error: "Missing field" }, { status: 400 });
   }
-  const provider_id = req.payload["provider"];
+  const provider_id = req.payload["provider_id"];
   const provider = await redis.get<string>(
     [REGISTERED_PROVIDER_PREFIX, provider_id].join(":")
   );
@@ -26,6 +25,7 @@ async function protectedPOST(req: PayloadRequest) {
   const providerParsed = JSON.parse(provider);
   // Save
   const adapterRaw = {
+    target: provider_id,
     token: req.token,
     url: providerParsed.url,
   };
@@ -40,12 +40,12 @@ async function protectedPOST(req: PayloadRequest) {
 }
 export const POST = withAuth(protectedPOST);
 
-// Get Adapters
+// [Internal] Get Adapters
 async function protectedGET(req: PayloadRequest) {
   if (!req.payload || typeof req.payload["user_id"] !== "string") {
     return NextResponse.json({ error: "Missing field" }, { status: 400 });
   }
-  const results: BaseAdapter[] = (
+  const results: { target: string; token: string; url: string }[] = (
     await redis.lrange<string>(
       [USER_ADAPTER_PREFIX, req.payload["user_id"]].join(":"),
       0,
@@ -56,17 +56,17 @@ async function protectedGET(req: PayloadRequest) {
 }
 export const GET = withAuth(protectedGET);
 
-// Delete Adapter
+// [Internal] Delete Adapter
 async function protectedDELETE(req: PayloadRequest) {
   if (
     !req.payload ||
     typeof req.payload["user_id"] !== "string" ||
-    typeof req.payload["index"] !== "number"
+    typeof req.payload["delete_index"] !== "number"
   ) {
     return NextResponse.json({ error: "Missing field" }, { status: 400 });
   }
 
-  const delete_index = req.payload["index"];
+  const delete_index = req.payload["delete_index"];
   const delete_item: string = await redis.lindex(
     [USER_ADAPTER_PREFIX, req.payload["user_id"]].join(":"),
     delete_index

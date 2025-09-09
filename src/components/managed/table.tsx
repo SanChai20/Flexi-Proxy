@@ -4,13 +4,12 @@ import { useState } from "react";
 import { Cog6ToothIcon, PlusIcon } from "@heroicons/react/24/outline";
 import ManagedModal from "@/components/managed/modal";
 import { useAsyncFn } from "@/hooks/useAsyncFn";
-import { BaseAdapter } from "@/lib/utils";
+import { jwtSign } from "@/lib/jwt";
 
-export interface ProviderRow {
-  id: string;
-  provider: ProviderType;
-  baseUrl: string;
-  authToken: string;
+export interface AdapterRow {
+  provider: string;
+  url: string;
+  token: string;
 }
 
 export const PROVIDER_OPTIONS = [{ id: "anthropic", name: "Anthropic" }];
@@ -24,81 +23,75 @@ export default function ManagedTable({
   userAvailableAdapters,
 }: {
   dict: any;
-  targetAvailableProviders: {
-    id: string;
-    name: string;
-  }[];
-  userAvailableAdapters: BaseAdapter[];
+  targetAvailableProviders: string[];
+  userAvailableAdapters: { target: string; token: string; url: string }[];
 }) {
+  const { execute: createAdapter, loading: isCreatingAdapter } = useAsyncFn(
+    async (
+      provider_id: string,
+      base_url: string,
+      api_key: string,
+      model_id: string
+    ) => {
+      const token = await jwtSign({ provider_id, base_url, api_key, model_id });
+      const response = await fetch("/api/adapters", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.json();
+    }
+  );
 
-  const { execute: createAdapter, loading: isCreatingAdapter } = useAsyncFn(async (param: string) => {
-    const response = await fetch("/api/adapter", {
-      method: 'POST',
-      headers: {
-        "Authorization": `Bearer ${}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ param })
-    })
-    return response.json()
-  })
+  const { execute: deleteAdapter, loading: isDeletingAdapter } = useAsyncFn(
+    async (delete_index: number) => {
+      const token = await jwtSign({ delete_index }, 60);
+      const response = await fetch("/api/adapters", {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return response.json();
+    }
+  );
 
-  const { execute: deleteAdapter, loading: isDeletingAdapter } = useAsyncFn(async (param: string) => {
-    const response = await fetch("/api/adapter", {
-      method: 'DELETE',
-      headers: {
-        "Authorization": `Bearer ${}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ param })
-    })
-    return response.json()
-  })
-
-
-
-
-
-  const { execute: GetSecurityToken } = useAsyncFn(async (user_id: string) => {
-    const response = await fetch("/api/token", {
-      method: "POST",
-    });
-    return response.json();
-  });
-
-  const [rows, setRows] = useState<ProviderRow[]>([]);
+  const [rows, setRows] = useState<AdapterRow[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  /** 简单的“新增行”实现（真实项目请改成弹窗收集信息） */
   const handleAdd = () => {
     setIsModalOpen(true);
-  };
-
-  const handleModalSubmit = (data: {
-    provider: string;
-    baseUrl: string;
-    apiKey: string;
-    modelId: string;
-  }) => {
-    const newRow: ProviderRow = {
-      id: crypto.randomUUID(),
-      provider: data.provider,
-      baseUrl: data.baseUrl,
-      authToken: data.apiKey,
-      modelId: data.modelId,
-      status: "inactive",
-    };
-    setRows((prev) => [...prev, newRow]);
-    setIsModalOpen(false);
   };
 
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
 
-  /** 删除行 */
-  const handleDelete = (id: string) => {
-    setRows((prev) => prev.filter((r) => r.id !== id));
+  const handleDelete = async (id: string) => {
+    // await deleteAdapter();
+    // setRows((prev) => prev.filter((r) => r.id !== id));
+  };
+
+  const handleModalSubmit = async (data: {
+    provider: string;
+    baseUrl: string;
+    apiKey: string;
+    modelId: string;
+  }) => {
+    const adapter = await createAdapter(
+      data.provider,
+      data.baseUrl,
+      data.apiKey,
+      data.modelId
+    );
+    const newRow: AdapterRow = {
+      provider: adapter.target.toUpperCase(),
+      url: adapter.url,
+      token: adapter.token,
+    };
+    setRows((prev) => [...prev, newRow]);
+    setIsModalOpen(false);
   };
 
   return (
@@ -121,10 +114,10 @@ export default function ManagedTable({
 
         {/* ---------- Proxy Modal ---------- */}
         <ManagedModal
-          isOpen={isModalOpen}
+          isOpen={isModalOpen && !isCreatingAdapter && !isDeletingAdapter}
           onClose={handleModalClose}
           onSubmit={handleModalSubmit}
-          targetProviders={[{ id: "1", name: "a" }]}
+          targetProviders={targetAvailableProviders}
           dict={dict}
         />
 
@@ -180,35 +173,12 @@ export default function ManagedTable({
                 <tbody className="divide-y divide-border">
                   {rows.map((row) => (
                     <tr
-                      key={row.id}
+                      key={row.token}
                       className="hover:bg-muted/50 transition-colors"
                     >
                       <td className="p-3">{row.provider}</td>
-                      <td className="p-3 break-all">{row.baseUrl}</td>
-                      <td className="p-3 font-mono">{row.authToken}</td>
-                      <td className="p-3">{row.modelId}</td>
-                      <td className="p-3">
-                        {/* {row.headers.map((header, index) => (
-                          <div key={index} className="text-xs">
-                            <span className="font-medium">{header.key}:</span>{" "}
-                            {header.value}
-                          </div>
-                        ))} */}
-                      </td>
-                      <td className="p-3">
-                        <span
-                          className={`
-                      inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium
-                      ${
-                        row.status === "active"
-                          ? "bg-success/20 text-success"
-                          : "bg-destructive/20 text-destructive"
-                      }
-                    `}
-                        >
-                          {row.status}
-                        </span>
-                      </td>
+                      <td className="p-3 break-all">{row.url}</td>
+                      <td className="p-3 font-mono">{row.token}</td>
 
                       {/* Settings 图标 + 简易下拉菜单 */}
                       <td className="p-3 text-right">

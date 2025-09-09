@@ -13,14 +13,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@/components/ui/icons";
 import ManagedTable from "@/components/managed/table";
-import { BaseAdapter } from "@/lib/utils";
-import { sign } from "@/lib/security";
 
-async function GetAvailableTargetProviders(
-  token: string
-): Promise<{ id: string; name: string }[]> {
+import { jwtSign } from "@/lib/jwt";
+
+async function GetAvailableTargetProviders(token: string): Promise<string[]> {
   const response = await fetch(
-    [process.env.BASE_URL, "api/provider"].join("/"),
+    [process.env.BASE_URL, "api/providers"].join("/"),
     {
       method: "GET",
       headers: {
@@ -36,9 +34,11 @@ async function GetAvailableTargetProviders(
   }
 }
 
-async function GetUserAvailableAdapters(token: string): Promise<BaseAdapter[]> {
+async function GetUserAvailableAdapters(
+  token: string
+): Promise<{ target: string; token: string; url: string }[]> {
   const response = await fetch(
-    [process.env.BASE_URL, "api/adapter"].join("/"),
+    [process.env.BASE_URL, "api/adapters"].join("/"),
     {
       method: "GET",
       headers: {
@@ -59,9 +59,9 @@ export default async function ManagementPage(
 ) {
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
-  const { token, error } = await sign(undefined, 60);
+  const { token, error } = await jwtSign(undefined, 60);
   if (!token) {
-    return null;
+    return error;
   }
   const [targetProviders, userAdapters] = await Promise.all([
     GetAvailableTargetProviders(token),

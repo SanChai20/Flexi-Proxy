@@ -10,8 +10,3 @@ export function pathCullLocale(pathname: string) {
   const pattern = i18n.locales.join("|");
   return pathname.replace(new RegExp(`^\\/(${pattern})(\\/|$)`), "/");
 }
-
-export interface BaseAdapter {
-  token: string;
-  url: string;
-}

@@ -13,7 +13,7 @@ export default function ManagedModal({
   onClose,
   onSubmit,
   targetProviders,
-  dict
+  dict,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -23,7 +23,7 @@ export default function ManagedModal({
     apiKey: string;
     modelId: string;
   }) => void;
-  targetProviders: { id: string; name: string }[];
+  targetProviders: string[];
   dict: any;
 }) {
   return (
@@ -56,10 +56,10 @@ export default function ManagedModal({
               onSubmit={(e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target as HTMLFormElement);
-                const provider = formData.get('provider') as string;
-                const baseUrl = formData.get('baseUrl') as string;
-                const apiKey = formData.get('apiKey') as string;
-                const modelId = formData.get('modelId') as string;
+                const provider = formData.get("provider") as string;
+                const baseUrl = formData.get("baseUrl") as string;
+                const apiKey = formData.get("apiKey") as string;
+                const modelId = formData.get("modelId") as string;
                 onSubmit({ provider, baseUrl, apiKey, modelId });
               }}
               className="space-y-6"
@@ -168,7 +168,8 @@ export default function ManagedModal({
                           {dict?.management?.adapterTarget || "TARGET"}
                         </span>
                         <span className="truncate">
-                          {dict?.management?.targetTitle || "Select Target API Provider"}
+                          {dict?.management?.targetTitle ||
+                            "Select Target API Provider"}
                         </span>
                       </h3>
                       <div className="space-y-4">
@@ -190,8 +191,8 @@ export default function ManagedModal({
                                 "Select a provider"}
                             </option>
                             {targetProviders.map((option) => (
-                              <option key={option.id} value={option.id}>
-                                {option.name}
+                              <option key={option} value={option}>
+                                {option.toUpperCase()}
                               </option>
                             ))}
                           </select>

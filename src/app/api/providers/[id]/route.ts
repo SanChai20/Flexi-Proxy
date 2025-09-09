@@ -41,11 +41,7 @@ async function protectedPOST(
     );
   }
 
-  if (
-    !req.payload ||
-    typeof req.payload["name"] !== "string" ||
-    typeof req.payload["url"] !== "string"
-  ) {
+  if (!req.payload || typeof req.payload["url"] !== "string") {
     return NextResponse.json({ error: "Missing field" }, { status: 400 });
   }
 
@@ -60,10 +56,7 @@ async function protectedPOST(
   tx.rpush<string>(REGISTERED_PROVIDERS_KEY, id);
   tx.set<string>(
     [REGISTERED_PROVIDER_PREFIX, id].join(":"),
-    JSON.stringify({
-      name: req.payload["name"],
-      url: req.payload["url"],
-    })
+    req.payload["url"]
   );
   const res = await tx.exec();
   return NextResponse.json({ success: true });
@@ -82,11 +75,7 @@ async function protectedPATCH(
       { status: 400 }
     );
   }
-  if (
-    !req.payload ||
-    typeof req.payload["name"] !== "string" ||
-    typeof req.payload["url"] !== "string"
-  ) {
+  if (!req.payload || typeof req.payload["url"] !== "string") {
     return NextResponse.json({ error: "Missing field" }, { status: 400 });
   }
 
@@ -102,10 +91,7 @@ async function protectedPATCH(
   }
   await redis.set<string>(
     [REGISTERED_PROVIDER_PREFIX, id].join(":"),
-    JSON.stringify({
-      name: req.payload["name"],
-      url: req.payload["url"],
-    })
+    req.payload["url"]
   );
   return NextResponse.json({ success: true });
 }

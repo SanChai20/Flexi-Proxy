@@ -11,31 +11,7 @@ async function protectedGET(req: PayloadRequest) {
     0,
     -1
   );
-
-  let pp = redis.pipeline();
-  ids.forEach((id) => {
-    pp.get<string>([REGISTERED_PROVIDER_PREFIX, id].join(":"));
-  });
-
-  const results: { id: string; name: string; url: string }[] = (await pp.exec())
-    .map((result: unknown, index: number) => {
-      const [error, data] = result as [Error | null, string];
-      const id = ids[index];
-      if (error || !data || !id) return null;
-      try {
-        const parsedData = JSON.parse(data);
-        return {
-          id: id,
-          name: parsedData.name,
-          url: parsedData.url,
-        };
-      } catch (parseError) {
-        console.error("JSON 解析错误:", parseError);
-        return null;
-      }
-    })
-    .filter((result) => result !== null);
-  return NextResponse.json(results);
+  return NextResponse.json(ids);
 }
 
 export const GET = withAuth(protectedGET);
