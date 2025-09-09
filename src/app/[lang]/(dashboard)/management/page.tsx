@@ -55,7 +55,7 @@ async function GetUserAvailableAdapters(
 }
 
 async function CreateProvider() {
-  const token = await jwtSign({ url: "https://checkcheck.com" }, 60);
+  const { token, error } = await jwtSign({ url: "https://checkcheck.com" }, 60);
   const response = await fetch(
     [process.env.BASE_URL, "api/providers", "anthropic"].join("/"),
     {

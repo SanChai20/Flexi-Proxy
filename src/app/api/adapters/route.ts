@@ -31,8 +31,8 @@ async function protectedPOST(req: PayloadRequest) {
   };
   const adapter = JSON.stringify(adapterRaw);
   const queryKey = [USER_ADAPTER_PREFIX, req.payload["user_id"]].join(":");
-  const position = await redis.lpos(queryKey, adapter);
-  if (!!position) {
+  const position = await redis.lpos<number | null>(queryKey, adapter);
+  if (position !== null) {
     return NextResponse.json({ error: "Adapter existed" }, { status: 409 });
   }
   await redis.rpush<string>(queryKey, adapter);

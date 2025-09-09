@@ -40,16 +40,14 @@ async function protectedPOST(
       { status: 400 }
     );
   }
-
   if (!req.payload || typeof req.payload["url"] !== "string") {
     return NextResponse.json({ error: "Missing field" }, { status: 400 });
   }
-
-  const position = await redis.lpos<number | null | undefined>(
+  const position = await redis.lpos<number | null>(
     REGISTERED_PROVIDERS_KEY,
     id
   );
-  if (!!position) {
+  if (position !== null) {
     return NextResponse.json({ error: "Provider existed" }, { status: 409 });
   }
   const tx = redis.multi();
@@ -79,11 +77,11 @@ async function protectedPATCH(
     return NextResponse.json({ error: "Missing field" }, { status: 400 });
   }
 
-  const position = await redis.lpos<number | null | undefined>(
+  const position = await redis.lpos<number | null>(
     REGISTERED_PROVIDERS_KEY,
     id
   );
-  if (!position) {
+  if (position === null) {
     return NextResponse.json(
       { error: "Provider not existed" },
       { status: 409 }
