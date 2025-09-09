@@ -1,7 +1,6 @@
 import { redis } from "@/lib/database";
-import { verify } from "@/lib/security";
-import { Redis } from "@upstash/redis";
-import { NextRequest, NextResponse } from "next/server";
+import { PayloadRequest, withAuth } from "@/lib/with-auth";
+import { NextResponse } from "next/server";
 import { Resend, CreateEmailResponse } from "resend";
 
 interface ContactFormData {
@@ -107,21 +106,17 @@ const createEmailTemplate = (data: ContactFormData) => `
 </html>
 `;
 
-export async function POST(req: NextRequest) {
-  const authHeader = req.headers.get("authorization");
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+async function protectedPOST(req: PayloadRequest) {
+  if (
+    !req.payload ||
+    typeof req.payload["user_id"] !== "string" ||
+    typeof req.payload["user_name"] !== "string" ||
+    typeof req.payload["user_email"] !== "string"
+  ) {
+    return NextResponse.json({ error: "Missing field" }, { status: 400 });
   }
 
-  const token = authHeader.split(" ")[1];
-  const { payload, error } = await verify(token);
-  if (!payload) {
-    return NextResponse.json({ error }, { status: 401 });
-  }
-
-  const userId = payload["user_id"];
-
+  const userId = req.payload["user_id"];
   const ipSubmittedExpiryInSeconds: number = await redis.ttl(
     [USER_CONTACT_PREFIX, userId].join(":")
   );
@@ -137,8 +132,8 @@ export async function POST(req: NextRequest) {
   const reqBody = await req.json();
   const subject = sanitizeString(reqBody["subject"] as string);
   const message = sanitizeString(reqBody["message"] as string);
-  const userName = sanitizeString(payload["user_name"]);
-  const userEmail = sanitizeString(payload["user_email"]);
+  const userName = sanitizeString(req.payload["user_name"]);
+  const userEmail = sanitizeString(req.payload["user_email"]);
 
   // Validate email if provided
   if (userEmail && !validateEmail(userEmail)) {
@@ -187,3 +182,5 @@ export async function POST(req: NextRequest) {
     { status: 500 }
   );
 }
+
+export const POST = withAuth(protectedPOST);

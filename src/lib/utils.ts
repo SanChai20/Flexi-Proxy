@@ -12,13 +12,6 @@ export function pathCullLocale(pathname: string) {
 }
 
 export interface BaseAdapter {
-  provider: string;
   token: string;
-  url: string;
-}
-
-export interface TargetProvider {
-  id: string;
-  name: string;
   url: string;
 }

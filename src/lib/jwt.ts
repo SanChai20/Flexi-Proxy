@@ -1,11 +1,8 @@
-"use server";
-
-import crypto from "crypto";
 import { auth } from "@/auth";
 import { JwtPayload } from "jsonwebtoken";
 import jwt from "jsonwebtoken";
 
-export async function sign(
+export async function jwtSign(
   payload?: Record<string, any>,
   expiresIn?: number //seconds
 ): Promise<{
@@ -55,7 +52,7 @@ export async function sign(
   }
 }
 
-export async function verify(token: string): Promise<{
+export async function jwtVerify(token: string): Promise<{
   payload?: JwtPayload;
   error?: string;
 }> {
