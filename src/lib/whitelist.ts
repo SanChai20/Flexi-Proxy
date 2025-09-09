@@ -14,7 +14,6 @@ export const i18nRouteWhitelist = [
 ];
 // page route that needs verification check first
 export const protectedRouteList = [
-  "login",
   "contact",
   "documentation",
   "subscription",

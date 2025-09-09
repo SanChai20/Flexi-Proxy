@@ -54,9 +54,25 @@ async function GetUserAvailableAdapters(
   }
 }
 
+async function CreateProvider() {
+  const token = await jwtSign({ url: "https://checkcheck.com" }, 60);
+  const response = await fetch(
+    [process.env.BASE_URL, "api/providers", "anthropic"].join("/"),
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response;
+}
+
 export default async function ManagementPage(
   props: PageProps<"/[lang]/management">
 ) {
+  await CreateProvider();
+
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
   const { token, error } = await jwtSign(undefined, 60);

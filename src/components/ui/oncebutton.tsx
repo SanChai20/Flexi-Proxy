@@ -32,10 +32,10 @@ export function OnceButton({
   return (
     <button type={type} disabled={isDisabled} className={className} {...props}>
       {isDisabled ? (
-        <span className="flex items-center gap-2">
+        <div className="flex items-center justify-center gap-2 w-full">
           <LoadingIcon className="animate-spin h-4 w-4" />
           {children}
-        </span>
+        </div>
       ) : (
         children
       )}
