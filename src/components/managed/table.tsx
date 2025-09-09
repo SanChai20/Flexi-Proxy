@@ -5,6 +5,7 @@ import { Cog6ToothIcon, PlusIcon } from "@heroicons/react/24/outline";
 import ManagedModal from "@/components/managed/modal";
 import { useAsyncFn } from "@/hooks/useAsyncFn";
 import { jwtSign } from "@/lib/jwt";
+import { useRouter } from "next/navigation";
 
 export interface AdapterRow {
   provider: string;
@@ -12,55 +13,95 @@ export interface AdapterRow {
   token: string;
 }
 
-export const PROVIDER_OPTIONS = [{ id: "anthropic", name: "Anthropic" }];
-
 /**
  * Provider 表格（含添加按钮、行设置图标）
  */
 export default function ManagedTable({
   dict,
+  token,
   targetAvailableProviders,
   userAvailableAdapters,
 }: {
   dict: any;
+  token: string;
   targetAvailableProviders: string[];
   userAvailableAdapters: { target: string; token: string; url: string }[];
 }) {
-  const { execute: createAdapter, loading: isCreatingAdapter } = useAsyncFn(
+  const router = useRouter();
+  const { execute: createAdapter, loading: isCreatingAdapter } = useAsyncFn<{ target: string, token: string, url: string } | undefined, [string, string, string, string, string]>(
     async (
+      token: string,
       provider_id: string,
       base_url: string,
       api_key: string,
       model_id: string
     ) => {
-      const token = await jwtSign({ provider_id, base_url, api_key, model_id });
       const response = await fetch("/api/adapters", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
         },
+        body: JSON.stringify({
+          provider_id,
+          base_url,
+          api_key,
+          model_id
+        })
       });
-      return response.json();
+
+      if (response.ok) {
+        return response.json();
+      } else {
+        return undefined;
+      }
+    },
+    (result?: { target: string, token: string, url: string }) => {
+      if (result !== undefined) {
+        setRows((prev) => [...prev, {
+          provider: result.target.toUpperCase(),
+          url: result.url,
+          token: result.token,
+        }]);
+        setIsModalOpen(false);
+      } else {
+        // Try verify
+        //router.push('/login')
+      }
     }
   );
 
-  const { execute: deleteAdapter, loading: isDeletingAdapter } = useAsyncFn(
-    async (delete_index: number) => {
-      const token = await jwtSign({ delete_index }, 60);
+  const { execute: deleteAdapter, loading: isDeletingAdapter } = useAsyncFn<{ target: string, token: string, url: string } | undefined, [string, number]>(
+    async (token: string, delete_index: number) => {
       const response = await fetch("/api/adapters", {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
         },
+        body: JSON.stringify({
+          delete_index
+        })
       });
-      return response.json();
+      if (response.ok) {
+        return response.json();
+      } else {
+        return undefined;
+      }
+    },
+    (result?: { target: string, token: string, url: string }) => {
+      if (result !== undefined) {
+        setRows((prev) => prev.filter((r) => r.token !== result.token));
+      } else {
+        router.push('/login')
+      }
     }
   );
 
   const [rows, setRows] = useState<AdapterRow[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleAdd = () => {
+  const handleModalOpen = () => {
     setIsModalOpen(true);
   };
 
@@ -68,30 +109,12 @@ export default function ManagedTable({
     setIsModalOpen(false);
   };
 
-  const handleDelete = async (id: string) => {
-    // await deleteAdapter();
-    // setRows((prev) => prev.filter((r) => r.id !== id));
+  const handleDeleteRow = async (index: number) => {
+    await deleteAdapter(token, index);
   };
 
-  const handleModalSubmit = async (data: {
-    provider: string;
-    baseUrl: string;
-    apiKey: string;
-    modelId: string;
-  }) => {
-    const adapter = await createAdapter(
-      data.provider,
-      data.baseUrl,
-      data.apiKey,
-      data.modelId
-    );
-    const newRow: AdapterRow = {
-      provider: adapter.target.toUpperCase(),
-      url: adapter.url,
-      token: adapter.token,
-    };
-    setRows((prev) => [...prev, newRow]);
-    setIsModalOpen(false);
+  const handleModalSubmit = async (data: { provider: string; baseUrl: string; apiKey: string; modelId: string; }) => {
+    await createAdapter(token, data.provider, data.baseUrl, data.apiKey, data.modelId);
   };
 
   return (
@@ -104,7 +127,7 @@ export default function ManagedTable({
           </h3>
           <button
             type="button"
-            onClick={handleAdd}
+            onClick={handleModalOpen}
             className="inline-flex items-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-medium shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 active:bg-primary/90 transition-all duration-200"
           >
             <PlusIcon className="h-4 w-4" />
@@ -114,7 +137,7 @@ export default function ManagedTable({
 
         {/* ---------- Proxy Modal ---------- */}
         <ManagedModal
-          isOpen={isModalOpen && !isCreatingAdapter && !isDeletingAdapter}
+          isOpen={isModalOpen}
           onClose={handleModalClose}
           onSubmit={handleModalSubmit}
           targetProviders={targetAvailableProviders}
@@ -144,7 +167,7 @@ export default function ManagedTable({
             </p>
             <button
               type="button"
-              onClick={handleAdd}
+              onClick={handleModalOpen}
               className="inline-flex items-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors"
             >
               <PlusIcon className="h-4 w-4" />
@@ -171,7 +194,7 @@ export default function ManagedTable({
 
                 {/* ----- Body ----- */}
                 <tbody className="divide-y divide-border">
-                  {rows.map((row) => (
+                  {rows.map((row, index) => (
                     <tr
                       key={row.token}
                       className="hover:bg-muted/50 transition-colors"
@@ -204,7 +227,7 @@ export default function ManagedTable({
                               </li>
                               <li>
                                 <button
-                                  onClick={() => handleDelete(row.id)}
+                                  onClick={() => handleDeleteRow(index)}
                                   className="block w-full text-left px-4 py-2 text-sm text-destructive hover:bg-muted"
                                 >
                                   Delete

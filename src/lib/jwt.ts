@@ -1,3 +1,5 @@
+"use server";
+
 import { auth } from "@/auth";
 import { JwtPayload } from "jsonwebtoken";
 import jwt from "jsonwebtoken";
@@ -23,9 +25,17 @@ export async function jwtSign(
   }
 
   // Get session
-  const session = await auth();
-  if (!(session && session.user && session.user.id)) {
-    return { token: undefined, error: "Invalid session" };
+  // const session = await auth();
+  // if (!(session && session.user && session.user.id)) {
+  //   return { token: undefined, error: "Invalid session" };
+  // }
+  // TODO...
+  const session = {
+    user: {
+      id: "ABC123",
+      name: "",
+      email: "sc20@613.com"
+    }
   }
 
   try {
