@@ -209,21 +209,21 @@ export default function ManagedTable({
         </div>
       ) : (
         <div className="border border-border rounded-xl bg-card overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full">
+          <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-transparent scrollbar-thumb-muted-foreground/20">
+            <table className="w-full min-w-[400px] md:min-w-full">
               {/* ----- Header ----- */}
               <thead className="bg-muted/50 text-muted-foreground">
                 <tr>
-                  <th className="px-5 py-3.5 text-left text-sm font-semibold uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider md:px-5 md:py-3.5 md:text-sm">
                     Provider
                   </th>
-                  <th className="px-5 py-3.5 text-left text-sm font-semibold uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider md:px-5 md:py-3.5 md:text-sm">
                     Base URL
                   </th>
-                  <th className="px-5 py-3.5 text-left text-sm font-semibold uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider md:px-5 md:py-3.5 md:text-sm">
                     Auth Token
                   </th>
-                  <th className="px-5 py-3.5 text-right text-sm font-semibold uppercase tracking-wider w-12">
+                  <th className="px-3 py-3 text-right text-xs font-semibold uppercase tracking-wider w-12 md:px-5 md:py-3.5 md:text-sm">
                     Actions
                   </th>
                 </tr>
@@ -236,32 +236,32 @@ export default function ManagedTable({
                     key={row.token}
                     className="hover:bg-muted/30 transition-colors duration-150"
                   >
-                    <td className="px-5 py-4 font-medium text-foreground">
+                    <td className="px-3 py-3 font-medium text-foreground md:px-5 md:py-4">
                       {row.provider}
                     </td>
                     <td
-                      className="px-5 py-4 text-muted-foreground max-w-xs truncate"
+                      className="px-3 py-3 text-muted-foreground max-w-[100px] truncate md:px-5 md:py-4 md:max-w-[120px] lg:max-w-xs"
                       title={row.url}
                     >
                       {row.url}
                     </td>
                     <td
-                      className="px-5 py-4 font-mono text-sm text-muted-foreground truncate max-w-xs"
+                      className="px-3 py-3 font-mono text-xs text-muted-foreground truncate max-w-[80px] md:px-5 md:py-4 md:text-sm md:max-w-[100px] lg:max-w-xs"
                       title={row.token}
                     >
                       {row.token}
                     </td>
 
                     {/* Settings 图标 + 下拉菜单 */}
-                    <td className="px-5 py-4 text-right">
+                    <td className="px-3 py-3 text-right md:px-5 md:py-4">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <button
                             type="button"
-                            className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-150"
+                            className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-150 md:p-2"
                             aria-haspopup="true"
                           >
-                            <Cog6ToothIcon className="h-5 w-5" />
+                            <Cog6ToothIcon className="h-4 w-4 md:h-5 md:w-5" />
                           </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
