@@ -96,7 +96,7 @@ export default async function ManagementPage(
   const dict = await getDictionary(lang as Locale);
   const { token, error } = await jwtSign(undefined, 300);
   if (!token) {
-    return error;
+    return <div>Error: {error || "Failed to generate token"}</div>;
   }
   const [targetProviders, userAdapters] = await Promise.all([
     GetAvailableTargetProviders(token),

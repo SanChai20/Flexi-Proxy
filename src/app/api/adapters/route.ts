@@ -23,9 +23,17 @@ async function protectedPOST(req: PayloadRequest) {
       return NextResponse.json({ error: "Missing provider" }, { status: 400 });
     }
     // Sign
-    const token = await jwtSign({ provider_id, base_url, api_key, model_id });
+    const { token, error } = await jwtSign({
+      provider_id,
+      base_url,
+      api_key,
+      model_id,
+    });
     if (token === undefined) {
-      return NextResponse.json({ error: "Authorize failed" }, { status: 401 });
+      return NextResponse.json(
+        { error: error || "Authorize failed" },
+        { status: 401 }
+      );
     }
     // Save
     const adapter = {
