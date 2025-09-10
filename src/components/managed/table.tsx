@@ -74,8 +74,8 @@ export default function ManagedTable({
         ]);
         setIsModalOpen(false);
       } else {
-        //Try verify
-        router.push("/login");
+        //Try reload
+        router.push("/management");
       }
     }
   );
@@ -85,6 +85,8 @@ export default function ManagedTable({
     [string, string]
   >(
     async (token: string, adapter_token: string) => {
+      //await new Promise(resolve => setTimeout(resolve, 3000));
+
       const response = await fetch("/api/adapters", {
         method: "DELETE",
         headers: {
@@ -105,8 +107,8 @@ export default function ManagedTable({
       if (result !== undefined) {
         setRows((prev) => prev.filter((r) => r.token !== result.token));
       } else {
-        //Try verify
-        router.push("/login");
+        //Try reload
+        router.push("/management");
       }
     }
   );
@@ -256,15 +258,15 @@ export default function ManagedTable({
                     {/* Settings 图标 + 下拉菜单 */}
                     <td className="px-3 py-3 text-right md:px-5 md:py-4">
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
+                        <DropdownMenuTrigger asChild disabled={isDeletingAdapter}>
                           <button
                             type="button"
                             className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-150 md:p-2"
                             aria-haspopup="true"
-                            disabled={isDeletingAdapter}
                           >
                             {
-                              isDeletingAdapter ? <LoadingIcon className="h-4 w-4 md:h-5 md:w-5" /> : <Cog6ToothIcon className="h-4 w-4 md:h-5 md:w-5" />
+                              isDeletingAdapter ? <LoadingIcon className="h-4 w-4 md:h-5 md:w-5" /> :
+                                <Cog6ToothIcon className="h-4 w-4 md:h-5 md:w-5" />
                             }
                           </button>
                         </DropdownMenuTrigger>
@@ -275,6 +277,7 @@ export default function ManagedTable({
                           <DropdownMenuItem
                             onClick={() => handleDeleteRow(row.token)}
                             className="cursor-pointer text-destructive focus:text-destructive"
+                            disabled={isDeletingAdapter}
                           >
                             Delete
                           </DropdownMenuItem>

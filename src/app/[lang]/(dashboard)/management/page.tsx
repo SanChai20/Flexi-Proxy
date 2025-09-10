@@ -90,11 +90,9 @@ async function GetUserAvailableAdapters(
 export default async function ManagementPage(
   props: PageProps<"/[lang]/management">
 ) {
-  // await CreateProvider();
-  // await DeleteProvider();
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
-  const { token, error } = await jwtSign(undefined, 300);
+  const { token, error } = await jwtSign(undefined, 3600);
   if (!token) {
     return <div>Error: {error || "Failed to generate token"}</div>;
   }
