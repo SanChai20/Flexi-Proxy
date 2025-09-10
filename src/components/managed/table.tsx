@@ -104,7 +104,15 @@ export default function ManagedTable({
     }
   );
 
-  const [rows, setRows] = useState<AdapterRow[]>([]);
+  const [rows, setRows] = useState<AdapterRow[]>(
+    userAvailableAdapters.map((adapter) => {
+      return {
+        provider: adapter.target.toUpperCase(),
+        url: adapter.url,
+        token: adapter.token,
+      };
+    })
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleModalOpen = () => {
