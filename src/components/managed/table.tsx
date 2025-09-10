@@ -5,6 +5,12 @@ import { Cog6ToothIcon, PlusIcon } from "@heroicons/react/24/outline";
 import ManagedModal from "@/components/managed/modal";
 import { useAsyncFn } from "@/hooks/useAsyncFn";
 import { useRouter } from "next/navigation";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export interface AdapterRow {
   provider: string;
@@ -143,37 +149,37 @@ export default function ManagedTable({
   };
 
   return (
-    <section>
+    <section className="space-y-6">
       {/* ---------- Header + "Add" 按钮 ---------- */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-foreground">
-            {dict.management.adapters}
-          </h3>
-          <button
-            type="button"
-            onClick={handleModalOpen}
-            className="inline-flex items-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-medium shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 active:bg-primary/90 transition-all duration-200"
-          >
-            <PlusIcon className="h-4 w-4" />
-            {dict.management.adapterAdd}
-          </button>
-        </div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <h2 className="text-2xl font-bold text-foreground">
+          {dict.management.adapters}
+        </h2>
+        <button
+          type="button"
+          onClick={handleModalOpen}
+          className="inline-flex items-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2.5 text-sm font-medium shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 active:bg-primary/90 transition-all duration-200 whitespace-nowrap"
+        >
+          <PlusIcon className="h-4 w-4" />
+          {dict.management.adapterAdd}
+        </button>
+      </div>
 
-        {/* ---------- Proxy Modal ---------- */}
-        <ManagedModal
-          isOpen={isModalOpen}
-          isSubmitting={isCreatingAdapter}
-          onClose={handleModalClose}
-          onSubmit={handleModalSubmit}
-          targetProviders={targetAvailableProviders}
-          dict={dict}
-        />
+      {/* ---------- Proxy Modal ---------- */}
+      <ManagedModal
+        isOpen={isModalOpen}
+        isSubmitting={isCreatingAdapter}
+        onClose={handleModalClose}
+        onSubmit={handleModalSubmit}
+        targetProviders={targetAvailableProviders}
+        dict={dict}
+      />
 
-        {rows.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 px-4 text-center border border-border rounded-lg bg-card">
+      {rows.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 px-6 text-center border border-border rounded-xl bg-card shadow-sm">
+          <div className="bg-muted p-4 rounded-full mb-5">
             <svg
-              className="w-12 h-12 text-muted-foreground mb-4"
+              className="w-10 h-10 text-muted-foreground"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -185,92 +191,105 @@ export default function ManagedTable({
                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
               />
             </svg>
-            <h3 className="text-lg font-medium text-foreground mb-2">
-              {dict.management.noAdapters}
-            </h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              {dict.management.noAdaptersDescription}
-            </p>
-            <button
-              type="button"
-              onClick={handleModalOpen}
-              className="inline-flex items-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-medium hover:bg-primary/90 transition-colors"
-            >
-              <PlusIcon className="h-4 w-4" />
-              {dict.management.addFirstAdapter}
-            </button>
           </div>
-        ) : (
-          <div className="border border-border rounded-lg bg-card overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full table-auto">
-                {/* ----- Header ----- */}
-                <thead className="bg-muted text-muted-foreground">
-                  <tr>
-                    <th className="p-3 text-left font-medium">Provider</th>
-                    <th className="p-3 text-left font-medium">Base URL</th>
-                    <th className="p-3 text-left font-medium">Auth Token</th>
-                    <th className="p-3 text-left font-medium">Model ID</th>
-                    <th className="p-3 text-left font-medium">Headers</th>
-                    <th className="p-3 text-left font-medium">Status</th>
-                    {/* Settings 列（保持空宽度） */}
-                    <th className="p-3 w-12"></th>
-                  </tr>
-                </thead>
+          <h3 className="text-xl font-semibold text-foreground mb-2">
+            {dict.management.noAdapters}
+          </h3>
+          <p className="text-base text-muted-foreground mb-6 max-w-md">
+            {dict.management.noAdaptersDescription}
+          </p>
+          <button
+            type="button"
+            onClick={handleModalOpen}
+            className="inline-flex items-center gap-2 rounded-lg bg-primary text-primary-foreground px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 active:bg-primary/90 transition-all duration-200"
+          >
+            <PlusIcon className="h-4 w-4" />
+            {dict.management.addFirstAdapter}
+          </button>
+        </div>
+      ) : (
+        <div className="border border-border rounded-xl bg-card overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              {/* ----- Header ----- */}
+              <thead className="bg-muted/50 text-muted-foreground">
+                <tr>
+                  <th className="px-5 py-3.5 text-left text-sm font-semibold uppercase tracking-wider">
+                    Provider
+                  </th>
+                  <th className="px-5 py-3.5 text-left text-sm font-semibold uppercase tracking-wider">
+                    Base URL
+                  </th>
+                  <th className="px-5 py-3.5 text-left text-sm font-semibold uppercase tracking-wider">
+                    Auth Token
+                  </th>
+                  <th className="px-5 py-3.5 text-right text-sm font-semibold uppercase tracking-wider w-12">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
 
-                {/* ----- Body ----- */}
-                <tbody className="divide-y divide-border">
-                  {rows.map((row, index) => (
-                    <tr
-                      key={row.token}
-                      className="hover:bg-muted/50 transition-colors"
+              {/* ----- Body ----- */}
+              <tbody className="divide-y divide-border">
+                {rows.map((row, index) => (
+                  <tr
+                    key={row.token}
+                    className="hover:bg-muted/30 transition-colors duration-150"
+                  >
+                    <td className="px-5 py-4 font-medium text-foreground">
+                      {row.provider}
+                    </td>
+                    <td
+                      className="px-5 py-4 text-muted-foreground max-w-xs truncate"
+                      title={row.url}
                     >
-                      <td className="p-3">{row.provider}</td>
-                      <td className="p-3 break-all">{row.url}</td>
-                      <td className="p-3 font-mono">{row.token}</td>
+                      {row.url}
+                    </td>
+                    <td
+                      className="px-5 py-4 font-mono text-sm text-muted-foreground truncate max-w-xs"
+                      title={row.token}
+                    >
+                      {row.token}
+                    </td>
 
-                      {/* Settings 图标 + 简易下拉菜单 */}
-                      <td className="p-3 text-right">
-                        <div className="relative inline-block text-left">
+                    {/* Settings 图标 + 下拉菜单 */}
+                    <td className="px-5 py-4 text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
                           <button
                             type="button"
-                            className="p-1 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
+                            className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-150"
                             aria-haspopup="true"
                           >
                             <Cog6ToothIcon className="h-5 w-5" />
                           </button>
-
-                          {/* 简易下拉（实际项目建议使用 Radix UI / Headless UI） */}
-                          <div className="absolute right-0 mt-2 w-32 origin-top-right rounded-md bg-popover shadow-lg ring-1 ring-border hidden group-hover:block">
-                            <ul className="py-1">
-                              <li>
-                                <button
-                                  onClick={() => alert(`编辑 ${row.provider}`)}
-                                  className="block w-full text-left px-4 py-2 text-sm text-foreground hover:bg-muted"
-                                >
-                                  Edit
-                                </button>
-                              </li>
-                              <li>
-                                <button
-                                  onClick={() => handleDeleteRow(row.token)}
-                                  className="block w-full text-left px-4 py-2 text-sm text-destructive hover:bg-muted"
-                                >
-                                  Delete
-                                </button>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          align="end"
+                          className="w-36 rounded-lg"
+                        >
+                          <DropdownMenuItem
+                            onClick={() => alert(`编辑 ${row.provider}`)}
+                            className="cursor-pointer"
+                          >
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleDeleteRow(row.token)}
+                            className="cursor-pointer text-destructive focus:text-destructive"
+                          >
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </section>
   );
 }
