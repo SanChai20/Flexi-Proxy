@@ -16,7 +16,9 @@ import ManagedTable from "@/components/managed/table";
 
 import { jwtSign } from "@/lib/jwt";
 
-async function GetAvailableTargetProviders(token: string): Promise<string[]> {
+async function GetAvailableTargetProviders(
+  token: string
+): Promise<{ id: string; url: string }[]> {
   const response = await fetch(
     [process.env.BASE_URL, "api/providers"].join("/"),
     {
@@ -55,9 +57,12 @@ async function GetUserAvailableAdapters(
 }
 //DEMO
 async function CreateProvider() {
-  const { token, error } = await jwtSign({ url: "https://checkcheck.com" }, 180);
+  const { token, error } = await jwtSign(
+    { url: "https://checkcheck.com" },
+    180
+  );
   const response = await fetch(
-    [process.env.BASE_URL, "api/providers", "anthropic2"].join("/"),
+    [process.env.BASE_URL, "api/providers", "anthropic3"].join("/"),
     {
       method: "POST",
       headers: {
@@ -71,7 +76,7 @@ async function CreateProvider() {
 async function DeleteProvider() {
   const { token, error } = await jwtSign(undefined, 90);
   const response = await fetch(
-    [process.env.BASE_URL, "api/providers", "anthropic1"].join("/"),
+    [process.env.BASE_URL, "api/providers", "anthropic2"].join("/"),
     {
       method: "DELETE",
       headers: {
@@ -85,7 +90,7 @@ async function DeleteProvider() {
 export default async function ManagementPage(
   props: PageProps<"/[lang]/management">
 ) {
-  // await CreateProvider();
+  await CreateProvider();
   await DeleteProvider();
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);

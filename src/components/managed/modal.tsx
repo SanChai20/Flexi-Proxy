@@ -23,7 +23,7 @@ export default function ManagedModal({
     apiKey: string;
     modelId: string;
   }) => void;
-  targetProviders: string[];
+  targetProviders: { id: string; url: string }[];
   dict: any;
 }) {
   return (
@@ -191,8 +191,8 @@ export default function ManagedModal({
                                 "Select a provider"}
                             </option>
                             {targetProviders.map((option) => (
-                              <option key={option} value={option}>
-                                {option.toUpperCase()}
+                              <option key={option.id} value={option.id}>
+                                {option.id.toUpperCase()}
                               </option>
                             ))}
                           </select>

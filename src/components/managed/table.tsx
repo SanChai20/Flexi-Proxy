@@ -24,11 +24,14 @@ export default function ManagedTable({
 }: {
   dict: any;
   token: string;
-  targetAvailableProviders: string[];
+  targetAvailableProviders: { id: string; url: string }[];
   userAvailableAdapters: { target: string; token: string; url: string }[];
 }) {
   const router = useRouter();
-  const { execute: createAdapter, loading: isCreatingAdapter } = useAsyncFn<{ target: string, token: string, url: string } | undefined, [string, string, string, string, string]>(
+  const { execute: createAdapter, loading: isCreatingAdapter } = useAsyncFn<
+    { target: string; token: string; url: string } | undefined,
+    [string, string, string, string, string]
+  >(
     async (
       token: string,
       provider_id: string,
@@ -40,14 +43,14 @@ export default function ManagedTable({
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           provider_id,
           base_url,
           api_key,
-          model_id
-        })
+          model_id,
+        }),
       });
 
       if (response.ok) {
@@ -56,13 +59,16 @@ export default function ManagedTable({
         return undefined;
       }
     },
-    (result?: { target: string, token: string, url: string }) => {
+    (result?: { target: string; token: string; url: string }) => {
       if (result !== undefined) {
-        setRows((prev) => [...prev, {
-          provider: result.target.toUpperCase(),
-          url: result.url,
-          token: result.token,
-        }]);
+        setRows((prev) => [
+          ...prev,
+          {
+            provider: result.target.toUpperCase(),
+            url: result.url,
+            token: result.token,
+          },
+        ]);
         setIsModalOpen(false);
       } else {
         // Try verify
@@ -71,17 +77,20 @@ export default function ManagedTable({
     }
   );
 
-  const { execute: deleteAdapter, loading: isDeletingAdapter } = useAsyncFn<{ token: string } | undefined, [string, string]>(
+  const { execute: deleteAdapter, loading: isDeletingAdapter } = useAsyncFn<
+    { token: string } | undefined,
+    [string, string]
+  >(
     async (token: string, adapter_token: string) => {
       const response = await fetch("/api/adapters", {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          adapter_token
-        })
+          adapter_token,
+        }),
       });
       if (response.ok) {
         return response.json();
@@ -93,7 +102,7 @@ export default function ManagedTable({
       if (result !== undefined) {
         setRows((prev) => prev.filter((r) => r.token !== result.token));
       } else {
-        router.push('/login')
+        // router.push('/login')
       }
     }
   );
@@ -113,8 +122,19 @@ export default function ManagedTable({
     await deleteAdapter(token, adapter_token);
   };
 
-  const handleModalSubmit = async (data: { provider: string; baseUrl: string; apiKey: string; modelId: string; }) => {
-    await createAdapter(token, data.provider, data.baseUrl, data.apiKey, data.modelId);
+  const handleModalSubmit = async (data: {
+    provider: string;
+    baseUrl: string;
+    apiKey: string;
+    modelId: string;
+  }) => {
+    await createAdapter(
+      token,
+      data.provider,
+      data.baseUrl,
+      data.apiKey,
+      data.modelId
+    );
   };
 
   return (

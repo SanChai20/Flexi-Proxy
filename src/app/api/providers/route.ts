@@ -5,29 +5,36 @@ import { PayloadRequest, withAuth } from "@/lib/with-auth";
 export const REGISTERED_PROVIDER_PREFIX = "registered:target:provider";
 
 async function protectedGET(req: PayloadRequest) {
-
+  const searchPatternPrefix = `${REGISTERED_PROVIDER_PREFIX}:`;
   try {
+    // Scan all keys with the prefix
     let allKeys: string[] = [];
-    let cursor = 0
-    // scan returns a tuple [new cursor, keys]
+    let cursor = 0;
     do {
-      const [newCursor, keys] = await redis.scan(cursor, { match: `${REGISTERED_PROVIDER_PREFIX}:*`, count: 100 });
-      if (keys.length > 0) {
-        allKeys = allKeys.concat(keys);
-      }
+      const [newCursor, keys] = await redis.scan(cursor, {
+        match: `${searchPatternPrefix}*`,
+        count: 100,
+      });
+      allKeys.push(...keys);
       cursor = Number(newCursor);
     } while (cursor !== 0);
-
-    let tasks = []
-    for (let key of allKeys) {
-      tasks.push(redis.get<string>(key));
+    if (allKeys.length > 0) {
+      const ids = allKeys.map((key) => key.replace(searchPatternPrefix, ""));
+      const values = await redis.mget<{ url: string }[]>(...allKeys);
+      return NextResponse.json(
+        ids.map((id, index) => ({
+          id,
+          ...(values[index] || {}),
+        }))
+      );
     }
-    allKeys = (await Promise.all(tasks)).filter((item): item is string => item !== null);
-
-    return NextResponse.json(allKeys);
-  } catch (error) {
-    console.error(error);
     return NextResponse.json([]);
+  } catch (error) {
+    console.error("Failed to fetch providers:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch providers" },
+      { status: 500 }
+    );
   }
 }
 
