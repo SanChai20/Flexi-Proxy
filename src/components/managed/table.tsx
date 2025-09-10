@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { LoadingIcon } from "../ui/icons";
 
 export interface AdapterRow {
   provider: string;
@@ -260,20 +261,17 @@ export default function ManagedTable({
                             type="button"
                             className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-150 md:p-2"
                             aria-haspopup="true"
+                            disabled={isDeletingAdapter}
                           >
-                            <Cog6ToothIcon className="h-4 w-4 md:h-5 md:w-5" />
+                            {
+                              isDeletingAdapter ? <LoadingIcon className="h-4 w-4 md:h-5 md:w-5" /> : <Cog6ToothIcon className="h-4 w-4 md:h-5 md:w-5" />
+                            }
                           </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
                           align="end"
                           className="w-36 rounded-lg"
                         >
-                          <DropdownMenuItem
-                            onClick={() => alert(`编辑 ${row.provider}`)}
-                            className="cursor-pointer"
-                          >
-                            Edit
-                          </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleDeleteRow(row.token)}
                             className="cursor-pointer text-destructive focus:text-destructive"
