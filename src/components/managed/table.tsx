@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Cog6ToothIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { Cog6ToothIcon, PlusIcon, ClipboardIcon } from "@heroicons/react/24/outline";
 import ManagedModal from "@/components/managed/modal";
 import { useAsyncFn } from "@/hooks/useAsyncFn";
 import { useRouter } from "next/navigation";
@@ -123,6 +123,7 @@ export default function ManagedTable({
     })
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [copiedField, setCopiedField] = useState<{ [key: string]: boolean }>({});
 
   const handleModalOpen = () => {
     setIsModalOpen(true);
@@ -134,6 +135,39 @@ export default function ManagedTable({
 
   const handleDeleteRow = async (adapter_token: string) => {
     await deleteAdapter(token, adapter_token);
+  };
+
+  const copyToClipboard = async (text: string, field: string, index: number) => {
+    try {
+      // 尝试使用现代 Clipboard API
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // Fallback 方案：创建临时文本区域
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+
+      const key = `${field}-${index}`;
+      setCopiedField({ ...copiedField, [key]: true });
+      setTimeout(() => {
+        setCopiedField(prev => {
+          const newCopiedField = { ...prev };
+          delete newCopiedField[key];
+          return newCopiedField;
+        });
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+    }
   };
 
   const handleModalSubmit = async (data: {
@@ -242,17 +276,47 @@ export default function ManagedTable({
                     <td className="px-3 py-3 font-medium text-foreground md:px-5 md:py-4">
                       {row.provider}
                     </td>
-                    <td
-                      className="px-3 py-3 text-muted-foreground max-w-[100px] truncate md:px-5 md:py-4 md:max-w-[120px] lg:max-w-xs"
-                      title={row.url}
-                    >
-                      {row.url}
+                    <td className="px-3 py-3 md:px-5 md:py-4">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="font-mono text-xs text-muted-foreground truncate max-w-[60px] md:text-sm md:max-w-[80px] lg:max-w-[120px]"
+                          title={row.url}
+                        >
+                          {row.url}
+                        </span>
+                        <button
+                          onClick={() => copyToClipboard(row.url, 'url', index)}
+                          className="p-1 rounded hover:bg-muted transition-colors"
+                          title="Copy URL"
+                        >
+                          {copiedField[`url-${index}`] ? (
+                            <ClipboardIcon className="h-4 w-4 text-green-500" />
+                          ) : (
+                            <ClipboardIcon className="h-4 w-4 text-muted-foreground" />
+                          )}
+                        </button>
+                      </div>
                     </td>
-                    <td
-                      className="px-3 py-3 font-mono text-xs text-muted-foreground truncate max-w-[80px] md:px-5 md:py-4 md:text-sm md:max-w-[100px] lg:max-w-xs"
-                      title={row.token}
-                    >
-                      {row.token}
+                    <td className="px-3 py-3 md:px-5 md:py-4">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="font-mono text-xs text-muted-foreground truncate max-w-[60px] md:text-sm md:max-w-[80px] lg:max-w-[100px]"
+                          title={row.token}
+                        >
+                          {row.token}
+                        </span>
+                        <button
+                          onClick={() => copyToClipboard(row.token, 'token', index)}
+                          className="p-1 rounded hover:bg-muted transition-colors"
+                          title="Copy Token"
+                        >
+                          {copiedField[`token-${index}`] ? (
+                            <ClipboardIcon className="h-4 w-4 text-green-500" />
+                          ) : (
+                            <ClipboardIcon className="h-4 w-4 text-muted-foreground" />
+                          )}
+                        </button>
+                      </div>
                     </td>
 
                     {/* Settings 图标 + 下拉菜单 */}
