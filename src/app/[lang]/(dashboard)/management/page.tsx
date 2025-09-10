@@ -55,37 +55,37 @@ async function GetUserAvailableAdapters(
     return [];
   }
 }
-//DEMO
-async function CreateProvider() {
-  const { token, error } = await jwtSign(
-    { url: "https://checkcheck.com" },
-    180
-  );
-  const response = await fetch(
-    [process.env.BASE_URL, "api/providers", "anthropic3"].join("/"),
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-  return response;
-}
-//DEMO
-async function DeleteProvider() {
-  const { token, error } = await jwtSign(undefined, 90);
-  const response = await fetch(
-    [process.env.BASE_URL, "api/providers", "anthropic2"].join("/"),
-    {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-  return response;
-}
+// //DEMO
+// async function CreateProvider() {
+//   const { token, error } = await jwtSign(
+//     { url: "https://checkcheck.com" },
+//     180
+//   );
+//   const response = await fetch(
+//     [process.env.BASE_URL, "api/providers", "anthropic3"].join("/"),
+//     {
+//       method: "POST",
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     }
+//   );
+//   return response;
+// }
+// //DEMO
+// async function DeleteProvider() {
+//   const { token, error } = await jwtSign(undefined, 90);
+//   const response = await fetch(
+//     [process.env.BASE_URL, "api/providers", "anthropic2"].join("/"),
+//     {
+//       method: "DELETE",
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//       },
+//     }
+//   );
+//   return response;
+// }
 
 export default async function ManagementPage(
   props: PageProps<"/[lang]/management">
