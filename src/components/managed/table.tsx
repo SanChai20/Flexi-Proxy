@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Cog6ToothIcon, PlusIcon } from "@heroicons/react/24/outline";
 import ManagedModal from "@/components/managed/modal";
 import { useAsyncFn } from "@/hooks/useAsyncFn";
-import { jwtSign } from "@/lib/jwt";
 import { useRouter } from "next/navigation";
 
 export interface AdapterRow {
@@ -68,8 +67,8 @@ export default function ManagedTable({
         ]);
         setIsModalOpen(false);
       } else {
-        // Try verify
-        //router.push('/login')
+        //Try verify
+        router.push("/login");
       }
     }
   );
@@ -99,7 +98,8 @@ export default function ManagedTable({
       if (result !== undefined) {
         setRows((prev) => prev.filter((r) => r.token !== result.token));
       } else {
-        // router.push('/login')
+        //Try verify
+        router.push("/login");
       }
     }
   );
@@ -163,6 +163,7 @@ export default function ManagedTable({
         {/* ---------- Proxy Modal ---------- */}
         <ManagedModal
           isOpen={isModalOpen}
+          isSubmitting={isCreatingAdapter}
           onClose={handleModalClose}
           onSubmit={handleModalSubmit}
           targetProviders={targetAvailableProviders}

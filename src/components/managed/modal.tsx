@@ -7,15 +7,18 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { XIcon, HelpCircleIcon } from "lucide-react";
+import { OnceButton } from "@/components/ui/oncebutton";
 
 export default function ManagedModal({
   isOpen,
+  isSubmitting,
   onClose,
   onSubmit,
   targetProviders,
   dict,
 }: {
   isOpen: boolean;
+  isSubmitting: boolean;
   onClose: () => void;
   onSubmit: (data: {
     provider: string;
@@ -202,12 +205,13 @@ export default function ManagedModal({
 
                     {/* Submit Button */}
                     <div className="mt-4">
-                      <button
+                      <OnceButton
                         type="submit"
-                        className="w-full px-4 py-2.5 text-sm font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition"
+                        loading={isSubmitting}
+                        className="w-full rounded-lg bg-primary text-primary-foreground px-4 py-2 transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-ring"
                       >
                         {dict?.management?.confirm || "Confirm"}
-                      </button>
+                      </OnceButton>
                     </div>
                   </div>
                 </div>

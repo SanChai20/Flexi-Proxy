@@ -9,12 +9,14 @@ export function OnceButton({
   className,
   type = "submit",
   coolDown = 8000,
+  loading = false,
   ...props
 }: {
   children: React.ReactNode;
   className?: string;
   type?: "submit" | "button";
   coolDown?: number;
+  loading?: boolean;
 }) {
   const { pending } = useFormStatus();
   const [wasPending, setWasPending] = useState(false);
@@ -27,7 +29,7 @@ export function OnceButton({
     }
   }, [pending, wasPending, coolDown]);
 
-  const isDisabled = pending || wasPending;
+  const isDisabled = pending || wasPending || loading;
 
   return (
     <button type={type} disabled={isDisabled} className={className} {...props}>
