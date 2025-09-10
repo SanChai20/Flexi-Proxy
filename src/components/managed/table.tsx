@@ -13,9 +13,6 @@ export interface AdapterRow {
   token: string;
 }
 
-/**
- * Provider 表格（含添加按钮、行设置图标）
- */
 export default function ManagedTable({
   dict,
   token,

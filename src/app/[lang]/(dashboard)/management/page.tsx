@@ -90,8 +90,8 @@ async function DeleteProvider() {
 export default async function ManagementPage(
   props: PageProps<"/[lang]/management">
 ) {
-  await CreateProvider();
-  await DeleteProvider();
+  // await CreateProvider();
+  // await DeleteProvider();
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
   const { token, error } = await jwtSign(undefined, 300);

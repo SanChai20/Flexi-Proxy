@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { JwtPayload } from "jsonwebtoken";
+import { JwtPayload, SignOptions } from "jsonwebtoken";
 import jwt from "jsonwebtoken";
 
 export async function jwtSign(
@@ -34,9 +34,9 @@ export async function jwtSign(
     user: {
       id: "ABC123",
       name: "",
-      email: "sc20@613.com"
-    }
-  }
+      email: "sc20@613.com",
+    },
+  };
 
   try {
     // Create JWT payload with user information
@@ -49,14 +49,24 @@ export async function jwtSign(
     };
 
     // Sign the token
-    const token: string = jwt.sign(jwtPayload, process.env.JWT_SECRET_KEY, {
-      expiresIn,
+    const signOptions: jwt.SignOptions = {
       issuer: process.env.JWT_ISSUER,
       audience: process.env.JWT_AUDIENCE,
-    });
+    };
+
+    // Only add expiresIn if it's defined
+    if (expiresIn !== undefined) {
+      signOptions.expiresIn = expiresIn;
+    }
+
+    const token: string = jwt.sign(
+      jwtPayload,
+      process.env.JWT_SECRET_KEY,
+      signOptions
+    );
 
     return { token };
-  } catch (error: any) {
+  } catch (error) {
     console.error("JWT signing error:", error);
     return { token: undefined, error: "Token signing failed" };
   }
