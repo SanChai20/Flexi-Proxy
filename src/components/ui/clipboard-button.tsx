@@ -78,9 +78,9 @@ const ClipboardButton: React.FC<ClipboardButtonProps> = ({
     >
       {children ||
         (isCopied ? (
-          <Check className="w-4 h-4" />
+          <Check className="h-3 w-3 xs:h-4 xs:w-4 text-green-500" />
         ) : (
-          <Copy className="w-4 h-4" />
+          <Copy className="h-3 w-3 xs:h-4 xs:w-4 text-green-500" />
         ))}
     </button>
   );

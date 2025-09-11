@@ -314,7 +314,10 @@ export default function ManagedTable({
                           {row.token}
                         </span>
 
-                        <ClipboardButton text="Hello World" />
+                        <ClipboardButton
+                          className="p-1 rounded hover:bg-muted transition-colors"
+                          text="Hello World"
+                        />
 
                         {/* <button
                           onClick={() =>
