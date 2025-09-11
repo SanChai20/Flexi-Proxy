@@ -93,3 +93,34 @@ export async function createAdapter(user_id: string, provider_id: string, base_u
   }
   return undefined;
 }
+
+export async function deleteAdapter(user_id: string, create_time: string): Promise<{ create_time: string } | undefined> {
+  try {
+    const { token, error } = await jwtSign({ user_id }, 3600);
+    if (!token) {
+      console.error("Error generating auth token:", error);
+      return undefined;
+    }
+    const response = await fetch(
+      [process.env.BASE_URL, "api/adapters"].join("/"),
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          create_time,
+        }),
+      }
+    );
+    if (response.ok) {
+      return response.json();
+    }
+
+  } catch (error) {
+    console.error("Error deleting adapter:", error);
+  }
+  return undefined;
+}
+
