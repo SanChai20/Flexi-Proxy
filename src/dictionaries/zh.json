@@ -85,7 +85,9 @@
     "apiKeyPlaceHolder": "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
     "modelIdPlaceHolder": "deepseek-chat",
     "notice": "*API Key 仅用于适配器发起 API 请求",
-    "selectProvider": "选择一个供应商"
+    "selectProvider": "选择一个供应商",
+    "actions": "操作",
+    "delete": "删除"
   },
   "settings": {
     "title": "设置",

@@ -85,7 +85,9 @@
     "apiKeyPlaceHolder": "xai-xxxxxxxxxxxxxxxxxxxxxxxxxx",
     "modelIdPlaceHolder": "grok-3",
     "notice": "*The API key is only used to make API requests by adapter",
-    "selectProvider": "Select a provider"
+    "selectProvider": "Select a provider",
+    "actions": "Actions",
+    "delete": "Delete"
   },
   "settings": {
     "title": "Settings",

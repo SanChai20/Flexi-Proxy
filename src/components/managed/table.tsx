@@ -260,16 +260,16 @@ export default function ManagedTable({
               <thead className="bg-muted/50 text-muted-foreground">
                 <tr>
                   <th className="px-2 py-3 text-xs text-left uppercase sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
-                    Provider
+                    {dict?.management?.provider || "Provider"}
                   </th>
                   <th className="px-2 py-3 text-xs text-left uppercase sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
-                    Base URL
+                    {dict?.management?.baseUrl || "Base URL"}
                   </th>
                   <th className="px-2 py-3 text-xs text-left uppercase sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
-                    Auth Token
+                    {dict?.management?.apiKey || "API Key"}
                   </th>
                   <th className="px-2 py-3 text-xs text-right uppercase sm:px-5 sm:py-3.5 sm:text-sm sm:text-right">
-                    Actions
+                    {dict?.management?.actions || "Actions"}
                   </th>
                 </tr>
               </thead>
@@ -341,7 +341,7 @@ export default function ManagedTable({
                             className="cursor-pointer text-destructive focus:text-destructive text-xs xs:text-sm"
                             disabled={isDeletingAdapter}
                           >
-                            Delete
+                            {dict?.management?.delete || "Delete"}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
