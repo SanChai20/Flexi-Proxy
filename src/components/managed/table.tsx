@@ -292,17 +292,7 @@ export default function ManagedTable({
                         >
                           {row.url}
                         </span>
-                        <button
-                          onClick={() => copyToClipboard(row.url, "url", index)}
-                          className="p-1 rounded hover:bg-muted transition-colors"
-                          title="Copy URL"
-                        >
-                          {copiedField[`url-${index}`] ? (
-                            <ClipboardIcon className="h-4 w-4 text-green-500" />
-                          ) : (
-                            <ClipboardIcon className="h-3 w-3 xs:h-4 xs:w-4 text-muted-foreground" />
-                          )}
-                        </button>
+                        <ClipboardButton text={row.url} />
                       </div>
                     </td>
                     <td className="px-1 py-2 md:px-5 md:py-4">
@@ -313,25 +303,7 @@ export default function ManagedTable({
                         >
                           {row.token}
                         </span>
-
-                        <ClipboardButton
-                          className="p-1 rounded hover:bg-muted transition-colors"
-                          text="Hello World"
-                        />
-
-                        {/* <button
-                          onClick={() =>
-                            copyToClipboard(row.token, "token", index)
-                          }
-                          className="p-1 rounded hover:bg-muted transition-colors"
-                          title="Copy Token"
-                        >
-                          {copiedField[`token-${index}`] ? (
-                            <ClipboardIcon className="h-4 w-4 text-green-500" />
-                          ) : (
-                            <ClipboardIcon className="h-3 w-3 xs:h-4 xs:w-4 text-muted-foreground" />
-                          )}
-                        </button> */}
+                        <ClipboardButton text={row.token} />
                       </div>
                     </td>
 
