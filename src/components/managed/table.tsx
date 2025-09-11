@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Cog6ToothIcon, PlusIcon, ClipboardIcon } from "@heroicons/react/24/outline";
+import {
+  Cog6ToothIcon,
+  PlusIcon,
+  ClipboardIcon,
+} from "@heroicons/react/24/outline";
 import ManagedModal from "@/components/managed/modal";
 import { useAsyncFn } from "@/hooks/useAsyncFn";
 import { useRouter } from "next/navigation";
@@ -123,7 +127,9 @@ export default function ManagedTable({
     })
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [copiedField, setCopiedField] = useState<{ [key: string]: boolean }>({});
+  const [copiedField, setCopiedField] = useState<{ [key: string]: boolean }>(
+    {}
+  );
 
   const handleModalOpen = () => {
     setIsModalOpen(true);
@@ -137,7 +143,11 @@ export default function ManagedTable({
     await deleteAdapter(token, adapter_token);
   };
 
-  const copyToClipboard = async (text: string, field: string, index: number) => {
+  const copyToClipboard = async (
+    text: string,
+    field: string,
+    index: number
+  ) => {
     try {
       // 尝试使用现代 Clipboard API
       if (navigator.clipboard && window.isSecureContext) {
@@ -152,21 +162,21 @@ export default function ManagedTable({
         document.body.appendChild(textArea);
         textArea.focus();
         textArea.select();
-        document.execCommand('copy');
+        document.execCommand("copy");
         document.body.removeChild(textArea);
       }
 
       const key = `${field}-${index}`;
       setCopiedField({ ...copiedField, [key]: true });
       setTimeout(() => {
-        setCopiedField(prev => {
+        setCopiedField((prev) => {
           const newCopiedField = { ...prev };
           delete newCopiedField[key];
           return newCopiedField;
         });
       }, 2000);
     } catch (err) {
-      console.error('Failed to copy: ', err);
+      console.error("Failed to copy: ", err);
     }
   };
 
@@ -189,9 +199,6 @@ export default function ManagedTable({
     <section className="space-y-6">
       {/* ---------- Header + "Add" 按钮 ---------- */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h2 className="text-2xl font-bold text-foreground">
-          {dict.management.adapters}
-        </h2>
         <button
           type="button"
           onClick={handleModalOpen}
@@ -247,20 +254,20 @@ export default function ManagedTable({
       ) : (
         <div className="border border-border rounded-xl bg-card overflow-hidden shadow-sm">
           <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-transparent scrollbar-thumb-muted-foreground/20">
-            <table className="w-full min-w-[400px] md:min-w-full">
+            <table className="w-full min-w-[280px] md:min-w-full">
               {/* ----- Header ----- */}
               <thead className="bg-muted/50 text-muted-foreground">
                 <tr>
-                  <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider md:px-5 md:py-3.5 md:text-sm">
+                  <th className="px-2 py-3 text-center text-xs font-semibold uppercase tracking-wider md:px-5 md:py-3.5 md:text-sm md:text-left">
                     Provider
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider md:px-5 md:py-3.5 md:text-sm">
+                  <th className="px-2 py-3 text-center text-xs font-semibold uppercase tracking-wider md:px-5 md:py-3.5 md:text-sm md:text-left">
                     Base URL
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider md:px-5 md:py-3.5 md:text-sm">
+                  <th className="px-2 py-3 text-center text-xs font-semibold uppercase tracking-wider md:px-5 md:py-3.5 md:text-sm md:text-left">
                     Auth Token
                   </th>
-                  <th className="px-3 py-3 text-right text-xs font-semibold uppercase tracking-wider w-12 md:px-5 md:py-3.5 md:text-sm">
+                  <th className="px-2 py-3 text-center text-xs font-semibold uppercase tracking-wider w-12 md:px-5 md:py-3.5 md:text-sm md:text-right">
                     Actions
                   </th>
                 </tr>
@@ -273,19 +280,19 @@ export default function ManagedTable({
                     key={row.token}
                     className="hover:bg-muted/30 transition-colors duration-150"
                   >
-                    <td className="px-3 py-3 font-medium text-foreground md:px-5 md:py-4">
+                    <td className="px-2 py-3 font-medium text-foreground text-center md:px-5 md:py-4 md:text-left">
                       {row.provider}
                     </td>
-                    <td className="px-3 py-3 md:px-5 md:py-4">
-                      <div className="flex items-center gap-2">
+                    <td className="px-2 py-3 md:px-5 md:py-4">
+                      <div className="flex items-center justify-center gap-2 md:justify-start">
                         <span
-                          className="font-mono text-xs text-muted-foreground truncate max-w-[60px] md:text-sm md:max-w-[80px] lg:max-w-[120px]"
+                          className="font-mono text-xs text-muted-foreground truncate max-w-[50px] sm:max-w-[60px] md:text-sm md:max-w-[80px] lg:max-w-[120px]"
                           title={row.url}
                         >
                           {row.url}
                         </span>
                         <button
-                          onClick={() => copyToClipboard(row.url, 'url', index)}
+                          onClick={() => copyToClipboard(row.url, "url", index)}
                           className="p-1 rounded hover:bg-muted transition-colors"
                           title="Copy URL"
                         >
@@ -297,16 +304,18 @@ export default function ManagedTable({
                         </button>
                       </div>
                     </td>
-                    <td className="px-3 py-3 md:px-5 md:py-4">
-                      <div className="flex items-center gap-2">
+                    <td className="px-2 py-3 md:px-5 md:py-4">
+                      <div className="flex items-center justify-center gap-2 md:justify-start">
                         <span
-                          className="font-mono text-xs text-muted-foreground truncate max-w-[60px] md:text-sm md:max-w-[80px] lg:max-w-[100px]"
+                          className="font-mono text-xs text-muted-foreground truncate max-w-[50px] sm:max-w-[60px] md:text-sm md:max-w-[80px] lg:max-w-[100px]"
                           title={row.token}
                         >
                           {row.token}
                         </span>
                         <button
-                          onClick={() => copyToClipboard(row.token, 'token', index)}
+                          onClick={() =>
+                            copyToClipboard(row.token, "token", index)
+                          }
                           className="p-1 rounded hover:bg-muted transition-colors"
                           title="Copy Token"
                         >
@@ -320,18 +329,22 @@ export default function ManagedTable({
                     </td>
 
                     {/* Settings 图标 + 下拉菜单 */}
-                    <td className="px-3 py-3 text-right md:px-5 md:py-4">
+                    <td className="px-2 py-3 text-center md:px-5 md:py-4 md:text-right">
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild disabled={isDeletingAdapter}>
+                        <DropdownMenuTrigger
+                          asChild
+                          disabled={isDeletingAdapter}
+                        >
                           <button
                             type="button"
                             className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-150 md:p-2"
                             aria-haspopup="true"
                           >
-                            {
-                              isDeletingAdapter ? <LoadingIcon className="h-4 w-4 md:h-5 md:w-5" /> :
-                                <Cog6ToothIcon className="h-4 w-4 md:h-5 md:w-5" />
-                            }
+                            {isDeletingAdapter ? (
+                              <LoadingIcon className="h-4 w-4 md:h-5 md:w-5" />
+                            ) : (
+                              <Cog6ToothIcon className="h-4 w-4 md:h-5 md:w-5" />
+                            )}
                           </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
