@@ -287,7 +287,7 @@ export default function ManagedTable({
                     <td className="px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                       <div className="flex justify-start gap-1 xs:gap-2">
                         <span
-                          className="font-mono text-[10px] xs:text-xs text-muted-foreground truncate max-w-[40px] xs:max-w-[50px] sm:max-w-[60px] md:text-sm md:max-w-[80px] lg:max-w-[150px] xl:max-w-[200px]"
+                          className="font-mono text-[10px] xs:text-xs text-muted-foreground truncate max-w-[40px] xs:max-w-[50px] sm:max-w-[60px] md:text-sm md:max-w-[80px] lg:max-w-[150px] xl:max-w-[220px]"
                           title={row.url}
                         >
                           {row.url}
@@ -296,12 +296,18 @@ export default function ManagedTable({
                       </div>
                     </td>
                     <td className="px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
-                      <div className="flex items-center justify-start gap-1 xs:gap-2">
+                      <div className="flex justify-start gap-1 xs:gap-2">
                         <span
-                          className="font-mono text-[10px] xs:text-xs text-muted-foreground truncate max-w-[40px] xs:max-w-[50px] sm:max-w-[60px] md:text-sm md:max-w-[80px] lg:max-w-[120px] xl:max-w-[150px]"
+                          className="font-mono text-[10px] xs:text-xs text-muted-foreground max-w-[40px] xs:max-w-[50px] sm:max-w-[60px] md:text-sm md:max-w-[80px] lg:max-w-[120px] xl:max-w-[150px] 
+  inline-block overflow-hidden"
+                          style={{
+                            direction: "rtl",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
                           title={row.token}
                         >
-                          {row.token}
+                          <span style={{ direction: "ltr" }}>{row.token}</span>
                         </span>
                         <ClipboardButton text={row.token} />
                       </div>
