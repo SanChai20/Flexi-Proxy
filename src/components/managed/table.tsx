@@ -15,7 +15,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LoadingIcon } from "../ui/icons";
+import { LoadingIcon } from "@/components/ui/icons";
+import ClipboardButton from "@/components/ui/clipboard-button";
 
 export interface AdapterRow {
   provider: string;
@@ -286,7 +287,7 @@ export default function ManagedTable({
                     <td className="px-1 py-2 md:px-5 md:py-4">
                       <div className="flex items-center justify-center gap-1 xs:gap-2 md:justify-start">
                         <span
-                          className="font-mono text-[10px] xs:text-xs text-muted-foreground truncate max-w-[40px] xs:max-w-[50px] sm:max-w-[60px] md:text-sm md:max-w-[80px] lg:max-w-[120px]"
+                          className="font-mono text-[10px] xs:text-xs text-muted-foreground truncate max-w-[40px] xs:max-w-[50px] sm:max-w-[60px] md:text-sm md:max-w-[80px] lg:max-w-[150px] xl:max-w-[200px]"
                           title={row.url}
                         >
                           {row.url}
@@ -307,12 +308,15 @@ export default function ManagedTable({
                     <td className="px-1 py-2 md:px-5 md:py-4">
                       <div className="flex items-center justify-center gap-1 xs:gap-2 md:justify-start">
                         <span
-                          className="font-mono text-[10px] xs:text-xs text-muted-foreground truncate max-w-[40px] xs:max-w-[50px] sm:max-w-[60px] md:text-sm md:max-w-[80px] lg:max-w-[100px]"
+                          className="font-mono text-[10px] xs:text-xs text-muted-foreground truncate max-w-[40px] xs:max-w-[50px] sm:max-w-[60px] md:text-sm md:max-w-[80px] lg:max-w-[120px] xl:max-w-[150px]"
                           title={row.token}
                         >
                           {row.token}
                         </span>
-                        <button
+
+                        <ClipboardButton text="Hello World" />
+
+                        {/* <button
                           onClick={() =>
                             copyToClipboard(row.token, "token", index)
                           }
@@ -324,7 +328,7 @@ export default function ManagedTable({
                           ) : (
                             <ClipboardIcon className="h-3 w-3 xs:h-4 xs:w-4 text-muted-foreground" />
                           )}
-                        </button>
+                        </button> */}
                       </div>
                     </td>
 
