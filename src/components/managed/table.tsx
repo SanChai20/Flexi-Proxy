@@ -259,16 +259,16 @@ export default function ManagedTable({
               {/* ----- Header ----- */}
               <thead className="bg-muted/50 text-muted-foreground">
                 <tr>
-                  <th className="px-1 py-2 text-center text-[10px] font-semibold uppercase tracking-wider xs:px-2 xs:py-3 md:px-5 md:py-3.5 md:text-sm md:text-left">
+                  <th className="px-2 py-3 text-xs text-left uppercase sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                     Provider
                   </th>
-                  <th className="px-1 py-2 text-center text-[10px] font-semibold uppercase tracking-wider xs:px-2 xs:py-3 md:px-5 md:py-3.5 md:text-sm md:text-left">
+                  <th className="px-2 py-3 text-xs text-left uppercase sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                     Base URL
                   </th>
-                  <th className="px-1 py-2 text-center text-[10px] font-semibold uppercase tracking-wider xs:px-2 xs:py-3 md:px-5 md:py-3.5 md:text-sm md:text-left">
+                  <th className="px-2 py-3 text-xs text-left uppercase sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                     Auth Token
                   </th>
-                  <th className="px-1 py-2 text-center text-[10px] font-semibold uppercase tracking-wider w-10 xs:w-12 md:px-5 md:py-3.5 md:text-sm md:text-right">
+                  <th className="px-2 py-3 text-xs text-right uppercase sm:px-5 sm:py-3.5 sm:text-sm sm:text-right">
                     Actions
                   </th>
                 </tr>
@@ -281,11 +281,11 @@ export default function ManagedTable({
                     key={row.token}
                     className="hover:bg-muted/30 transition-colors duration-150"
                   >
-                    <td className="px-1 py-2 font-medium text-foreground text-center text-xs xs:text-sm md:px-5 md:py-4 md:text-left">
+                    <td className="px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                       {row.provider}
                     </td>
-                    <td className="px-1 py-2 md:px-5 md:py-4">
-                      <div className="flex items-center justify-center gap-1 xs:gap-2 md:justify-start">
+                    <td className="px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
+                      <div className="flex justify-start gap-1 xs:gap-2">
                         <span
                           className="font-mono text-[10px] xs:text-xs text-muted-foreground truncate max-w-[40px] xs:max-w-[50px] sm:max-w-[60px] md:text-sm md:max-w-[80px] lg:max-w-[150px] xl:max-w-[200px]"
                           title={row.url}
@@ -295,8 +295,8 @@ export default function ManagedTable({
                         <ClipboardButton text={row.url} />
                       </div>
                     </td>
-                    <td className="px-1 py-2 md:px-5 md:py-4">
-                      <div className="flex items-center justify-center gap-1 xs:gap-2 md:justify-start">
+                    <td className="px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
+                      <div className="flex items-center justify-start gap-1 xs:gap-2">
                         <span
                           className="font-mono text-[10px] xs:text-xs text-muted-foreground truncate max-w-[40px] xs:max-w-[50px] sm:max-w-[60px] md:text-sm md:max-w-[80px] lg:max-w-[120px] xl:max-w-[150px]"
                           title={row.token}
@@ -308,7 +308,7 @@ export default function ManagedTable({
                     </td>
 
                     {/* Settings 图标 + 下拉菜单 */}
-                    <td className="px-1 py-2 text-center md:px-5 md:py-4 md:text-right">
+                    <td className="px-2 py-3 text-xs text-right sm:px-5 sm:py-3.5 sm:text-sm sm:text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger
                           asChild
