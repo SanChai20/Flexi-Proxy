@@ -30,13 +30,21 @@ export default async function ManagementConfPage(
           <CardTitle className="text-2xl">
             {dict?.management?.adapterTitle || "Create Adapter"}
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-base">
             {dict?.management?.adapterSubtitle ||
               "Obtain a Base URL adapted to the Target Provider API"}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form
+            action={async (formData) => {
+              "use server";
+              const provider = formData.get("provider") as string;
+              const baseUrl = formData.get("baseUrl") as string;
+              const apiKey = formData.get("apiKey") as string;
+              const modelId = formData.get("modelId") as string;
+              await 
+            }}
             // onSubmit={(e) => {
             //   e.preventDefault();
             //   const formData = new FormData(e.target as HTMLFormElement);

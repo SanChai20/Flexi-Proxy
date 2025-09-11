@@ -31,5 +31,6 @@ export const dashboardRouteWhitelist = [
   "subscription",
   "documentation",
   "management",
+  "managementconf",
   "faq",
 ];
