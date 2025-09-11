@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@/components/ui/icons";
 import ManagedTable from "@/components/managed/table";
 
-import { jwtSign } from "@/lib/jwt";
+import { jwtSign, jwtVerify } from "@/lib/jwt";
 import { getAllUserAdapters } from "@/lib/actions";
 import { redirect } from "next/navigation";
 
@@ -38,23 +38,19 @@ import { redirect } from "next/navigation";
 export default async function ManagementPage(
   props: PageProps<"/[lang]/management">
 ) {
-  const session = await auth();
-  if (!(session && session.user && session.user.id)) {
-    return <div>Please sign in to manage your adapters.</div>;
-  }
+  // TODO...
+  // const session = await auth();
+  // if (!(session && session.user && session.user.id)) {
+  //   return <div>Please sign in to manage your adapters.</div>;
+  // }
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
-  const adapters: { target: string; token: string; url: string }[] =
-    await getAllUserAdapters(session.user.id);
+  const adapters: { provider_id: string; provider_url: string; base_url: string; model_id: string; create_time: string; }[] =
+    await getAllUserAdapters(/*session.user.id*/"AAAA");
 
   if (adapters.length <= 0) {
-    redirect("/");
+    redirect(`/${lang}/managementconf`);
   }
-
-  // const [targetProviders, userAdapters] = await Promise.all([
-  //   GetAvailableTargetProviders(token),
-  //   GetUserAvailableAdapters(token),
-  // ]);
 
   return (
     <section className="w-full max-w-4xl mx-auto px-0">

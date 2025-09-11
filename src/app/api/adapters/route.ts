@@ -5,7 +5,7 @@ import { REGISTERED_PROVIDER_PREFIX } from "@/app/api/providers/route";
 import { jwtSign } from "@/lib/jwt";
 import { auth } from "@/auth";
 
-const USER_ADAPTER_PREFIX = "user:adapter:list";
+const USER_ADAPTER_PREFIX = "user:adapter:lists";
 
 // [Internal] Create Adapter
 async function protectedPOST(req: PayloadRequest) {
@@ -13,8 +13,8 @@ async function protectedPOST(req: PayloadRequest) {
     if (!req.payload || typeof req.payload["user_id"] !== "string") {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
-    const { provider_id, base_url, api_key, model_id } = await req.json();
-    if (!provider_id || !base_url || !api_key || !model_id) {
+    const { provider_id, base_url, model_id } = await req.json();
+    if (!provider_id || !base_url || !model_id) {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
     const provider: { url: string } | null = await redis.get<{ url: string }>(
@@ -23,32 +23,21 @@ async function protectedPOST(req: PayloadRequest) {
     if (!provider) {
       return NextResponse.json({ error: "Missing provider" }, { status: 400 });
     }
-    // Sign
-    const { token, error } = await jwtSign({
-      provider_id,
-      base_url,
-      api_key,
-      model_id,
-      user_id: req.payload["user_id"],
-    });
-    if (token === undefined) {
-      return NextResponse.json(
-        { error: error || "Authorize failed" },
-        { status: 401 }
-      );
-    }
     // Save
     const adapter = {
-      target: provider_id,
-      url: provider.url,
+      provider_id,
+      provider_url: provider.url,
+      base_url,
+      model_id,
     };
-    await redis.set<{ target: string; url: string }>(
-      [USER_ADAPTER_PREFIX, req.payload["user_id"], token].join(":"),
+    const create_time = Date.now().toString();
+    await redis.set<{ provider_id: string; provider_url: string; base_url: string; model_id: string }>(
+      [USER_ADAPTER_PREFIX, req.payload["user_id"], create_time].join(":"),
       adapter
     );
     return NextResponse.json({
-      token,
-      ...adapter,
+      create_time,
+      ...adapter
     });
   } catch (error) {
     console.error("Failed to create adapter: ", error);
@@ -78,13 +67,13 @@ async function protectedGET(req: PayloadRequest) {
       cursor = Number(newCursor);
     } while (cursor !== 0);
     if (allKeys.length > 0) {
-      const tokens = allKeys.map((key) => key.replace(searchPatternPrefix, ""));
-      const values = await redis.mget<{ target: string; url: string }[]>(
+      const createTimes = allKeys.map((key) => key.replace(searchPatternPrefix, ""));
+      const values = await redis.mget<{ provider_id: string; provider_url: string; base_url: string; model_id: string }[]>(
         ...allKeys
       );
       return NextResponse.json(
-        tokens.map((token, index) => ({
-          token,
+        createTimes.map((create_time, index) => ({
+          create_time,
           ...(values[index] || {}),
         }))
       );
@@ -105,14 +94,14 @@ async function protectedDELETE(req: PayloadRequest) {
     if (!req.payload || typeof req.payload["user_id"] !== "string") {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
-    const { adapter_token } = await req.json();
-    if (!adapter_token) {
+    const { create_time } = await req.json();
+    if (!create_time) {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
     await redis.del(
-      [USER_ADAPTER_PREFIX, req.payload["user_id"], adapter_token].join(":")
+      [USER_ADAPTER_PREFIX, req.payload["user_id"], create_time].join(":")
     );
-    return NextResponse.json({ token: adapter_token });
+    return NextResponse.json({ create_time });
   } catch (error) {
     console.error("Failed to delete adapter: ", error);
     return NextResponse.json(

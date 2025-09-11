@@ -32,7 +32,7 @@ export async function getAllTargetProviders(): Promise<
 
 export async function getAllUserAdapters(
   userId: string
-): Promise<{ target: string; token: string; url: string }[]> {
+): Promise<{ provider_id: string; provider_url: string; base_url: string; model_id: string; create_time: string; }[]> {
   try {
     const { token, error } = await jwtSign({ user_id: userId }, 3600);
     if (!token) {
@@ -57,18 +57,18 @@ export async function getAllUserAdapters(
   return [];
 }
 
-export async function createAdapter(data: {
-  user_id: string;
+export async function createAdapter(user_id: string, provider_id: string, base_url: string, model_id: string): Promise<{
   provider_id: string;
+  provider_url: string;
   base_url: string;
-  api_key: string;
   model_id: string;
-}) {
+  create_time: string;
+} | undefined> {
   try {
-    const { token, error } = await jwtSign(data, 3600);
+    const { token, error } = await jwtSign({ user_id }, 3600);
     if (!token) {
       console.error("Error generating auth token:", error);
-      return [];
+      return undefined;
     }
     const response = await fetch(
       [process.env.BASE_URL, "api/adapters"].join("/"),
@@ -81,15 +81,15 @@ export async function createAdapter(data: {
         body: JSON.stringify({
           provider_id,
           base_url,
-          api_key,
           model_id,
         }),
       }
     );
     if (response.ok) {
-      return await response.json();
+      return response.json();
     }
   } catch (error) {
-    console.error("Error fetching adapters:", error);
+    console.error("Error creating adapter:", error);
   }
+  return undefined;
 }

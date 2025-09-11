@@ -14,7 +14,9 @@ import {
 } from "@/components/ui/card";
 import { HelpCircleIcon } from "lucide-react";
 import { OnceButton } from "@/components/ui/oncebutton";
-import { getAllTargetProviders } from "@/lib/actions";
+import { createAdapter, getAllTargetProviders } from "@/lib/actions";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 export default async function ManagementConfPage(
   props: PageProps<"/[lang]/managementconf">
@@ -41,19 +43,24 @@ export default async function ManagementConfPage(
               "use server";
               const provider = formData.get("provider") as string;
               const baseUrl = formData.get("baseUrl") as string;
-              const apiKey = formData.get("apiKey") as string;
               const modelId = formData.get("modelId") as string;
-              await 
+              // const session = await auth();
+              // if (!(session && session.user && session.user.id)) {
+              //   console.error("You must be logged in to perform this action.");
+              //   redirect('/login');
+              // } 
+              // TODO...
+              const result: {
+                provider_id: string;
+                provider_url: string;
+                base_url: string;
+                model_id: string;
+                create_time: string;
+              } | undefined = await createAdapter("AAAA", provider, baseUrl, modelId);
+              if (result !== undefined) {
+                redirect(`/${lang}/management`);
+              }
             }}
-            // onSubmit={(e) => {
-            //   e.preventDefault();
-            //   const formData = new FormData(e.target as HTMLFormElement);
-            //   const provider = formData.get("provider") as string;
-            //   const baseUrl = formData.get("baseUrl") as string;
-            //   const apiKey = formData.get("apiKey") as string;
-            //   const modelId = formData.get("modelId") as string;
-            //   //onSubmit({ provider, baseUrl, apiKey, modelId });
-            // }}
             className="space-y-6"
           >
             <div className="space-y-4">
@@ -71,7 +78,7 @@ export default async function ManagementConfPage(
                       </span>
                     </h3>
                     <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                         <div className="space-y-2">
                           <div className="flex items-center">
                             <label
@@ -104,33 +111,7 @@ export default async function ManagementConfPage(
                             required
                           />
                         </div>
-
-                        <div className="space-y-2">
-                          <label
-                            htmlFor="apiKey"
-                            className="block text-sm font-medium text-foreground"
-                          >
-                            {dict?.management?.apiKey || "API Key"}
-                          </label>
-                          <input
-                            type="password"
-                            id="apiKey"
-                            name="apiKey"
-                            className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
-                            placeholder={
-                              dict?.management?.apiKeyPlaceHolder ||
-                              "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-                            }
-                            required
-                          />
-                        </div>
                       </div>
-
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {dict?.management?.notice ||
-                          "The API key is only used to make API requests by adapter."}
-                      </p>
-
                       <div className="space-y-2">
                         <label
                           htmlFor="modelId"

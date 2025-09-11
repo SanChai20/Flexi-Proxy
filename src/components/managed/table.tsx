@@ -84,7 +84,7 @@ export default function ManagedTable({
     { token: string } | undefined,
     [string, string]
   >(
-    async (token: string, adapter_token: string) => {
+    async (token: string, create_time: string) => {
       //await new Promise(resolve => setTimeout(resolve, 3000));
 
       const response = await fetch("/api/adapters", {
@@ -94,7 +94,7 @@ export default function ManagedTable({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          adapter_token,
+          create_time,
         }),
       });
       if (response.ok) {
@@ -141,8 +141,8 @@ export default function ManagedTable({
     setIsModalOpen(false);
   };
 
-  const handleDeleteRow = async (adapter_token: string) => {
-    await deleteAdapter(token, adapter_token);
+  const handleDeleteRow = async (create_time: string) => {
+    await deleteAdapter(token, create_time);
   };
 
   const copyToClipboard = async (

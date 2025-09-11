@@ -2,7 +2,6 @@ import { NextRequest } from "next/server";
 import { jwtVerify } from "@/lib/jwt";
 
 export interface PayloadRequest extends NextRequest {
-  token?: string;
   payload?: Record<string, any>;
 }
 
@@ -25,7 +24,6 @@ export function withAuth(handler: Handler): Handler {
         headers: { "Content-Type": "application/json" },
       });
     }
-    req.token = token;
     req.payload = payload;
     // If authenticated, call the original handler
     return handler(req, context);
