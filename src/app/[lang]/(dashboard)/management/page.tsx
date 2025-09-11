@@ -102,7 +102,7 @@ export default async function ManagementPage(
   ]);
 
   return (
-    <section className="w-full max-w-4xl mx-auto p-4">
+    <section className="w-full max-w-4xl mx-auto px-0">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">{dict.management.title}</CardTitle>

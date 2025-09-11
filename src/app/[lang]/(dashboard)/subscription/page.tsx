@@ -16,7 +16,7 @@ export default async function SubscriptionPage(
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
   return (
-    <section className="w-full max-w-4xl mx-auto p-4">
+    <section className="w-full max-w-4xl mx-auto px-0">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">{dict.subscription.title}</CardTitle>
