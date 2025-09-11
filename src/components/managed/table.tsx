@@ -17,12 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LoadingIcon } from "@/components/ui/icons";
 import ClipboardButton from "@/components/ui/clipboard-button";
-
-export interface AdapterRow {
-  provider: string;
-  url: string;
-  token: string;
-}
+import { getAllTargetProviders } from "@/lib/actions";
 
 export default function ManagedTable({
   dict,
@@ -118,7 +113,13 @@ export default function ManagedTable({
     }
   );
 
-  const [rows, setRows] = useState<AdapterRow[]>(
+  const [rows, setRows] = useState<
+    {
+      provider: string;
+      url: string;
+      token: string;
+    }[]
+  >(
     userAvailableAdapters.map((adapter) => {
       return {
         provider: adapter.target.toUpperCase(),

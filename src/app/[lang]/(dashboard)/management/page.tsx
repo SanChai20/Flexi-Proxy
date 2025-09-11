@@ -15,47 +15,9 @@ import { PlusIcon } from "@/components/ui/icons";
 import ManagedTable from "@/components/managed/table";
 
 import { jwtSign } from "@/lib/jwt";
+import { getAllUserAdapters } from "@/lib/actions";
+import { redirect } from "next/navigation";
 
-async function GetAvailableTargetProviders(
-  token: string
-): Promise<{ id: string; url: string }[]> {
-  const response = await fetch(
-    [process.env.BASE_URL, "api/providers"].join("/"),
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-  if (response.ok) {
-    const reqBody = await response.json();
-    return reqBody;
-  } else {
-    return [];
-  }
-}
-
-async function GetUserAvailableAdapters(
-  token: string
-): Promise<{ target: string; token: string; url: string }[]> {
-  const response = await fetch(
-    [process.env.BASE_URL, "api/adapters"].join("/"),
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-  if (response.ok) {
-    const reqBody = await response.json();
-    return reqBody;
-  } else {
-    return [];
-  }
-}
-// //DEMO
 // async function CreateProvider() {
 //   const { token, error } = await jwtSign(
 //     { url: "https://checkcheck.com" },
@@ -72,34 +34,27 @@ async function GetUserAvailableAdapters(
 //   );
 //   return response;
 // }
-// //DEMO
-// async function DeleteProvider() {
-//   const { token, error } = await jwtSign(undefined, 90);
-//   const response = await fetch(
-//     [process.env.BASE_URL, "api/providers", "anthropic2"].join("/"),
-//     {
-//       method: "DELETE",
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     }
-//   );
-//   return response;
-// }
 
 export default async function ManagementPage(
   props: PageProps<"/[lang]/management">
 ) {
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    return <div>Please sign in to manage your adapters.</div>;
+  }
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
-  const { token, error } = await jwtSign(undefined, 3600);
-  if (!token) {
-    return <div>Error: {error || "Failed to generate token"}</div>;
+  const adapters: { target: string; token: string; url: string }[] =
+    await getAllUserAdapters(session.user.id);
+
+  if (adapters.length <= 0) {
+    redirect("/");
   }
-  const [targetProviders, userAdapters] = await Promise.all([
-    GetAvailableTargetProviders(token),
-    GetUserAvailableAdapters(token),
-  ]);
+
+  // const [targetProviders, userAdapters] = await Promise.all([
+  //   GetAvailableTargetProviders(token),
+  //   GetUserAvailableAdapters(token),
+  // ]);
 
   return (
     <section className="w-full max-w-4xl mx-auto px-0">
@@ -111,12 +66,13 @@ export default async function ManagementPage(
           </CardDescription>
         </CardHeader>
       </Card>
-      <ManagedTable
+
+      {/* <ManagedTable
         dict={dict}
         token={token}
         targetAvailableProviders={targetProviders}
         userAvailableAdapters={userAdapters}
-      />
+      /> */}
     </section>
   );
 }

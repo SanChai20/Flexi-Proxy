@@ -3,6 +3,7 @@ import { PayloadRequest, withAuth } from "@/lib/with-auth";
 import { NextResponse } from "next/server";
 import { REGISTERED_PROVIDER_PREFIX } from "@/app/api/providers/route";
 import { jwtSign } from "@/lib/jwt";
+import { auth } from "@/auth";
 
 const USER_ADAPTER_PREFIX = "user:adapter:list";
 
@@ -28,6 +29,7 @@ async function protectedPOST(req: PayloadRequest) {
       base_url,
       api_key,
       model_id,
+      user_id: req.payload["user_id"],
     });
     if (token === undefined) {
       return NextResponse.json(

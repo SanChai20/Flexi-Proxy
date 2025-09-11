@@ -1,7 +1,6 @@
 "use server";
 
-import { auth } from "@/auth";
-import { JwtPayload, SignOptions } from "jsonwebtoken";
+import { JwtPayload } from "jsonwebtoken";
 import jwt from "jsonwebtoken";
 
 export async function jwtSign(
@@ -24,27 +23,10 @@ export async function jwtSign(
     return { token: undefined, error: "Internal error" };
   }
 
-  // Get session
-  // const session = await auth();
-  // if (!(session && session.user && session.user.id)) {
-  //   return { token: undefined, error: "Invalid session" };
-  // }
-  // TODO...
-  const session = {
-    user: {
-      id: "ABC123",
-      name: "",
-      email: "sc20@613.com",
-    },
-  };
-
   try {
     // Create JWT payload with user information
     const jwtPayload = {
       ...(payload || {}),
-      user_id: session.user.id,
-      user_name: session.user.name || "Unknown",
-      user_email: session.user.email || "",
       jti: crypto.randomUUID(),
     };
 
