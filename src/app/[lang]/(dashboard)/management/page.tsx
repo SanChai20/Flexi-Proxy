@@ -17,6 +17,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { PlusIcon } from "@/components/ui/icons";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import ManagedTable from "@/components/managed/table";
 
 import { jwtSign, jwtVerify } from "@/lib/jwt";
@@ -24,6 +30,7 @@ import { deleteAdapter, getAllUserAdapters } from "@/lib/actions";
 import { redirect } from "next/navigation";
 import ClipboardButton from "@/components/ui/clipboard-button";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
+import AddAdapterButton from "@/components/managed/add-button";
 
 // async function CreateProvider() {
 //   const { token, error } = await jwtSign(
@@ -68,8 +75,11 @@ export default async function ManagementPage(
     <section className="w-full max-w-4xl mx-auto px-0">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">{dict.management.title}</CardTitle>
-          <CardDescription className="text-base">
+          <div className="flex flex-row items-center justify-between">
+            <CardTitle className="text-2xl">{dict.management.title}</CardTitle>
+            <AddAdapterButton dict={dict} />
+          </div>
+          <CardDescription className="text-base mt-2">
             {dict.management.subtitle}
           </CardDescription>
         </CardHeader>
