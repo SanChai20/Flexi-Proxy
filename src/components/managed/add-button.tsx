@@ -26,12 +26,12 @@ export default function AddAdapterButton({ dict }: { dict: any }) {
           >
             <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5" />
             <span className="sr-only">
-              {dict?.management?.addAdapter || "Add Adapter"}
+              {dict?.management?.adapterAdd || "Add Adapter"}
             </span>
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{dict?.management?.addAdapter || "Add Adapter"}</p>
+          <p>{dict?.management?.adapterAdd || "Add Adapter"}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

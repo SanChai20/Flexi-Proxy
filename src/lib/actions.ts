@@ -30,9 +30,15 @@ export async function getAllTargetProviders(): Promise<
   return [];
 }
 
-export async function getAllUserAdapters(
-  userId: string
-): Promise<{ provider_id: string; provider_url: string; base_url: string; model_id: string; create_time: string; }[]> {
+export async function getAllUserAdapters(userId: string): Promise<
+  {
+    provider_id: string;
+    provider_url: string;
+    base_url: string;
+    model_id: string;
+    create_time: string;
+  }[]
+> {
   try {
     const { token, error } = await jwtSign({ user_id: userId }, 3600);
     if (!token) {
@@ -57,15 +63,26 @@ export async function getAllUserAdapters(
   return [];
 }
 
-export async function createAdapter(user_id: string, provider_id: string, base_url: string, model_id: string): Promise<{
-  provider_id: string;
-  provider_url: string;
-  base_url: string;
-  model_id: string;
-  create_time: string;
-} | undefined> {
+export async function createAdapter(
+  provider_id: string,
+  base_url: string,
+  model_id: string
+): Promise<
+  | {
+      provider_id: string;
+      provider_url: string;
+      base_url: string;
+      model_id: string;
+      create_time: string;
+    }
+  | undefined
+> {
   try {
-    const { token, error } = await jwtSign({ user_id }, 3600);
+    const session = await auth();
+    if (!(session && session.user && session.user.id)) {
+      return undefined;
+    }
+    const { token, error } = await jwtSign({ user_id: session.user.id }, 3600);
     if (!token) {
       console.error("Error generating auth token:", error);
       return undefined;
@@ -94,9 +111,15 @@ export async function createAdapter(user_id: string, provider_id: string, base_u
   return undefined;
 }
 
-export async function deleteAdapter(user_id: string, create_time: string): Promise<{ create_time: string } | undefined> {
+export async function deleteAdapter(
+  create_time: string
+): Promise<{ create_time: string } | undefined> {
   try {
-    const { token, error } = await jwtSign({ user_id }, 3600);
+    const session = await auth();
+    if (!(session && session.user && session.user.id)) {
+      return undefined;
+    }
+    const { token, error } = await jwtSign({ user_id: session.user.id }, 3600);
     if (!token) {
       console.error("Error generating auth token:", error);
       return undefined;
@@ -117,10 +140,8 @@ export async function deleteAdapter(user_id: string, create_time: string): Promi
     if (response.ok) {
       return response.json();
     }
-
   } catch (error) {
     console.error("Error deleting adapter:", error);
   }
   return undefined;
 }
-

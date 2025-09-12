@@ -149,43 +149,53 @@ export default async function ManagementPage(
                           align="end"
                           className="w-32 xs:w-36 rounded-lg"
                         >
-                          {/* <form action={async (formData) => {
-                          "use server";
-                          const adapter = formData.get("adapter") as string;
-                          const adapterJSON: { provider_id: string; provider_url: string; base_url: string; model_id: string; create_time: string; } =
-                            JSON.parse(adapter);
-                          // TODO...
-                        }}>
-                          <input type="hidden" name="adapter" value={JSON.stringify(adapter)} />
-                          <DropdownMenuItem
-                            className="w-full cursor-pointer text-destructive focus:text-destructive text-xs xs:text-sm"
-                            asChild
+                          <form
+                            action={async (formData) => {
+                              "use server";
+                              const adapter = formData.get("adapter") as string;
+                              const adapterJSON: {
+                                provider_id: string;
+                                provider_url: string;
+                                base_url: string;
+                                model_id: string;
+                                create_time: string;
+                              } = JSON.parse(adapter);
+                              redirect(
+                                `/${lang}/managementkey?baseUrl=${encodeURIComponent(
+                                  adapterJSON.base_url
+                                )}&modelId=${encodeURIComponent(
+                                  adapterJSON.model_id
+                                )}&providerId=${encodeURIComponent(
+                                  adapterJSON.provider_id
+                                )}`
+                              );
+                            }}
                           >
-                            <button type="submit">
-                              {dict?.management?.getApiKey || "Get API Key"}
-                            </button>
-                          </DropdownMenuItem>
-                        </form> */}
+                            <input
+                              type="hidden"
+                              name="adapter"
+                              value={JSON.stringify(adapter)}
+                            />
+                            <DropdownMenuItem
+                              className="w-full cursor-pointer text-destructive focus:text-destructive text-xs xs:text-sm"
+                              asChild
+                            >
+                              <button type="submit">
+                                {dict?.management?.getApiKey || "Get API Key"}
+                              </button>
+                            </DropdownMenuItem>
+                          </form>
                           <form
                             action={async (formData) => {
                               "use server";
                               const createTime = formData.get(
                                 "createTime"
                               ) as string;
-                              const session = await auth();
-                              if (
-                                !(session && session.user && session.user.id)
-                              ) {
-                                redirect(`/${lang}/login`);
-                              }
                               const result:
                                 | { create_time: string }
-                                | undefined = await deleteAdapter(
-                                session.user.id,
-                                createTime
-                              );
+                                | undefined = await deleteAdapter(createTime);
                               if (result !== undefined) {
-                                redirect(`/${lang}/management`);
+                                redirect(`/${lang}/management`); //Refresh
                               }
                             }}
                           >
