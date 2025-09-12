@@ -45,12 +45,11 @@ export default async function ManagementConfPage(
           const provider = formData.get("provider") as string;
           const baseUrl = formData.get("baseUrl") as string;
           const modelId = formData.get("modelId") as string;
-          // const session = await auth();
-          // if (!(session && session.user && session.user.id)) {
-          //   console.error("You must be logged in to perform this action.");
-          //   redirect('/login');
-          // }
-          // TODO...
+          //   const session = await auth();
+          //   if (!(session && session.user && session.user.id)) {
+          //     console.error("You must be logged in to perform this action.");
+          //     redirect("/login");
+          //   }
           const result:
             | {
                 provider_id: string;
@@ -60,7 +59,7 @@ export default async function ManagementConfPage(
                 create_time: string;
               }
             | undefined = await createAdapter(
-            "AAAA",
+            "AAAA", //session.user.id,
             provider,
             baseUrl,
             modelId

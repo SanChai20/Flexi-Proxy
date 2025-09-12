@@ -81,68 +81,65 @@ export default async function ManagementPage(
         targetAvailableProviders={targetProviders}
         userAvailableAdapters={userAdapters}
       /> */}
+      <div className="mt-6">
+        <div className="border border-border rounded-xl bg-card overflow-hidden shadow-sm">
+          <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-transparent scrollbar-thumb-muted-foreground/20">
+            <table className="w-full min-w-[200px] md:min-w-full">
+              {/* ----- Header ----- */}
+              <thead className="bg-muted/50 text-muted-foreground">
+                <tr>
+                  <th className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
+                    {dict?.management?.provider || "Provider"}
+                  </th>
+                  <th className="w-3/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
+                    {dict?.management?.baseUrl || "Base URL"}
+                  </th>
+                  <th className="w-1/6 px-2 py-3 text-xs text-right sm:px-5 sm:py-3.5 sm:text-sm sm:text-right">
+                    {dict?.management?.actions || "Actions"}
+                  </th>
+                </tr>
+              </thead>
 
-      <div className="border border-border rounded-xl bg-card overflow-hidden shadow-sm">
-        <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-transparent scrollbar-thumb-muted-foreground/20">
-          <table className="w-full min-w-[200px] md:min-w-full">
-            {/* ----- Header ----- */}
-            <thead className="bg-muted/50 text-muted-foreground">
-              <tr>
-                <th className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
-                  {dict?.management?.provider || "Provider"}
-                </th>
-                <th className="w-3/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
-                  {dict?.management?.baseUrl || "Base URL"}
-                </th>
-                <th className="w-1/6 px-2 py-3 text-xs text-right sm:px-5 sm:py-3.5 sm:text-sm sm:text-right">
-                  {dict?.management?.actions || "Actions"}
-                </th>
-              </tr>
-            </thead>
-
-            {/* ----- Body ----- */}
-            <tbody className="divide-y divide-border">
-              {adapters.map((adapter, index) => (
-                <tr
-                  key={adapter.create_time}
-                  className="hover:bg-muted/30 transition-colors duration-150"
-                >
-                  <td className="w-1/6 px-2 py-3 text-xs uppercase text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
-                    <span className="text-[10px] xs:text-xs md:text-sm">
-                      {adapter.provider_id}
-                    </span>
-                  </td>
-                  <td className="w-3/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
-                    <div className="flex justify-start gap-1 xs:gap-2">
-                      <span
-                        className="font-mono text-[10px] xs:text-xs text-muted-foreground truncate max-w-[140px] xs:max-w-[160px] sm:max-w-[240px] md:text-sm md:max-w-[320px] lg:max-w-[320px] xl:max-w-[320px]"
-                        title={adapter.provider_url}
-                      >
-                        {/* {adapter.provider_url} */}
-                        {
-                          "http://example.com/v1/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-                        }
+              {/* ----- Body ----- */}
+              <tbody className="divide-y divide-border">
+                {adapters.map((adapter, index) => (
+                  <tr
+                    key={adapter.create_time}
+                    className="hover:bg-muted/30 transition-colors duration-150"
+                  >
+                    <td className="w-1/6 px-2 py-3 text-xs uppercase text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
+                      <span className="text-[10px] xs:text-xs md:text-sm">
+                        {adapter.provider_id}
                       </span>
-                      {/* <ClipboardButton text={adapter.provider_url} /> */}
-                    </div>
-                  </td>
-                  {/* Settings 图标 + 下拉菜单 */}
-                  <td className="w-1/6 px-2 py-3 text-xs text-right sm:px-5 sm:py-3.5 sm:text-sm sm:text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <button
-                          type="button"
-                          className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-150 md:p-1.5"
-                          aria-haspopup="true"
+                    </td>
+                    <td className="w-3/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
+                      <div className="flex justify-start gap-1 xs:gap-2">
+                        <span
+                          className="font-mono text-[10px] xs:text-xs text-muted-foreground truncate max-w-[140px] xs:max-w-[160px] sm:max-w-[240px] md:text-sm md:max-w-[320px] lg:max-w-[320px] xl:max-w-[320px]"
+                          title={adapter.provider_url}
                         >
-                          <Cog6ToothIcon className="h-3 w-3 xs:h-4 xs:w-4 md:h-5 md:w-5" />
-                        </button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent
-                        align="end"
-                        className="w-32 xs:w-36 rounded-lg"
-                      >
-                        {/* <form action={async (formData) => {
+                          {adapter.provider_url}
+                        </span>
+                        <ClipboardButton text={adapter.provider_url} />
+                      </div>
+                    </td>
+                    {/* Settings 图标 + 下拉菜单 */}
+                    <td className="w-1/6 px-2 py-3 text-xs text-right sm:px-5 sm:py-3.5 sm:text-sm sm:text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            type="button"
+                            className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-150 md:p-1.5"
+                            aria-haspopup="true"
+                          >
+                            <Cog6ToothIcon className="h-3 w-3 xs:h-4 xs:w-4 md:h-5 md:w-5" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          align="end"
+                          className="w-32 xs:w-36 rounded-lg"
+                        >
+                          {/* <form action={async (formData) => {
                           "use server";
                           const adapter = formData.get("adapter") as string;
                           const adapterJSON: { provider_id: string; provider_url: string; base_url: string; model_id: string; create_time: string; } =
@@ -159,44 +156,51 @@ export default async function ManagementPage(
                             </button>
                           </DropdownMenuItem>
                         </form> */}
-                        <form
-                          action={async (formData) => {
-                            "use server";
-                            const createTime = formData.get(
-                              "createTime"
-                            ) as string;
-                            const session = await auth();
-                            if (!(session && session.user && session.user.id)) {
-                              redirect(`/${lang}/login`);
-                            }
-                            const result: { create_time: string } | undefined =
-                              await deleteAdapter(session.user.id, createTime);
-                            if (result !== undefined) {
-                              redirect(`/${lang}/management`);
-                            }
-                          }}
-                        >
-                          <input
-                            type="hidden"
-                            name="createTime"
-                            value={adapter.create_time}
-                          />
-                          <DropdownMenuItem
-                            className="w-full cursor-pointer text-destructive focus:text-destructive text-xs xs:text-sm"
-                            asChild
+                          <form
+                            action={async (formData) => {
+                              "use server";
+                              const createTime = formData.get(
+                                "createTime"
+                              ) as string;
+                              const session = await auth();
+                              if (
+                                !(session && session.user && session.user.id)
+                              ) {
+                                redirect(`/${lang}/login`);
+                              }
+                              const result:
+                                | { create_time: string }
+                                | undefined = await deleteAdapter(
+                                session.user.id,
+                                createTime
+                              );
+                              if (result !== undefined) {
+                                redirect(`/${lang}/management`);
+                              }
+                            }}
                           >
-                            <button type="submit">
-                              {dict?.management?.delete || "Delete"}
-                            </button>
-                          </DropdownMenuItem>
-                        </form>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                            <input
+                              type="hidden"
+                              name="createTime"
+                              value={adapter.create_time}
+                            />
+                            <DropdownMenuItem
+                              className="w-full cursor-pointer text-destructive focus:text-destructive text-xs xs:text-sm"
+                              asChild
+                            >
+                              <button type="submit">
+                                {dict?.management?.delete || "Delete"}
+                              </button>
+                            </DropdownMenuItem>
+                          </form>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </section>
