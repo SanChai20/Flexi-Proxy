@@ -68,7 +68,7 @@ export default async function ManagementConfPage(
               <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2">
                 {dict?.management?.adapterSource || "SOURCE"}
               </span>
-              <span className="truncate">
+              <span className="truncate max-w-[200px] xs:max-w-[180px] sm:max-w-[220px] md:max-w-[280px] lg:max-w-[320px]">
                 {dict?.management?.sourceTitle ||
                   "Configure OpenAI-Compatible Endpoint"}
               </span>
@@ -138,7 +138,7 @@ export default async function ManagementConfPage(
               <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2">
                 {dict?.management?.adapterTarget || "TARGET"}
               </span>
-              <span className="truncate">
+              <span className="truncate max-w-[200px] xs:max-w-[180px] sm:max-w-[220px] md:max-w-[280px] lg:max-w-[320px]">
                 {dict?.management?.targetTitle || "Select Target API Provider"}
               </span>
             </h3>

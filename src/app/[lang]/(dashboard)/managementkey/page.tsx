@@ -69,11 +69,11 @@ export default async function ManagementKeyPage(
         <div className="bg-card border border-border rounded-lg overflow-hidden">
           {/* Source Section (OpenAI-Compatible) */}
           <div className="p-6">
-            <h3 className="text-md font-semibold text-foreground mb-4 flex items-center">
+            <h3 className="text-md font-semibold text-foreground mb-4 flex items-center w-full">
               <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2">
                 {dict?.management?.adapterSource || "SOURCE"}
               </span>
-              <span className="truncate">
+              <span className="truncate max-w-[200px] xs:max-w-[180px] sm:max-w-[220px] md:max-w-[280px] lg:max-w-[320px]">
                 {dict?.management?.sourceTitle2 ||
                   "Configured OpenAI-Compatible Endpoint"}
               </span>
@@ -113,11 +113,11 @@ export default async function ManagementKeyPage(
 
           {/* Target Section (API Provider) */}
           <div className="p-6">
-            <h3 className="text-md font-semibold text-foreground mb-4 flex items-center">
+            <h3 className="text-md font-semibold text-foreground mb-4 flex items-center w-full">
               <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2">
                 {dict?.management?.adapterTarget || "TARGET"}
               </span>
-              <span className="truncate">
+              <span className="truncate max-w-[200px] xs:max-w-[180px] sm:max-w-[220px] md:max-w-[280px] lg:max-w-[320px]">
                 {dict?.management?.targetTitle2 ||
                   "Selected Target API Provider"}
               </span>
@@ -136,9 +136,6 @@ export default async function ManagementKeyPage(
               </div>
             </div>
           </div>
-
-          {/* Divider between sections */}
-          <div className="border-t border-border"></div>
 
           {/* Divider between sections */}
           <div className="border-t border-border"></div>
