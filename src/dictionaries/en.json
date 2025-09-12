@@ -84,6 +84,7 @@
     "modelId": "Model ID",
     "provider": "Provider",
     "confirm": "Confirm",
+    "acquire": "Acquire API Key",
     "baseUrlTip": "Base URLs can be obtained from the official websites of various vendor platforms",
     "baseUrlPlaceHolder": "https://api.x.ai/v1",
     "apiKeyPlaceHolder": "xai-xxxxxxxxxxxxxxxxxxxxxxxxxx",
@@ -93,6 +94,7 @@
     "actions": "Actions",
     "delete": "Delete",
     "getApiKey": "Get API Key",
+    "copyApiKey": "Copy API Key",
     "keyTitle": "API Key Management",
     "keySubtitle": "Get available API keys for target provider"
   },

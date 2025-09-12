@@ -17,6 +17,7 @@ import { OnceButton } from "@/components/ui/oncebutton";
 import { createAdapter, getAllTargetProviders } from "@/lib/actions";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { jwtSign } from "@/lib/jwt";
 
 export default async function ManagementConfPage(
   props: PageProps<"/[lang]/managementconf">
@@ -45,17 +46,21 @@ export default async function ManagementConfPage(
           const provider = formData.get("provider") as string;
           const baseUrl = formData.get("baseUrl") as string;
           const modelId = formData.get("modelId") as string;
+          const apiKey = formData.get("apiKey") as string;
           const result:
             | {
-                provider_id: string;
-                provider_url: string;
-                base_url: string;
-                model_id: string;
-                create_time: string;
-              }
+              provider_id: string;
+              provider_url: string;
+              base_url: string;
+              model_id: string;
+              create_time: string;
+            }
             | undefined = await createAdapter(provider, baseUrl, modelId);
           if (result !== undefined) {
-            redirect(`/${lang}/management`);
+            const { token, error } = await jwtSign({ api_key: apiKey, create_time: result.create_time }, 3600);
+            if (token !== undefined) {
+              redirect(`/${lang}/management?token=${encodeURIComponent(token)}`);
+            }
           }
         }}
         className="mt-6"
@@ -74,7 +79,7 @@ export default async function ManagementConfPage(
               </span>
             </h3>
             <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <div className="flex items-center">
                     <label
@@ -103,6 +108,25 @@ export default async function ManagementConfPage(
                     placeholder={
                       dict?.management?.baseUrlPlaceHolder ||
                       "https://api.deepseek.com/v1"
+                    }
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label
+                    htmlFor="apiKey"
+                    className="block text-sm font-medium text-foreground"
+                  >
+                    {dict?.management?.apiKey || "API Key"}
+                  </label>
+                  <input
+                    type="password"
+                    id="apiKey"
+                    name="apiKey"
+                    className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
+                    placeholder={
+                      dict?.management?.apiKeyPlaceHolder ||
+                      "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
                     }
                     required
                   />

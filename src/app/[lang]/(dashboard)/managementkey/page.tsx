@@ -79,7 +79,7 @@ export default async function ManagementKeyPage(
               </span>
             </h3>
             <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <div className="flex items-center">
                     <label
@@ -93,6 +93,27 @@ export default async function ManagementKeyPage(
                     {baseUrl}
                   </div>
                 </div>
+
+                <div className="space-y-2">
+                  <label
+                    htmlFor="apiKey"
+                    className="block text-sm font-medium text-foreground"
+                  >
+                    {dict?.management?.apiKey || "API Key"}
+                  </label>
+                  <input
+                    type="password"
+                    id="apiKey"
+                    name="apiKey"
+                    className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
+                    placeholder={
+                      dict?.management?.apiKeyPlaceHolder ||
+                      "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                    }
+                    required
+                  />
+                </div>
+
               </div>
               <div className="space-y-2">
                 <label
@@ -146,7 +167,7 @@ export default async function ManagementKeyPage(
               type="submit"
               className="w-full rounded-lg bg-primary text-primary-foreground px-4 py-2 transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-ring max-w-full"
             >
-              {dict?.management?.confirm || "Confirm"}
+              {dict?.management?.acquire || "Acquire API Key"}
             </OnceButton>
           </div>
         </div>
