@@ -31,13 +31,18 @@ async function protectedPOST(req: PayloadRequest) {
       model_id,
     };
     const create_time = Date.now().toString();
-    await redis.set<{ provider_id: string; provider_url: string; base_url: string; model_id: string }>(
+    await redis.set<{
+      provider_id: string;
+      provider_url: string;
+      base_url: string;
+      model_id: string;
+    }>(
       [USER_ADAPTER_PREFIX, req.payload["user_id"], create_time].join(":"),
       adapter
     );
     return NextResponse.json({
       create_time,
-      ...adapter
+      ...adapter,
     });
   } catch (error) {
     console.error("Failed to create adapter: ", error);
@@ -67,10 +72,17 @@ async function protectedGET(req: PayloadRequest) {
       cursor = Number(newCursor);
     } while (cursor !== 0);
     if (allKeys.length > 0) {
-      const createTimes = allKeys.map((key) => key.replace(searchPatternPrefix, ""));
-      const values = await redis.mget<{ provider_id: string; provider_url: string; base_url: string; model_id: string }[]>(
-        ...allKeys
+      const createTimes = allKeys.map((key) =>
+        key.replace(searchPatternPrefix, "")
       );
+      const values = await redis.mget<
+        {
+          provider_id: string;
+          provider_url: string;
+          base_url: string;
+          model_id: string;
+        }[]
+      >(...allKeys);
       return NextResponse.json(
         createTimes.map((create_time, index) => ({
           create_time,

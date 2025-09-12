@@ -52,8 +52,13 @@ export default async function ManagementPage(
   // }
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
-  const adapters: { provider_id: string; provider_url: string; base_url: string; model_id: string; create_time: string; }[] =
-    await getAllUserAdapters(/*session.user.id*/"AAAA");
+  const adapters: {
+    provider_id: string;
+    provider_url: string;
+    base_url: string;
+    model_id: string;
+    create_time: string;
+  }[] = await getAllUserAdapters(/*session.user.id*/ "AAAA");
 
   if (adapters.length <= 0) {
     redirect(`/${lang}/managementconf`);
@@ -77,20 +82,19 @@ export default async function ManagementPage(
         userAvailableAdapters={userAdapters}
       /> */}
 
-
       <div className="border border-border rounded-xl bg-card overflow-hidden shadow-sm">
         <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-transparent scrollbar-thumb-muted-foreground/20">
           <table className="w-full min-w-[200px] md:min-w-full">
             {/* ----- Header ----- */}
             <thead className="bg-muted/50 text-muted-foreground">
               <tr>
-                <th className="px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
+                <th className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                   {dict?.management?.provider || "Provider"}
                 </th>
-                <th className="px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
+                <th className="w-3/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                   {dict?.management?.baseUrl || "Base URL"}
                 </th>
-                <th className="px-2 py-3 text-xs text-right sm:px-5 sm:py-3.5 sm:text-sm sm:text-right">
+                <th className="w-1/6 px-2 py-3 text-xs text-right sm:px-5 sm:py-3.5 sm:text-sm sm:text-right">
                   {dict?.management?.actions || "Actions"}
                 </th>
               </tr>
@@ -103,22 +107,27 @@ export default async function ManagementPage(
                   key={adapter.create_time}
                   className="hover:bg-muted/30 transition-colors duration-150"
                 >
-                  <td className="px-2 py-3 text-xs uppercase text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
-                    {adapter.provider_id}
+                  <td className="w-1/6 px-2 py-3 text-xs uppercase text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
+                    <span className="text-[10px] xs:text-xs md:text-sm">
+                      {adapter.provider_id}
+                    </span>
                   </td>
-                  <td className="px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
+                  <td className="w-3/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                     <div className="flex justify-start gap-1 xs:gap-2">
                       <span
-                        className="font-mono text-[10px] xs:text-xs text-muted-foreground truncate max-w-[40px] xs:max-w-[50px] sm:max-w-[90px] md:text-sm md:max-w-[120px] lg:max-w-[180px] xl:max-w-[280px]"
+                        className="font-mono text-[10px] xs:text-xs text-muted-foreground truncate max-w-[140px] xs:max-w-[160px] sm:max-w-[240px] md:text-sm md:max-w-[320px] lg:max-w-[320px] xl:max-w-[320px]"
                         title={adapter.provider_url}
                       >
-                        {adapter.provider_url}
+                        {/* {adapter.provider_url} */}
+                        {
+                          "http://example.com/v1/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                        }
                       </span>
                       {/* <ClipboardButton text={adapter.provider_url} /> */}
                     </div>
                   </td>
                   {/* Settings 图标 + 下拉菜单 */}
-                  <td className="px-2 py-3 text-xs text-right sm:px-5 sm:py-3.5 sm:text-sm sm:text-right">
+                  <td className="w-1/6 px-2 py-3 text-xs text-right sm:px-5 sm:py-3.5 sm:text-sm sm:text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button
@@ -150,19 +159,28 @@ export default async function ManagementPage(
                             </button>
                           </DropdownMenuItem>
                         </form> */}
-                        <form action={async (formData) => {
-                          "use server";
-                          const createTime = formData.get("createTime") as string;
-                          const session = await auth();
-                          if (!(session && session.user && session.user.id)) {
-                            redirect(`/${lang}/login`);
-                          }
-                          const result: { create_time: string } | undefined = await deleteAdapter(session.user.id, createTime);
-                          if (result !== undefined) {
-                            redirect(`/${lang}/management`);
-                          }
-                        }}>
-                          <input type="hidden" name="createTime" value={adapter.create_time} />
+                        <form
+                          action={async (formData) => {
+                            "use server";
+                            const createTime = formData.get(
+                              "createTime"
+                            ) as string;
+                            const session = await auth();
+                            if (!(session && session.user && session.user.id)) {
+                              redirect(`/${lang}/login`);
+                            }
+                            const result: { create_time: string } | undefined =
+                              await deleteAdapter(session.user.id, createTime);
+                            if (result !== undefined) {
+                              redirect(`/${lang}/management`);
+                            }
+                          }}
+                        >
+                          <input
+                            type="hidden"
+                            name="createTime"
+                            value={adapter.create_time}
+                          />
                           <DropdownMenuItem
                             className="w-full cursor-pointer text-destructive focus:text-destructive text-xs xs:text-sm"
                             asChild
@@ -181,9 +199,6 @@ export default async function ManagementPage(
           </table>
         </div>
       </div>
-
-
-
     </section>
   );
 }
