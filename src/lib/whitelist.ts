@@ -9,8 +9,8 @@ export const i18nRouteWhitelist = [
   "documentation",
   "subscription",
   "management",
-  "managementconf",
-  "managementkey",
+  "management/create",
+  "management/modify",
   "settings",
   "faq",
 ];
@@ -20,8 +20,6 @@ export const protectedRouteList = [
   "documentation",
   "subscription",
   "management",
-  "managementconf",
-  "managementkey",
   "settings",
   "faq",
 ];
@@ -33,7 +31,5 @@ export const dashboardRouteWhitelist = [
   "subscription",
   "documentation",
   "management",
-  "managementconf",
-  "managementkey",
   "faq",
 ];

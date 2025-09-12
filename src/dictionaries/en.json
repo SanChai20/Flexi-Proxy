@@ -46,8 +46,8 @@
   },
   "navigation": {
     "management": "Management",
-    "managementconf": "Management",
-    "managementkey": "Management",
+    "create": "Create Adapter",
+    "modify": "Modify Adapter",
     "subscription": "Subscriptions",
     "documentation": "Documentation",
     "contact": "Contact Us",

@@ -46,8 +46,8 @@
   },
   "navigation": {
     "management": "管理面板",
-    "managementconf": "管理面板",
-    "managementkey": "管理面板",
+    "create": "创建适配器",
+    "modify": "修改适配器",
     "subscription": "订阅计划",
     "documentation": "说明文档",
     "contact": "联系我们",

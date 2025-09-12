@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { getDictionary } from "@/lib/get-dictionary";
 import { auth } from "@/auth";
 import { Locale } from "i18n-config";
@@ -15,17 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { PlusIcon } from "@/components/ui/icons";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import ManagedTable from "@/components/managed/table";
-
-import { jwtSign, jwtVerify } from "@/lib/jwt";
+import { jwtVerify } from "@/lib/jwt";
 import { deleteAdapter, getAllUserAdapters } from "@/lib/actions";
 import { redirect } from "next/navigation";
 import ClipboardButton from "@/components/ui/clipboard-button";
@@ -82,9 +71,8 @@ export default async function ManagementPage(
       })
     }
   }
-
   if (adapters.length <= 0) {
-    redirect(`/${lang}/managementconf`);
+    redirect(`/${lang}/management/create`);
   }
 
   return (
@@ -104,12 +92,6 @@ export default async function ManagementPage(
         </CardHeader>
       </Card>
 
-      {/* <ManagedTable
-        dict={dict}
-        token={token}
-        targetAvailableProviders={targetProviders}
-        userAvailableAdapters={userAdapters}
-      /> */}
       <div className="mt-6">
         <div className="border border-border rounded-xl bg-card overflow-hidden shadow-sm">
           <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-transparent scrollbar-thumb-muted-foreground/20">
@@ -190,7 +172,7 @@ export default async function ManagementPage(
                                       create_time: string;
                                     } = JSON.parse(adapter);
                                     redirect(
-                                      `/${lang}/managementkey?baseUrl=${encodeURIComponent(
+                                      `/${lang}/management/modify?baseUrl=${encodeURIComponent(
                                         adapterJSON.base_url
                                       )}&modelId=${encodeURIComponent(
                                         adapterJSON.model_id

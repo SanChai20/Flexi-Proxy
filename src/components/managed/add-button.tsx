@@ -18,7 +18,7 @@ export default function AddAdapterButton({ dict }: { dict: any }) {
         <TooltipTrigger asChild>
           <Button
             onClick={() => {
-              router.push("/managementconf");
+              router.push("/management/create");
             }}
             variant="outline"
             size="icon"

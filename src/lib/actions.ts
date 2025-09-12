@@ -78,11 +78,11 @@ export async function createAdapter(
   | undefined
 > {
   try {
-    // const session = await auth();
-    // if (!(session && session.user && session.user.id)) {
-    //   return undefined;
-    // }
-    const { token, error } = await jwtSign({ user_id: /*session.user.id*/"AAAA" }, 3600);
+    const session = await auth();
+    if (!(session && session.user && session.user.id)) {
+      return undefined;
+    }
+    const { token, error } = await jwtSign({ user_id: session.user.id }, 3600);
     if (!token) {
       console.error("Error generating auth token:", error);
       return undefined;
@@ -115,11 +115,11 @@ export async function deleteAdapter(
   create_time: string
 ): Promise<{ create_time: string } | undefined> {
   try {
-    // const session = await auth();
-    // if (!(session && session.user && session.user.id)) {
-    //   return undefined;
-    // }
-    const { token, error } = await jwtSign({ user_id: /*session.user.id*/"AAAA" }, 3600);
+    const session = await auth();
+    if (!(session && session.user && session.user.id)) {
+      return undefined;
+    }
+    const { token, error } = await jwtSign({ user_id: session.user.id }, 3600);
     if (!token) {
       console.error("Error generating auth token:", error);
       return undefined;
