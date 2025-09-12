@@ -95,7 +95,7 @@
     "delete": "Delete",
     "getApiKey": "Get API Key",
     "copyApiKey": "Copy API Key",
-    "keyTitle": "API Key Management",
+    "keyTitle": "Modify Adapter",
     "keySubtitle": "Get available API keys for target provider"
   },
   "settings": {

@@ -196,6 +196,8 @@ export default async function ManagementPage(
                                         adapterJSON.model_id
                                       )}&providerId=${encodeURIComponent(
                                         adapterJSON.provider_id
+                                      )}&createTime=${encodeURIComponent(
+                                        adapterJSON.create_time
                                       )}`
                                     );
                                   }}

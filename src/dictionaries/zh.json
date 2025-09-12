@@ -95,7 +95,7 @@
     "delete": "删除",
     "getApiKey": "获取 API Key",
     "copyApiKey": "复制 API Key",
-    "keyTitle": "API Key 管理",
+    "keyTitle": "修改适配器",
     "keySubtitle": "获取目标供应商可用的API Key"
   },
   "settings": {

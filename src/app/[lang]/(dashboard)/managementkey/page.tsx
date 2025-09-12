@@ -17,6 +17,7 @@ import { OnceButton } from "@/components/ui/oncebutton";
 import { createAdapter, getAllTargetProviders } from "@/lib/actions";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { jwtSign } from "@/lib/jwt";
 
 export default async function ManagementKeyPage(
   props: PageProps<"/[lang]/managementkey">
@@ -27,8 +28,8 @@ export default async function ManagementKeyPage(
   // }
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
-  const { baseUrl, modelId, providerId } = await props.searchParams;
-  if (!baseUrl || !modelId || !providerId) {
+  const { baseUrl, modelId, providerId, createTime } = await props.searchParams;
+  if (!baseUrl || !modelId || !providerId || !createTime) {
     redirect(`/${lang}/management`);
   }
   return (
@@ -40,28 +41,18 @@ export default async function ManagementKeyPage(
           </CardTitle>
           <CardDescription className="text-base">
             {dict?.management?.keySubtitle ||
-              "Get available API keys for target provider"}
+              "Get available API key for target provider"}
           </CardDescription>
         </CardHeader>
       </Card>
       <form
         action={async (formData) => {
           "use server";
-          //   const provider = formData.get("provider") as string;
-          //   const baseUrl = formData.get("baseUrl") as string;
-          //   const modelId = formData.get("modelId") as string;
-          //   const result:
-          //     | {
-          //         provider_id: string;
-          //         provider_url: string;
-          //         base_url: string;
-          //         model_id: string;
-          //         create_time: string;
-          //       }
-          //     | undefined = await createAdapter(provider, baseUrl, modelId);
-          //   if (result !== undefined) {
-          //     redirect(`/${lang}/management`);
-          //   }
+          const apiKey = formData.get("apiKey") as string;
+          const { token, error } = await jwtSign({ api_key: apiKey, create_time: createTime }, 3600);
+          if (token !== undefined) {
+            redirect(`/${lang}/management?token=${encodeURIComponent(token)}`);
+          }
         }}
         className="mt-6"
       >
@@ -74,8 +65,8 @@ export default async function ManagementKeyPage(
                 {dict?.management?.adapterSource || "SOURCE"}
               </span>
               <span className="truncate max-w-[200px] xs:max-w-[180px] sm:max-w-[220px] md:max-w-[280px] lg:max-w-[320px]">
-                {dict?.management?.sourceTitle2 ||
-                  "Configured OpenAI-Compatible Endpoint"}
+                {dict?.management?.sourceTitle ||
+                  "Configure OpenAI-Compatible Endpoint"}
               </span>
             </h3>
             <div className="space-y-4">
@@ -89,9 +80,14 @@ export default async function ManagementKeyPage(
                       {dict?.management?.baseUrl || "Base URL"}
                     </label>
                   </div>
-                  <div className="w-full px-4 py-2.5 text-foreground bg-background border rounded-lg max-w-full">
-                    {baseUrl}
-                  </div>
+                  <input
+                    type="text"
+                    id="baseUrl"
+                    name="baseUrl"
+                    value={baseUrl}
+                    readOnly
+                    className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition cursor-not-allowed opacity-75"
+                  />
                 </div>
 
                 <div className="space-y-2">
@@ -122,9 +118,14 @@ export default async function ManagementKeyPage(
                 >
                   {dict?.management?.modelId || "Model ID"}
                 </label>
-                <div className="w-full px-4 py-2.5 text-foreground bg-background border rounded-lg max-w-full">
-                  {modelId}
-                </div>
+                <input
+                  type="text"
+                  id="modelId"
+                  name="modelId"
+                  value={modelId}
+                  readOnly
+                  className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition cursor-not-allowed opacity-75"
+                />
               </div>
             </div>
           </div>
@@ -151,9 +152,14 @@ export default async function ManagementKeyPage(
                 >
                   {dict?.management?.provider || "Provider"}
                 </label>
-                <div className="w-full px-4 py-2.5 text-foreground bg-background border rounded-lg max-w-full">
-                  {providerId}
-                </div>
+                <input
+                  type="text"
+                  id="provider"
+                  name="provider"
+                  value={providerId}
+                  readOnly
+                  className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition cursor-not-allowed opacity-75"
+                />
               </div>
             </div>
           </div>
@@ -167,7 +173,7 @@ export default async function ManagementKeyPage(
               type="submit"
               className="w-full rounded-lg bg-primary text-primary-foreground px-4 py-2 transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-ring max-w-full"
             >
-              {dict?.management?.acquire || "Acquire API Key"}
+              {dict?.management?.confirm || "Confirm"}
             </OnceButton>
           </div>
         </div>
