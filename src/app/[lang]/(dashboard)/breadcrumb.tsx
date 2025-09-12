@@ -13,6 +13,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { dashboardRouteWhitelist } from "@/lib/whitelist";
 import { pathCullLocale } from "@/lib/utils";
+import React from "react";
 
 export default function DashboardBreadcrumb({ dict }: { dict: any }) {
   const pathname = usePathname();
@@ -41,11 +42,11 @@ export default function DashboardBreadcrumb({ dict }: { dict: any }) {
             <Link href="/">{dict["navigation"]["home"]}</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
-        {pathNames.length > 0 && <BreadcrumbSeparator />}
         {pathNames.map((pathname, index) => {
           const routeTo = `/${pathNames.slice(0, index + 1).join("/")}`;
           const isLast = index === pathNames.length - 1;
-          return (
+          return [
+            <BreadcrumbSeparator key={`separator-${pathname}`} />,
             <BreadcrumbItem key={pathname}>
               {isLast ? (
                 <BreadcrumbPage>
@@ -58,9 +59,8 @@ export default function DashboardBreadcrumb({ dict }: { dict: any }) {
                   </Link>
                 </BreadcrumbLink>
               )}
-              {!isLast && <BreadcrumbSeparator />}
-            </BreadcrumbItem>
-          );
+            </BreadcrumbItem>,
+          ];
         })}
       </BreadcrumbList>
     </Breadcrumb>
