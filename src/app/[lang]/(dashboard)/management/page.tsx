@@ -76,11 +76,14 @@ export default async function ManagementPage(
       <Card>
         <CardHeader>
           <div className="flex flex-row items-center justify-between">
-            <CardTitle className="text-2xl">{dict.management.title}</CardTitle>
+            <CardTitle className="text-2xl">
+              {dict?.management?.title || "Adapter Management"}
+            </CardTitle>
             <AddAdapterButton dict={dict} />
           </div>
           <CardDescription className="text-base mt-2">
-            {dict.management.subtitle}
+            {dict?.management?.subtitle ||
+              "Adapt the OpenAI-Compatible API to the target provider's API service"}
           </CardDescription>
         </CardHeader>
       </Card>

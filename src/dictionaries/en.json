@@ -47,6 +47,7 @@
   "navigation": {
     "management": "Management",
     "managementconf": "Management",
+    "managementkey": "Management",
     "subscription": "Subscriptions",
     "documentation": "Documentation",
     "contact": "Contact Us",
@@ -89,7 +90,9 @@
     "selectProvider": "Select a provider",
     "actions": "Actions",
     "delete": "Delete",
-    "getApiKey": "Get API Key"
+    "getApiKey": "Get API Key",
+    "keyTitle": "API Key Management",
+    "keySubtitle": "Get available API keys for target provider"
   },
   "settings": {
     "title": "Settings",

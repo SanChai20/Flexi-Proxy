@@ -47,6 +47,7 @@
   "navigation": {
     "management": "管理面板",
     "managementconf": "管理面板",
+    "managementkey": "管理面板",
     "subscription": "订阅计划",
     "documentation": "说明文档",
     "contact": "联系我们",
@@ -89,7 +90,9 @@
     "selectProvider": "选择一个供应商",
     "actions": "操作",
     "delete": "删除",
-    "getApiKey": "获取 API Key"
+    "getApiKey": "获取 API Key",
+    "keyTitle": "API Key 管理",
+    "keySubtitle": "获取目标供应商可用的API Key"
   },
   "settings": {
     "title": "设置",
