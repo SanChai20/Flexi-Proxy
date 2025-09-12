@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/card";
 
 export default async function FAQPage(props: PageProps<"/[lang]/faq">) {
-  const session = await auth();
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
   return (

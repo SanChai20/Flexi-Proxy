@@ -12,7 +12,6 @@ import {
 export default async function SubscriptionPage(
   props: PageProps<"/[lang]/subscription">
 ) {
-  const session = await auth();
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
   return (

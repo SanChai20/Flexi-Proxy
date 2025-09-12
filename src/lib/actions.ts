@@ -30,7 +30,7 @@ export async function getAllTargetProviders(): Promise<
   return [];
 }
 
-export async function getAllUserAdapters(userId: string): Promise<
+export async function getAllUserAdapters(): Promise<
   {
     provider_id: string;
     provider_url: string;
@@ -40,7 +40,11 @@ export async function getAllUserAdapters(userId: string): Promise<
   }[]
 > {
   try {
-    const { token, error } = await jwtSign({ user_id: userId }, 3600);
+    const session = await auth();
+    if (!(session && session.user && session.user.id)) {
+      return [];
+    }
+    const { token, error } = await jwtSign({ user_id: session.user.id }, 3600);
     if (!token) {
       console.error("Error generating auth token:", error);
       return [];

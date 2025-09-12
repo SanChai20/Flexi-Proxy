@@ -14,10 +14,6 @@ import { jwtSign } from "@/lib/jwt";
 export default async function ManagementModifyPage(
     props: PageProps<"/[lang]/management/modify">
 ) {
-    // const session = await auth();
-    // if (!(session && session.user && session.user.id)) {
-    //   return <div>Please sign in to manage your api key.</div>;
-    // }
     const { lang } = await props.params;
     const dict = await getDictionary(lang as Locale);
     const { baseUrl, modelId, providerId, createTime } = await props.searchParams;

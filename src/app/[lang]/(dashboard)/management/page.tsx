@@ -1,5 +1,4 @@
 import { getDictionary } from "@/lib/get-dictionary";
-import { auth } from "@/auth";
 import { Locale } from "i18n-config";
 import {
   Card,
@@ -21,31 +20,9 @@ import ClipboardButton from "@/components/ui/clipboard-button";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import AddAdapterButton from "@/components/managed/add-button";
 
-// async function CreateProvider() {
-//   const { token, error } = await jwtSign(
-//     { url: "https://checkcheck.com" },
-//     180
-//   );
-//   const response = await fetch(
-//     [process.env.BASE_URL, "api/providers", "anthropic3"].join("/"),
-//     {
-//       method: "POST",
-//       headers: {
-//         Authorization: `Bearer ${token}`,
-//       },
-//     }
-//   );
-//   return response;
-// }
-
 export default async function ManagementPage(
   props: PageProps<"/[lang]/management">
 ) {
-  // TODO...
-  // const session = await auth();
-  // if (!(session && session.user && session.user.id)) {
-  //   return <div>Please sign in to manage your adapters.</div>;
-  // }
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
   let adapters: {
@@ -54,7 +31,7 @@ export default async function ManagementPage(
     base_url: string;
     model_id: string;
     create_time: string;
-  }[] = await getAllUserAdapters(/*session.user.id*/ "AAAA");
+  }[] = await getAllUserAdapters();
 
   const { token } = await props.searchParams;
   if (token && typeof token === "string") {
