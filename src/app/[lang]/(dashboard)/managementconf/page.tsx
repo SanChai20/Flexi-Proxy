@@ -69,7 +69,8 @@ export default async function ManagementConfPage(
                 {dict?.management?.adapterSource || "SOURCE"}
               </span>
               <span className="truncate">
-                {dict?.management?.sourceTitle || "OpenAI-Compatible Endpoint"}
+                {dict?.management?.sourceTitle ||
+                  "Configure OpenAI-Compatible Endpoint"}
               </span>
             </h3>
             <div className="space-y-4">

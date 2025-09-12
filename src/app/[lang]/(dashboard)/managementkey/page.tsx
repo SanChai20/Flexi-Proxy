@@ -74,7 +74,8 @@ export default async function ManagementKeyPage(
                 {dict?.management?.adapterSource || "SOURCE"}
               </span>
               <span className="truncate">
-                {dict?.management?.sourceTitle || "OpenAI-Compatible Endpoint"}
+                {dict?.management?.sourceTitle2 ||
+                  "Configured OpenAI-Compatible Endpoint"}
               </span>
             </h3>
             <div className="space-y-4">
@@ -88,17 +89,9 @@ export default async function ManagementKeyPage(
                       {dict?.management?.baseUrl || "Base URL"}
                     </label>
                   </div>
-                  <input
-                    type="url"
-                    id="baseUrl"
-                    name="baseUrl"
-                    className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition max-w-full"
-                    placeholder={
-                      dict?.management?.baseUrlPlaceHolder ||
-                      "https://api.deepseek.com/v1"
-                    }
-                    required
-                  />
+                  <div className="w-full px-4 py-2.5 text-foreground bg-background border rounded-lg max-w-full">
+                    {baseUrl}
+                  </div>
                 </div>
               </div>
               <div className="space-y-2">
@@ -108,16 +101,9 @@ export default async function ManagementKeyPage(
                 >
                   {dict?.management?.modelId || "Model ID"}
                 </label>
-                <input
-                  type="text"
-                  id="modelId"
-                  name="modelId"
-                  className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition max-w-full"
-                  placeholder={
-                    dict?.management?.modelIdPlaceHolder || "deepseek-chat"
-                  }
-                  required
-                />
+                <div className="w-full px-4 py-2.5 text-foreground bg-background border rounded-lg max-w-full">
+                  {modelId}
+                </div>
               </div>
             </div>
           </div>
