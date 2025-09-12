@@ -72,6 +72,7 @@
     "adapterSource": "SOURCE",
     "adapterTarget": "TARGET",
     "targetTitle": "Select Target API Provider",
+    "targetTitle2": "Selected Target API Provider",
     "sourceTitle": "Configure OpenAI-Compatible Endpoint",
     "sourceTitle2": "Configured OpenAI-Compatible Endpoint",
     "addHeader": "Add",

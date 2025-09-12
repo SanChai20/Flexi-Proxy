@@ -72,6 +72,7 @@
     "adapterSource": "源服务",
     "adapterTarget": "目标服务",
     "targetTitle": "选择目标 API 供应商",
+    "targetTitle2": "已选择的目标 API 供应商",
     "sourceTitle": "配置 OpenAI-Compatible 端点",
     "sourceTitle2": "已配置的 OpenAI-Compatible 端点",
     "addHeader": "添加",

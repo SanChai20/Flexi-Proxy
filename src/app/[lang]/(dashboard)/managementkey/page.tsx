@@ -118,7 +118,8 @@ export default async function ManagementKeyPage(
                 {dict?.management?.adapterTarget || "TARGET"}
               </span>
               <span className="truncate">
-                {dict?.management?.targetTitle || "Select Target API Provider"}
+                {dict?.management?.targetTitle2 ||
+                  "Selected Target API Provider"}
               </span>
             </h3>
             <div className="space-y-4">
@@ -129,24 +130,15 @@ export default async function ManagementKeyPage(
                 >
                   {dict?.management?.provider || "Provider"}
                 </label>
-                <select
-                  id="provider"
-                  name="provider"
-                  className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI0IDI0IiBzdHJva2U9IiNjY2NjY2MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJtNiA5IDYgNiA2LTYiLz48L3N2Zz4=')] bg-no-repeat bg-[right_12px_center] bg-[length:16px_16px] appearance-none max-w-full"
-                  required
-                >
-                  <option value="">
-                    {dict.management?.selectProvider || "Select a provider"}
-                  </option>
-                  {/* {providers.map((option) => (
-                    <option key={option.id} value={option.id}>
-                      {option.id.toUpperCase()}
-                    </option>
-                  ))} */}
-                </select>
+                <div className="w-full px-4 py-2.5 text-foreground bg-background border rounded-lg max-w-full">
+                  {providerId}
+                </div>
               </div>
             </div>
           </div>
+
+          {/* Divider between sections */}
+          <div className="border-t border-border"></div>
 
           {/* Divider between sections */}
           <div className="border-t border-border"></div>
