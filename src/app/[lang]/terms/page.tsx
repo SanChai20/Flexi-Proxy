@@ -11,7 +11,7 @@ export default async function TermsPage(props: PageProps<"/[lang]/terms">) {
   const { lang } = await props.params;
   const dictionary = await getDictionary(lang as Locale);
   // Read the terms of service markdown file
-  const docPath = path.join(process.cwd(), dictionary.legal.termsPage);
+  const docPath = path.join(process.cwd(), 'public', dictionary.legal.termsPage);
   const docContent = await fs.readFile(docPath, "utf8");
   return (
     <ContentDisplay

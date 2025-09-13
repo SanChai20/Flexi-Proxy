@@ -11,7 +11,7 @@ export default async function PolicyPage(props: PageProps<"/[lang]/policy">) {
   const { lang } = await props.params;
   const dictionary = await getDictionary(lang as Locale);
   // Read the terms of service markdown file
-  const docPath = path.join(process.cwd(), dictionary.legal.policyPage);
+  const docPath = path.join(process.cwd(), 'public', dictionary.legal.policyPage);
   const docContent = await fs.readFile(docPath, "utf8");
   return (
     <ContentDisplay
