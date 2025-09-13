@@ -11,10 +11,10 @@
     "agree": "By continuing, you agree to our"
   },
   "legal": {
-    "termsPage": "legal/TERMS_OF_SERVICE.md",
+    "termsPage": "public/legal/TERMS_OF_SERVICE.md",
     "termsTitle": "Terms of Service",
     "termsSubtitle": "Terms and conditions for using our services",
-    "policyPage": "legal/PRIVACY_POLICY.md",
+    "policyPage": "public/legal/PRIVACY_POLICY.md",
     "policyTitle": "Privacy Policy",
     "policySubtitle": "How we collect, use, and protect your personal information"
   },
@@ -59,12 +59,12 @@
   "documentation": {
     "title": "Documentation",
     "subtitle": "Guiding you through the configuration process",
-    "documentationPage": "docs/DOCUMENTATION.md"
+    "documentationPage": "public/docs/DOCUMENTATION.md"
   },
   "faq": {
     "title": "Frequently Asked Questions",
     "subtitle": "We've compiled answers to common questions about our service",
-    "faqPage": "docs/FAQ.md"
+    "faqPage": "public/docs/FAQ.md"
   },
   "management": {
     "title": "Adapter Management",

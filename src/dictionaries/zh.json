@@ -11,10 +11,10 @@
     "agree": "继续使用即表示您同意我们的"
   },
   "legal": {
-    "termsPage": "legal/TERMS_OF_SERVICE_ZH.md",
+    "termsPage": "public/legal/TERMS_OF_SERVICE_ZH.md",
     "termsTitle": "服务条款",
     "termsSubtitle": "使用我们服务的条款和条件",
-    "policyPage": "legal/PRIVACY_POLICY_ZH.md",
+    "policyPage": "public/legal/PRIVACY_POLICY_ZH.md",
     "policyTitle": "隐私政策",
     "policySubtitle": "我们如何收集、使用和保护您的个人信息"
   },
@@ -59,12 +59,12 @@
   "documentation": {
     "title": "说明文档",
     "subtitle": "指导用户完成配置流程",
-    "documentationPage": "docs/DOCUMENTATION_ZH.md"
+    "documentationPage": "public/docs/DOCUMENTATION_ZH.md"
   },
   "faq": {
     "title": "常见问题",
     "subtitle": "我们对使用前后的诸多问题进行了整理",
-    "faqPage": "docs/FAQ_ZH.md"
+    "faqPage": "public/docs/FAQ_ZH.md"
   },
   "management": {
     "title": "适配器管理",
