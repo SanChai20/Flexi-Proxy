@@ -1,5 +1,10 @@
 import { getDictionary } from "@/lib/dictionary";
 import { Locale } from "i18n-config";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
+import path from "path";
+import fs from 'fs';
 import {
   Card,
   CardContent,
@@ -7,11 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import remarkBreaks from "remark-breaks";
-import path from "path";
-import fs from 'fs';
 
 export default async function DocumentationPage(
   props: PageProps<"/[lang]/documentation">
@@ -24,7 +24,18 @@ export default async function DocumentationPage(
   const docContent = fs.readFileSync(docPath, "utf8");
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
-      <div className="prose prose-gray dark:prose-invert w-full max-w-full">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl">
+            {dict?.documentation?.title || "About FlexiProxy"}
+          </CardTitle>
+          <CardDescription className="text-base">
+            {dict?.documentation?.subtitle ||
+              "Learn more about FlexiProxy, its features, and how to use it"}
+          </CardDescription>
+        </CardHeader>
+      </Card>
+      <div className="mt-6 prose prose-gray dark:prose-invert w-full max-w-full">
         <Markdown
           remarkPlugins={[remarkGfm, remarkBreaks]}
         >

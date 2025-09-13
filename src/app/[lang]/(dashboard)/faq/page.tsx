@@ -1,12 +1,5 @@
 import { getDictionary } from "@/lib/dictionary";
 import { Locale } from "i18n-config";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
@@ -21,14 +14,6 @@ export default async function FAQPage(props: PageProps<"/[lang]/faq">) {
   const docContent = await fs.readFile(docPath, "utf8");
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">{dict?.faq?.title || "Frequently Asked Questions"}</CardTitle>
-          <CardDescription className="text-base">
-            {dict?.faq?.subtitle || "We've compiled answers to common questions about our service"}
-          </CardDescription>
-        </CardHeader>
-      </Card>
       <div className="mt-6 prose prose-gray dark:prose-invert w-full max-w-full">
         <Markdown
           remarkPlugins={[remarkGfm, remarkBreaks]}

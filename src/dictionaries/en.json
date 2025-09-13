@@ -58,8 +58,8 @@
     "home": "Home"
   },
   "documentation": {
-    "title": "Documentation",
-    "subtitle": "Guiding you through the configuration process",
+    "title": "About FlexiProxy",
+    "subtitle": "Learn more about FlexiProxy, its features, and how to use it",
     "documentationPage": "docs/DOCUMENTATION.md"
   },
   "faq": {

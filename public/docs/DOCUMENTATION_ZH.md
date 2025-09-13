@@ -1,64 +1,28 @@
-
-
-# 关于 FlexiProxy
-
 [![GitHub](https://img.shields.io/badge/GitHub-0.5.1-blue?logo=github)](https://github.com/SanChai20/tiny-mcp-host) 
 
 **目录**
 
-- [远程开发](#远程开发)
-  - [前置项](#前置项)
-  - [远程服务器配置及管理](#远程服务器配置及管理)
-    - [A. 通过Remote SSH连接](#a-通过remote-ssh连接)
-    - [B. 创建容器](#b-创建容器)
-    - [C. 部署Github Repository至Volume](#c-部署github-repository至volume)
-    - [D. 打开(附加)容器](#d-打开附加容器)
-    - [E. 版本控制](#e-版本控制)
-  - [常见问题](#常见问题)
-- [本地开发](#本地开发)
-  - [方式一. 使用Docker](#方式一-使用docker)
-    - [A. 下载Docker Desktop](#a-下载docker-desktop)
-    - [B. 安装Docker Desktop](#b-安装docker-desktop)
-    - [C. 重启系统](#c-重启系统)
-    - [D. 容器中打开工程](#d-容器中打开工程)
-    - [E. 版本控制](#e-版本控制-1)
-  - [方式二. 使用虚拟环境（推荐）](#方式二-使用虚拟环境推荐)
-    - [A. 创建虚拟环境](#a-创建虚拟环境)
-    - [B. 激活虚拟环境](#b-激活虚拟环境)
-    - [C. Python解释器选择](#c-python解释器选择)
-    - [D. 第三方库的安装](#d-第三方库的安装)
-    - [E. 同步至requirements.txt](#e-同步至requirementstxt)
-    - [F. VS Code推荐插件安装](#f-vs-code推荐插件安装)
-    - [G. Ngrok反向代理调试Webhook](#g-ngrok反向代理调试webhook)
-- [环境变量的配置与更新](#环境变量的配置与更新)
-  - [配置信息](#配置信息)
-  - [环境变量的拉取](#环境变量的拉取)
-  - [环境变量的更新](#环境变量的更新)
-- [其它易用功能](#其它易用功能)
-  - [根据依赖文件安装库](#根据依赖文件安装库)
-  - [同步本地库至依赖文件](#同步本地库至依赖文件)
-  - [启动并查看API文档](#启动并查看api文档)
-- [调试相关](#调试相关)
-- [开发规范](#开发规范)
-  - [REST API](#rest-api)
-  - [Python](#python)
-- [Vibe Coding](#vibe-coding)
-  - [Cline + Qwen](#cline--qwen)
-  - [Claude Code + Qwen (推荐)](#claude-code--qwen-推荐)
-    - [Windows](#windows)
-    - [macOS](#macos)
-- [常见问题及解决方法](#常见问题及解决方法)
+- [概述](#概述)
+- [主要特性](#主要特性)
+- [用户使用指南](#用户使用指南)
+  - [创建适配器](#创建适配器)
+  - [作为目标平台使用](#作为目标平台使用)
 
+
+*最后更新：2025年9月13日*
 
 # 概述
 
+FlexiProxy 是一个基于 OpenAI-Compatible API 向不同目标供应商平台兼容适配的服务代理。它允许用户在已有AI客户端下使用不同的后端服务，解决了某些客户端易用但其可用的大语言模型后端服务在某些地区下较为昂贵或无法使用的问题。
+
+# 主要特性
+
+- **区域灵活性**：克服区域限制和定价问题
+- **数据统计**：可选的使用跟踪和统计（默认禁用）
+- **简单配置**：通过适配器将客户端请求映射到提供商端点的简单设置
 
 
-# 目的与用途
-
-
-
-# 用户使用说明
+# 用户使用指南
 
 ## 创建适配器
 
@@ -87,173 +51,67 @@ A. 创建适配器前请先准备好现有AI供应商平台的OpenAI-Compatible 
     - 模型 ID: **grok-3**、**grok-4**等，详情参考[xAI 文档](https://docs.x.ai/docs/models)
 
 
-B. 根据以上信息可填写**源服务**，在**目标服务**处选择目标供应商平台，这里以**Anthropic**为例
+B. 选择并点击左侧侧边栏中的**管理面板**图标，如果首次创建，会自动跳转至**创建适配器**的页面，根据以上信息可填写**源服务**，在**目标服务**处选择目标供应商平台，这里以**Anthropic**为例，填写完毕后点击确认
+
+![](https://flexiproxy.com/public/screenshots/zh/createadapter.PNG)
 
 
+C. 创建成功后会生成目标平台可用的**API Key**（将跳转至**API Key**界面），需要用户自行复制和妥善保存，如果后续使用过程中不慎丢失，可以参考**步骤E**
+
+![](https://flexiproxy.com/public/screenshots/zh/apikey.png)
 
 
-C. 
+D. 上述步骤完成后点击**返回管理面板**按键，**管理面板**页面中可自行添加新的适配器，同时也会将目标平台可用的**Base URL**展示出来，但是不会显示上一步的**API Key**，如果不慎丢失
 
+![](https://flexiproxy.com/public/screenshots/zh/management.png)
 
-
-
-
-
-## 获取/复制 API Key
-
-在创建适配器后，
-
-
+E. 适配器每一行最右方有一个⚙图标，点击后会在弹框中找到如下功能
+- **获取 API Key**: 如果**API Key**不慎丢失，可以通过此功能重新生成，重复**步骤C**即可
+- **删除**: 删除当前适配器，对于用户创建的适配器存在最大数量限制，如果无法创建新的，请删除原有的
 
 
 ## 作为目标平台使用
 
-创建完成后
+[创建适配器](#创建适配器)完成后，有两个字段是关键的，一个是**管理面板**中目标平台可用的**Base URL**，另一个是通过**源服务**生成的新的**API Key**，下面以两个常用的AI客户端为例，举例说明如何使用：
 
+- **Visual Studio Code - Cline插件** (天然支持OpenAI-Compatible API，这里仅用于举例)
 
+    我们继续以**Anthropic**为例，在Cline窗口下方选择**Model/API Provider**，在弹框中按照如下配置:
 
+    - API Provider: **Anthropic**
+    - Anthropic API Key: **填写上述步骤生成的API Key** 
+    - Use custom base URL: **勾选此选项，然后填写管理面板下的Base URL**
 
-# 
+- **Claude Code**
 
+    这里不展开如何安装Claude Code，只说明如何配置。Claude Code通过两种方式来配置**Base URL**和**API Key**，方式一是通过系统环境变量，方式二是通过Claude Code Settings文件配置，详情可以参考Anthropic的[相关文档](https://docs.anthropic.com/en/docs/claude-code/llm-gateway#litellm-configuration)
+    
+    以Windows系统为例，按照方式一进行配置:
 
+    - 使用Cmd命令行窗口，设置如下变量，并用上述获取到的API Key和Base URL分别代替 YOUR_TARGET_PROVIDER_API_KEY 和 YOUR_TARGET_PROVIDER_BASE_URL
+        ```cmd
+        setx ANTHROPIC_AUTH_TOKEN "YOUR_TARGET_PROVIDER_API_KEY"
+        setx ANTHROPIC_BASE_URL "YOUR_TARGET_PROVIDER_BASE_URL"
+        ```
+    - 打开一个新的CMD窗口，运行以下命令，检查环境变量是否生效
+        ```cmd
+        echo %ANTHROPIC_AUTH_TOKEN%
+        echo %ANTHROPIC_BASE_URL%
+        ```
+    - 正常启动Claude Code即可使用
 
-# 
+    按照方式二进行配置:
 
-
-
-
-
-
-
-
-## 概述
-
-FlexiProxy 是一个在 OpenAI 兼容客户端和各种 AI 服务提供商之间充当中介的服务。它允许用户在不更改客户端配置的情况下无缝切换不同的 AI 服务提供商，解决了客户端使用方便但服务器端服务在某些地区可能昂贵或不可用的问题。
-
-## 主要特性
-
-- **提供商无关性**：将 OpenAI 兼容的 API 调用转换为可与各种 AI 服务提供商一起使用
-- **区域灵活性**：克服区域限制和定价问题
-- **数据统计**：可选的使用跟踪和统计（默认禁用）
-- **简单配置**：通过适配器将客户端请求映射到提供商端点的简单设置
-
-## 架构
-
-FlexiProxy 由几个核心组件组成：
-
-1. **提供商**：已注册的 AI 服务提供商及其基础 URL
-2. **适配器**：客户端配置和提供商配置之间的映射
-3. **身份验证**：基于 JWT 的 API 访问身份验证
-4. **Redis 存储**：提供商和适配器的持久化存储
-
-## API 端点
-
-### 提供商管理
-
-#### 列出可用提供商
-```http
-GET /api/providers
-```
-获取所有已注册提供商的列表。
-
-#### 获取提供商详情
-```http
-GET /api/providers/{id}
-```
-通过 ID 获取特定提供商的详细信息。
-
-#### 注册/更新提供商
-```http
-POST /api/providers/{id}
-```
-注册新提供商或更新现有提供商。
-载荷：
-```json
-{
-  "url": "https://provider-api-endpoint.com"
-}
-```
-
-#### 删除提供商
-```http
-DELETE /api/providers/{id}
-```
-从注册表中删除提供商。
-
-### 适配器管理
-
-#### 创建适配器
-```http
-POST /api/adapters
-```
-创建一个新的适配器，将客户端配置映射到提供商。
-载荷：
-```json
-{
-  "provider_id": "provider-name",
-  "base_url": "https://client-base-url.com",
-  "model_id": "model-name"
-}
-```
-
-#### 列出适配器
-```http
-GET /api/adapters
-```
-获取已认证用户的所有适配器。
-
-#### 删除适配器
-```http
-DELETE /api/adapters
-```
-删除适配器。
-载荷：
-```json
-{
-  "create_time": "timestamp"
-}
-```
-
-## 工作原理
-
-1. **提供商注册**：管理员使用各自的 API 端点注册 AI 服务提供商
-2. **适配器创建**：用户创建适配器，将 OpenAI 兼容的客户端设置映射到特定提供商
-3. **请求代理**：当客户端向 FlexiProxy 发出 API 请求时：
-   - 验证请求
-   - 查找适当的适配器
-   - 将请求路由到目标提供商
-   - 将提供商的响应返回给客户端
-
-## 身份验证
-
-所有 API 请求都需要在 Authorization 头中使用 Bearer 令牌进行身份验证：
-```
-Authorization: Bearer <jwt-token>
-```
-
-## 配置
-
-FlexiProxy 需要以下环境变量：
-
-- `UPSTASH_REDIS_REST_URL`：用于存储的 Redis 数据库 URL
-- `UPSTASH_REDIS_REST_TOKEN`：Redis 身份验证令牌
-- 其他 Next.js 和身份验证相关的环境变量
-
-## 数据统计
-
-FlexiProxy 可以选择性地跟踪使用统计信息。此功能默认禁用，可以在设置中启用。启用后，它提供 API 使用模式的见解，并有助于容量规划。
-
-## 使用场景
-
-1. **区域访问**：访问在某些地区可能受限制的 AI 服务
-2. **成本优化**：根据定价在提供商之间切换
-3. **服务冗余**：当主要服务不可用时故障转移到替代提供商
-4. **统一接口**：无论底层提供商如何，都使用一致的 API 接口
-
-## 入门指南
-
-1. 设置所需的环境变量
-2. 注册您首选的 AI 服务提供商
-3. 为您的客户端配置创建适配器
-4. 配置您的 OpenAI 兼容客户端以使用 FlexiProxy 作为其基础 URL
-5. 如需要，可在设置中启用数据统计
+    - 创建.claude目录，并在目录下创建**settings.json**文件，文件内容如下:
+        ```json
+        {
+            "env": {
+                "ANTHROPIC_BASE_URL": "YOUR_TARGET_PROVIDER_BASE_URL",
+                "ANTHROPIC_AUTH_TOKEN": "YOUR_TARGET_PROVIDER_API_KEY"
+            }
+        }
+        ```
+    - 通过**claude**指令启动时，需要指定配置文件
+        ```
+        claude --settings="./your/path/to/.claude/settings.json"
+        ```

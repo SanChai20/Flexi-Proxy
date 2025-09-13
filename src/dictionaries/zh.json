@@ -58,8 +58,8 @@
     "home": "主页"
   },
   "documentation": {
-    "title": "说明文档",
-    "subtitle": "指导用户完成配置流程",
+    "title": "关于 FlexiProxy",
+    "subtitle": "了解有关 FlexiProxy 及其使用方法的更多信息",
     "documentationPage": "docs/DOCUMENTATION_ZH.md"
   },
   "faq": {
