@@ -104,11 +104,9 @@
   "settings": {
     "title": "Settings",
     "subtitle": "Configure your account and preferences",
-    "language": "Language",
-    "light": "Light",
-    "dark": "Dark",
-    "system": "System",
-    "theme": "Theme"
+    "collection": "Data Collection",
+    "collectionSubtitle": "Enable or disable data collection for analytics",
+    "apply": "Apply Changes"
   },
   "subscription": {
     "title": "Subscriptions",
