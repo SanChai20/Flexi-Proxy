@@ -53,7 +53,7 @@ export default async function ManagementPage(
   }
 
   return (
-    <section className="w-full max-w-4xl mx-auto px-0">
+    <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
       <Card>
         <CardHeader>
           <div className="flex flex-row items-center justify-between">
@@ -103,7 +103,7 @@ export default async function ManagementPage(
                     <td className="w-3/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                       <div className="flex justify-start gap-1 xs:gap-2">
                         <span
-                          className="font-mono text-[10px] xs:text-xs text-muted-foreground truncate max-w-[140px] xs:max-w-[160px] sm:max-w-[240px] md:text-sm md:max-w-[320px] lg:max-w-[320px] xl:max-w-[320px]"
+                          className="font-mono text-[10px] xs:text-xs text-muted-foreground truncate transition-all duration-300 ease-in-out max-w-[140px] xs:max-w-[140px] sm:max-w-[180px] md:max-w-[240px] lg:max-w-[320px]"
                           title={adapter.provider_url}
                         >
                           {adapter.provider_url}

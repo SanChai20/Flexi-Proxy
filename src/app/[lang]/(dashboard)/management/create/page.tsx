@@ -26,7 +26,7 @@ export default async function ManagementCreatePage(
     const providers: { id: string; url: string }[] =
         await getAllTargetProviders();
     return (
-        <section className="w-full max-w-4xl mx-auto px-0">
+        <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
             <Card>
                 <CardHeader>
                     <CardTitle className="text-2xl">
@@ -69,10 +69,10 @@ export default async function ManagementCreatePage(
                     {/* Source Section (OpenAI-Compatible) */}
                     <div className="p-6">
                         <h3 className="text-md font-semibold text-foreground mb-4 flex items-center">
-                            <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2">
+                            <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2 flex-shrink-0">
                                 {dict?.management?.adapterSource || "SOURCE"}
                             </span>
-                            <span className="truncate max-w-[200px] xs:max-w-[180px] sm:max-w-[220px] md:max-w-[280px] lg:max-w-[320px]">
+                            <span className="truncate">
                                 {dict?.management?.sourceTitle ||
                                     "Configure OpenAI-Compatible Endpoint"}
                             </span>
@@ -158,10 +158,10 @@ export default async function ManagementCreatePage(
                     {/* Target Section (API Provider) */}
                     <div className="p-6">
                         <h3 className="text-md font-semibold text-foreground mb-4 flex items-center">
-                            <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2">
+                            <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2 flex-shrink-0">
                                 {dict?.management?.adapterTarget || "TARGET"}
                             </span>
-                            <span className="truncate max-w-[200px] xs:max-w-[180px] sm:max-w-[220px] md:max-w-[280px] lg:max-w-[320px]">
+                            <span className="truncate">
                                 {dict?.management?.targetTitle || "Select Target API Provider"}
                             </span>
                         </h3>

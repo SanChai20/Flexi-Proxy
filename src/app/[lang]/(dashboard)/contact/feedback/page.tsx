@@ -18,7 +18,7 @@ export default async function ContactFeedbackPage(props: PageProps<"/[lang]/cont
     const message = searchParams.message || '';
 
     return (
-        <section className="w-full max-w-4xl mx-auto px-0">
+        <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
             <Card>
                 <CardHeader>
                     <CardTitle className="text-2xl">{dict?.contact?.title || "Contact Us"}</CardTitle>

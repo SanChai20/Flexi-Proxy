@@ -58,7 +58,8 @@
   },
   "documentation": {
     "title": "Documentation",
-    "subtitle": "Guiding you through the configuration process"
+    "subtitle": "Guiding you through the configuration process",
+    "documentationPage": "docs/DOCUMENTATION.md"
   },
   "faq": {
     "title": "Frequently Asked Questions",

@@ -3,6 +3,8 @@ import { ContentDisplay } from "@/components/ui/contentdisplay";
 import path from "path";
 import { promises as fs } from "fs";
 import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
 import { Locale } from "i18n-config";
 
 export default async function PolicyPage(props: PageProps<"/[lang]/policy">) {
@@ -16,7 +18,7 @@ export default async function PolicyPage(props: PageProps<"/[lang]/policy">) {
       title={dictionary.legal.policyTitle}
       subtitle={dictionary.legal.policySubtitle}
     >
-      <Markdown children={termsContent} />
+      <Markdown remarkPlugins={[remarkGfm, remarkBreaks]} children={termsContent} />
     </ContentDisplay>
   );
 }
