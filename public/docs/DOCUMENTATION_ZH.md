@@ -51,7 +51,7 @@ C. 创建成功后会生成目标平台可用的**API Key**（将跳转至**API 
 ![](https://flexiproxy.com/screenshots/zh/apikey.PNG)
 
 
-D. 上述步骤完成后点击**返回管理面板**按键，**管理面板**页面中可自行添加新的适配器，同时也会将目标平台可用的**Base URL**展示出来，但是不会显示上一步的**API Key**，如果不慎丢失
+D. 上述步骤完成后点击**返回管理面板**按键，**管理面板**页面中可自行添加新的适配器，同时也会将目标平台可用的**Base URL**展示出来，但是不会显示上一步的**API Key**
 
 ![](https://flexiproxy.com/screenshots/zh/management.PNG)
 
