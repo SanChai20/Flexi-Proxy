@@ -1,6 +1,6 @@
 {
-  "name": "api-base-router",
-  "version": "0.1.0",
+  "name": "flexi-proxy",
+  "version": "0.5.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
