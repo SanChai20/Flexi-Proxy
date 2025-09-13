@@ -19,7 +19,7 @@ export default async function DocumentationPage(
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
   // Read the documentation markdown file
-  const docPath = path.join(process.cwd(), dict?.documentation?.documentationPage || "docs/DOCUMENTATION.md");
+  const docPath = path.join(process.cwd(), dict.documentation.documentationPage);
   const docContent = await fs.readFile(docPath, "utf8");
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
