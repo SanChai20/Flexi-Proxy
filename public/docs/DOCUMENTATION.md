@@ -34,10 +34,15 @@ d
 
 --
 
+[![GitHub](https://img.shields.io/badge/GitHub-0.5.1-blue?logo=github)](https://github.com/SanChai20/tiny-mcp-host)
+
 
 ![](https://pandao.github.io/editor.md/images/logos/editormd-logo-180x180.png)
 
-![](https://img.shields.io/github/stars/pandao/editor.md.svg) ![](https://img.shields.io/github/forks/pandao/editor.md.svg) ![](https://img.shields.io/github/tag/pandao/editor.md.svg) ![](https://img.shields.io/github/release/pandao/editor.md.svg) ![](https://img.shields.io/github/issues/pandao/editor.md.svg) ![](https://img.shields.io/bower/v/editor.md.svg)
+![](https://img.shields.io/github/stars/pandao/editor.md.svg) ![](https://img.shields.io/github/forks/pandao/editor.md.svg) ![](https://img.shields.io/github/tag/pandao/editor.md.svg) ![](https://img.shields.io/github/release/pandao/editor.md.svg) ![](https://img.shields.io/github/issues/pandao/editor.md.svg) 
+
+
+![](https://img.shields.io/bower/v/editor.md.svg)
 
 **目录 (Table of Contents)**
 

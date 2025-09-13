@@ -12,6 +12,7 @@ export const i18nRouteWhitelist = [
   "management",
   "management/create",
   "management/modify",
+  "management/key",
   "settings",
   "faq",
 ];

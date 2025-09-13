@@ -10,14 +10,15 @@ import {
 import { OnceButton } from "@/components/ui/oncebutton";
 import { redirect } from "next/navigation";
 import { jwtSign } from "@/lib/jwt";
+import { signOneTimeToken } from "@/lib/actions";
 
 export default async function ManagementModifyPage(
     props: PageProps<"/[lang]/management/modify">
 ) {
     const { lang } = await props.params;
     const dict = await getDictionary(lang as Locale);
-    const { baseUrl, modelId, providerId, createTime } = await props.searchParams;
-    if (!baseUrl || !modelId || !providerId || !createTime) {
+    const params = await props.searchParams;
+    if (!params || !params.baseUrl || !params.modelId || !params.providerId || !params.createTime) {
         redirect(`/${lang}/management`);
     }
     return (
@@ -37,9 +38,9 @@ export default async function ManagementModifyPage(
                 action={async (formData) => {
                     "use server";
                     const apiKey = formData.get("apiKey") as string;
-                    const { token, error } = await jwtSign({ api_key: apiKey, create_time: createTime }, 3600);
-                    if (token !== undefined) {
-                        redirect(`/${lang}/management?token=${encodeURIComponent(token)}`);
+                    const tempToken: undefined | { token: string } = await signOneTimeToken(apiKey);
+                    if (tempToken !== undefined) {
+                        redirect(`/${lang}/management/key?token=${encodeURIComponent(tempToken.token)}`);
                     }
                 }}
                 className="mt-6"
@@ -72,7 +73,7 @@ export default async function ManagementModifyPage(
                                         type="text"
                                         id="baseUrl"
                                         name="baseUrl"
-                                        value={baseUrl}
+                                        value={params.baseUrl}
                                         readOnly
                                         className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition cursor-not-allowed opacity-75"
                                     />
@@ -110,7 +111,7 @@ export default async function ManagementModifyPage(
                                     type="text"
                                     id="modelId"
                                     name="modelId"
-                                    value={modelId}
+                                    value={params.modelId}
                                     readOnly
                                     className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition cursor-not-allowed opacity-75"
                                 />
@@ -144,7 +145,7 @@ export default async function ManagementModifyPage(
                                     type="text"
                                     id="provider"
                                     name="provider"
-                                    value={providerId}
+                                    value={params.providerId}
                                     readOnly
                                     className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition cursor-not-allowed opacity-75"
                                 />

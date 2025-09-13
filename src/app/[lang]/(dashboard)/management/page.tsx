@@ -32,26 +32,9 @@ export default async function ManagementPage(
     model_id: string;
     create_time: string;
   }[] = await getAllUserAdapters();
-
-  const { token } = await props.searchParams;
-  if (token && typeof token === "string") {
-    const { payload, error } = await jwtVerify(token);
-    if (payload) {
-      adapters = adapters.map(adapter => {
-        if (adapter.create_time === payload["create_time"]) {
-          return {
-            ...adapter,
-            api_key: payload["api_key"],
-          }
-        }
-        return adapter;
-      })
-    }
-  }
   if (adapters.length <= 0) {
     redirect(`/${lang}/management/create`);
   }
-
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
       <Card>
@@ -127,55 +110,45 @@ export default async function ManagementPage(
                           align="end"
                           className="w-32 xs:w-36 rounded-lg"
                         >
-                          {
-                            'api_key' in adapter && typeof adapter.api_key === 'string' ?
-                              <DropdownMenuItem
-                                className="w-full cursor-pointer text-destructive focus:text-destructive text-xs xs:text-sm"
-                              >
-                                <ClipboardButton text={adapter.api_key}>
-                                  {dict?.management?.copyApiKey || "Copy API Key"}
-                                </ClipboardButton>
-                              </DropdownMenuItem>
-                              : <form
-                                action={
-                                  async (formData) => {
-                                    "use server";
-                                    const adapter = formData.get("adapter") as string;
-                                    const adapterJSON: {
-                                      provider_id: string;
-                                      provider_url: string;
-                                      base_url: string;
-                                      model_id: string;
-                                      create_time: string;
-                                    } = JSON.parse(adapter);
-                                    redirect(
-                                      `/${lang}/management/modify?baseUrl=${encodeURIComponent(
-                                        adapterJSON.base_url
-                                      )}&modelId=${encodeURIComponent(
-                                        adapterJSON.model_id
-                                      )}&providerId=${encodeURIComponent(
-                                        adapterJSON.provider_id
-                                      )}&createTime=${encodeURIComponent(
-                                        adapterJSON.create_time
-                                      )}`
-                                    );
-                                  }}
-                              >
-                                <input
-                                  type="hidden"
-                                  name="adapter"
-                                  value={JSON.stringify(adapter)}
-                                />
-                                <DropdownMenuItem
-                                  className="w-full cursor-pointer text-destructive focus:text-destructive text-xs xs:text-sm"
-                                  asChild
-                                >
-                                  <button type="submit">
-                                    {dict?.management?.getApiKey || "Get API Key"}
-                                  </button>
-                                </DropdownMenuItem>
-                              </form>
-                          }
+                          <form
+                            action={
+                              async (formData) => {
+                                "use server";
+                                const adapter = formData.get("adapter") as string;
+                                const adapterJSON: {
+                                  provider_id: string;
+                                  provider_url: string;
+                                  base_url: string;
+                                  model_id: string;
+                                  create_time: string;
+                                } = JSON.parse(adapter);
+                                redirect(
+                                  `/${lang}/management/modify?baseUrl=${encodeURIComponent(
+                                    adapterJSON.base_url
+                                  )}&modelId=${encodeURIComponent(
+                                    adapterJSON.model_id
+                                  )}&providerId=${encodeURIComponent(
+                                    adapterJSON.provider_id
+                                  )}&createTime=${encodeURIComponent(
+                                    adapterJSON.create_time
+                                  )}`
+                                );
+                              }}
+                          >
+                            <input
+                              type="hidden"
+                              name="adapter"
+                              value={JSON.stringify(adapter)}
+                            />
+                            <DropdownMenuItem
+                              className="w-full cursor-pointer text-destructive focus:text-destructive text-xs xs:text-sm"
+                              asChild
+                            >
+                              <button type="submit">
+                                {dict?.management?.getApiKey || "Get API Key"}
+                              </button>
+                            </DropdownMenuItem>
+                          </form>
                           <form
                             action={async (formData) => {
                               "use server";

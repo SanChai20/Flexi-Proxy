@@ -48,6 +48,7 @@
     "management": "管理面板",
     "create": "创建适配器",
     "modify": "修改适配器",
+    "key": "API Key",
     "subscription": "订阅计划",
     "documentation": "说明文档",
     "contact": "联系我们",
@@ -99,7 +100,10 @@
     "getApiKey": "获取 API Key",
     "copyApiKey": "复制 API Key",
     "keyTitle": "修改适配器",
-    "keySubtitle": "获取目标供应商可用的API Key"
+    "keySubtitle": "获取目标供应商可用的API Key",
+    "copyKeyTitle": "你的 API Key",
+    "copyKeySubtitle": "请复制并保存您的 API Key",
+    "back": "返回管理面板"
   },
   "settings": {
     "title": "设置",

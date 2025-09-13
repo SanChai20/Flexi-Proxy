@@ -24,15 +24,7 @@ export default async function DocumentationPage(
   const docContent = fs.readFileSync(docPath, "utf8");
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">{dict?.documentation?.title || "Documentation"}</CardTitle>
-          <CardDescription className="text-base">
-            {dict?.documentation?.subtitle || "Guiding you through the configuration process"}
-          </CardDescription>
-        </CardHeader>
-      </Card>
-      <div className="mt-6 prose prose-gray dark:prose-invert w-full max-w-full">
+      <div className="prose prose-gray dark:prose-invert w-full max-w-full">
         <Markdown
           remarkPlugins={[remarkGfm, remarkBreaks]}
         >

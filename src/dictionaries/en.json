@@ -48,6 +48,7 @@
     "management": "Management",
     "create": "Create Adapter",
     "modify": "Modify Adapter",
+    "key": "API Key",
     "subscription": "Subscriptions",
     "documentation": "Documentation",
     "contact": "Contact Us",
@@ -99,7 +100,10 @@
     "getApiKey": "Get API Key",
     "copyApiKey": "Copy API Key",
     "keyTitle": "Modify Adapter",
-    "keySubtitle": "Get available API keys for target provider"
+    "keySubtitle": "Get available API keys for target provider",
+    "copyKeyTitle": "Your API Key",
+    "copyKeySubtitle": "Make sure to copy and save your API key now",
+    "back": "Back to Management"
   },
   "settings": {
     "title": "Settings",

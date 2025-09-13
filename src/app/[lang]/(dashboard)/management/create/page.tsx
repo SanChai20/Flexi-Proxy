@@ -14,9 +14,8 @@ import {
 } from "@/components/ui/card";
 import { HelpCircleIcon } from "lucide-react";
 import { OnceButton } from "@/components/ui/oncebutton";
-import { createAdapter, getAllTargetProviders } from "@/lib/actions";
+import { createAdapter, getAllTargetProviders, signOneTimeToken } from "@/lib/actions";
 import { redirect } from "next/navigation";
-import { jwtSign } from "@/lib/jwt";
 
 export default async function ManagementCreatePage(
     props: PageProps<"/[lang]/management/create">
@@ -56,9 +55,9 @@ export default async function ManagementCreatePage(
                         }
                         | undefined = await createAdapter(provider, baseUrl, modelId);
                     if (result !== undefined) {
-                        const { token, error } = await jwtSign({ api_key: apiKey, create_time: result.create_time }, 3600);
-                        if (token !== undefined) {
-                            redirect(`/${lang}/management?token=${encodeURIComponent(token)}`);
+                        const tempToken: undefined | { token: string } = await signOneTimeToken(apiKey);
+                        if (tempToken !== undefined) {
+                            redirect(`/${lang}/management/key?token=${encodeURIComponent(tempToken.token)}`);
                         }
                     }
                 }}

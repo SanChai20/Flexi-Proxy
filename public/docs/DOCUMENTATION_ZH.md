@@ -1,402 +1,259 @@
----
-title: YAML Front Matter
-description: A very simple way to add structured data to a page.
----
-
-# Editor.md
 
 
-<a href="https://oschina.net">hhh</a>
+# 关于 FlexiProxy
 
-<img src="https://pandao.github.io/editor.md/images/logos/editormd-logo-180x180.png">
+[![GitHub](https://img.shields.io/badge/GitHub-0.5.1-blue?logo=github)](https://github.com/SanChai20/tiny-mcp-host) 
 
-# 换行TEST
+**目录**
 
-1
-2
-3
+- [远程开发](#远程开发)
+  - [前置项](#前置项)
+  - [远程服务器配置及管理](#远程服务器配置及管理)
+    - [A. 通过Remote SSH连接](#a-通过remote-ssh连接)
+    - [B. 创建容器](#b-创建容器)
+    - [C. 部署Github Repository至Volume](#c-部署github-repository至volume)
+    - [D. 打开(附加)容器](#d-打开附加容器)
+    - [E. 版本控制](#e-版本控制)
+  - [常见问题](#常见问题)
+- [本地开发](#本地开发)
+  - [方式一. 使用Docker](#方式一-使用docker)
+    - [A. 下载Docker Desktop](#a-下载docker-desktop)
+    - [B. 安装Docker Desktop](#b-安装docker-desktop)
+    - [C. 重启系统](#c-重启系统)
+    - [D. 容器中打开工程](#d-容器中打开工程)
+    - [E. 版本控制](#e-版本控制-1)
+  - [方式二. 使用虚拟环境（推荐）](#方式二-使用虚拟环境推荐)
+    - [A. 创建虚拟环境](#a-创建虚拟环境)
+    - [B. 激活虚拟环境](#b-激活虚拟环境)
+    - [C. Python解释器选择](#c-python解释器选择)
+    - [D. 第三方库的安装](#d-第三方库的安装)
+    - [E. 同步至requirements.txt](#e-同步至requirementstxt)
+    - [F. VS Code推荐插件安装](#f-vs-code推荐插件安装)
+    - [G. Ngrok反向代理调试Webhook](#g-ngrok反向代理调试webhook)
+- [环境变量的配置与更新](#环境变量的配置与更新)
+  - [配置信息](#配置信息)
+  - [环境变量的拉取](#环境变量的拉取)
+  - [环境变量的更新](#环境变量的更新)
+- [其它易用功能](#其它易用功能)
+  - [根据依赖文件安装库](#根据依赖文件安装库)
+  - [同步本地库至依赖文件](#同步本地库至依赖文件)
+  - [启动并查看API文档](#启动并查看api文档)
+- [调试相关](#调试相关)
+- [开发规范](#开发规范)
+  - [REST API](#rest-api)
+  - [Python](#python)
+- [Vibe Coding](#vibe-coding)
+  - [Cline + Qwen](#cline--qwen)
+  - [Claude Code + Qwen (推荐)](#claude-code--qwen-推荐)
+    - [Windows](#windows)
+    - [macOS](#macos)
+- [常见问题及解决方法](#常见问题及解决方法)
 
-a  
-b
 
----
-
-q\
-d
-
-#HEAD TEST
-
-# Smart Test
-
-...
-
----
-
---
+# 概述
 
 
-![](https://pandao.github.io/editor.md/images/logos/editormd-logo-180x180.png)
 
-![](https://img.shields.io/github/stars/pandao/editor.md.svg) ![](https://img.shields.io/github/forks/pandao/editor.md.svg) ![](https://img.shields.io/github/tag/pandao/editor.md.svg) ![](https://img.shields.io/github/release/pandao/editor.md.svg) ![](https://img.shields.io/github/issues/pandao/editor.md.svg) ![](https://img.shields.io/bower/v/editor.md.svg)
+# 目的与用途
 
-**目录 (Table of Contents)**
 
-[TOCM]
 
-[TOC]
+# 用户使用说明
 
-# Heading 1
-## Heading 2               
-### Heading 3
-#### Heading 4
-##### Heading 5
-###### Heading 6
-# Heading 1 link [Heading link](https://github.com/pandao/editor.md "Heading link")
-## Heading 2 link [Heading link](https://github.com/pandao/editor.md "Heading link")
-### Heading 3 link [Heading link](https://github.com/pandao/editor.md "Heading link")
-#### Heading 4 link [Heading link](https://github.com/pandao/editor.md "Heading link") Heading link [Heading link](https://github.com/pandao/editor.md "Heading link")
-##### Heading 5 link [Heading link](https://github.com/pandao/editor.md "Heading link")
-###### Heading 6 link [Heading link](https://github.com/pandao/editor.md "Heading link")
+## 创建适配器
 
-#### 标题（用底线的形式）Heading (underline)
+> 适配器使用用户提供的API信息进行后台请求，同时向目标平台API兼容，因此FlexiProxy不会直接提供大语言模型服务，而是作为中间层进行请求转发
 
-This is an H1
-=============
+A. 创建适配器前请先准备好现有AI供应商平台的OpenAI-Compatible Base URL和API Key，以下平台样例可供参考（以官网为准），凡是支持OpenAI-Compatible API的平台都可使用：
 
-This is an H2
--------------
+- [DeepSeek](https://www.deepseek.com/)
+    - Base URL: **https://api.deepseek.com/v1**
+    - API Key: 前往[此处](https://platform.deepseek.com/)获取
+    - 模型 ID: **deepseek-chat**、**deepseek-reasoner**等，详情参考[DeepSeek API文档](https://api-docs.deepseek.com/)
 
-### 字符效果和横线等
-                
-----
+- [DeepInfra](https://deepinfra.com/)
+    - Base URL: **https://api.deepinfra.com/v1/openai**
+    - API Key: 前往[此处](https://deepinfra.com/dash/api_keys)获取
+    - 模型 ID: **openai/gpt-oss-120b**、**zai-org/GLM-4.5**等，详情参考[DeepInfra Models](https://deepinfra.com/models)
 
-~~删除线~~ <s>删除线（开启识别HTML标签时）</s>
-*斜体字*      _斜体字_
-**粗体**  __粗体__
-***粗斜体*** ___粗斜体___
+- [Alibaba Qwen](https://bailian.console.aliyun.com/)
+    - Base URL: **https://dashscope.aliyuncs.com/compatible-mode/v1**
+    - API Key: 前往[此处](https://bailian.console.aliyun.com/?tab=model#/api-key)获取
+    - 模型 ID: **qwen3-coder-plus**、**qwen-plus**等，详情参考[模型广场](https://bailian.console.aliyun.com/)
 
-上标：X<sub>2</sub>，下标：O<sup>2</sup>
+- [xAI Grok](https://x.ai/)
+    - Base URL: **https://api.x.ai/v1**
+    - API Key: 前往[此处](https://console.x.ai/team/default/api-keys)获取
+    - 模型 ID: **grok-3**、**grok-4**等，详情参考[xAI 文档](https://docs.x.ai/docs/models)
 
-**缩写(同HTML的abbr标签)**
 
-> 即更长的单词或短语的缩写形式，前提是开启识别HTML标签时，已默认开启
+B. 根据以上信息可填写**源服务**，在**目标服务**处选择目标供应商平台，这里以**Anthropic**为例
 
-The <abbr title="Hyper Text Markup Language">HTML</abbr> specification is maintained by the <abbr title="World Wide Web Consortium">W3C</abbr>.
 
-### 引用 Blockquotes
 
-> 引用文本 Blockquotes
 
-引用的行内混合 Blockquotes
-                    
-> 引用：如果想要插入空白换行`即<br />标签`，在插入处先键入两个以上的空格然后回车即可，[普通链接](http://localhost/)。
+C. 
 
-### 锚点与链接 Links
 
-[普通链接](http://localhost/)
 
-[普通链接带标题](http://localhost/ "普通链接带标题")
 
-直接链接：<https://github.com>
 
-https://baidu.com
 
-[锚点链接][anchor-id] 
+## 获取/复制 API Key
 
-[anchor-id]: http://www.this-anchor-link.com/
+在创建适配器后，
 
-[mailto:test.test@gmail.com](mailto:test.test@gmail.com)
 
-GFM a-tail link [@pandao](https://my.oschina.net/u/3691274)  邮箱地址自动链接 test.test@gmail.com  www@vip.qq.com
 
-> @pandao
 
-### 多语言代码高亮 Codes
+## 作为目标平台使用
 
-#### 行内代码 Inline code
+创建完成后
 
-执行命令：`npm install marked`
 
-#### 缩进风格
 
-即缩进四个空格，也做为实现类似 `<pre>` 预格式化文本 ( Preformatted Text ) 的功能。
 
-    <?php
-        echo "Hello world!";
-    ?>
-    
-预格式化文本：
+# 
 
-    | First Header  | Second Header |
-    | ------------- | ------------- |
-    | Content Cell  | Content Cell  |
-    | Content Cell  | Content Cell  |
 
-#### JS代码　
 
-```javascript
-function test() {
-	console.log("Hello world!");
+# 
+
+
+
+
+
+
+
+
+## 概述
+
+FlexiProxy 是一个在 OpenAI 兼容客户端和各种 AI 服务提供商之间充当中介的服务。它允许用户在不更改客户端配置的情况下无缝切换不同的 AI 服务提供商，解决了客户端使用方便但服务器端服务在某些地区可能昂贵或不可用的问题。
+
+## 主要特性
+
+- **提供商无关性**：将 OpenAI 兼容的 API 调用转换为可与各种 AI 服务提供商一起使用
+- **区域灵活性**：克服区域限制和定价问题
+- **数据统计**：可选的使用跟踪和统计（默认禁用）
+- **简单配置**：通过适配器将客户端请求映射到提供商端点的简单设置
+
+## 架构
+
+FlexiProxy 由几个核心组件组成：
+
+1. **提供商**：已注册的 AI 服务提供商及其基础 URL
+2. **适配器**：客户端配置和提供商配置之间的映射
+3. **身份验证**：基于 JWT 的 API 访问身份验证
+4. **Redis 存储**：提供商和适配器的持久化存储
+
+## API 端点
+
+### 提供商管理
+
+#### 列出可用提供商
+```http
+GET /api/providers
+```
+获取所有已注册提供商的列表。
+
+#### 获取提供商详情
+```http
+GET /api/providers/{id}
+```
+通过 ID 获取特定提供商的详细信息。
+
+#### 注册/更新提供商
+```http
+POST /api/providers/{id}
+```
+注册新提供商或更新现有提供商。
+载荷：
+```json
+{
+  "url": "https://provider-api-endpoint.com"
 }
- 
-(function(){
-    var box = function() {
-        return box.fn.init();
-    };
-
-    box.prototype = box.fn = {
-        init : function(){
-            console.log('box.init()');
-
-			return this;
-        },
-
-		add : function(str) {
-			alert("add", str);
-
-			return this;
-		},
-
-		remove : function(str) {
-			alert("remove", str);
-
-			return this;
-		}
-    };
-    
-    box.fn.init.prototype = box.fn;
-    
-    window.box =box;
-})();
-
-var testBox = box();
-testBox.add("jQuery").remove("jQuery");
 ```
 
-#### HTML 代码 HTML codes
+#### 删除提供商
+```http
+DELETE /api/providers/{id}
+```
+从注册表中删除提供商。
 
-```html
-<!DOCTYPE html>
-<html>
-    <head>
-        <mate charest="utf-8" />
-        <meta name="keywords" content="Editor.md, Markdown, Editor" />
-        <title>Hello world!</title>
-        <style type="text/css">
-            body{font-size:14px;color:#444;font-family: "Microsoft Yahei", Tahoma, "Hiragino Sans GB", Arial;background:#fff;}
-            ul{list-style: none;}
-            img{border:none;vertical-align: middle;}
-        </style>
-    </head>
-    <body>
-        <h1 class="text-xxl">Hello world!</h1>
-        <p class="text-green">Plain text</p>
-    </body>
-</html>
+### 适配器管理
+
+#### 创建适配器
+```http
+POST /api/adapters
+```
+创建一个新的适配器，将客户端配置映射到提供商。
+载荷：
+```json
+{
+  "provider_id": "provider-name",
+  "base_url": "https://client-base-url.com",
+  "model_id": "model-name"
+}
 ```
 
-### 图片 Images
+#### 列出适配器
+```http
+GET /api/adapters
+```
+获取已认证用户的所有适配器。
 
-Image:
-
-![](https://pandao.github.io/editor.md/examples/images/4.jpg)
-
-> Follow your heart.
-
-![](https://pandao.github.io/editor.md/examples/images/8.jpg)
-
-> 图为：厦门白城沙滩
-
-图片加链接 (Image + Link)：
-
-[![](https://pandao.github.io/editor.md/examples/images/7.jpg)](https://pandao.github.io/editor.md/images/7.jpg "李健首张专辑《似水流年》封面")
-
-> 图为：李健首张专辑《似水流年》封面
-                
-----
-
-### 列表 Lists
-
-#### 无序列表（减号）Unordered Lists (-)
-                
-- 列表一
-- 列表二
-- 列表三
-     
-#### 无序列表（星号）Unordered Lists (*)
-
-* 列表一
-* 列表二
-* 列表三
-
-#### 无序列表（加号和嵌套）Unordered Lists (+)
-                
-+ 列表一
-+ 列表二
-    + 列表二-1
-    + 列表二-2
-    + 列表二-3
-+ 列表三
-    * 列表一
-    * 列表二
-    * 列表三
-
-#### 有序列表 Ordered Lists (-)
-                
-1. 第一行
-2. 第二行
-3. 第三行
-
-#### GFM task list
-
-- [x] GFM task list 1
-- [x] GFM task list 2
-- [ ] GFM task list 3
-    - [ ] GFM task list 3-1
-    - [ ] GFM task list 3-2
-    - [ ] GFM task list 3-3
-- [ ] GFM task list 4
-    - [ ] GFM task list 4-1
-    - [ ] GFM task list 4-2
-                
-----
-                    
-### 绘制表格 Tables
-
-| 项目        | 价格   |  数量  |
-| --------   | -----:  | :----:  |
-| 计算机      | $1600   |   5     |
-| 手机        |   $12   |   12   |
-| 管线        |    $1    |  234  |
-                    
-First Header  | Second Header
-------------- | -------------
-Content Cell  | Content Cell
-Content Cell  | Content Cell 
-
-| First Header  | Second Header |
-| ------------- | ------------- |
-| Content Cell  | Content Cell  |
-| Content Cell  | Content Cell  |
-
-| Function name | Description                    |
-| ------------- | ------------------------------ |
-| `help()`      | Display the help window.       |
-| `destroy()`   | **Destroy your computer!**     |
-
-| Left-Aligned  | Center Aligned  | Right Aligned |
-| :------------ |:---------------:| -----:|
-| col 3 is      | some wordy text | $1600 |
-| col 2 is      | centered        |   $12 |
-| zebra stripes | are neat        |    $1 |
-
-| Item      | Value |
-| --------- | -----:|
-| Computer  | $1600 |
-| Phone     |   $12 |
-| Pipe      |    $1 |
-                
-----
-
-#### 特殊符号 HTML Entities Codes
-
-&copy; &  &uml; &trade; &iexcl; &pound;
-&amp; &lt; &gt; &yen; &euro; &reg; &plusmn; &para; &sect; &brvbar; &macr; &laquo; &middot; 
-
-X&sup2; Y&sup3; &frac34; &frac14;  &times;  &divide;   &raquo;
-
-18&ordm;C  &quot;  &apos;
-
-[========]
-
-### Emoji表情 :smiley:
-
-> Blockquotes :star:
-
-#### GFM task lists & Emoji & fontAwesome icon emoji & editormd logo emoji :editormd-logo-5x:
-
-- [x] :smiley: @mentions, :smiley: #refs, [links](), **formatting**, and <del>tags</del> supported :editormd-logo:;
-- [x] list syntax required (any unordered or ordered list supported) :editormd-logo-3x:;
-- [x] [ ] :smiley: this is a complete item :smiley:;
-- [ ] []this is an incomplete item [test link](#) :fa-star: @pandao; 
-- [ ] [ ]this is an incomplete item :fa-star: :fa-gear:;
-    - [ ] :smiley: this is an incomplete item [test link](#) :fa-star: :fa-gear:;
-    - [ ] :smiley: this is  :fa-star: :fa-gear: an incomplete item [test link](#);
- 
-#### 反斜杠 Escape
-
-\*literal asterisks\*
-
-[========]
-            
-### 科学公式 TeX(KaTeX)
-
-$$E=mc^2$$
-
-行内的公式$$E=mc^2$$行内的公式，行内的$$E=mc^2$$公式。
-
-$$x > y$$
-
-$$\(\sqrt{3x-1}+(1+x)^2\)$$
-                    
-$$\sin(\alpha)^{\theta}=\sum_{i=0}^{n}(x^i + \cos(f))$$
-
-多行公式：
-
-```math
-\displaystyle
-\left( \sum\_{k=1}^n a\_k b\_k \right)^2
-\leq
-\left( \sum\_{k=1}^n a\_k^2 \right)
-\left( \sum\_{k=1}^n b\_k^2 \right)
+#### 删除适配器
+```http
+DELETE /api/adapters
+```
+删除适配器。
+载荷：
+```json
+{
+  "create_time": "timestamp"
+}
 ```
 
-```katex
-\displaystyle 
-    \frac{1}{
-        \Bigl(\sqrt{\phi \sqrt{5}}-\phi\Bigr) e^{
-        \frac25 \pi}} = 1+\frac{e^{-2\pi}} {1+\frac{e^{-4\pi}} {
-        1+\frac{e^{-6\pi}}
-        {1+\frac{e^{-8\pi}}
-         {1+\cdots} }
-        } 
-    }
+## 工作原理
+
+1. **提供商注册**：管理员使用各自的 API 端点注册 AI 服务提供商
+2. **适配器创建**：用户创建适配器，将 OpenAI 兼容的客户端设置映射到特定提供商
+3. **请求代理**：当客户端向 FlexiProxy 发出 API 请求时：
+   - 验证请求
+   - 查找适当的适配器
+   - 将请求路由到目标提供商
+   - 将提供商的响应返回给客户端
+
+## 身份验证
+
+所有 API 请求都需要在 Authorization 头中使用 Bearer 令牌进行身份验证：
+```
+Authorization: Bearer <jwt-token>
 ```
 
-```latex
-f(x) = \int_{-\infty}^\infty
-    \hat f(\xi)\,e^{2 \pi i \xi x}
-    \,d\xi
-```
+## 配置
 
-### 分页符 Page break
+FlexiProxy 需要以下环境变量：
 
-> Print Test: Ctrl + P
+- `UPSTASH_REDIS_REST_URL`：用于存储的 Redis 数据库 URL
+- `UPSTASH_REDIS_REST_TOKEN`：Redis 身份验证令牌
+- 其他 Next.js 和身份验证相关的环境变量
 
-[========]
+## 数据统计
 
-### 绘制流程图 Flowchart
+FlexiProxy 可以选择性地跟踪使用统计信息。此功能默认禁用，可以在设置中启用。启用后，它提供 API 使用模式的见解，并有助于容量规划。
 
-```flow
-st=>start: 用户登陆
-op=>operation: 登陆操作
-cond=>condition: 登陆成功 Yes or No?
-e=>end: 进入后台
+## 使用场景
 
-st->op->cond
-cond(yes)->e
-cond(no)->op
-```
+1. **区域访问**：访问在某些地区可能受限制的 AI 服务
+2. **成本优化**：根据定价在提供商之间切换
+3. **服务冗余**：当主要服务不可用时故障转移到替代提供商
+4. **统一接口**：无论底层提供商如何，都使用一致的 API 接口
 
-[========]
-                    
-### 绘制序列图 Sequence Diagram
-                    
-```seq
-Andrew->China: Says Hello 
-Note right of China: China thinks\nabout it 
-China-->Andrew: How are you? 
-Andrew->>China: I am good thanks!
-```
+## 入门指南
 
-### End
+1. 设置所需的环境变量
+2. 注册您首选的 AI 服务提供商
+3. 为您的客户端配置创建适配器
+4. 配置您的 OpenAI 兼容客户端以使用 FlexiProxy 作为其基础 URL
+5. 如需要，可在设置中启用数据统计

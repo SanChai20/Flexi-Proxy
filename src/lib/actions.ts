@@ -86,12 +86,12 @@ export async function createAdapter(
   | undefined
 > {
   // make sure not in scope of below try catch
-  const session = await auth();
-  if (!(session && session.user && session.user.id)) {
-    return undefined;
-  }
+  // const session = await auth();
+  // if (!(session && session.user && session.user.id)) {
+  //   return undefined;
+  // }
   try {
-    const { token, error } = await jwtSign({ user_id: session.user.id }, 3600);
+    const { token, error } = await jwtSign({ user_id: "AAAA" }, 3600);
     if (!token) {
       console.error("Error generating auth token:", error);
       return undefined;
@@ -124,6 +124,7 @@ export async function createAdapter(
 export async function deleteAdapter(
   create_time: string
 ): Promise<{ create_time: string } | undefined> {
+
   // make sure not in scope of below try catch
   const session = await auth();
   if (!(session && session.user && session.user.id)) {
@@ -190,4 +191,62 @@ export async function sendContactMessage(subject: string, message: string): Prom
     console.error("Error sending contact message:", error);
     return { message: "Error sending contact message", success: false };
   }
+}
+
+export async function signOneTimeToken(secure: string): Promise<undefined | { token: string }> {
+  // const session = await auth();
+  // if (!(session && session.user && session.user.id)) {
+  //   return undefined;
+  // }
+  try {
+    const { token, error } = await jwtSign({ user_id: "AAAA", secure }, 720);
+    if (!token) {
+      console.error("Error generating auth token:", error);
+      return undefined;
+    }
+    const response = await fetch(
+      [process.env.BASE_URL, "api/token"].join("/"),
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+    if (response.ok) {
+      return await response.json();
+    }
+  } catch (error) {
+    console.error("Error generating one-time token:", error);
+  }
+  return undefined;
+}
+
+export async function verifyOneTimeToken(oneTimeToken: string): Promise<undefined | { secure: string }> {
+  // const session = await auth();
+  // if (!(session && session.user && session.user.id)) {
+  //   return undefined;
+  // }
+  try {
+    const { token, error } = await jwtSign({ user_id: "AAAA", token: oneTimeToken }, 720);
+    if (!token) {
+      console.error("Error generating auth token:", error);
+      return undefined;
+    }
+    const response = await fetch(
+      [process.env.BASE_URL, "api/token"].join("/"),
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+    if (response.ok) {
+      return await response.json();
+    }
+  } catch (error) {
+    console.error("Error generating one-time token:", error);
+  }
+  return undefined;
 }
