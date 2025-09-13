@@ -14,8 +14,10 @@ import {
 } from "@/components/ui/card";
 import { HelpCircleIcon } from "lucide-react";
 import { OnceButton } from "@/components/ui/oncebutton";
-import { createAdapter, getAllTargetProviders, signOneTimeToken } from "@/lib/actions";
+import { createAdapter, getAllTargetProviders, encode } from "@/lib/actions";
 import { redirect } from "next/navigation";
+import { jwtSign } from "@/lib/jwt";
+import { auth } from "@/auth";
 
 export default async function ManagementCreatePage(
     props: PageProps<"/[lang]/management/create">
@@ -45,19 +47,25 @@ export default async function ManagementCreatePage(
                     const baseUrl = formData.get("baseUrl") as string;
                     const modelId = formData.get("modelId") as string;
                     const apiKey = formData.get("apiKey") as string;
-                    const result:
-                        | {
-                            provider_id: string;
-                            provider_url: string;
-                            base_url: string;
-                            model_id: string;
-                            create_time: string;
-                        }
-                        | undefined = await createAdapter(provider, baseUrl, modelId);
-                    if (result !== undefined) {
-                        const tempToken: undefined | { token: string } = await signOneTimeToken(apiKey);
-                        if (tempToken !== undefined) {
-                            redirect(`/${lang}/management/key?token=${encodeURIComponent(tempToken.token)}`);
+                    const session = await auth();
+                    if (!!(session && session.user && session.user.id)) {
+                        const result:
+                            | { create_time: string; }
+                            | undefined = await createAdapter(session.user.id, provider, baseUrl, modelId);
+                        if (result !== undefined) {
+                            const { token, error } = await jwtSign({
+                                user_id: session.user.id,
+                                api_key: apiKey,
+                                base_url: baseUrl,
+                                provider_id: provider,
+                                model_id: modelId
+                            }, 3600);
+                            if (token !== undefined) {
+                                const tempToken: undefined | { token: string } = await encode(token);
+                                if (tempToken !== undefined) {
+                                    redirect(`/${lang}/management/key?token=${encodeURIComponent(tempToken.token)}`);
+                                }
+                            }
                         }
                     }
                 }}

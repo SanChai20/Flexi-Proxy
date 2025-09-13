@@ -10,7 +10,8 @@ import {
 import { OnceButton } from "@/components/ui/oncebutton";
 import { redirect } from "next/navigation";
 import { jwtSign } from "@/lib/jwt";
-import { signOneTimeToken } from "@/lib/actions";
+import { encode } from "@/lib/actions";
+import { auth } from "@/auth";
 
 export default async function ManagementModifyPage(
     props: PageProps<"/[lang]/management/modify">
@@ -38,9 +39,21 @@ export default async function ManagementModifyPage(
                 action={async (formData) => {
                     "use server";
                     const apiKey = formData.get("apiKey") as string;
-                    const tempToken: undefined | { token: string } = await signOneTimeToken(apiKey);
-                    if (tempToken !== undefined) {
-                        redirect(`/${lang}/management/key?token=${encodeURIComponent(tempToken.token)}`);
+                    const session = await auth();
+                    if (!!(session && session.user && session.user.id)) {
+                        const { token, error } = await jwtSign({
+                            user_id: session.user.id,
+                            api_key: apiKey,
+                            base_url: params.baseUrl,
+                            provider_id: params.providerId,
+                            model_id: params.modelId
+                        }, 3600);
+                        if (token !== undefined) {
+                            const tempToken: undefined | { token: string } = await encode(token);
+                            if (tempToken !== undefined) {
+                                redirect(`/${lang}/management/key?token=${encodeURIComponent(tempToken.token)}`);
+                            }
+                        }
                     }
                 }}
                 className="mt-6"

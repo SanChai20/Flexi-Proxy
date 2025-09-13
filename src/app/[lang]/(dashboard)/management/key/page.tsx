@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { HelpCircleIcon } from "lucide-react";
 import { OnceButton } from "@/components/ui/oncebutton";
-import { createAdapter, getAllTargetProviders, verifyOneTimeToken } from "@/lib/actions";
+import { createAdapter, getAllTargetProviders, decode } from "@/lib/actions";
 import { redirect } from "next/navigation";
 import { jwtSign, jwtVerify } from "@/lib/jwt";
 import ClipboardButton from "@/components/ui/clipboard-button";
@@ -28,7 +28,7 @@ export default async function ManagementKeyPage(
     const { token } = await props.searchParams;
     let apiKey: string | undefined = undefined;
     if (token && typeof token === "string") {
-        const response: undefined | { secure: string } = await verifyOneTimeToken(token);
+        const response: undefined | { secure: string } = await decode(token);
         if (response !== undefined) {
             apiKey = response.secure;
         }

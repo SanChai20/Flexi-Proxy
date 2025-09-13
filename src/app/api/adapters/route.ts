@@ -25,12 +25,6 @@ async function protectedPOST(req: PayloadRequest) {
       return NextResponse.json({ error: "Missing provider" }, { status: 400 });
     }
     // Save
-    const adapter = {
-      provider_id,
-      provider_url: provider.url,
-      base_url,
-      model_id,
-    };
     const create_time = Date.now().toString();
     await redis.set<{
       provider_id: string;
@@ -39,11 +33,15 @@ async function protectedPOST(req: PayloadRequest) {
       model_id: string;
     }>(
       [USER_ADAPTER_PREFIX, req.payload["user_id"], create_time].join(":"),
-      adapter
+      {
+        provider_id,
+        provider_url: provider.url,
+        base_url,
+        model_id,
+      }
     );
     return NextResponse.json({
-      create_time,
-      ...adapter,
+      create_time
     });
   } catch (error) {
     console.error("Failed to create adapter: ", error);
