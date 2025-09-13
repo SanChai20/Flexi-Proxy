@@ -1,8 +1,7 @@
 import { redis } from "@/lib/database";
 import { NextResponse } from "next/server";
 import { PayloadRequest, withAuth } from "@/lib/with-auth";
-
-export const REGISTERED_PROVIDER_PREFIX = "registered:target:provider";
+import { REGISTERED_PROVIDER_PREFIX } from "@/lib/utils";
 
 async function protectedGET(req: PayloadRequest) {
   const searchPatternPrefix = `${REGISTERED_PROVIDER_PREFIX}:`;

@@ -1,4 +1,4 @@
-import { getDictionary } from "@/lib/get-dictionary";
+import { getDictionary } from "@/lib/dictionary";
 import { ContentDisplay } from "@/components/ui/contentdisplay";
 import path from "path";
 import { promises as fs } from "fs";

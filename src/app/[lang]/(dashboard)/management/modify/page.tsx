@@ -1,4 +1,4 @@
-import { getDictionary } from "@/lib/get-dictionary";
+import { getDictionary } from "@/lib/dictionary";
 import { Locale } from "i18n-config";
 import {
     Card,

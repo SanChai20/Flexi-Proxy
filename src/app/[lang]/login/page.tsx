@@ -7,7 +7,7 @@ import { Metadata } from "next";
 import Unauthorized from "@/components/ui/unauthorized";
 import { OnceButton } from "@/components/ui/oncebutton";
 import { Locale } from "../../../../i18n-config";
-import { getDictionary } from "@/lib/get-dictionary";
+import { getDictionary } from "@/lib/dictionary";
 
 export const metadata: Metadata = {
   title: "Login - FlexiProxy",

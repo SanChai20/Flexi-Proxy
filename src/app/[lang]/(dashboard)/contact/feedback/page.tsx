@@ -1,4 +1,4 @@
-import { getDictionary } from "@/lib/get-dictionary";
+import { getDictionary } from "@/lib/dictionary";
 import { Locale } from "i18n-config";
 import {
     Card,
@@ -8,7 +8,6 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Check, X } from "lucide-react";
-
 
 export default async function ContactFeedbackPage(props: PageProps<"/[lang]/contact/feedback">) {
     const { lang } = await props.params;

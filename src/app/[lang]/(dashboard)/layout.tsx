@@ -31,7 +31,7 @@ import Providers from "./providers";
 import { NavItem } from "./nav-item";
 import DashboardBreadcrumb from "./breadcrumb";
 import { Locale } from "i18n-config";
-import { getDictionary } from "@/lib/get-dictionary";
+import { getDictionary } from "@/lib/dictionary";
 import { Footer } from "@/components/ui/footer";
 
 export default async function DashboardLayout(props: LayoutProps<"/[lang]">) {

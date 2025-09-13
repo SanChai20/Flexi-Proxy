@@ -1,7 +1,7 @@
 import { Turnstile } from "@marsidev/react-turnstile";
 import { redirect } from "next/navigation";
 import { Locale } from "../../../../i18n-config";
-import { getDictionary } from "@/lib/get-dictionary";
+import { getDictionary } from "@/lib/dictionary";
 
 export default async function VerificationPage(
   props: PageProps<"/[lang]/verification">

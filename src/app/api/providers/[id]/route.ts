@@ -1,7 +1,7 @@
 import { redis } from "@/lib/database";
 import { NextResponse } from "next/server";
 import { PayloadRequest, withAuth } from "@/lib/with-auth";
-import { REGISTERED_PROVIDER_PREFIX } from "@/app/api/providers/route";
+import { REGISTERED_PROVIDER_PREFIX } from "@/lib/utils";
 
 // [BOTH] Get the provider by id
 async function protectedGET(
