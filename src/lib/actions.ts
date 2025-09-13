@@ -41,11 +41,12 @@ export async function getAllUserAdapters(): Promise<
     create_time: string;
   }[]
 > {
+  // make sure not in scope of below try catch
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    return [];
+  }
   try {
-    const session = await auth();
-    if (!(session && session.user && session.user.id)) {
-      return [];
-    }
     const { token, error } = await jwtSign({ user_id: session.user.id }, 3600);
     if (!token) {
       console.error("Error generating auth token:", error);
@@ -84,11 +85,12 @@ export async function createAdapter(
   }
   | undefined
 > {
+  // make sure not in scope of below try catch
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    return undefined;
+  }
   try {
-    const session = await auth();
-    if (!(session && session.user && session.user.id)) {
-      return undefined;
-    }
     const { token, error } = await jwtSign({ user_id: session.user.id }, 3600);
     if (!token) {
       console.error("Error generating auth token:", error);
@@ -122,11 +124,12 @@ export async function createAdapter(
 export async function deleteAdapter(
   create_time: string
 ): Promise<{ create_time: string } | undefined> {
+  // make sure not in scope of below try catch
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    return undefined;
+  }
   try {
-    const session = await auth();
-    if (!(session && session.user && session.user.id)) {
-      return undefined;
-    }
     const { token, error } = await jwtSign({ user_id: session.user.id }, 3600);
     if (!token) {
       console.error("Error generating auth token:", error);
@@ -156,14 +159,16 @@ export async function deleteAdapter(
 
 // Send contact message
 export async function sendContactMessage(subject: string, message: string): Promise<{ message: string, success: boolean }> {
-  try {
-    const session = await auth();
-    if (!(session && session.user && session.user.id)) {
-      return {
-        message: "User not authenticated",
-        success: false
-      }
+
+  // make sure not in scope of below try catch
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    return {
+      message: "User not authenticated",
+      success: false
     }
+  }
+  try {
     const { token, error } = await jwtSign({ user_id: session.user.id, user_name: session.user.name || "User", user_email: session.user.email || "Email" }, 3600);
     if (!token) {
       console.error("Error generating auth token:", error);
