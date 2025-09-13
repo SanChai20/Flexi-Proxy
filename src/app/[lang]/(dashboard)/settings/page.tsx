@@ -14,17 +14,24 @@ export default async function SettingsPage(
 ) {
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
+
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">{dict.settings.title}</CardTitle>
+          <CardTitle className="text-2xl">
+            {dict?.settings?.title || "Settings"}
+          </CardTitle>
           <CardDescription className="text-base">
-            {dict.settings.subtitle}
+            {dict?.settings?.subtitle ||
+              "Configure your account and preferences"}
           </CardDescription>
         </CardHeader>
-        <CardContent></CardContent>
       </Card>
-    </section>
+      <div className="mt-6">
+        {/* <LanguageSwitcher dict={dict}></LanguageSwitcher>
+        <ThemeSwitcher dict={dict} /> */}
+      </div>
+    </section >
   );
 }

@@ -18,6 +18,7 @@ export default async function DocumentationPage(
 ) {
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
+
   // Read the documentation markdown file
   const docPath = path.join(process.cwd(), 'public', dict.documentation.documentationPage);
   const docContent = fs.readFileSync(docPath, "utf8");

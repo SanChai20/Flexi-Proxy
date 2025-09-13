@@ -38,7 +38,7 @@ export default async function DashboardLayout(props: LayoutProps<"/[lang]">) {
   const { lang } = await props.params;
   const dictionary = await getDictionary(lang as Locale);
   return (
-    <Providers>
+    <Providers lang={lang as Locale}>
       <main className="flex min-h-screen w-full flex-col bg-muted/40">
         <DesktopNav dict={dictionary} />
         <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14 flex-1">

@@ -103,7 +103,12 @@
   },
   "settings": {
     "title": "Settings",
-    "subtitle": "Configure your account and preferences"
+    "subtitle": "Configure your account and preferences",
+    "language": "Language",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "theme": "Theme"
   },
   "subscription": {
     "title": "Subscriptions",

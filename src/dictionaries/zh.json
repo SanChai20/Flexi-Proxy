@@ -103,7 +103,12 @@
   },
   "settings": {
     "title": "设置",
-    "subtitle": "配置您的账户和偏好设置"
+    "subtitle": "配置您的账户和偏好设置",
+    "language": "语言",
+    "light": "浅色",
+    "dark": "暗色",
+    "system": "系统",
+    "theme": "主题色"
   },
   "subscription": {
     "title": "订阅计划",
