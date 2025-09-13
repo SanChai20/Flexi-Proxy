@@ -86,12 +86,12 @@ export async function createAdapter(
   | undefined
 > {
   // make sure not in scope of below try catch
-  // const session = await auth();
-  // if (!(session && session.user && session.user.id)) {
-  //   return undefined;
-  // }
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    return undefined;
+  }
   try {
-    const { token, error } = await jwtSign({ user_id: "AAAA" }, 3600);
+    const { token, error } = await jwtSign({ user_id: session.user.id }, 3600);
     if (!token) {
       console.error("Error generating auth token:", error);
       return undefined;
@@ -194,12 +194,12 @@ export async function sendContactMessage(subject: string, message: string): Prom
 }
 
 export async function signOneTimeToken(secure: string): Promise<undefined | { token: string }> {
-  // const session = await auth();
-  // if (!(session && session.user && session.user.id)) {
-  //   return undefined;
-  // }
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    return undefined;
+  }
   try {
-    const { token, error } = await jwtSign({ user_id: "AAAA", secure }, 720);
+    const { token, error } = await jwtSign({ user_id: session.user.id, secure }, 720);
     if (!token) {
       console.error("Error generating auth token:", error);
       return undefined;
@@ -223,12 +223,12 @@ export async function signOneTimeToken(secure: string): Promise<undefined | { to
 }
 
 export async function verifyOneTimeToken(oneTimeToken: string): Promise<undefined | { secure: string }> {
-  // const session = await auth();
-  // if (!(session && session.user && session.user.id)) {
-  //   return undefined;
-  // }
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    return undefined;
+  }
   try {
-    const { token, error } = await jwtSign({ user_id: "AAAA", token: oneTimeToken }, 720);
+    const { token, error } = await jwtSign({ user_id: session.user.id, token: oneTimeToken }, 720);
     if (!token) {
       console.error("Error generating auth token:", error);
       return undefined;

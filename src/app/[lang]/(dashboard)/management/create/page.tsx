@@ -93,7 +93,7 @@ export default async function ManagementCreatePage(
                                             <TooltipContent side="top" className="max-w-xs">
                                                 <p>
                                                     {dict?.management?.baseUrlTip ||
-                                                        "Enter the base URL for the API endpoint\n aaaaa"}
+                                                        "Enter the base URL for the API endpoint"}
                                                 </p>
                                             </TooltipContent>
                                         </Tooltip>
