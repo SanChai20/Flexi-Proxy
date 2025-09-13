@@ -11,14 +11,14 @@ export default async function PolicyPage(props: PageProps<"/[lang]/policy">) {
   const { lang } = await props.params;
   const dictionary = await getDictionary(lang as Locale);
   // Read the terms of service markdown file
-  const termsPath = path.join(process.cwd(), dictionary.legal.policyPage);
-  const termsContent = await fs.readFile(termsPath, "utf8");
+  const docPath = path.join(process.cwd(), dictionary.legal.policyPage);
+  const docContent = await fs.readFile(docPath, "utf8");
   return (
     <ContentDisplay
       title={dictionary.legal.policyTitle}
       subtitle={dictionary.legal.policySubtitle}
     >
-      <Markdown remarkPlugins={[remarkGfm, remarkBreaks]} children={termsContent} />
+      <Markdown remarkPlugins={[remarkGfm, remarkBreaks]} children={docContent} />
     </ContentDisplay>
   );
 }
