@@ -48,12 +48,12 @@ B. 选择并点击左侧侧边栏中的**管理面板**图标，如果首次创�
 
 C. 创建成功后会生成目标平台可用的**API Key**（将跳转至**API Key**界面），需要用户自行复制和妥善保存，如果后续使用过程中不慎丢失，可以参考**步骤E**
 
-![](https://flexiproxy.com/screenshots/zh/apikey.png)
+![](https://flexiproxy.com/screenshots/zh/apikey.PNG)
 
 
 D. 上述步骤完成后点击**返回管理面板**按键，**管理面板**页面中可自行添加新的适配器，同时也会将目标平台可用的**Base URL**展示出来，但是不会显示上一步的**API Key**，如果不慎丢失
 
-![](https://flexiproxy.com/screenshots/zh/management.png)
+![](https://flexiproxy.com/screenshots/zh/management.PNG)
 
 E. 适配器每一行最右方有一个⚙图标，点击后会在弹框中找到如下功能
 - **获取 API Key**: 如果**API Key**不慎丢失，可以通过此功能重新生成，重复**步骤C**即可
