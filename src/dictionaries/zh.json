@@ -63,7 +63,8 @@
   },
   "faq": {
     "title": "常见问题",
-    "subtitle": "我们对使用前后的诸多问题进行了整理"
+    "subtitle": "我们对使用前后的诸多问题进行了整理",
+    "faqPage": "docs/FAQ_ZH.md"
   },
   "management": {
     "title": "适配器管理",

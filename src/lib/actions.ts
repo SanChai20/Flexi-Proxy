@@ -42,11 +42,11 @@ export async function getAllUserAdapters(): Promise<
   }[]
 > {
   try {
-    // const session = await auth();
-    // if (!(session && session.user && session.user.id)) {
-    //   return [];
-    // }
-    const { token, error } = await jwtSign({ user_id: "AAAA" }, 3600);
+    const session = await auth();
+    if (!(session && session.user && session.user.id)) {
+      return [];
+    }
+    const { token, error } = await jwtSign({ user_id: session.user.id }, 3600);
     if (!token) {
       console.error("Error generating auth token:", error);
       return [];

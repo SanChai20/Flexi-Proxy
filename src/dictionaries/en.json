@@ -63,7 +63,8 @@
   },
   "faq": {
     "title": "Frequently Asked Questions",
-    "subtitle": "We've compiled answers to common questions about our service"
+    "subtitle": "We've compiled answers to common questions about our service",
+    "faqPage": "docs/FAQ.md"
   },
   "management": {
     "title": "Adapter Management",

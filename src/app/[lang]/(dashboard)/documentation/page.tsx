@@ -19,15 +19,15 @@ export default async function DocumentationPage(
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
   // Read the documentation markdown file
-  const termsPath = path.join(process.cwd(), dict.documentation.documentationPage);
-  const termsContent = await fs.readFile(termsPath, "utf8");
+  const docPath = path.join(process.cwd(), dict?.documentation?.documentationPage || "docs/DOCUMENTATION.md");
+  const docContent = await fs.readFile(docPath, "utf8");
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">{dict.documentation.title}</CardTitle>
+          <CardTitle className="text-2xl">{dict?.documentation?.title || "Documentation"}</CardTitle>
           <CardDescription className="text-base">
-            {dict.documentation.subtitle}
+            {dict?.documentation?.subtitle || "Guiding you through the configuration process"}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -35,7 +35,7 @@ export default async function DocumentationPage(
         <Markdown
           remarkPlugins={[remarkGfm, remarkBreaks]}
         >
-          {termsContent}
+          {docContent}
         </Markdown>
       </div>
     </section>
