@@ -61,7 +61,7 @@ export default async function ManagementCreatePage(
                                 model_id: modelId
                             }, 3600);
                             if (token !== undefined) {
-                                const tempToken: undefined | { token: string } = await encode(token);
+                                const tempToken: undefined | { token: string } = await encode(session.user.id, token);
                                 if (tempToken !== undefined) {
                                     redirect(`/${lang}/management/key?token=${encodeURIComponent(tempToken.token)}`);
                                 }

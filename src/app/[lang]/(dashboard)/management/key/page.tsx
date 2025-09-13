@@ -1,24 +1,17 @@
 import { getDictionary } from "@/lib/dictionary";
 import { Locale } from "i18n-config";
 import {
-    Tooltip,
-    TooltipTrigger,
-    TooltipContent,
-} from "@/components/ui/tooltip";
-import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { HelpCircleIcon } from "lucide-react";
-import { OnceButton } from "@/components/ui/oncebutton";
-import { createAdapter, getAllTargetProviders, decode } from "@/lib/actions";
-import { redirect } from "next/navigation";
-import { jwtSign, jwtVerify } from "@/lib/jwt";
+import { decode } from "@/lib/actions";
 import ClipboardButton from "@/components/ui/clipboard-button";
 import BackToManagementButton from "@/components/managed/back-button";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 export default async function ManagementKeyPage(
     props: PageProps<"/[lang]/management/key">
@@ -28,14 +21,17 @@ export default async function ManagementKeyPage(
     const { token } = await props.searchParams;
     let apiKey: string | undefined = undefined;
     if (token && typeof token === "string") {
-        const response: undefined | { secure: string } = await decode(token);
-        if (response !== undefined) {
-            apiKey = response.secure;
+        const session = await auth();
+        if (!!(session && session.user && session.user.id)) {
+            const response: undefined | { secure: string } = await decode(session.user.id, token);
+            if (response !== undefined) {
+                apiKey = response.secure;
+            }
         }
     }
-    // if (!apiKey) {
-    //     redirect(`/${lang}/management`);
-    // }
+    if (!apiKey) {
+        redirect(`/${lang}/management`);
+    }
     return (
         <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
             <Card>

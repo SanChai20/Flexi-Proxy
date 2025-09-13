@@ -114,7 +114,6 @@ export async function createAdapter(
 export async function deleteAdapter(
   create_time: string
 ): Promise<{ create_time: string } | undefined> {
-
   // make sure not in scope of below try catch
   const session = await auth();
   if (!(session && session.user && session.user.id)) {
@@ -150,7 +149,6 @@ export async function deleteAdapter(
 
 // Send contact message
 export async function sendContactMessage(subject: string, message: string): Promise<{ message: string, success: boolean }> {
-
   // make sure not in scope of below try catch
   const session = await auth();
   if (!(session && session.user && session.user.id)) {
@@ -184,13 +182,9 @@ export async function sendContactMessage(subject: string, message: string): Prom
 }
 
 // Get one-time token for given secure value
-export async function encode(secure: string): Promise<undefined | { token: string }> {
-  // const session = await auth();
-  // if (!(session && session.user && session.user.id)) {
-  //   return undefined;
-  // }
+export async function encode(user_id: string, secure: string): Promise<undefined | { token: string }> {
   try {
-    const { token, error } = await jwtSign({ user_id: "AAAA", secure }, 720);
+    const { token, error } = await jwtSign({ user_id, secure }, 720);
     if (!token) {
       console.error("Error generating auth token:", error);
       return undefined;
@@ -214,13 +208,9 @@ export async function encode(secure: string): Promise<undefined | { token: strin
 }
 
 // Get secure value by one-time token
-export async function decode(oneTimeToken: string): Promise<undefined | { secure: string }> {
-  // const session = await auth();
-  // if (!(session && session.user && session.user.id)) {
-  //   return undefined;
-  // }
+export async function decode(user_id: string, oneTimeToken: string): Promise<undefined | { secure: string }> {
   try {
-    const { token, error } = await jwtSign({ user_id: "AAAA", token: oneTimeToken }, 720);
+    const { token, error } = await jwtSign({ user_id, token: oneTimeToken }, 720);
     if (!token) {
       console.error("Error generating auth token:", error);
       return undefined;
