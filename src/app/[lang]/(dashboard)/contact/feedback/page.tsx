@@ -1,0 +1,1 @@
+export default async function ContactFeedbackPage(props: PageProps<"/[lang]/contact/feedback">) { }

@@ -6,6 +6,7 @@ export const i18nRouteWhitelist = [
   "terms",
   "verification",
   "contact",
+  "contact/feedback",
   "documentation",
   "subscription",
   "management",

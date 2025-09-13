@@ -3,6 +3,7 @@
 import { auth } from "@/auth";
 import { jwtSign } from "./jwt";
 
+// Get all target providers
 export async function getAllTargetProviders(): Promise<
   { id: string; url: string }[]
 > {
@@ -30,6 +31,7 @@ export async function getAllTargetProviders(): Promise<
   return [];
 }
 
+// Get all adapters for the authenticated user
 export async function getAllUserAdapters(): Promise<
   {
     provider_id: string;
@@ -67,6 +69,7 @@ export async function getAllUserAdapters(): Promise<
   return [];
 }
 
+// Create new adapter
 export async function createAdapter(
   provider_id: string,
   base_url: string,
@@ -115,6 +118,7 @@ export async function createAdapter(
   return undefined;
 }
 
+// Delete adapter by create_time
 export async function deleteAdapter(
   create_time: string
 ): Promise<{ create_time: string } | undefined> {
@@ -148,4 +152,37 @@ export async function deleteAdapter(
     console.error("Error deleting adapter:", error);
   }
   return undefined;
+}
+
+// Send contact message
+export async function sendContactMessage(subject: string, message: string): Promise<{ message: string, success: boolean }> {
+  try {
+    const session = await auth();
+    if (!(session && session.user && session.user.id)) {
+      return {
+        message: "User not authenticated",
+        success: false
+      }
+    }
+    const { token, error } = await jwtSign({ user_id: session.user.id, user_name: session.user.name || "User", user_email: session.user.email || "Email" }, 3600);
+    if (!token) {
+      console.error("Error generating auth token:", error);
+      return { message: "Error generating auth token", success: false };
+    }
+    const response = await fetch(
+      [process.env.BASE_URL, "api/contact"].join("/"),
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ subject, message }),
+      }
+    );
+    return { message: (await response.json()).message, success: response.ok };
+  } catch (error) {
+    console.error("Error sending contact message:", error);
+    return { message: "Error sending contact message", success: false };
+  }
 }
