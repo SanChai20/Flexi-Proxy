@@ -13,54 +13,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { deleteAdapter } from "@/lib/actions";
+import { deleteAdapter, getAllUserAdapters } from "@/lib/actions";
 import { redirect } from "next/navigation";
 import ClipboardButton from "@/components/ui/clipboard-button";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import AddAdapterButton from "@/components/managed/add-button";
-import { auth } from "@/auth";
-import { VERIFY_TOKEN_EXPIRE_SECONDS } from "@/lib/utils";
-import { jwtSign } from "@/lib/jwt";
-
-async function getAllUserAdapters(): Promise<
-  {
-    provider_id: string;
-    provider_url: string;
-    base_url: string;
-    model_id: string;
-    create_time: string;
-  }[]
-> {
-  const user_id: string | undefined = (await auth())?.user?.id;
-  if (user_id === undefined) {
-    return [];
-  }
-  try {
-    const { token, error } = await jwtSign({ user_id }, VERIFY_TOKEN_EXPIRE_SECONDS);
-    if (!token) {
-      console.error("Error generating auth token:", error);
-      return [];
-    }
-    console.warn(`getAllUserAdapters - token: ${token}`)
-    const response = await fetch(
-      [process.env.BASE_URL, "api/adapters"].join("/"),
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    if (response.ok) {
-      return await response.json();
-    }
-  } catch (error) {
-    console.error("Error fetching adapters:", error);
-  }
-  return [];
-}
-
-
 
 export default async function ManagementPage(
   props: PageProps<"/[lang]/management">

@@ -8,7 +8,7 @@ export interface PayloadRequest extends NextRequest {
 type Handler = (req: PayloadRequest, context?: any) => Promise<Response>;
 
 export function withAuth(handler: Handler): Handler {
-  return async (req: PayloadRequest, context) => {
+  return async (req: NextRequest, context) => {
     console.warn(JSON.stringify(req.headers.keys()))
     console.warn(JSON.stringify(req.headers.values()))
     const authHeader = req.headers.get("Authorization");
@@ -31,8 +31,7 @@ export function withAuth(handler: Handler): Handler {
         headers: { "Content-Type": "application/json" },
       });
     }
-    req.payload = payload;
     // If authenticated, call the original handler
-    return handler(req, context);
+    return handler({ ...req, payload } as PayloadRequest, context);
   };
 }
