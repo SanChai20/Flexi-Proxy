@@ -32,7 +32,7 @@ export async function getAllTargetProviders(): Promise<
 }
 
 // Get all adapters for the authenticated user
-export async function getAllUserAdapters(): Promise<
+export async function getAllUserAdapters(user_id: string): Promise<
   {
     provider_id: string;
     provider_url: string;
@@ -41,13 +41,8 @@ export async function getAllUserAdapters(): Promise<
     create_time: string;
   }[]
 > {
-  // make sure not in scope of below try catch
-  const session = await auth();
-  if (!(session && session.user && session.user.id)) {
-    return [];
-  }
   try {
-    const { token, error } = await jwtSign({ user_id: session.user.id }, 3600);
+    const { token, error } = await jwtSign({ user_id }, 3600);
     if (!token) {
       console.error("Error generating auth token:", error);
       return [];
@@ -112,15 +107,11 @@ export async function createAdapter(
 
 // Delete adapter by create_time
 export async function deleteAdapter(
+  user_id: string,
   create_time: string
 ): Promise<{ create_time: string } | undefined> {
-  // make sure not in scope of below try catch
-  const session = await auth();
-  if (!(session && session.user && session.user.id)) {
-    return undefined;
-  }
   try {
-    const { token, error } = await jwtSign({ user_id: session.user.id }, 3600);
+    const { token, error } = await jwtSign({ user_id }, 300);
     if (!token) {
       console.error("Error generating auth token:", error);
       return undefined;
@@ -158,7 +149,12 @@ export async function sendContactMessage(subject: string, message: string): Prom
     }
   }
   try {
-    const { token, error } = await jwtSign({ user_id: session.user.id, user_name: session.user.name || "User", user_email: session.user.email || "Email" }, 3600);
+    const { token, error } = await jwtSign({
+      user_id: session.user.id,
+      user_name: session.user.name || "User",
+      user_email: session.user.email || "Email"
+    }, 300);
+
     if (!token) {
       console.error("Error generating auth token:", error);
       return { message: "Error generating auth token", success: false };
@@ -184,7 +180,7 @@ export async function sendContactMessage(subject: string, message: string): Prom
 // Get one-time token for given secure value
 export async function encode(user_id: string, secure: string): Promise<undefined | { token: string }> {
   try {
-    const { token, error } = await jwtSign({ user_id, secure }, 720);
+    const { token, error } = await jwtSign({ user_id, secure }, 300);
     if (!token) {
       console.error("Error generating auth token:", error);
       return undefined;
@@ -210,7 +206,7 @@ export async function encode(user_id: string, secure: string): Promise<undefined
 // Get secure value by one-time token
 export async function decode(user_id: string, oneTimeToken: string): Promise<undefined | { secure: string }> {
   try {
-    const { token, error } = await jwtSign({ user_id, token: oneTimeToken }, 720);
+    const { token, error } = await jwtSign({ user_id, token: oneTimeToken }, 300);
     if (!token) {
       console.error("Error generating auth token:", error);
       return undefined;

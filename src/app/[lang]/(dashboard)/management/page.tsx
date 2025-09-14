@@ -13,25 +13,29 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { jwtVerify } from "@/lib/jwt";
 import { deleteAdapter, getAllUserAdapters } from "@/lib/actions";
 import { redirect } from "next/navigation";
 import ClipboardButton from "@/components/ui/clipboard-button";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import AddAdapterButton from "@/components/managed/add-button";
+import { auth } from "@/auth";
 
 export default async function ManagementPage(
   props: PageProps<"/[lang]/management">
 ) {
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
+  const userId: string | undefined = (await auth())?.user?.id;
+  if (userId === undefined) {
+    redirect(`/${lang}/login`);
+  }
   let adapters: {
     provider_id: string;
     provider_url: string;
     base_url: string;
     model_id: string;
     create_time: string;
-  }[] = await getAllUserAdapters();
+  }[] = await getAllUserAdapters(userId);
   if (adapters.length <= 0) {
     redirect(`/${lang}/management/create`);
   }
@@ -152,12 +156,10 @@ export default async function ManagementPage(
                           <form
                             action={async (formData) => {
                               "use server";
-                              const createTime = formData.get(
-                                "createTime"
-                              ) as string;
+                              const createTime = formData.get("createTime") as string;
                               const result:
                                 | { create_time: string }
-                                | undefined = await deleteAdapter(createTime);
+                                | undefined = await deleteAdapter(userId, createTime);
                               if (result !== undefined) {
                                 redirect(`/${lang}/management`); //Refresh
                               }

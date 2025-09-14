@@ -59,32 +59,31 @@ function routeCompletion(req: NextRequest): string | NextResponse {
 function navigateRoutes(
   pathName: string,
   isLoggedIn: boolean,
-  req: NextRequest
+  requestUrl: string
 ): NextResponse<unknown> {
-  // const parts = pathName.replace(/^\/+|\/+$/g, "").split("/");
-  // console.log(`[PARTS] ${parts}`);
-  // if (parts.length < 1 || !parts[0] || !i18n.locales.includes(parts[0] as any))
-  //   return NextResponse.next();
-  // const locale = parts[0];
-  // let redirectPath: string | null = null;
-  // if (parts.length === 1) {
-  //   // Home Page
-  //   if (!isLoggedIn) {
-  //     redirectPath = `/${locale}/verification`;
-  //   }
-  // } else {
-  //   const section = parts[1];
-  //   if (protectedRouteList.includes(section) && !isLoggedIn) {
-  //     redirectPath = `/${locale}/verification`;
-  //   }
-  //   // Some overrides, navigations
-  //   if (section === "login" && isLoggedIn) {
-  //     redirectPath = `/${locale}`;
-  //   }
-  // }
-  // if (redirectPath) {
-  //   return NextResponse.redirect(new URL(redirectPath, req.url));
-  // }
+  const parts = pathName.replace(/^\/+|\/+$/g, "").split("/");
+  if (parts.length >= 1 && parts[0] !== undefined && i18n.locales.includes(parts[0] as any)) {
+    const locale = parts[0];
+    let redirectPath: string | null = null;
+    if (parts.length === 1) {
+      // Home Page
+      if (!isLoggedIn) {
+        redirectPath = `/${locale}/verification`;
+      }
+    } else {
+      const section = parts[1];
+      if (protectedRouteList.includes(section) && !isLoggedIn) {
+        redirectPath = `/${locale}/verification`;
+      }
+      // Some overrides, navigations
+      if (section === "login" && isLoggedIn) {
+        redirectPath = `/${locale}`;
+      }
+    }
+    if (redirectPath) {
+      return NextResponse.redirect(new URL(redirectPath, requestUrl));
+    }
+  }
   return NextResponse.next();
 }
 
@@ -95,7 +94,7 @@ export default auth(async function middleware(req: NextRequest) {
   if (route instanceof NextResponse) {
     return route;
   }
-  return navigateRoutes(route, isLoggedIn, req);
+  return navigateRoutes(route, isLoggedIn, req.url);
 });
 
 export const config = {

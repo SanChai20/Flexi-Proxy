@@ -21,12 +21,10 @@ export default async function ManagementKeyPage(
     const { token } = await props.searchParams;
     let apiKey: string | undefined = undefined;
     if (token && typeof token === "string") {
-        const session = await auth();
-        if (!!(session && session.user && session.user.id)) {
-            const response: undefined | { secure: string } = await decode(session.user.id, token);
-            if (response !== undefined) {
-                apiKey = response.secure;
-            }
+        const userId: string | undefined = (await auth())?.user?.id;
+        if (userId !== undefined) {
+            const response: undefined | { secure: string } = await decode(userId, token);
+            apiKey = response?.secure;
         }
     }
     if (!apiKey) {

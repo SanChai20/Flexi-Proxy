@@ -47,20 +47,20 @@ export default async function ManagementCreatePage(
                     const baseUrl = formData.get("baseUrl") as string;
                     const modelId = formData.get("modelId") as string;
                     const apiKey = formData.get("apiKey") as string;
-                    const session = await auth();
-                    if (!!(session && session.user && session.user.id)) {
+                    const userId: string | undefined = (await auth())?.user?.id;
+                    if (userId !== undefined) {
                         const result:
                             | { create_time: string; }
-                            | undefined = await createAdapter(session.user.id, provider, baseUrl, modelId);
+                            | undefined = await createAdapter(userId, provider, baseUrl, modelId);
                         if (result !== undefined) {
                             const { token, error } = await jwtSign({
-                                uid: session.user.id,
+                                uid: userId,
                                 ak: apiKey,
                                 bu: baseUrl,
                                 mid: modelId
                             });
                             if (token !== undefined) {
-                                const tempToken: undefined | { token: string } = await encode(session.user.id, token);
+                                const tempToken: undefined | { token: string } = await encode(userId, token);
                                 if (tempToken !== undefined) {
                                     redirect(`/${lang}/management/key?token=${encodeURIComponent(tempToken.token)}`);
                                 }

@@ -12,9 +12,8 @@ import { auth, signOut } from "@/auth";
 import Link from "next/link";
 
 export async function User({ dict }: { dict: any }) {
-  let session = await auth();
+  const session = await auth();
   let user = session?.user;
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

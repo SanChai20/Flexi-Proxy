@@ -19,7 +19,8 @@ export default async function ManagementModifyPage(
     const { lang } = await props.params;
     const dict = await getDictionary(lang as Locale);
     const params = await props.searchParams;
-    if (!params || !params.baseUrl || !params.modelId || !params.providerId || !params.createTime) {
+    const userId: string | undefined = (await auth())?.user?.id;
+    if (!userId || !params || !params.baseUrl || !params.modelId || !params.providerId || !params.createTime) {
         redirect(`/${lang}/management`);
     }
     return (
@@ -39,19 +40,16 @@ export default async function ManagementModifyPage(
                 action={async (formData) => {
                     "use server";
                     const apiKey = formData.get("apiKey") as string;
-                    const session = await auth();
-                    if (!!(session && session.user && session.user.id)) {
-                        const { token, error } = await jwtSign({
-                            uid: session.user.id,
-                            ak: apiKey,
-                            bu: params.baseUrl,
-                            mid: params.modelId
-                        });
-                        if (token !== undefined) {
-                            const tempToken: undefined | { token: string } = await encode(session.user.id, token);
-                            if (tempToken !== undefined) {
-                                redirect(`/${lang}/management/key?token=${encodeURIComponent(tempToken.token)}`);
-                            }
+                    const { token, error } = await jwtSign({
+                        uid: userId,
+                        ak: apiKey,
+                        bu: params.baseUrl,
+                        mid: params.modelId
+                    });
+                    if (token !== undefined) {
+                        const tempToken: undefined | { token: string } = await encode(userId, token);
+                        if (tempToken !== undefined) {
+                            redirect(`/${lang}/management/key?token=${encodeURIComponent(tempToken.token)}`);
                         }
                     }
                 }}
