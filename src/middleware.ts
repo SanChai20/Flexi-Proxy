@@ -15,17 +15,14 @@ function routeCompletion(req: NextRequest): string | NextResponse {
   const pathNameIsMissingLocale = i18n.locales.every(
     (locale) => !pathName.startsWith(`/${locale}/`) && pathName !== `/${locale}`
   );
-  console.log(`[ORIGIN1] ${pathName}`);
   // If pathname already has a locale, return as is
   if (!pathNameIsMissingLocale) {
     return pathName;
   }
-
   // Check if the path is in the whitelist (without leading slash for comparison)
   const pathWithoutSlash = pathName.startsWith("/")
     ? pathName.substring(1)
     : pathName;
-  console.log(`[ORIGIN2] ${pathWithoutSlash}  - ${pathName}`);
   const isWhitelisted =
     i18nRouteWhitelist.includes(pathWithoutSlash) ||
     i18nRouteWhitelist.includes(pathName);
@@ -47,7 +44,6 @@ function routeCompletion(req: NextRequest): string | NextResponse {
     url.pathname = pathName.startsWith("/")
       ? `/${locale}${pathName}`
       : `/${locale}/${pathName}`;
-    console.warn("AAAAAAAAAAA " + url.toString())
     return NextResponse.redirect(url);
   }
   // For non-whitelisted routes, return as is
