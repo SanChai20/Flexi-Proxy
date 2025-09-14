@@ -8,8 +8,12 @@ import { VERIFY_TOKEN_EXPIRE_SECONDS } from "./utils";
 export async function getAllTargetProviders(): Promise<
   { id: string; url: string }[]
 > {
+  const user_id: string | undefined = (await auth())?.user?.id;
+  if (user_id === undefined) {
+    return [];
+  }
   try {
-    const { token, error } = await jwtSign(undefined, VERIFY_TOKEN_EXPIRE_SECONDS);
+    const { token, error } = await jwtSign({ user_id }, VERIFY_TOKEN_EXPIRE_SECONDS);
     if (!token) {
       console.error("Error generating auth token:", error);
       return [];

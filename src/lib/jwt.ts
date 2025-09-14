@@ -4,7 +4,7 @@ import { JwtPayload } from "jsonwebtoken";
 import jwt from "jsonwebtoken";
 
 export async function jwtSign(
-  payload?: Record<string, any>,
+  payload: Record<string, any>,
   expiresIn?: number //seconds
 ): Promise<{
   token?: string;
@@ -26,7 +26,7 @@ export async function jwtSign(
   try {
     // Create JWT payload with user information
     const jwtPayload = {
-      ...(payload || {}),
+      ...payload,
       jti: crypto.randomUUID(),
     };
 
