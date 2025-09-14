@@ -28,6 +28,7 @@ export default async function ManagementKeyPage(
         }
     }
     if (!apiKey) {
+        console.warn('Api key is invalid.')
         redirect(`/${lang}/management`);
     }
     return (
