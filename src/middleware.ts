@@ -88,6 +88,12 @@ function navigateRoutes(
 }
 
 export default auth(async function middleware(req: NextRequest) {
+
+  if (req.nextUrl.pathname.startsWith("/api")) {
+    console.warn(`======================= ${req.nextUrl.pathname}`)
+  }
+
+
   const session = await auth();
   const isLoggedIn = !!(session && session.user && session.user.id);
   const route: string | NextResponse = routeCompletion(req);
