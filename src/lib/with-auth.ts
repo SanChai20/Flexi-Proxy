@@ -1,30 +1,21 @@
+import { NextRequest } from "next/server";
 import { jwtVerify } from "@/lib/jwt";
 
-export interface PayloadRequest extends Request {
+export interface PayloadRequest extends NextRequest {
   payload?: Record<string, any>;
 }
 
 type Handler = (req: PayloadRequest, context?: any) => Promise<Response>;
 
 export function withAuth(handler: Handler): Handler {
-  return async (req: Request, context) => {
-    let headersObj: any = {};
-    for (const [key, value] of req.headers.entries()) {
-      headersObj[key] = value;
-    }
-    console.log(headersObj);
-    const authHeader = req.headers.get("Authorization");
-    console.warn(`${req.url} - authHeader1: ${authHeader}`);
-    console.warn(`${req.url} - JWT_SECRET_KEY: ${process.env.JWT_SECRET_KEY}`)
-    console.warn(`${req.url} - JWT_ISSUER: ${process.env.JWT_ISSUER}`)
-    console.warn(`${req.url} - JWT_AUDIENCE: ${process.env.JWT_AUDIENCE}`)
+  return async (req: PayloadRequest, context) => {
+    const authHeader = req.headers.get("authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { "Content-Type": "application/json" },
       });
     }
-    console.warn(`${req.url} - authHeader2: ${authHeader}`);
     const token = authHeader.split(" ")[1];
     const { payload, error } = await jwtVerify(token);
     if (!payload) {
@@ -33,7 +24,8 @@ export function withAuth(handler: Handler): Handler {
         headers: { "Content-Type": "application/json" },
       });
     }
+    req.payload = payload;
     // If authenticated, call the original handler
-    return handler({ ...req, payload } as PayloadRequest, context);
+    return handler(req, context);
   };
 }
