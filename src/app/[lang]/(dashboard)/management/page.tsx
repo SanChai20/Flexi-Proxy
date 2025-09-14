@@ -18,7 +18,6 @@ import { redirect } from "next/navigation";
 import ClipboardButton from "@/components/ui/clipboard-button";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import AddAdapterButton from "@/components/managed/add-button";
-import { auth } from "@/auth";
 
 export default async function ManagementPage(
   props: PageProps<"/[lang]/management">
