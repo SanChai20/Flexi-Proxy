@@ -37,4 +37,4 @@ async function protectedGET(req: PayloadRequest) {
   }
 }
 
-export const GET = (protectedGET);
+export const GET = withAuth(protectedGET);
