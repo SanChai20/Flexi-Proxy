@@ -25,17 +25,13 @@ export default async function ManagementPage(
 ) {
   const { lang } = await props.params;
   const dict = await getDictionary(lang as Locale);
-  const userId: string | undefined = (await auth())?.user?.id;
-  if (userId === undefined) {
-    redirect(`/${lang}/login`);
-  }
   let adapters: {
     provider_id: string;
     provider_url: string;
     base_url: string;
     model_id: string;
     create_time: string;
-  }[] = await getAllUserAdapters(userId);
+  }[] = await getAllUserAdapters();
   if (adapters.length <= 0) {
     redirect(`/${lang}/management/create`);
   }
@@ -159,7 +155,7 @@ export default async function ManagementPage(
                               const createTime = formData.get("createTime") as string;
                               const result:
                                 | { create_time: string }
-                                | undefined = await deleteAdapter(userId, createTime);
+                                | undefined = await deleteAdapter(createTime);
                               if (result !== undefined) {
                                 redirect(`/${lang}/management`); //Refresh
                               }

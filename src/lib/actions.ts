@@ -37,7 +37,7 @@ export async function getAllTargetProviders(): Promise<
 }
 
 // Get all adapters for the authenticated user
-export async function getAllUserAdapters(user_id: string): Promise<
+export async function getAllUserAdapters(): Promise<
   {
     provider_id: string;
     provider_url: string;
@@ -46,6 +46,10 @@ export async function getAllUserAdapters(user_id: string): Promise<
     create_time: string;
   }[]
 > {
+  const user_id: string | undefined = (await auth())?.user?.id;
+  if (user_id === undefined) {
+    return [];
+  }
   try {
     const { token, error } = await jwtSign({ user_id }, VERIFY_TOKEN_EXPIRE_SECONDS);
     if (!token) {
@@ -106,17 +110,32 @@ export async function createAdapter(
       }
     );
     if (response.ok) {
-      const { token: apiToken, error: apiError } = await jwtSign({
+      const { token: keyToken, error: keyError } = await jwtSign({
         u: user_id,
         a: api_key,
         b: base_url,
         m: model_id
       });
-      if (apiToken === undefined) {
-        console.error("Error generating api token:", apiError);
+      if (keyToken === undefined) {
+        console.error("Error generating api token:", keyError);
         return undefined;
       }
-      const oneTimeToken: undefined | { token: string } = await encode(user_id, apiToken);
+
+      const { token: tempToken, error: tempError } = await jwtSign({ user_id, secure: keyToken }, VERIFY_TOKEN_EXPIRE_SECONDS);
+      if (!tempToken) {
+        console.error("Error generating temp token:", tempError);
+        return undefined;
+      }
+      const response = await fetch(
+        [process.env.BASE_URL, "api/token"].join("/"),
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${tempToken}`
+          }
+        }
+      );
+      const oneTimeToken: undefined | { token: string } = await response.json();
       return oneTimeToken?.token;
     }
   } catch (error) {
@@ -139,27 +158,76 @@ export async function updateAdapter(
     return undefined;
   }
   try {
-    const { token, error } = await jwtSign({
+    const { token: keyToken, error: keyError } = await jwtSign({
       u: user_id,
       a: api_key,
       b: base_url,
       m: model_id
     });
-    if (token !== undefined) {
-      const oneTimeToken: undefined | { token: string } = await encode(user_id, token);
-      return oneTimeToken?.token;
+    if (keyToken === undefined) {
+      console.error("Error generating key token: ", keyError);
+      return undefined;
     }
+
+    const { token: tempToken, error: tempError } = await jwtSign({ user_id, secure: keyToken }, VERIFY_TOKEN_EXPIRE_SECONDS);
+    if (!tempToken) {
+      console.error("Error generating temp token:", tempError);
+      return undefined;
+    }
+    const response = await fetch(
+      [process.env.BASE_URL, "api/token"].join("/"),
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${tempToken}`
+        }
+      }
+    );
+    const oneTimeToken: undefined | { token: string } = await response.json();
+    return oneTimeToken?.token;
   } catch (error) {
     console.error("Error updating adapter:", error);
   }
   return undefined;
 }
 
+export async function retrieveAdapterKey(oneTimeToken: string): Promise<undefined | { secure: string }> {
+  const user_id: string | undefined = (await auth())?.user?.id;
+  if (user_id === undefined) {
+    return undefined;
+  }
+  try {
+    const { token, error } = await jwtSign({ user_id, token: oneTimeToken }, VERIFY_TOKEN_EXPIRE_SECONDS);
+    if (!token) {
+      console.error("Error generating auth token:", error);
+      return undefined;
+    }
+    const response = await fetch(
+      [process.env.BASE_URL, "api/token"].join("/"),
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+    if (response.ok) {
+      return await response.json();
+    }
+  } catch (error) {
+    console.error("Error generating one-time token:", error);
+  }
+  return undefined;
+}
+
 // Delete adapter by create_time
 export async function deleteAdapter(
-  user_id: string,
   create_time: string
 ): Promise<{ create_time: string } | undefined> {
+  const user_id: string | undefined = (await auth())?.user?.id;
+  if (user_id === undefined) {
+    return undefined;
+  }
   try {
     const { token, error } = await jwtSign({ user_id }, VERIFY_TOKEN_EXPIRE_SECONDS);
     if (!token) {
@@ -225,56 +293,4 @@ export async function sendContactMessage(subject: string, message: string): Prom
     console.error("Error sending contact message:", error);
     return { message: "Error sending contact message", success: false };
   }
-}
-
-// Get one-time token for given secure value
-export async function encode(user_id: string, secure: string): Promise<undefined | { token: string }> {
-  try {
-    const { token, error } = await jwtSign({ user_id, secure }, VERIFY_TOKEN_EXPIRE_SECONDS);
-    if (!token) {
-      console.error("Error generating auth token:", error);
-      return undefined;
-    }
-    const response = await fetch(
-      [process.env.BASE_URL, "api/token"].join("/"),
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
-    if (response.ok) {
-      return await response.json();
-    }
-  } catch (error) {
-    console.error("Error generating one-time token:", error);
-  }
-  return undefined;
-}
-
-// Get secure value by one-time token
-export async function decode(user_id: string, oneTimeToken: string): Promise<undefined | { secure: string }> {
-  try {
-    const { token, error } = await jwtSign({ user_id, token: oneTimeToken }, VERIFY_TOKEN_EXPIRE_SECONDS);
-    if (!token) {
-      console.error("Error generating auth token:", error);
-      return undefined;
-    }
-    const response = await fetch(
-      [process.env.BASE_URL, "api/token"].join("/"),
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
-    if (response.ok) {
-      return await response.json();
-    }
-  } catch (error) {
-    console.error("Error generating one-time token:", error);
-  }
-  return undefined;
 }

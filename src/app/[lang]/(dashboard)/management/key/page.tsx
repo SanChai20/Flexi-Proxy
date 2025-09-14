@@ -7,10 +7,9 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { decode } from "@/lib/actions";
+import { retrieveAdapterKey } from "@/lib/actions";
 import ClipboardButton from "@/components/ui/clipboard-button";
 import BackToManagementButton from "@/components/managed/back-button";
-import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
 export default async function ManagementKeyPage(
@@ -21,14 +20,11 @@ export default async function ManagementKeyPage(
     const { token } = await props.searchParams;
     let apiKey: string | undefined = undefined;
     if (token && typeof token === "string") {
-        const userId: string | undefined = (await auth())?.user?.id;
-        if (userId !== undefined) {
-            const response: undefined | { secure: string } = await decode(userId, token);
-            apiKey = response?.secure;
-        }
+        const response: undefined | { secure: string } = await retrieveAdapterKey(token);
+        apiKey = response?.secure;
     }
     if (!apiKey) {
-        console.warn('Api key is invalid.')
+        console.error('API Key is invalid.')
         redirect(`/${lang}/management`);
     }
     return (
@@ -47,9 +43,9 @@ export default async function ManagementKeyPage(
                     <div className="mt-6 bg-card border border-border rounded-lg overflow-hidden">
                         <div className="flex items-center">
                             <div className="p-6 truncate max-w-[calc(100%-40px)] flex-grow text-muted-foreground">
-                                {apiKey || "qoiwuyebzxncblqaoisueuqwrhajnsdkjhxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}
+                                {apiKey}
                             </div>
-                            <ClipboardButton text={apiKey || "qoiwuyebzxncblqaoisueuqwrhajnsdkjhxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"} />
+                            <ClipboardButton text={apiKey} />
                         </div>
                         {/* Divider between sections */}
                         <div className="border-t border-border"></div>
