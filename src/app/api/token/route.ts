@@ -5,10 +5,10 @@ import { PayloadRequest, withAuth } from "@/lib/with-auth";
 // [INTERNAL] Get Security value and Delete Token Key
 async function protectedGET(req: PayloadRequest) {
     try {
-        if (!req.payload || typeof req.payload["token"] !== "string" || typeof req.payload["user_id"] !== "string") {
+        if (!req.payload || typeof req.payload["t"] !== "string" || typeof req.payload["uid"] !== "string") {
             return NextResponse.json({ error: "Missing field" }, { status: 400 });
         }
-        const secureVal: string | null = await redis.getdel<string>([req.payload["user_id"], req.payload["token"]].join(":"));
+        const secureVal: string | null = await redis.getdel<string>([req.payload["uid"], req.payload["t"]].join(":"));
         if (secureVal) {
             return NextResponse.json({ secure: secureVal });
         } else {
@@ -28,11 +28,11 @@ async function protectedGET(req: PayloadRequest) {
 // [INTERNAL] Create Security value and Temp Token Key
 async function protectedPOST(req: PayloadRequest) {
     try {
-        if (!req.payload || typeof req.payload["secure"] !== "string" || typeof req.payload["user_id"] !== "string") {
+        if (!req.payload || typeof req.payload["s"] !== "string" || typeof req.payload["uid"] !== "string") {
             return NextResponse.json({ error: "Missing field" }, { status: 400 });
         }
         const token = crypto.randomUUID();
-        await redis.set<string>([req.payload["user_id"], token].join(":"), req.payload["secure"], { ex: 300 });
+        await redis.set<string>([req.payload["uid"], token].join(":"), req.payload["s"], { ex: 300 });
         return NextResponse.json({ token });
     } catch (error) {
         return NextResponse.json(

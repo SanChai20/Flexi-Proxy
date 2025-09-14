@@ -74,32 +74,32 @@ const createEmailTemplate = (data: ContactFormData) => `
             <div class="field">
                 <div class="label">💬 Message Content:</div>
                 <div class="value message-value">${escapeHtml(
-                  data.message
-                )}</div>
+  data.message
+)}</div>
             </div>
             
             <div class="field">
                 <div class="label">⏰ Submission Time:</div>
                 <div class="value">${new Date(data.submitTime).toLocaleString(
-                  "zh-CN",
-                  {
-                    timeZone: "Asia/Shanghai",
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit",
-                  }
-                )}</div>
+  "zh-CN",
+  {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }
+)}</div>
             </div>
         </div>
         
         <div class="footer">
             <p>This email was automatically sent by API Base Router contact form system</p>
             <p>To reply, please respond directly to the user's email: ${escapeHtml(
-              data.email
-            )}</p>
+  data.email
+)}</p>
         </div>
     </div>
 </body>
@@ -109,14 +109,14 @@ const createEmailTemplate = (data: ContactFormData) => `
 async function protectedPOST(req: PayloadRequest) {
   if (
     !req.payload ||
-    typeof req.payload["user_id"] !== "string" ||
-    typeof req.payload["user_name"] !== "string" ||
-    typeof req.payload["user_email"] !== "string"
+    typeof req.payload["uid"] !== "string" ||
+    typeof req.payload["un"] !== "string" ||
+    typeof req.payload["ue"] !== "string"
   ) {
     return NextResponse.json({ error: "Missing field" }, { status: 400 });
   }
 
-  const userId = req.payload["user_id"];
+  const userId = req.payload["uid"];
   const ipSubmittedExpiryInSeconds: number = await redis.ttl(
     [USER_CONTACT_PREFIX, userId].join(":")
   );
@@ -132,8 +132,8 @@ async function protectedPOST(req: PayloadRequest) {
   const reqBody = await req.json();
   const subject = sanitizeString(reqBody["subject"] as string);
   const message = sanitizeString(reqBody["message"] as string);
-  const userName = sanitizeString(req.payload["user_name"]);
-  const userEmail = sanitizeString(req.payload["user_email"]);
+  const userName = sanitizeString(req.payload["un"]);
+  const userEmail = sanitizeString(req.payload["ue"]);
 
   // Validate email if provided
   if (userEmail && !validateEmail(userEmail)) {

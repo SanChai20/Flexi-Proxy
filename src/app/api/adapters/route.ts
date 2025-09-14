@@ -8,7 +8,7 @@ const USER_ADAPTER_PREFIX = "user:adapter:lists";
 // [Internal] Create Adapter
 async function protectedPOST(req: PayloadRequest) {
   try {
-    if (!req.payload || typeof req.payload["user_id"] !== "string") {
+    if (!req.payload || typeof req.payload["uid"] !== "string") {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
     const { provider_id, base_url, model_id } = await req.json();
@@ -29,7 +29,7 @@ async function protectedPOST(req: PayloadRequest) {
       base_url: string;
       model_id: string;
     }>(
-      [USER_ADAPTER_PREFIX, req.payload["user_id"], create_time].join(":"),
+      [USER_ADAPTER_PREFIX, req.payload["uid"], create_time].join(":"),
       {
         provider_id,
         provider_url: provider.url,
@@ -52,10 +52,10 @@ async function protectedPOST(req: PayloadRequest) {
 // [Internal] Get Adapters
 async function protectedGET(req: PayloadRequest) {
   try {
-    if (!req.payload || typeof req.payload["user_id"] !== "string") {
+    if (!req.payload || typeof req.payload["uid"] !== "string") {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
-    const searchPatternPrefix = `${USER_ADAPTER_PREFIX}:${req.payload["user_id"]}:`;
+    const searchPatternPrefix = `${USER_ADAPTER_PREFIX}:${req.payload["uid"]}:`;
 
     let allKeys: string[] = [];
     let cursor = 0;
@@ -99,7 +99,7 @@ async function protectedGET(req: PayloadRequest) {
 // [Internal] Delete Adapter
 async function protectedDELETE(req: PayloadRequest) {
   try {
-    if (!req.payload || typeof req.payload["user_id"] !== "string") {
+    if (!req.payload || typeof req.payload["uid"] !== "string") {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
     const { create_time } = await req.json();
@@ -107,7 +107,7 @@ async function protectedDELETE(req: PayloadRequest) {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
     await redis.del(
-      [USER_ADAPTER_PREFIX, req.payload["user_id"], create_time].join(":")
+      [USER_ADAPTER_PREFIX, req.payload["uid"], create_time].join(":")
     );
     return NextResponse.json({ create_time });
   } catch (error) {
