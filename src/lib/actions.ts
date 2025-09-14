@@ -56,6 +56,7 @@ export async function getAllUserAdapters(): Promise<
       console.error("Error generating auth token:", error);
       return [];
     }
+    console.warn(`getAllUserAdapters - token: ${token}`)
     const response = await fetch(
       [process.env.BASE_URL, "api/adapters"].join("/"),
       {

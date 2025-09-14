@@ -12,7 +12,7 @@ export function withAuth(handler: Handler): Handler {
     const authHeader = req.headers.get("Authorization");
     console.warn(`${req.url} - authHeader: ${authHeader}`);
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      return new Response(JSON.stringify({ error: "Unauthorized 1" }), {
         status: 401,
         headers: { "Content-Type": "application/json" },
       });
