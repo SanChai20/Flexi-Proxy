@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 
 export default async function DocumentationPage(
   props: PageProps<"/[lang]/documentation">
@@ -36,11 +37,10 @@ export default async function DocumentationPage(
         </CardHeader>
       </Card>
       <div className="mt-6 prose prose-gray dark:prose-invert w-full max-w-full">
-        <Markdown
-          remarkPlugins={[remarkGfm, remarkBreaks]}
+        <MarkdownRenderer
         >
           {docContent}
-        </Markdown>
+        </MarkdownRenderer>
       </div>
     </section>
   );
