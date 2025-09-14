@@ -3,6 +3,7 @@
 import { auth } from "@/auth";
 import { jwtSign } from "./jwt";
 import { VERIFY_TOKEN_EXPIRE_SECONDS } from "./utils";
+import { redirect } from "next/navigation";
 
 // Get all target providers
 export async function getAllTargetProviders(): Promise<
@@ -293,4 +294,27 @@ export async function sendContactMessage(subject: string, message: string): Prom
     console.error("Error sending contact message:", error);
     return { message: "Error sending contact message", success: false };
   }
+}
+
+
+export async function getAPIKeyAction(prevState: any, formData: FormData): Promise<{ adapter?: string }> {
+  const adapter = formData.get("adapter") as string;
+  const adapterJSON: {
+    provider_id: string;
+    provider_url: string;
+    base_url: string;
+    model_id: string;
+    create_time: string;
+  } = JSON.parse(adapter);
+  redirect(
+    `/management/modify?baseUrl=${encodeURIComponent(
+      adapterJSON.base_url
+    )}&modelId=${encodeURIComponent(
+      adapterJSON.model_id
+    )}&providerId=${encodeURIComponent(
+      adapterJSON.provider_id
+    )}&createTime=${encodeURIComponent(
+      adapterJSON.create_time
+    )}`
+  );
 }

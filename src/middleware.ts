@@ -15,7 +15,7 @@ function routeCompletion(req: NextRequest): string | NextResponse {
   const pathNameIsMissingLocale = i18n.locales.every(
     (locale) => !pathName.startsWith(`/${locale}/`) && pathName !== `/${locale}`
   );
-
+  console.log(`[ORIGIN1] ${pathName}`);
   // If pathname already has a locale, return as is
   if (!pathNameIsMissingLocale) {
     return pathName;
@@ -25,7 +25,7 @@ function routeCompletion(req: NextRequest): string | NextResponse {
   const pathWithoutSlash = pathName.startsWith("/")
     ? pathName.substring(1)
     : pathName;
-  console.log(`[ORIGIN] ${pathWithoutSlash}`);
+  console.log(`[ORIGIN2] ${pathWithoutSlash}  - ${pathName}`);
   const isWhitelisted =
     i18nRouteWhitelist.includes(pathWithoutSlash) ||
     i18nRouteWhitelist.includes(pathName);
@@ -42,14 +42,13 @@ function routeCompletion(req: NextRequest): string | NextResponse {
       locales
     );
     const locale = matchLocale(languages, locales, i18n.defaultLocale);
-    return NextResponse.redirect(
-      new URL(
-        pathName.startsWith("/")
-          ? `/${locale}${pathName}`
-          : `/${locale}/${pathName}`,
-        req.url
-      )
-    );
+    // Preserve query parameters by using the full URL
+    let url = req.nextUrl.clone();
+    url.pathname = pathName.startsWith("/")
+      ? `/${locale}${pathName}`
+      : `/${locale}/${pathName}`;
+    console.warn("AAAAAAAAAAA " + url.toString())
+    return NextResponse.redirect(url);
   }
   // For non-whitelisted routes, return as is
   return pathName;

@@ -18,6 +18,7 @@ import { redirect } from "next/navigation";
 import ClipboardButton from "@/components/ui/clipboard-button";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import AddAdapterButton from "@/components/managed/add-button";
+import { GetAPIKeyForm } from "./manage-apikey-form";
 
 export default async function ManagementPage(
   props: PageProps<"/[lang]/management">
@@ -109,7 +110,8 @@ export default async function ManagementPage(
                           align="end"
                           className="w-32 xs:w-36 rounded-lg"
                         >
-                          <form
+                          <GetAPIKeyForm dict={dict} adapter={adapter} />
+                          {/* <form
                             action={
                               async (formData) => {
                                 "use server";
@@ -147,7 +149,7 @@ export default async function ManagementPage(
                                 {dict?.management?.getApiKey || "Get API Key"}
                               </button>
                             </DropdownMenuItem>
-                          </form>
+                          </form> */}
                           <form
                             action={async (formData) => {
                               "use server";
