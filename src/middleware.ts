@@ -96,6 +96,10 @@ export default auth(async function middleware(req: NextRequest) {
       headersObj[key] = value;
     }
     console.log(headersObj);
+
+    const auth = req.headers.get('Authorization');
+    console.log(`====!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ${auth}`)
+
     console.warn(`======================= ${req.nextUrl.pathname}`)
   }
 
