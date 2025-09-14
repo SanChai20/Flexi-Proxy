@@ -1,14 +1,13 @@
-import { NextRequest } from "next/server";
 import { jwtVerify } from "@/lib/jwt";
 
-export interface PayloadRequest extends NextRequest {
+export interface PayloadRequest extends Request {
   payload?: Record<string, any>;
 }
 
 type Handler = (req: PayloadRequest, context?: any) => Promise<Response>;
 
 export function withAuth(handler: Handler): Handler {
-  return async (req: NextRequest, context) => {
+  return async (req: Request, context) => {
     console.warn(JSON.stringify(req.headers.keys()))
     console.warn(JSON.stringify(req.headers.values()))
     const authHeader = req.headers.get("Authorization");
