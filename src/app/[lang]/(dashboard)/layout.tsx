@@ -3,15 +3,11 @@ import {
   BookText,
   Home,
   LayoutDashboard,
-  LayoutList,
-  LineChart,
   Mails,
   MessageCircleQuestionMark,
-  Package,
   PanelLeft,
   Settings,
   ShoppingCart,
-  Users2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";

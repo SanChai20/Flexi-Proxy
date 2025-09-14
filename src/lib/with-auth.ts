@@ -9,7 +9,8 @@ type Handler = (req: PayloadRequest, context?: any) => Promise<Response>;
 
 export function withAuth(handler: Handler): Handler {
   return async (req: PayloadRequest, context) => {
-    const authHeader = req.headers.get("authorization");
+    const authHeader = req.headers.get("Authorization");
+    console.warn(`${req.url} - authHeader: ${authHeader}`);
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
