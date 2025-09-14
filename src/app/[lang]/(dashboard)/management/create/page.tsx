@@ -14,10 +14,8 @@ import {
 } from "@/components/ui/card";
 import { HelpCircleIcon } from "lucide-react";
 import { OnceButton } from "@/components/ui/oncebutton";
-import { createAdapter, getAllTargetProviders, encode } from "@/lib/actions";
+import { createAdapter, getAllTargetProviders } from "@/lib/actions";
 import { redirect } from "next/navigation";
-import { jwtSign } from "@/lib/jwt";
-import { auth } from "@/auth";
 
 export default async function ManagementCreatePage(
     props: PageProps<"/[lang]/management/create">
@@ -47,25 +45,11 @@ export default async function ManagementCreatePage(
                     const baseUrl = formData.get("baseUrl") as string;
                     const modelId = formData.get("modelId") as string;
                     const apiKey = formData.get("apiKey") as string;
-                    const userId: string | undefined = (await auth())?.user?.id;
-                    if (userId !== undefined) {
-                        const result:
-                            | { create_time: string; }
-                            | undefined = await createAdapter(userId, provider, baseUrl, modelId);
-                        if (result !== undefined) {
-                            const { token, error } = await jwtSign({
-                                uid: userId,
-                                ak: apiKey,
-                                bu: baseUrl,
-                                mid: modelId
-                            });
-                            if (token !== undefined) {
-                                const tempToken: undefined | { token: string } = await encode(userId, token);
-                                if (tempToken !== undefined) {
-                                    redirect(`/${lang}/management/key?token=${encodeURIComponent(tempToken.token)}`);
-                                }
-                            }
-                        }
+                    const oneTimeToken:
+                        | string
+                        | undefined = await createAdapter(apiKey, provider, baseUrl, modelId);
+                    if (oneTimeToken !== undefined) {
+                        redirect(`/${lang}/management/key?token=${encodeURIComponent(oneTimeToken)}`);
                     }
                 }}
                 className="mt-6"

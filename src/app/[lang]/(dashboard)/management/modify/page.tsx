@@ -9,18 +9,19 @@ import {
 } from "@/components/ui/card";
 import { OnceButton } from "@/components/ui/oncebutton";
 import { redirect } from "next/navigation";
-import { jwtSign } from "@/lib/jwt";
-import { encode } from "@/lib/actions";
-import { auth } from "@/auth";
+import { updateAdapter } from "@/lib/actions";
 
 export default async function ManagementModifyPage(
     props: PageProps<"/[lang]/management/modify">
 ) {
     const { lang } = await props.params;
     const dict = await getDictionary(lang as Locale);
-    const params = await props.searchParams;
-    const userId: string | undefined = (await auth())?.user?.id;
-    if (!userId || !params || !params.baseUrl || !params.modelId || !params.providerId || !params.createTime) {
+    const { baseUrl, modelId, providerId, createTime } = await props.searchParams;
+    if (typeof baseUrl !== 'string' ||
+        typeof modelId !== 'string' ||
+        typeof providerId !== 'string' ||
+        typeof createTime !== 'string'
+    ) {
         redirect(`/${lang}/management`);
     }
     return (
@@ -40,17 +41,9 @@ export default async function ManagementModifyPage(
                 action={async (formData) => {
                     "use server";
                     const apiKey = formData.get("apiKey") as string;
-                    const { token, error } = await jwtSign({
-                        uid: userId,
-                        ak: apiKey,
-                        bu: params.baseUrl,
-                        mid: params.modelId
-                    });
-                    if (token !== undefined) {
-                        const tempToken: undefined | { token: string } = await encode(userId, token);
-                        if (tempToken !== undefined) {
-                            redirect(`/${lang}/management/key?token=${encodeURIComponent(tempToken.token)}`);
-                        }
+                    const oneTimeToken: string | undefined = await updateAdapter(apiKey, baseUrl, modelId);
+                    if (oneTimeToken !== undefined) {
+                        redirect(`/${lang}/management/key?token=${encodeURIComponent(oneTimeToken)}`);
                     }
                 }}
                 className="mt-6"
@@ -83,7 +76,7 @@ export default async function ManagementModifyPage(
                                         type="text"
                                         id="baseUrl"
                                         name="baseUrl"
-                                        value={params.baseUrl}
+                                        value={baseUrl}
                                         readOnly
                                         className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition cursor-not-allowed opacity-75"
                                     />
@@ -121,7 +114,7 @@ export default async function ManagementModifyPage(
                                     type="text"
                                     id="modelId"
                                     name="modelId"
-                                    value={params.modelId}
+                                    value={modelId}
                                     readOnly
                                     className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition cursor-not-allowed opacity-75"
                                 />
@@ -155,7 +148,7 @@ export default async function ManagementModifyPage(
                                     type="text"
                                     id="provider"
                                     name="provider"
-                                    value={params.providerId}
+                                    value={providerId}
                                     readOnly
                                     className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition cursor-not-allowed opacity-75"
                                 />

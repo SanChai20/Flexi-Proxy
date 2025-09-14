@@ -12,3 +12,4 @@ export function pathCullLocale(pathname: string) {
 }
 
 export const REGISTERED_PROVIDER_PREFIX = "registered:target:provider";
+export const VERIFY_TOKEN_EXPIRE_SECONDS = 300;
