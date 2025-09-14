@@ -1,10 +1,10 @@
 [![GitHub](https://img.shields.io/badge/GitHub-0.5.1-blue?logo=github)](https://github.com/SanChai20/Flexi-Proxy) 
 
-*最后更新：2025年9月13日*
+*最后更新：2025年9月14日*
 
 # 概述
 
-FlexiProxy 是一个基于 OpenAI-Compatible API 向不同目标供应商平台兼容适配的服务代理。它允许用户在已有AI客户端下使用不同的后端服务，解决了某些客户端易用但其可用的大语言模型后端服务在某些地区下较为昂贵或无法使用的问题。
+FlexiProxy 是一个基于 OpenAI-Compatible API 向不同目标供应商平台兼容适配的服务代理。它允许用户在已有LLM客户端下使用不同的后端服务，解决了某些客户端易用但其可用的大语言模型后端服务在某些地区下较为昂贵或无法使用的问题。
 
 # 主要特性
 
@@ -18,7 +18,7 @@ FlexiProxy 是一个基于 OpenAI-Compatible API 向不同目标供应商平台�
 
 ## 创建适配器
 
-A. 创建适配器前请先准备好现有AI供应商平台的OpenAI-Compatible Base URL和API Key，以下平台样例可供参考（以官网为准），凡是支持OpenAI-Compatible API的平台都可使用：
+A. 创建适配器前请先准备好现有LLM供应商平台的OpenAI-Compatible Base URL和API Key，以下平台样例可供参考（以官网为准），凡是支持OpenAI-Compatible API的平台都可使用：
 
 - [DeepSeek](https://www.deepseek.com/)
     - Base URL: **https://api.deepseek.com/v1**
@@ -41,7 +41,7 @@ A. 创建适配器前请先准备好现有AI供应商平台的OpenAI-Compatible 
     - 模型 ID: **grok-3**、**grok-4**等，详情参考[xAI 文档](https://docs.x.ai/docs/models)
 
 
-B. 选择并点击左侧侧边栏中的**管理面板**图标，如果首次创建，会自动跳转至**创建适配器**的页面，根据以上信息可填写**源服务**，在**目标服务**处选择目标供应商平台，这里以**Anthropic**为例，填写完毕后点击确认
+B. 选择并点击左侧侧边栏中的**管理面板**图标，如果首次创建，会自动跳转至**创建适配器**的页面，根据以上信息可填写**源服务**（**请注意！您提供的 API Key 我们不会持久化存储，只用于服务请求**），在**目标服务**处选择目标供应商平台，这里以**Anthropic**为例，填写完毕后点击确认
 
 ![](https://flexiproxy.com/screenshots/zh/createadapter.PNG)
 
@@ -63,7 +63,7 @@ E. 适配器每一行最右方有一个⚙图标，点击后会在弹框中找�
 
 ## 作为目标平台使用
 
-[创建适配器](#创建适配器)完成后，有两个字段是关键的，一个是**管理面板**中目标平台可用的**Base URL**，另一个是通过**源服务**生成的新的**API Key**，下面以两个常用的AI客户端为例，举例说明如何使用：
+[创建适配器](#创建适配器)完成后，有两个字段是关键的，一个是**管理面板**中目标平台可用的**Base URL**，另一个是通过**源服务**生成的新的**API Key**，下面以两个常用的LLM客户端为例，举例说明如何使用：
 
 - **Visual Studio Code - Cline插件** (天然支持OpenAI-Compatible API，这里仅用于举例)
 
