@@ -1,8 +1,5 @@
 import { getDictionary } from "@/lib/dictionary";
 import { Locale } from "i18n-config";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import remarkBreaks from "remark-breaks";
 import path from "path";
 import fs from 'fs';
 import {
@@ -37,8 +34,7 @@ export default async function DocumentationPage(
         </CardHeader>
       </Card>
       <div className="mt-6 prose prose-gray dark:prose-invert w-full max-w-full">
-        <MarkdownRenderer
-        >
+        <MarkdownRenderer>
           {docContent}
         </MarkdownRenderer>
       </div>

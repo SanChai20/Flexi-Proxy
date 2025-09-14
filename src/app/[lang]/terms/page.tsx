@@ -2,10 +2,8 @@ import { getDictionary } from "@/lib/dictionary";
 import { ContentDisplay } from "@/components/ui/contentdisplay";
 import path from "path";
 import { promises as fs } from "fs";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import remarkBreaks from "remark-breaks";
 import { Locale } from "i18n-config";
+import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
 
 export default async function TermsPage(props: PageProps<"/[lang]/terms">) {
   const { lang } = await props.params;
@@ -18,7 +16,7 @@ export default async function TermsPage(props: PageProps<"/[lang]/terms">) {
       title={dictionary.legal.termsTitle}
       subtitle={dictionary.legal.termsSubtitle}
     >
-      <Markdown remarkPlugins={[remarkGfm, remarkBreaks]} children={docContent} />
+      <MarkdownRenderer>{docContent}</MarkdownRenderer>
     </ContentDisplay>
   );
 }
