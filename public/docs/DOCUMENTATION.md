@@ -1,407 +1,109 @@
----
-title: YAML Front Matter
-description: A very simple way to add structured data to a page.
----
+[![GitHub](https://img.shields.io/badge/GitHub-0.5.1-blue?logo=github)](https://github.com/SanChai20/Flexi-Proxy)
 
-# Editor.md
+*Last updated: September 14, 2025*
+
+# A. Overview
+
+FlexiProxy is a service proxy that provides OpenAI-Compatible API compatibility for different target supplier platforms. It allows users to use different backend services under existing LLM clients, solving the problem of expensive or unavailable large language model backend services in certain regions for clients that are easy to use.
+
+# B. Key Features
+
+- [x] **Regional Flexibility**: Overcome regional restrictions and pricing issues
+- [x] **Data Statistics**: Optional usage tracking and statistics (disabled by default)
+- [x] **Simple Configuration**: Easy setup for mapping client requests to provider endpoints through adapters
+
+# C. User Guide
+
+> The adapter uses user-provided API information for background requests while maintaining compatibility with target platform APIs. Therefore, FlexiProxy does not directly provide large language model services but acts as an intermediary for request forwarding.
+
+## a. Creating an Adapter
+
+1. Before creating an adapter, prepare the OpenAI-Compatible Base URL and API Key of your existing LLM supplier platform. The following platform examples are for reference (based on official websites). Any platform that supports the OpenAI-Compatible API can be used:
+
+- [DeepSeek](https://www.deepseek.com/)
+    - Base URL: **https://api.deepseek.com/v1**
+    - API Key: Obtain [here](https://platform.deepseek.com/)
+    - Model IDs: **deepseek-chat**, **deepseek-reasoner**, etc. See [DeepSeek API Documentation](https://api-docs.deepseek.com/) for details
+
+- [DeepInfra](https://deepinfra.com/)
+    - Base URL: **https://api.deepinfra.com/v1/openai**
+    - API Key: Obtain [here](https://deepinfra.com/dash/api_keys)
+    - Model IDs: **openai/gpt-oss-120b**, **zai-org/GLM-4.5**, etc. See [DeepInfra Models](https://deepinfra.com/models) for details
+
+- [Alibaba Qwen](https://bailian.console.aliyun.com/)
+    - Base URL: **https://dashscope.aliyuncs.com/compatible-mode/v1**
+    - API Key: Obtain [here](https://bailian.console.aliyun.com/?tab=model#/api-key)
+    - Model IDs: **qwen3-coder-plus**, **qwen-plus**, etc. See [Model Square](https://bailian.console.aliyun.com/) for details
+
+- [xAI Grok](https://x.ai/)
+    - Base URL: **https://api.x.ai/v1**
+    - API Key: Obtain [here](https://console.x.ai/team/default/api-keys)
+    - Model IDs: **grok-3**, **grok-4**, etc. See [xAI Documentation](https://docs.x.ai/docs/models) for details
 
 
-<a href="https://oschina.net">hhh</a>
+1. Select and click the **Management** icon in the left sidebar. If creating for the first time, you will be automatically redirected to the **Create Adapter** page. Based on the above information, you can fill in the **SOURCE** (**Note! We will not persistently store the API Key you provide, it is only used for service requests**). Select the target supplier platform under **TARGET**. Here we use **Anthropic** as an example. After filling in the information, click confirm.
 
-<img src="https://pandao.github.io/editor.md/images/logos/editormd-logo-180x180.png">
-
-# 换行TEST
-
-1
-2
-3
-
-a  
-b
-
----
-
-q\
-d
-
-#HEAD TEST
-
-# Smart Test
-
-...
-
----
-
---
-
-[![GitHub](https://img.shields.io/badge/GitHub-0.5.1-blue?logo=github)](https://github.com/SanChai20/tiny-mcp-host)
+![](https://flexiproxy.com/screenshots/en/createadapter.PNG)
 
 
-![](https://pandao.github.io/editor.md/images/logos/editormd-logo-180x180.png)
+3. After successful creation, a target platform available **API Key** will be generated (you will be redirected to the **API Key** interface). Users need to copy and properly save it. If accidentally lost during subsequent use, refer to **Step 5**.
 
-![](https://img.shields.io/github/stars/pandao/editor.md.svg) ![](https://img.shields.io/github/forks/pandao/editor.md.svg) ![](https://img.shields.io/github/tag/pandao/editor.md.svg) ![](https://img.shields.io/github/release/pandao/editor.md.svg) ![](https://img.shields.io/github/issues/pandao/editor.md.svg) 
+![](https://flexiproxy.com/screenshots/en/apikey.PNG)
 
 
-![](https://img.shields.io/bower/v/editor.md.svg)
+1. After completing the above steps, click the **Back to Management** button. The **Management** page allows you to add new adapters, and will also display the target platform available **Base URL**, but will not show the **API Key** from the previous step.
 
-**目录 (Table of Contents)**
+![](https://flexiproxy.com/screenshots/en/management.PNG)
 
-[TOCM]
 
-[TOC]
+5. There is a ⚙ icon at the far right of each adapter row. Clicking it will reveal the following functions in a popup:
+- **Get API Key**: If the **API Key** is accidentally lost, you can regenerate it through this function, repeating **Step 3**
+- **Delete**: Delete the current adapter. There is a maximum limit for user-created adapters. If you cannot create new ones, please delete existing ones
 
-# Heading 1
-## Heading 2               
-### Heading 3
-#### Heading 4
-##### Heading 5
-###### Heading 6
-# Heading 1 link [Heading link](https://github.com/pandao/editor.md "Heading link")
-## Heading 2 link [Heading link](https://github.com/pandao/editor.md "Heading link")
-### Heading 3 link [Heading link](https://github.com/pandao/editor.md "Heading link")
-#### Heading 4 link [Heading link](https://github.com/pandao/editor.md "Heading link") Heading link [Heading link](https://github.com/pandao/editor.md "Heading link")
-##### Heading 5 link [Heading link](https://github.com/pandao/editor.md "Heading link")
-###### Heading 6 link [Heading link](https://github.com/pandao/editor.md "Heading link")
+## b. Using as Target Platform
 
-#### 标题（用底线的形式）Heading (underline)
+After completing adapter creation, two fields are key: one is the target platform available **Base URL** in the **Management**, and the other is the new **API Key** generated through the **SOURCE**. Below are examples using two common LLM clients to illustrate how to use them:
 
-This is an H1
-=============
+- **Visual Studio Code - Cline Plugin** (naturally supports OpenAI-Compatible API, used here for example purposes)
 
-This is an H2
--------------
+    Continuing with **Anthropic** as an example, select **Model/API Provider** in the Cline window below, and configure as follows in the popup:
 
-### 字符效果和横线等
-                
-----
+    - API Provider: **Anthropic**
+    - Anthropic API Key: **Fill in the API Key generated from the above steps**
+    - Use custom base URL: **Check this option, then fill in the Base URL from the management panel**
 
-~~删除线~~ <s>删除线（开启识别HTML标签时）</s>
-*斜体字*      _斜体字_
-**粗体**  __粗体__
-***粗斜体*** ___粗斜体___
+- **Claude Code**
 
-上标：X<sub>2</sub>，下标：O<sup>2</sup>
+    We won't elaborate on how to install Claude Code, only explaining how to configure it. Claude Code configures **Base URL** and **API Key** through two methods: Method one is through system environment variables, and method two is through the Claude Code Settings file. For details, refer to Anthropic's [relevant documentation](https://docs.anthropic.com/en/docs/claude-code/llm-gateway#litellm-configuration)
 
-**缩写(同HTML的abbr标签)**
+    Using Windows system as an example, configuring via method one:
 
-> 即更长的单词或短语的缩写形式，前提是开启识别HTML标签时，已默认开启
+    - Using Cmd command line window, set the following variables, replacing YOUR_TARGET_PROVIDER_API_KEY and YOUR_TARGET_PROVIDER_BASE_URL with the API Key and Base URL obtained above
+        ```cmd
+        setx ANTHROPIC_AUTH_TOKEN "YOUR_TARGET_PROVIDER_API_KEY"
+        setx ANTHROPIC_BASE_URL "YOUR_TARGET_PROVIDER_BASE_URL"
+        ```
+    - Open a new CMD window and run the following commands to check if environment variables are effective
+        ```cmd
+        echo %ANTHROPIC_AUTH_TOKEN%
+        echo %ANTHROPIC_BASE_URL%
+        ```
+    - Start Claude Code normally to use it
 
-The <abbr title="Hyper Text Markup Language">HTML</abbr> specification is maintained by the <abbr title="World Wide Web Consortium">W3C</abbr>.
+    Configuring via method two:
 
-### 引用 Blockquotes
-
-> 引用文本 Blockquotes
-
-引用的行内混合 Blockquotes
-                    
-> 引用：如果想要插入空白换行`即<br />标签`，在插入处先键入两个以上的空格然后回车即可，[普通链接](http://localhost/)。
-
-### 锚点与链接 Links
-
-[普通链接](http://localhost/)
-
-[普通链接带标题](http://localhost/ "普通链接带标题")
-
-直接链接：<https://github.com>
-
-https://baidu.com
-
-[锚点链接][anchor-id] 
-
-[anchor-id]: http://www.this-anchor-link.com/
-
-[mailto:test.test@gmail.com](mailto:test.test@gmail.com)
-
-GFM a-tail link [@pandao](https://my.oschina.net/u/3691274)  邮箱地址自动链接 test.test@gmail.com  www@vip.qq.com
-
-> @pandao
-
-### 多语言代码高亮 Codes
-
-#### 行内代码 Inline code
-
-执行命令：`npm install marked`
-
-#### 缩进风格
-
-即缩进四个空格，也做为实现类似 `<pre>` 预格式化文本 ( Preformatted Text ) 的功能。
-
-    <?php
-        echo "Hello world!";
-    ?>
-    
-预格式化文本：
-
-    | First Header  | Second Header |
-    | ------------- | ------------- |
-    | Content Cell  | Content Cell  |
-    | Content Cell  | Content Cell  |
-
-#### JS代码　
-
-```javascript
-function test() {
-    console.log("Hello world!");
-}
- 
-(function(){
-    var box = function() {
-        return box.fn.init();
-    };
-
-    box.prototype = box.fn = {
-        init : function(){
-            console.log('box.init()');
-
-            return this;
-        },
-
-        add : function(str) {
-            alert("add", str);
-
-            return this;
-        },
-
-        remove : function(str) {
-            alert("remove", str);
-
-            return this;
+    - Create a .claude directory and create a **settings.json** file in the directory with the following content:
+        ```json
+        {
+            "env": {
+                "ANTHROPIC_BASE_URL": "YOUR_TARGET_PROVIDER_BASE_URL",
+                "ANTHROPIC_AUTH_TOKEN": "YOUR_TARGET_PROVIDER_API_KEY"
+            }
         }
-    };
-    
-    box.fn.init.prototype = box.fn;
-    
-    window.box =box;
-})();
+        ```
+    - When starting with the **claude** command, you need to specify the configuration file
+        ```
+        claude --settings="./your/path/to/.claude/settings.json"
+        ```
 
-var testBox = box();
-testBox.add("jQuery").remove("jQuery");
-```
-
-#### HTML 代码 HTML codes
-
-```html
-<!DOCTYPE html>
-<html>
-    <head>
-        <mate charest="utf-8" />
-        <meta name="keywords" content="Editor.md, Markdown, Editor" />
-        <title>Hello world!</title>
-        <style type="text/css">
-            body{font-size:14px;color:#444;font-family: "Microsoft Yahei", Tahoma, "Hiragino Sans GB", Arial;background:#fff;}
-            ul{list-style: none;}
-            img{border:none;vertical-align: middle;}
-        </style>
-    </head>
-    <body>
-        <h1 class="text-xxl">Hello world!</h1>
-        <p class="text-green">Plain text</p>
-    </body>
-</html>
-```
-
-### 图片 Images
-
-Image:
-
-![](https://pandao.github.io/editor.md/examples/images/4.jpg)
-
-> Follow your heart.
-
-![](https://pandao.github.io/editor.md/examples/images/8.jpg)
-
-> 图为：厦门白城沙滩
-
-图片加链接 (Image + Link)：
-
-[![](https://pandao.github.io/editor.md/examples/images/7.jpg)](https://pandao.github.io/editor.md/images/7.jpg "李健首张专辑《似水流年》封面")
-
-> 图为：李健首张专辑《似水流年》封面
-                
-----
-
-### 列表 Lists
-
-#### 无序列表（减号）Unordered Lists (-)
-                
-- 列表一
-- 列表二
-- 列表三
-     
-#### 无序列表（星号）Unordered Lists (*)
-
-* 列表一
-* 列表二
-* 列表三
-
-#### 无序列表（加号和嵌套）Unordered Lists (+)
-                
-+ 列表一
-+ 列表二
-    + 列表二-1
-    + 列表二-2
-    + 列表二-3
-+ 列表三
-    * 列表一
-    * 列表二
-    * 列表三
-
-#### 有序列表 Ordered Lists (-)
-                
-1. 第一行
-2. 第二行
-3. 第三行
-
-#### GFM task list
-
-- [x] GFM task list 1
-- [x] GFM task list 2
-- [ ] GFM task list 3
-    - [ ] GFM task list 3-1
-    - [ ] GFM task list 3-2
-    - [ ] GFM task list 3-3
-- [ ] GFM task list 4
-    - [ ] GFM task list 4-1
-    - [ ] GFM task list 4-2
-                
-----
-                    
-### 绘制表格 Tables
-
-| 项目        | 价格   |  数量  |
-| --------   | -----:  | :----:  |
-| 计算机      | $1600   |   5     |
-| 手机        |   $12   |   12   |
-| 管线        |    $1    |  234  |
-                    
-First Header  | Second Header
-------------- | -------------
-Content Cell  | Content Cell
-Content Cell  | Content Cell 
-
-| First Header  | Second Header |
-| ------------- | ------------- |
-| Content Cell  | Content Cell  |
-| Content Cell  | Content Cell  |
-
-| Function name | Description                    |
-| ------------- | ------------------------------ |
-| `help()`      | Display the help window.       |
-| `destroy()`   | **Destroy your computer!**     |
-
-| Left-Aligned  | Center Aligned  | Right Aligned |
-| :------------ |:---------------:| -----:|
-| col 3 is      | some wordy text | $1600 |
-| col 2 is      | centered        |   $12 |
-| zebra stripes | are neat        |    $1 |
-
-| Item      | Value |
-| --------- | -----:|
-| Computer  | $1600 |
-| Phone     |   $12 |
-| Pipe      |    $1 |
-                
-----
-
-#### 特殊符号 HTML Entities Codes
-
-&copy; &  &uml; &trade; &iexcl; &pound;
-&amp; &lt; &gt; &yen; &euro; &reg; &plusmn; &para; &sect; &brvbar; &macr; &laquo; &middot; 
-
-X&sup2; Y&sup3; &frac34; &frac14;  &times;  &divide;   &raquo;
-
-18&ordm;C  &quot;  &apos;
-
-[========]
-
-### Emoji表情 :smiley:
-
-> Blockquotes :star:
-
-#### GFM task lists & Emoji & fontAwesome icon emoji & editormd logo emoji :editormd-logo-5x:
-
-- [x] :smiley: @mentions, :smiley: #refs, [links](), **formatting**, and <del>tags</del> supported :editormd-logo:;
-- [x] list syntax required (any unordered or ordered list supported) :editormd-logo-3x:;
-- [x] [ ] :smiley: this is a complete item :smiley:;
-- [ ] []this is an incomplete item [test link](#) :fa-star: @pandao; 
-- [ ] [ ]this is an incomplete item :fa-star: :fa-gear:;
-    - [ ] :smiley: this is an incomplete item [test link](#) :fa-star: :fa-gear:;
-    - [ ] :smiley: this is  :fa-star: :fa-gear: an incomplete item [test link](#);
- 
-#### 反斜杠 Escape
-
-\*literal asterisks\*
-
-[========]
-            
-### 科学公式 TeX(KaTeX)
-
-$$E=mc^2$$
-
-行内的公式$$E=mc^2$$行内的公式，行内的$$E=mc^2$$公式。
-
-$$x > y$$
-
-$$\(\sqrt{3x-1}+(1+x)^2\)$$
-                    
-$$\sin(\alpha)^{\theta}=\sum_{i=0}^{n}(x^i + \cos(f))$$
-
-多行公式：
-
-```math
-\displaystyle
-\left( \sum\_{k=1}^n a\_k b\_k \right)^2
-\leq
-\left( \sum\_{k=1}^n a\_k^2 \right)
-\left( \sum\_{k=1}^n b\_k^2 \right)
-```
-
-```katex
-\displaystyle 
-    \frac{1}{
-        \Bigl(\sqrt{\phi \sqrt{5}}-\phi\Bigr) e^{
-        \frac25 \pi}} = 1+\frac{e^{-2\pi}} {1+\frac{e^{-4\pi}} {
-        1+\frac{e^{-6\pi}}
-        {1+\frac{e^{-8\pi}}
-         {1+\cdots} }
-        } 
-    }
-```
-
-```latex
-f(x) = \int_{-\infty}^\infty
-    \hat f(\xi)\,e^{2 \pi i \xi x}
-    \,d\xi
-```
-
-### 分页符 Page break
-
-> Print Test: Ctrl + P
-
-[========]
-
-### 绘制流程图 Flowchart
-
-```flow
-st=>start: 用户登陆
-op=>operation: 登陆操作
-cond=>condition: 登陆成功 Yes or No?
-e=>end: 进入后台
-
-st->op->cond
-cond(yes)->e
-cond(no)->op
-```
-
-[========]
-                    
-### 绘制序列图 Sequence Diagram
-                    
-```seq
-Andrew->China: Says Hello 
-Note right of China: China thinks\nabout it 
-China-->Andrew: How are you? 
-Andrew->>China: I am good thanks!
-```
-
-### End
+Other platform clients are not listed here. If you have any questions during use, please contact us.
