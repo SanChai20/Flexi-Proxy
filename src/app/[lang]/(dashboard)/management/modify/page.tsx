@@ -42,12 +42,11 @@ export default async function ManagementModifyPage(
                     const session = await auth();
                     if (!!(session && session.user && session.user.id)) {
                         const { token, error } = await jwtSign({
-                            user_id: session.user.id,
-                            api_key: apiKey,
-                            base_url: params.baseUrl,
-                            provider_id: params.providerId,
-                            model_id: params.modelId
-                        }, 3600);
+                            uid: session.user.id,
+                            ak: apiKey,
+                            bu: params.baseUrl,
+                            mid: params.modelId
+                        });
                         if (token !== undefined) {
                             const tempToken: undefined | { token: string } = await encode(session.user.id, token);
                             if (tempToken !== undefined) {

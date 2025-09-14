@@ -54,12 +54,11 @@ export default async function ManagementCreatePage(
                             | undefined = await createAdapter(session.user.id, provider, baseUrl, modelId);
                         if (result !== undefined) {
                             const { token, error } = await jwtSign({
-                                user_id: session.user.id,
-                                api_key: apiKey,
-                                base_url: baseUrl,
-                                provider_id: provider,
-                                model_id: modelId
-                            }, 3600);
+                                uid: session.user.id,
+                                ak: apiKey,
+                                bu: baseUrl,
+                                mid: modelId
+                            });
                             if (token !== undefined) {
                                 const tempToken: undefined | { token: string } = await encode(session.user.id, token);
                                 if (tempToken !== undefined) {
