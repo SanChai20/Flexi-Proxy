@@ -89,10 +89,6 @@ function navigateRoutes(
 
 export default auth(async function middleware(req: NextRequest) {
   const session = await auth();
-
-  console.warn(`Middleware - Begin - URL - ${req.url}`)
-  console.dir(req.headers)
-  console.warn(`Middleware - End - URL - ${req.url}`)
   const isLoggedIn = !!(session && session.user && session.user.id);
   const route: string | NextResponse = routeCompletion(req);
   if (route instanceof NextResponse) {

@@ -58,7 +58,7 @@ export async function getAllUserAdapters(): Promise<
     }
     console.warn(`getAllUserAdapters - token: ${token}`)
     const response = await fetch(
-      "/api/adapters",
+      [process.env.BASE_URL, "api/adapters"].join("/"),
       {
         method: "GET",
         headers: {
