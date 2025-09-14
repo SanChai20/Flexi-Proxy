@@ -77,7 +77,7 @@ export default async function ManagementPage(
                     key={adapter.create_time}
                     className="hover:bg-muted/30 transition-colors duration-150"
                   >
-                    <td className="w-1/6 px-2 py-3 text-xs uppercase text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
+                    <td className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                       <span className="text-[10px] xs:text-xs md:text-sm">
                         {adapter.provider_id}
                       </span>
