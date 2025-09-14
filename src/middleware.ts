@@ -91,6 +91,12 @@ export default auth(async function middleware(req: NextRequest) {
 
   if (req.nextUrl.pathname.startsWith("/api")) {
     console.warn(`======================= ${req.nextUrl.pathname}`)
+    let headersObj: any = {};
+    for (const [key, value] of req.headers.entries()) {
+      headersObj[key] = value;
+    }
+    console.log(headersObj);
+    console.warn(`======================= ${req.nextUrl.pathname}`)
   }
 
 
@@ -104,6 +110,6 @@ export default auth(async function middleware(req: NextRequest) {
 });
 
 export const config = {
-  // Matcher ignoring `/_next/` and `/api/`
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  // Matcher ignoring `/_next/`
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };

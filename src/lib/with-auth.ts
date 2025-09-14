@@ -8,7 +8,11 @@ type Handler = (req: PayloadRequest, context?: any) => Promise<Response>;
 
 export function withAuth(handler: Handler): Handler {
   return async (req: Request, context) => {
-    console.dir(req.headers)
+    let headersObj: any = {};
+    for (const [key, value] of req.headers.entries()) {
+      headersObj[key] = value;
+    }
+    console.log(headersObj);
     const authHeader = req.headers.get("Authorization");
     console.warn(`${req.url} - authHeader1: ${authHeader}`);
     console.warn(`${req.url} - JWT_SECRET_KEY: ${process.env.JWT_SECRET_KEY}`)
