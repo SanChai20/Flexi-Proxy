@@ -1,4 +1,4 @@
-import { redis } from "@/lib/database";
+import { redis } from "@/lib/redis";
 import { PayloadRequest, withAuth } from "@/lib/with-auth";
 import { NextResponse } from "next/server";
 import { Resend, CreateEmailResponse } from "resend";
@@ -74,32 +74,32 @@ const createEmailTemplate = (data: ContactFormData) => `
             <div class="field">
                 <div class="label">💬 Message Content:</div>
                 <div class="value message-value">${escapeHtml(
-  data.message
-)}</div>
+                  data.message
+                )}</div>
             </div>
             
             <div class="field">
                 <div class="label">⏰ Submission Time:</div>
                 <div class="value">${new Date(data.submitTime).toLocaleString(
-  "zh-CN",
-  {
-    timeZone: "Asia/Shanghai",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  }
-)}</div>
+                  "zh-CN",
+                  {
+                    timeZone: "Asia/Shanghai",
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                  }
+                )}</div>
             </div>
         </div>
         
         <div class="footer">
             <p>This email was automatically sent by API Base Router contact form system</p>
             <p>To reply, please respond directly to the user's email: ${escapeHtml(
-  data.email
-)}</p>
+              data.email
+            )}</p>
         </div>
     </div>
 </body>

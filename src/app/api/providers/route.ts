@@ -1,4 +1,4 @@
-import { redis } from "@/lib/database";
+import { redis } from "@/lib/redis";
 import { NextResponse } from "next/server";
 import { PayloadRequest, withAuth } from "@/lib/with-auth";
 import { REGISTERED_PROVIDER_PREFIX } from "@/lib/utils";

@@ -7,7 +7,7 @@ import WeChat from "next-auth/providers/wechat";
 import { Redis } from "@upstash/redis";
 import { Theme } from "@auth/core/types";
 import { UpstashRedisAdapter } from "@auth/upstash-redis-adapter";
-import { redis } from "@/lib/database";
+import { redis } from "@/lib/redis";
 
 function html(params: { url: string; host: string; theme: Theme }) {
   const { url, host, theme } = params;
