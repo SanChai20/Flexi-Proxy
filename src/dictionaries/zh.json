@@ -103,7 +103,10 @@
     "keySubtitle": "获取目标供应商可用的API Key",
     "copyKeyTitle": "你的 API Key",
     "copyKeySubtitle": "请复制并保存您的 API Key",
-    "back": "返回管理面板"
+    "back": "返回管理面板",
+    "noteTag": "备注",
+    "noteTitle": "填写备注信息",
+    "notePlaceHolder": "为此适配器创建备注信息...(最多20个字)"
   },
   "settings": {
     "title": "设置",
