@@ -64,6 +64,9 @@ export default async function ManagementPage(
                   <th className="w-3/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                     {dict?.management?.baseUrl || "Base URL"}
                   </th>
+                  <th className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
+                    {dict?.management?.apiKey || "API Key"}
+                  </th>
                   <th className="w-1/6 px-2 py-3 text-xs text-right sm:px-5 sm:py-3.5 sm:text-sm sm:text-right">
                     {dict?.management?.actions || "Actions"}
                   </th>
@@ -85,12 +88,23 @@ export default async function ManagementPage(
                     <td className="w-3/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                       <div className="flex justify-start gap-1 xs:gap-2">
                         <span
-                          className="font-mono text-[10px] xs:text-xs text-muted-foreground truncate transition-all duration-300 ease-in-out max-w-[140px] xs:max-w-[140px] sm:max-w-[180px] md:max-w-[240px] lg:max-w-[320px]"
+                          className="font-mono text-[10px] xs:text-xs md:text-sm text-muted-foreground truncate transition-all duration-300 ease-in-out max-w-[140px] xs:max-w-[120px] sm:max-w-[140px] md:max-w-[180px] lg:max-w-[240px]"
                           title={adapter.pul}
                         >
                           {adapter.pul}
                         </span>
                         <ClipboardButton text={adapter.pul} />
+                      </div>
+                    </td>
+                    <td className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
+                      <div className="flex justify-start gap-1 xs:gap-2">
+                        <span
+                          className="font-mono text-[10px] xs:text-xs md:text-sm text-muted-foreground truncate transition-all duration-300 ease-in-out max-w-[80px] xs:max-w-[80px] sm:max-w-[120px] md:max-w-[140px] lg:max-w-[180px]"
+                          title={adapter.tk}
+                        >
+                          {adapter.tk}
+                        </span>
+                        <ClipboardButton text={adapter.tk} />
                       </div>
                     </td>
                     {/* Settings 图标 + 下拉菜单 */}
