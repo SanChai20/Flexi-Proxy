@@ -1,4 +1,4 @@
-import { getDictionary } from "@/lib/dictionary";
+import { getTrans } from "@/lib/dictionary";
 import { Locale } from "i18n-config";
 import {
   Card,
@@ -13,14 +13,17 @@ import { redirect } from "next/navigation";
 
 export default async function ContactPage(props: PageProps<"/[lang]/contact">) {
   const { lang } = await props.params;
-  const dict = await getDictionary(lang as Locale);
+  const dict = await getTrans(lang as Locale);
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">{dict?.contact?.title || "Contact Us"}</CardTitle>
+          <CardTitle className="text-2xl">
+            {dict?.contact?.title || "Contact Us"}
+          </CardTitle>
           <CardDescription className="text-base">
-            {dict?.contact?.subtitle || "Have questions or feedback? We'd love to hear from you."}
+            {dict?.contact?.subtitle ||
+              "Have questions or feedback? We'd love to hear from you."}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -29,10 +32,16 @@ export default async function ContactPage(props: PageProps<"/[lang]/contact">) {
               "use server";
               const subject = formData.get("subject") as string;
               const message = formData.get("message") as string;
-              const result: { message: string, success: boolean } = await sendContactMessage(subject, message);
-              redirect(`/${lang}/contact/feedback?success=${encodeURIComponent(result.success)}&message=${encodeURIComponent(result.message)}`);
+              const result: { message: string; success: boolean } =
+                await sendContactMessage(subject, message);
+              redirect(
+                `/${lang}/contact/feedback?success=${encodeURIComponent(
+                  result.success
+                )}&message=${encodeURIComponent(result.message)}`
+              );
             }}
-            className="space-y-6">
+            className="space-y-6"
+          >
             <div className="space-y-4">
               <div className="flex flex-col">
                 <label

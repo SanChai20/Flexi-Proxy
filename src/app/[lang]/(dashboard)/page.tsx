@@ -1,6 +1,3 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { File, PlusCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Locale } from "i18n-config";
 import { auth } from "@/auth";
 import {
@@ -10,12 +7,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getDictionary } from "@/lib/dictionary";
+import { getTrans } from "@/lib/dictionary";
 
 export default async function HomePage(props: PageProps<"/[lang]">) {
-  let session = await auth();
   const { lang } = await props.params;
-  const dict = await getDictionary(lang as Locale);
+  const dict = await getTrans(lang as Locale);
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
       <Card>

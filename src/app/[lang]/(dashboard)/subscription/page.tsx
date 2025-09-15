@@ -1,4 +1,4 @@
-import { getDictionary } from "@/lib/dictionary";
+import { getTrans } from "@/lib/dictionary";
 import { auth } from "@/auth";
 import { Locale } from "i18n-config";
 import {
@@ -13,7 +13,7 @@ export default async function SubscriptionPage(
   props: PageProps<"/[lang]/subscription">
 ) {
   const { lang } = await props.params;
-  const dict = await getDictionary(lang as Locale);
+  const dict = await getTrans(lang as Locale);
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
       <Card>

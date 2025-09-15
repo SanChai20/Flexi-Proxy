@@ -1,7 +1,7 @@
-import { getDictionary } from "@/lib/dictionary";
+import { getTrans } from "@/lib/dictionary";
 import { Locale } from "i18n-config";
 import path from "path";
-import fs from 'fs';
+import fs from "fs";
 import {
   Card,
   CardContent,
@@ -15,10 +15,14 @@ export default async function DocumentationPage(
   props: PageProps<"/[lang]/documentation">
 ) {
   const { lang } = await props.params;
-  const dict = await getDictionary(lang as Locale);
+  const dict = await getTrans(lang as Locale);
 
   // Read the documentation markdown file
-  const docPath = path.join(process.cwd(), 'public', dict.documentation.documentationPage);
+  const docPath = path.join(
+    process.cwd(),
+    "public",
+    dict.documentation.documentationPage
+  );
   const docContent = fs.readFileSync(docPath, "utf8");
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
@@ -34,9 +38,7 @@ export default async function DocumentationPage(
         </CardHeader>
       </Card>
       <div className="mt-6 prose prose-gray dark:prose-invert w-full max-w-full">
-        <MarkdownRenderer>
-          {docContent}
-        </MarkdownRenderer>
+        <MarkdownRenderer>{docContent}</MarkdownRenderer>
       </div>
     </section>
   );

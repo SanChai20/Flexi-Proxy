@@ -1,13 +1,13 @@
 import { Turnstile } from "@marsidev/react-turnstile";
 import { redirect } from "next/navigation";
 import { Locale } from "../../../../i18n-config";
-import { getDictionary } from "@/lib/dictionary";
+import { getTrans } from "@/lib/dictionary";
 
 export default async function VerificationPage(
   props: PageProps<"/[lang]/verification">
 ) {
   const { lang } = await props.params;
-  const dictionary = await getDictionary(lang as Locale);
+  const dictionary = await getTrans(lang as Locale);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">

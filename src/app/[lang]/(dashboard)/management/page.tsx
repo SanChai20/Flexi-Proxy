@@ -1,4 +1,4 @@
-import { getDictionary } from "@/lib/dictionary";
+import { getTrans } from "@/lib/dictionary";
 import { Locale } from "i18n-config";
 import {
   Card,
@@ -24,7 +24,7 @@ export default async function ManagementPage(
   props: PageProps<"/[lang]/management">
 ) {
   const { lang } = await props.params;
-  const dict = await getDictionary(lang as Locale);
+  const dict = await getTrans(lang as Locale);
   let adapters: {
     provider_id: string;
     provider_url: string;

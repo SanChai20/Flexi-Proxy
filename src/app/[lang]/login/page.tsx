@@ -7,7 +7,7 @@ import { Metadata } from "next";
 import Unauthorized from "@/components/ui/unauthorized";
 import { OnceButton } from "@/components/ui/oncebutton";
 import { Locale } from "../../../../i18n-config";
-import { getDictionary } from "@/lib/dictionary";
+import { getTrans } from "@/lib/dictionary";
 
 export const metadata: Metadata = {
   title: "Login - FlexiProxy",
@@ -39,7 +39,7 @@ const verifyToken = async (token: string | null): Promise<boolean> => {
 export default async function LoginPage(props: PageProps<"/[lang]/login">) {
   const { lang } = await props.params;
   const { from } = await props.searchParams;
-  const dict = await getDictionary(lang as Locale);
+  const dict = await getTrans(lang as Locale);
 
   if (!from || typeof from !== "string") return <Unauthorized dict={dict} />;
   const isVerified = await verifyToken(from);

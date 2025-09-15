@@ -1,4 +1,4 @@
-import { getDictionary } from "@/lib/dictionary";
+import { getTrans } from "@/lib/dictionary";
 import { Locale } from "i18n-config";
 import {
   Card,
@@ -20,7 +20,7 @@ export default async function ManagementModifyPage(
     redirect(`/${lang}/management`);
   }
 
-  const dict = await getDictionary(lang as Locale);
+  const dict = await getTrans(lang as Locale);
   const providers: { id: string; url: string }[] =
     await getAllTargetProviders();
 

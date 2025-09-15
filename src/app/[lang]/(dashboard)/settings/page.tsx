@@ -1,4 +1,4 @@
-import { getDictionary } from "@/lib/dictionary";
+import { getTrans } from "@/lib/dictionary";
 import { auth } from "@/auth";
 import { Locale } from "i18n-config";
 import {
@@ -14,7 +14,7 @@ export default async function SettingsPage(
   props: PageProps<"/[lang]/settings">
 ) {
   const { lang } = await props.params;
-  const dict = await getDictionary(lang as Locale);
+  const dict = await getTrans(lang as Locale);
 
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
@@ -40,9 +40,12 @@ export default async function SettingsPage(
       >
         <div className="flex items-center justify-between py-4">
           <div>
-            <h3 className="text-lg font-medium">{dict?.settings?.collection || "Data Collection"}</h3>
+            <h3 className="text-lg font-medium">
+              {dict?.settings?.collection || "Data Collection"}
+            </h3>
             <p className="text-sm text-muted-foreground">
-              {dict?.settings?.collectionSubtitle || "Enable or disable data collection for analytics"}
+              {dict?.settings?.collectionSubtitle ||
+                "Enable or disable data collection for analytics"}
             </p>
           </div>
           <label className="relative inline-flex items-center cursor-pointer">
@@ -56,9 +59,11 @@ export default async function SettingsPage(
           </label>
         </div>
         <div className="flex justify-end mt-4">
-          <Button type="submit">{dict?.settings?.apply || "Apply Changes"}</Button>
+          <Button type="submit">
+            {dict?.settings?.apply || "Apply Changes"}
+          </Button>
         </div>
       </form>
-    </section >
+    </section>
   );
 }
