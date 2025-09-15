@@ -13,8 +13,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { HelpCircleIcon } from "lucide-react";
+import { HelpCircleIcon, PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 export function AdapterForm({
   dict,
@@ -299,14 +300,16 @@ export function CreateAdapterForm({ dict }: { dict: any }) {
       <Tooltip>
         <TooltipTrigger asChild>
           <form action={onSubmit}>
-            <DropdownMenuItem
-              className="w-full cursor-pointer text-destructive focus:text-destructive text-xs xs:text-sm"
-              asChild
-            >
-              <button type="submit" className="w-full">
+            <Button
+              type="submit"
+              variant="outline"
+              size="icon"
+              className="h-8 w-8 rounded-full sm:h-9 sm:w-9">
+              <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="sr-only">
                 {dict?.management?.adapterAdd || "Add Adapter"}
-              </button>
-            </DropdownMenuItem>
+              </span>
+            </Button>
           </form>
         </TooltipTrigger>
         <TooltipContent>
