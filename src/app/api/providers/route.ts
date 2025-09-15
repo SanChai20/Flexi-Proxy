@@ -1,10 +1,15 @@
 import { redis } from "@/lib/redis";
 import { NextResponse } from "next/server";
 import { PayloadRequest, withAuth } from "@/lib/with-auth";
-import { REGISTERED_PROVIDER_PREFIX } from "@/lib/utils";
 
 async function protectedGET(req: PayloadRequest) {
-  const searchPatternPrefix = `${REGISTERED_PROVIDER_PREFIX}:`;
+  if (!process.env.PROVIDER_PREFIX) {
+    return NextResponse.json(
+      { error: "Internal Error" },
+      { status: 500 }
+    );
+  }
+  const searchPatternPrefix = `${process.env.PROVIDER_PREFIX}:`;
   try {
     // Scan all keys with the prefix
     let allKeys: string[] = [];
