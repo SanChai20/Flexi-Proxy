@@ -25,11 +25,11 @@ export default async function ManagementPage(
   const { lang } = await props.params;
   const dict = await getTrans(lang as Locale);
   let adapters: {
-    provider_id: string;
-    provider_url: string;
-    base_url: string;
-    model_id: string;
-    create_time: string;
+    aid: string;
+    tk: string;
+    pid: string;
+    pul: string;
+    not: string;
   }[] = await getAllUserAdapters();
   if (adapters.length <= 0) {
     redirect(`/${lang}/management/create`);
@@ -74,23 +74,23 @@ export default async function ManagementPage(
               <tbody className="divide-y divide-border">
                 {adapters.map((adapter, index) => (
                   <tr
-                    key={adapter.create_time}
+                    key={adapter.aid}
                     className="hover:bg-muted/30 transition-colors duration-150"
                   >
                     <td className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                       <span className="text-[10px] xs:text-xs md:text-sm">
-                        {adapter.provider_id}
+                        {adapter.pid}
                       </span>
                     </td>
                     <td className="w-3/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                       <div className="flex justify-start gap-1 xs:gap-2">
                         <span
                           className="font-mono text-[10px] xs:text-xs text-muted-foreground truncate transition-all duration-300 ease-in-out max-w-[140px] xs:max-w-[140px] sm:max-w-[180px] md:max-w-[240px] lg:max-w-[320px]"
-                          title={adapter.provider_url}
+                          title={adapter.pul}
                         >
-                          {adapter.provider_url}
+                          {adapter.pul}
                         </span>
-                        <ClipboardButton text={adapter.provider_url} />
+                        <ClipboardButton text={adapter.pul} />
                       </div>
                     </td>
                     {/* Settings 图标 + 下拉菜单 */}
@@ -111,11 +111,11 @@ export default async function ManagementPage(
                         >
                           <EditAdapterDropdownForm
                             dict={dict}
-                            create_time={adapter.create_time}
+                            adapter_id={adapter.aid}
                           />
                           <DeleteAdapterDropdownForm
                             dict={dict}
-                            create_time={adapter.create_time}
+                            adapter_id={adapter.aid}
                           />
                         </DropdownMenuContent>
                       </DropdownMenu>

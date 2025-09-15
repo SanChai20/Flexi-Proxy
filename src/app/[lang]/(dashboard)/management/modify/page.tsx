@@ -9,20 +9,24 @@ import {
 } from "@/components/ui/card";
 import { redirect } from "next/navigation";
 import { AdapterForm } from "../form";
-import { getAllTargetProviders } from "@/lib/actions";
+import { getAdapterAction, getAllTargetProviders } from "@/lib/actions";
 
 export default async function ManagementModifyPage(
   props: PageProps<"/[lang]/management/modify">
 ) {
   const { lang } = await props.params;
-  const { createTime } = await props.searchParams;
-  if (typeof createTime !== "string") {
+  const { aid } = await props.searchParams;
+  if (typeof aid !== "string") {
     redirect(`/${lang}/management`);
   }
-
   const dict = await getTrans(lang as Locale);
   const providers: { id: string; url: string }[] =
     await getAllTargetProviders();
+
+  const adapter: { url: string; mid: string; pid: string; not: string; } | undefined = await getAdapterAction(aid);
+  if (adapter === undefined) {
+    redirect(`/${lang}/management`);
+  }
 
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
@@ -40,7 +44,7 @@ export default async function ManagementModifyPage(
       <AdapterForm
         dict={dict}
         providers={providers}
-        defaultValues={{ baseUrl, modelId, providerId, commentNote }}
+        defaultValues={{ baseUrl: adapter.url, modelId: adapter.mid, providerId: adapter.pid, commentNote: adapter.not }}
       />
     </section>
   );

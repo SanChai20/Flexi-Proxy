@@ -233,22 +233,22 @@ export function AdapterForm({
 
 export function EditAdapterDropdownForm({
   dict,
-  create_time,
+  adapter_id,
 }: {
   dict: any;
-  create_time: string;
+  adapter_id: string;
 }) {
   const router = useRouter();
   async function onSubmit(formData: FormData) {
     router.push(
-      `/management/modify?createTime=${encodeURIComponent(
-        formData.get("createTime") as string
+      `/management/modify?aid=${encodeURIComponent(
+        formData.get("adapterId") as string
       )}`
     );
   }
   return (
     <form action={onSubmit}>
-      <input type="hidden" name="createTime" value={create_time} />
+      <input type="hidden" name="adapterId" value={adapter_id} />
       <DropdownMenuItem
         className="w-full cursor-pointer text-destructive focus:text-destructive text-xs xs:text-sm"
         asChild
@@ -263,10 +263,10 @@ export function EditAdapterDropdownForm({
 
 export function DeleteAdapterDropdownForm({
   dict,
-  create_time,
+  adapter_id,
 }: {
   dict: any;
-  create_time: string;
+  adapter_id: string;
 }) {
   const router = useRouter();
   async function onSubmit(formData: FormData) {
@@ -277,7 +277,7 @@ export function DeleteAdapterDropdownForm({
   }
   return (
     <form action={onSubmit}>
-      <input type="hidden" name="createTime" value={create_time} />
+      <input type="hidden" name="adapterId" value={adapter_id} />
       <DropdownMenuItem
         className="w-full cursor-pointer text-destructive focus:text-destructive text-xs xs:text-sm"
         asChild

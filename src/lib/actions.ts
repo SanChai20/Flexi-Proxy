@@ -36,11 +36,11 @@ export async function getAllTargetProviders(): Promise<
 // Get all adapters for the authenticated user
 export async function getAllUserAdapters(): Promise<
   {
-    provider_id: string;
-    provider_url: string;
-    base_url: string;
-    model_id: string;
-    create_time: string;
+    aid: string;
+    tk: string;
+    pid: string;
+    pul: string;
+    not: string;
   }[]
 > {
   const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
@@ -194,7 +194,7 @@ export async function deleteAdapterAction(
   if (user_id === undefined) {
     return undefined;
   }
-  const create_time = formData.get("createTime") as string;
+  const adapter_id = formData.get("adapterId") as string;
   try {
     const { token, error } = await jwtSign(
       { uid: user_id },
@@ -351,5 +351,18 @@ export async function createAdapterAction(
   } catch (error) {
     console.error("Error creating adapter:", error);
   }
+  return undefined;
+}
+
+
+export async function getAdapterAction(adapterId: string): Promise<{ url: string; mid: string; pid: string; not: string; } | undefined> {
+
+
+
+
+
+
+
+
   return undefined;
 }
