@@ -10,3 +10,18 @@
     - role: 用户角色（如 admin, editor）
     - permissions: 权限列表
 4. API Key需要加密处理，才可以上传数据库
+
+
+
+Adapter
+
+    AdapterPrefix:TokenKey - {
+        UserId
+        ApiKey(Encoded)
+        BaseUrl
+        ModelId
+    }
+
+    
+
+Provider
