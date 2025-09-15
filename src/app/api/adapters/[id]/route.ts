@@ -70,7 +70,7 @@ async function protectedPOST(req: PayloadRequest, { params }: { params: Promise<
       mid
     });
     await transaction.exec();
-    return NextResponse.json(undefined, { status: 200 });
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("Failed to create adapter: ", error);
     return NextResponse.json(
@@ -194,7 +194,7 @@ async function protectedPATCH(req: PayloadRequest, { params }: { params: Promise
       });
     }
     await transaction.exec();
-    return NextResponse.json(undefined, { status: 200 });
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("Failed to update adapter: ", error);
     return NextResponse.json(
@@ -234,7 +234,7 @@ async function protectedDELETE(req: PayloadRequest, { params }: { params: Promis
       transaction.del([process.env.ADAPTER_PREFIX, req.payload["uid"], adapterId].join(":"))
       await transaction.exec();
     }
-    return NextResponse.json(undefined, { status: 200 });
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("Failed to delete adapter: ", error);
     return NextResponse.json(

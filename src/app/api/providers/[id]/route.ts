@@ -68,7 +68,7 @@ async function protectedPOST(
     await redis.set<{ url: string }>(
       [process.env.PROVIDER_PREFIX, providerId].join(":"), { url }
     );
-    return NextResponse.json(undefined, { status: 200 });
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("Failed to create provider: ", error);
     return NextResponse.json(
@@ -95,7 +95,7 @@ async function protectedDELETE(
   try {
     const providerId = (await params).id;
     await redis.del([process.env.PROVIDER_PREFIX, providerId].join(":"));
-    return NextResponse.json(undefined, { status: 200 });
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("Failed to delete provider: ", error);
     return NextResponse.json(
