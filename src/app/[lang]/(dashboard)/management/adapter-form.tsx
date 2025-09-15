@@ -6,6 +6,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import { createAdapterAction, updateAdapterAction } from "@/lib/actions";
 import { HelpCircleIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -25,12 +26,17 @@ export function AdapterForm({
 }) {
   const router = useRouter();
   async function onSubmit(formData: FormData) {
+    let redirectTo = undefined;
     if (defaultValues !== undefined) {
       // Updating Operation
+      redirectTo = await updateAdapterAction(formData);
     } else {
       // Creating Operation
+      redirectTo = await createAdapterAction(formData);
     }
-    router.push("/management");
+    if (redirectTo !== undefined) {
+      router.push(redirectTo);
+    }
   }
   return (
     <form action={onSubmit} className="mt-6">
