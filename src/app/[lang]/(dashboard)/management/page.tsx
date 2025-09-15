@@ -67,6 +67,9 @@ export default async function ManagementPage(
                   <th className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                     {dict?.management?.apiKey || "API Key"}
                   </th>
+                  <th className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
+                    {dict?.management?.note || "Note"}
+                  </th>
                   <th className="w-1/6 px-2 py-3 text-xs text-right sm:px-5 sm:py-3.5 sm:text-sm sm:text-right">
                     {dict?.management?.actions || "Actions"}
                   </th>
@@ -106,6 +109,11 @@ export default async function ManagementPage(
                         </span>
                         <ClipboardButton text={adapter.tk} />
                       </div>
+                    </td>
+                    <td className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
+                      <span className="text-[10px] xs:text-xs md:text-sm">
+                        {adapter.not}
+                      </span>
                     </td>
                     {/* Settings 图标 + 下拉菜单 */}
                     <td className="w-1/6 px-2 py-3 text-xs text-right sm:px-5 sm:py-3.5 sm:text-sm sm:text-right">

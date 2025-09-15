@@ -107,7 +107,8 @@
     "noteTag": "NOTE",
     "noteTitle": "Add note information",
     "notePlaceHolder": "Create note for this adapter...(20 words max)",
-    "edit": "Edit"
+    "edit": "Edit",
+    "note": "Note"
   },
   "settings": {
     "title": "Settings",
