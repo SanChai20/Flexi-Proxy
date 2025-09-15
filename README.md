@@ -14,20 +14,24 @@
 
 
 Adapter
-    // 用于列举用户适配器信息
-    AdapterPrefix:UserId:UniqueId - {
+    //
+    AdapterPrefix:UserId:[UniqueId] - {
+        TokenKey
         providerId
         providerUrl
         Note
-        TokenKey
     }
-    // 
+    //
     AdapterPrefix:TokenKey - {
-        UserId
-        ApiKey(Encoded)
-        BaseUrl
-        ModelId
+        [Hide] UserId
+        [Hide] ApiKey(Encoded)
+        [展示] BaseUrl 
+        [展示] ModelId
     }
 
 
 Provider
+
+    ProviderPrefix:[ProviderId] - {
+        providerUrl
+    }

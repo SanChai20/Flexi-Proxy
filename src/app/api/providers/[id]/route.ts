@@ -1,13 +1,20 @@
 import { redis } from "@/lib/redis";
 import { NextResponse } from "next/server";
 import { PayloadRequest, withAuth } from "@/lib/with-auth";
-import { REGISTERED_PROVIDER_PREFIX } from "@/lib/utils";
 
 // [BOTH] Get the provider by id
 async function protectedGET(
   req: PayloadRequest,
   { params }: { params: { id: string } }
 ) {
+
+  if (!process.env.PROVIDER_PREFIX) {
+    return NextResponse.json(
+      { error: "Internal Error" },
+      { status: 500 }
+    );
+  }
+
   try {
     const { id } = await params;
     if (!id) {
@@ -17,7 +24,7 @@ async function protectedGET(
       );
     }
     const provider: { url: string } | null = await redis.get<{ url: string }>(
-      [REGISTERED_PROVIDER_PREFIX, id].join(":")
+      [process.env.PROVIDER_PREFIX, id].join(":")
     );
     if (!provider) {
       return NextResponse.json(
@@ -40,6 +47,14 @@ async function protectedPOST(
   req: PayloadRequest,
   { params }: { params: { id: string } }
 ) {
+
+  if (!process.env.PROVIDER_PREFIX) {
+    return NextResponse.json(
+      { error: "Internal Error" },
+      { status: 500 }
+    );
+  }
+
   try {
     const { id } = await params;
     if (!id) {
@@ -52,7 +67,7 @@ async function protectedPOST(
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
     await redis.set<{ url: string }>(
-      [REGISTERED_PROVIDER_PREFIX, id].join(":"),
+      [process.env.PROVIDER_PREFIX, id].join(":"),
       {
         url: req.payload["url"],
       }
@@ -72,6 +87,14 @@ async function protectedDELETE(
   req: PayloadRequest,
   { params }: { params: { id: string } }
 ) {
+
+  if (!process.env.PROVIDER_PREFIX) {
+    return NextResponse.json(
+      { error: "Internal Error" },
+      { status: 500 }
+    );
+  }
+
   try {
     const { id } = await params;
     if (!id) {
@@ -80,7 +103,7 @@ async function protectedDELETE(
         { status: 400 }
       );
     }
-    await redis.del([REGISTERED_PROVIDER_PREFIX, id].join(":"));
+    await redis.del([process.env.PROVIDER_PREFIX, id].join(":"));
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Failed to delete provider: ", error);
