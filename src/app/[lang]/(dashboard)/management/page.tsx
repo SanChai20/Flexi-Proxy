@@ -17,8 +17,7 @@ import { getAllUserAdapters } from "@/lib/actions";
 import { redirect } from "next/navigation";
 import ClipboardButton from "@/components/ui/clipboard-button";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
-import { DeleteAdapterDropdownForm, EditAdapterDropdownForm } from "./form";
-import CreateAdapterButton from "./create-button";
+import { CreateAdapterForm, DeleteAdapterDropdownForm, EditAdapterDropdownForm } from "./form";
 
 export default async function ManagementPage(
   props: PageProps<"/[lang]/management">
@@ -43,7 +42,7 @@ export default async function ManagementPage(
             <CardTitle className="text-2xl">
               {dict?.management?.title || "Adapter Management"}
             </CardTitle>
-            <CreateAdapterButton dict={dict} />
+            <CreateAdapterForm dict={dict} />
           </div>
           <CardDescription className="text-base mt-2">
             {dict?.management?.subtitle ||
@@ -128,6 +127,6 @@ export default async function ManagementPage(
           </div>
         </div>
       </div>
-    </section>
+    </section >
   );
 }

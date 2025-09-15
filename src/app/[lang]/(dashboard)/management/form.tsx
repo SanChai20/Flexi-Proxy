@@ -3,15 +3,16 @@
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { OnceButton } from "@/components/ui/oncebutton";
 import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
-import {
   createAdapterAction,
   deleteAdapterAction,
   updateAdapterAction,
 } from "@/lib/actions";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { HelpCircleIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -285,5 +286,33 @@ export function DeleteAdapterDropdownForm({
         </button>
       </DropdownMenuItem>
     </form>
+  );
+}
+
+export function CreateAdapterForm({ dict }: { dict: any }) {
+  const router = useRouter();
+  async function onSubmit(formData: FormData) {
+    router.push(`/management/create`)
+  }
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <form action={onSubmit}>
+            <DropdownMenuItem
+              className="w-full cursor-pointer text-destructive focus:text-destructive text-xs xs:text-sm"
+              asChild
+            >
+              <button type="submit" className="w-full">
+                {dict?.management?.adapterAdd || "Add Adapter"}
+              </button>
+            </DropdownMenuItem>
+          </form>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{dict?.management?.adapterAdd || "Add Adapter"}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
