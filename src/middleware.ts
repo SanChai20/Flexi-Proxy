@@ -57,7 +57,11 @@ function navigateRoutes(
   requestUrl: string
 ): NextResponse<unknown> {
   const parts = pathName.replace(/^\/+|\/+$/g, "").split("/");
-  if (parts.length >= 1 && parts[0] !== undefined && i18n.locales.includes(parts[0] as any)) {
+  if (
+    parts.length >= 1 &&
+    parts[0] !== undefined &&
+    i18n.locales.includes(parts[0] as any)
+  ) {
     const locale = parts[0];
     let redirectPath: string | null = null;
     if (parts.length === 1) {

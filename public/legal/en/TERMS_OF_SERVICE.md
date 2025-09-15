@@ -43,7 +43,7 @@ All intellectual property rights in the Service are owned by us or our licensors
 
 ## 7. Data Usage and Privacy
 
-We act as a technical intermediary and do not store, process, or use your API credentials or data for any purpose other than forwarding requests. We do not use user-provided information for any illegal purposes. Please refer to our Privacy Policy for more information.
+We act as a technical intermediary and do not process, or use your API credentials or data for any purpose other than forwarding requests. We do not use user-provided information for any illegal purposes. Please refer to our Privacy Policy for more information.
 
 ## 8. Termination
 

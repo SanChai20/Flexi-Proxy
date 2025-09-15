@@ -25,8 +25,8 @@
   },
   "unauthorized": {
     "title": "Unauthorized Access",
-    "subtitle": "You don't have permission to access this page.",
-    "description": "Please sign in with a valid account.",
+    "subtitle": "You don't have permission to access this page",
+    "description": "Please sign in with a valid account",
     "retry": "Retry"
   },
   "contact": {

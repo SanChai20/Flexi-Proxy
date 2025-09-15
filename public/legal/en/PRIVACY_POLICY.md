@@ -15,7 +15,6 @@ FlexiProxy ("we", "us", or "our") respects your privacy and is committed to prot
 - IP addresses
 - Browser type and version
 - Pages visited and actions taken
-- Device information
 - Log data related to service usage
 
 ## 3. How We Use Your Information

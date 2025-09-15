@@ -1,6 +1,4 @@
-# 项目名称
+踩坑记录
 
-<iframe src="https://flexiproxy.com/docs/zh/DOCUMENTATION.md" width="100%" height="600px"></iframe>
-
-[查看完整英文文档](https://flexiproxy.com/docs/en/DOCUMENTATION.md) |
-[查看完整中文文档](https://flexiproxy.com/docs/zh/DOCUMENTATION.md)
+1. redirect会绕过middleware中间件处理
+2. Vercel会剔除掉Authorization请求头，是因为Base Url没有配置www. 导致重定向了，所以配置成www.xxx.com就可以了

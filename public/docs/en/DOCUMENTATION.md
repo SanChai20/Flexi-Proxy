@@ -41,7 +41,7 @@ FlexiProxy is a service proxy that provides OpenAI-Compatible API compatibility 
     - Model IDs: **grok-3**, **grok-4**, etc. See [xAI Documentation](https://docs.x.ai/docs/models) for details
 
 
-2. Select and click the **Management** icon in the left sidebar. If creating for the first time, you will be automatically redirected to the **Create Adapter** page. Based on the above information, you can fill in the **SOURCE** (**Note! We will not persistently store the API Key you provide, it is only used for service requests**). Select the target supplier platform under **TARGET**. Here we use **Anthropic** as an example. After filling in the information, click confirm.
+2. Select and click the **Management** icon in the left sidebar. If creating for the first time, you will be automatically redirected to the **Create Adapter** page. Based on the above information, you can fill in the **SOURCE** (**Note! The API Key you provide only used for service requests**). Select the target supplier platform under **TARGET**. Here we use **Anthropic** as an example. After filling in the information, click confirm.
 
 ![](https://flexiproxy.com/screenshots/en/createadapter.PNG)
 

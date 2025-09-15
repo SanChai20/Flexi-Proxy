@@ -13,12 +13,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { deleteAdapter, getAllUserAdapters } from "@/lib/actions";
+import { getAllUserAdapters } from "@/lib/actions";
 import { redirect } from "next/navigation";
 import ClipboardButton from "@/components/ui/clipboard-button";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import AddAdapterButton from "@/components/managed/add-button";
-import { GetAPIKeyForm } from "./manage-apikey-form";
+import { GetAPIKeyForm } from "./apikey-form";
+import { DeleteAdapterForm } from "./delete-form";
 
 export default async function ManagementPage(
   props: PageProps<"/[lang]/management">
@@ -111,71 +112,10 @@ export default async function ManagementPage(
                           className="w-32 xs:w-36 rounded-lg"
                         >
                           <GetAPIKeyForm dict={dict} adapter={adapter} />
-                          {/* <form
-                            action={
-                              async (formData) => {
-                                "use server";
-                                const adapter = formData.get("adapter") as string;
-                                const adapterJSON: {
-                                  provider_id: string;
-                                  provider_url: string;
-                                  base_url: string;
-                                  model_id: string;
-                                  create_time: string;
-                                } = JSON.parse(adapter);
-                                redirect(
-                                  `/${lang}/management/modify?baseUrl=${encodeURIComponent(
-                                    adapterJSON.base_url
-                                  )}&modelId=${encodeURIComponent(
-                                    adapterJSON.model_id
-                                  )}&providerId=${encodeURIComponent(
-                                    adapterJSON.provider_id
-                                  )}&createTime=${encodeURIComponent(
-                                    adapterJSON.create_time
-                                  )}`
-                                );
-                              }}
-                          >
-                            <input
-                              type="hidden"
-                              name="adapter"
-                              value={JSON.stringify(adapter)}
-                            />
-                            <DropdownMenuItem
-                              className="w-full cursor-pointer text-destructive focus:text-destructive text-xs xs:text-sm"
-                              asChild
-                            >
-                              <button type="submit">
-                                {dict?.management?.getApiKey || "Get API Key"}
-                              </button>
-                            </DropdownMenuItem>
-                          </form> */}
-                          <form
-                            action={async (formData) => {
-                              "use server";
-                              const createTime = formData.get("createTime") as string;
-                              const result:
-                                | { create_time: string }
-                                | undefined = await deleteAdapter(createTime);
-                              if (result !== undefined) {
-                                redirect(`/${lang}/management`); //Refresh
-                              }
-                            }}
-                          >
-                            <input
-                              type="hidden"
-                              name="createTime"
-                              value={adapter.create_time}
-                            />
-                            <DropdownMenuItem
-                              className="w-full cursor-pointer text-destructive focus:text-destructive text-xs xs:text-sm"
-                              asChild
-                            >
-                              <button type="submit">
-                                {dict?.management?.delete || "Delete"}
-                              </button>
-                            </DropdownMenuItem>
-                          </form>
+                          <DeleteAdapterForm
+                            dict={dict}
+                            create_time={adapter.create_time}
+                          />
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </td>
@@ -186,6 +126,6 @@ export default async function ManagementPage(
           </div>
         </div>
       </div>
-    </section >
+    </section>
   );
 }
