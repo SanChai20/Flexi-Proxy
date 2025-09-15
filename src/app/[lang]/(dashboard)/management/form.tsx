@@ -33,16 +33,16 @@ export function AdapterForm({
 }) {
   const router = useRouter();
   async function onSubmit(formData: FormData) {
-    let redirectTo = undefined;
+    let canJump: boolean = false;
     if (defaultValues !== undefined) {
       // Updating Operation
-      redirectTo = await updateAdapterAction(formData);
+      //canJump = await updateAdapterAction(formData);
     } else {
       // Creating Operation
-      redirectTo = await createAdapterAction(formData);
+      canJump = await createAdapterAction(formData);
     }
-    if (redirectTo !== undefined) {
-      router.push(redirectTo);
+    if (canJump) {
+      router.push('/management');
     }
   }
   return (
