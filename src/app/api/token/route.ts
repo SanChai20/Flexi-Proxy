@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 // API: '/api/token'
 // Headers: Authorization Bearer Token(tk)
 async function protectedGET(req: PayloadRequest) {
-    // Get Adapter
+    // Get Token data
     if (!process.env.ADAPTER_PREFIX) {
         return NextResponse.json({ error: "Internal Error" }, { status: 500 });
     }

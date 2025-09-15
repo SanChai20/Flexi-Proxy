@@ -2,29 +2,27 @@ import { redis } from "@/lib/redis";
 import { NextResponse } from "next/server";
 import { PayloadRequest, withAuth } from "@/lib/with-auth";
 
-// [BOTH] Get the provider by id
+// GET
+// API: '/api/providers/[id]'
+// Headers: Authorization Bearer Token
+// Body: {
+//  [string] url -> provider proxy url
+//}
 async function protectedGET(
   req: PayloadRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-
+  // Get the provider by id
   if (!process.env.PROVIDER_PREFIX) {
     return NextResponse.json(
       { error: "Internal Error" },
       { status: 500 }
     );
   }
-
   try {
-    const { id } = await params;
-    if (!id) {
-      return NextResponse.json(
-        { error: "Provider ID is required" },
-        { status: 400 }
-      );
-    }
+    const providerId = (await params).id;
     const provider: { url: string } | null = await redis.get<{ url: string }>(
-      [process.env.PROVIDER_PREFIX, id].join(":")
+      [process.env.PROVIDER_PREFIX, providerId].join(":")
     );
     if (!provider) {
       return NextResponse.json(
@@ -36,18 +34,24 @@ async function protectedGET(
   } catch (error) {
     console.error("Failed to get provider: ", error);
     return NextResponse.json(
-      { error: "Failed to get provider" },
+      { error: "Internal Error" },
       { status: 500 }
     );
   }
 }
 
-// [EXTERNAL ONLY] Create or update the provider
+
+// POST
+// API: '/api/providers/[id]'
+// Headers: Authorization Bearer Token
+// Body: {
+//  [string] url -> provider proxy url
+//}
 async function protectedPOST(
   req: PayloadRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-
+  // Create or update the provider
   if (!process.env.PROVIDER_PREFIX) {
     return NextResponse.json(
       { error: "Internal Error" },
@@ -56,23 +60,15 @@ async function protectedPOST(
   }
 
   try {
-    const { id } = await params;
-    if (!id) {
-      return NextResponse.json(
-        { error: "Provider ID is required" },
-        { status: 400 }
-      );
-    }
-    if (!req.payload || typeof req.payload["url"] !== "string") {
+    const providerId = (await params).id;
+    const { url } = await req.json();
+    if (typeof url !== 'string') {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
     await redis.set<{ url: string }>(
-      [process.env.PROVIDER_PREFIX, id].join(":"),
-      {
-        url: req.payload["url"],
-      }
+      [process.env.PROVIDER_PREFIX, providerId].join(":"), { url }
     );
-    return NextResponse.json({ success: true });
+    return NextResponse.json(undefined, { status: 200 });
   } catch (error) {
     console.error("Failed to create provider: ", error);
     return NextResponse.json(
@@ -82,29 +78,24 @@ async function protectedPOST(
   }
 }
 
-// [EXTERNAL ONLY] Delete the provider
+// DELETE
+// API: '/api/providers/[id]'
+// Headers: Authorization Bearer Token
 async function protectedDELETE(
   req: PayloadRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-
+  // Delete the provider
   if (!process.env.PROVIDER_PREFIX) {
     return NextResponse.json(
       { error: "Internal Error" },
       { status: 500 }
     );
   }
-
   try {
-    const { id } = await params;
-    if (!id) {
-      return NextResponse.json(
-        { error: "Provider ID is required" },
-        { status: 400 }
-      );
-    }
-    await redis.del([process.env.PROVIDER_PREFIX, id].join(":"));
-    return NextResponse.json({ success: true });
+    const providerId = (await params).id;
+    await redis.del([process.env.PROVIDER_PREFIX, providerId].join(":"));
+    return NextResponse.json(undefined, { status: 200 });
   } catch (error) {
     console.error("Failed to delete provider: ", error);
     return NextResponse.json(
