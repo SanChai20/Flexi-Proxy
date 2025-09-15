@@ -16,12 +16,16 @@ async function protectedGET(req: PayloadRequest) {
         }
         const tokenData: {
             uid: string;
-            key: string;
+            kiv: string;
+            ken: string;
+            kau: string;
             url: string;
             mid: string;
         } | null = await redis.get<{
             uid: string;
-            key: string;
+            kiv: string;
+            ken: string;
+            kau: string;
             url: string;
             mid: string;
         }>([process.env.ADAPTER_PREFIX, req.payload["tk"]].join(":"));

@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { jwtSign } from "./jwt";
 import { VERIFY_TOKEN_EXPIRE_SECONDS } from "./utils";
 import { redirect } from "next/navigation";
+import { encrypt } from "./encryption";
 
 // Get all target providers
 export async function getAllTargetProviders(): Promise<
@@ -274,84 +275,56 @@ export async function updateAdapterAction(
   return undefined;
 }
 
+
 export async function createAdapterAction(
   formData: FormData
-): Promise<string | undefined> {
-  const providerId = formData.get("provider") as string;
-  const baseUrl = formData.get("baseUrl") as string;
-  const modelId = formData.get("modelId") as string;
+): Promise<boolean> {
+  const pid = formData.get("provider") as string;
+  const url = formData.get("baseUrl") as string;
+  const mid = formData.get("modelId") as string;
   const apiKey = formData.get("apiKey") as string;
   const commentNote: string | null = formData.get("commentNote") as string;
   const user_id: string | undefined = (await auth())?.user?.id;
   if (user_id === undefined) {
-    return undefined;
+    return false;
+  }
+  if (!process.env.ENCRYPTION_KEY) {
+    return false;
   }
   try {
-    const { token: verifyToken, error: verifyError } = await jwtSign(
-      { uid: user_id },
+    const { token, error } = await jwtSign(
+      true,
       VERIFY_TOKEN_EXPIRE_SECONDS
     );
-    if (verifyToken === undefined) {
-      console.error("Error generating auth token:", verifyError);
-      return undefined;
+    if (token === undefined) {
+      console.error("Error generating auth token:", error);
+      return false;
     }
+    const encodedKey: { iv: string, encryptedData: string, authTag: string } = encrypt(apiKey, process.env.ENCRYPTION_KEY);
     const response = await fetch(
-      [process.env.BASE_URL, "api/adapters"].join("/"),
+      [process.env.BASE_URL, "api/adapters", crypto.randomUUID()].join("/"),
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${verifyToken}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          provider_id,
-          base_url,
-          model_id,
+          pid,
+          url,
+          mid,
+          not: commentNote !== null ? commentNote : "",
+          kiv: encodedKey.iv,
+          ken: encodedKey.encryptedData,
+          kau: encodedKey.authTag,
         }),
       }
     );
-    if (response.ok) {
-      const { token: keyToken, error: keyError } = await jwtSign({
-        u: user_id,
-        a: api_key,
-        b: base_url,
-        m: model_id,
-      });
-      if (keyToken === undefined) {
-        console.error("Error generating api token:", keyError);
-        return undefined;
-      }
-
-      const { token: tempToken, error: tempError } = await jwtSign(
-        { uid: user_id, s: keyToken },
-        VERIFY_TOKEN_EXPIRE_SECONDS
-      );
-      if (!tempToken) {
-        console.error("Error generating temp token:", tempError);
-        return undefined;
-      }
-      const response = await fetch(
-        [process.env.BASE_URL, "api/token"].join("/"),
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${tempToken}`,
-          },
-        }
-      );
-      const oneTimeToken: undefined | { token: string } = await response.json();
-      return oneTimeToken?.token;
-
-      if (oneTimeToken !== undefined) {
-        redirect(
-          `/${lang}/management/key?token=${encodeURIComponent(oneTimeToken)}`
-        );
-      }
-    }
+    return response.ok;
   } catch (error) {
     console.error("Error creating adapter:", error);
+    return false;
   }
-  return undefined;
 }
 
 

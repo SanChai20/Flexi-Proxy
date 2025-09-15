@@ -16,22 +16,24 @@
 Adapter
     //
     AdapterPrefix:UserId:[UniqueId] - {
-        TokenKey
-        providerId
-        providerUrl
-        Note
+        TokenKey = tk
+        providerId = pid
+        providerUrl = pul
+        Note = not
     }
     //
     AdapterPrefix:TokenKey - {
-        [Hide] UserId
-        [Hide] ApiKey(Encoded)
-        [展示] BaseUrl 
-        [展示] ModelId
+        [Hide] UserId = uid
+        [Hide] iv(ApiKey) = kiv
+        [Hide] encryptedData(ApiKey) = ken
+        [Hide] authTag(ApiKey) = kau
+        [展示] BaseUrl = url
+        [展示] ModelId = mid
     }
 
 
 Provider
 
     ProviderPrefix:[ProviderId] - {
-        providerUrl
+        providerUrl = pul
     }

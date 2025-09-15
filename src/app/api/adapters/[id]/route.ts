@@ -10,7 +10,9 @@ import { NextResponse } from "next/server";
 //    [string] url -> base url
 //    [string] mid -> model id
 //    [string] not -> notes
-//    [string] key -> encoded api key
+//    [string] kiv -> iv
+//    [string] ken -> encryptedData
+//    [string] kau -> authTag
 // }
 async function protectedPOST(req: PayloadRequest, { params }: { params: Promise<{ id: string }> }) {
   // Create Adapter
@@ -22,13 +24,15 @@ async function protectedPOST(req: PayloadRequest, { params }: { params: Promise<
     if (!req.payload || typeof req.payload["uid"] !== "string") {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
-    const { pid, url, mid, not, key } = await req.json();
+    const { pid, url, mid, not, kiv, ken, kau } = await req.json();
     if (
       typeof pid !== 'string' ||
       typeof url !== 'string' ||
       typeof mid !== 'string' ||
       typeof not !== 'string' ||
-      typeof key !== 'string') {
+      typeof kiv !== 'string' ||
+      typeof ken !== 'string' ||
+      typeof kau !== 'string') {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
     const provider: { url: string } | null = await redis.get<{ url: string }>(
@@ -52,12 +56,16 @@ async function protectedPOST(req: PayloadRequest, { params }: { params: Promise<
     })
     transaction.set<{
       uid: string;
-      key: string;
+      kiv: string;
+      ken: string;
+      kau: string;
       url: string;
       mid: string;
     }>([process.env.ADAPTER_PREFIX, tokenKey].join(":"), {
       uid: req.payload["uid"],
-      key,
+      kiv,
+      ken,
+      kau,
       url,
       mid
     });
@@ -81,7 +89,9 @@ async function protectedPOST(req: PayloadRequest, { params }: { params: Promise<
 //    [string] url -> base url
 //    [string] mid -> model id
 //    [string] not -> notes
-//    [string] key -> encoded api key
+//    [string] kiv -> iv
+//    [string] ken -> encryptedData
+//    [string] kau -> authTag
 // }
 async function protectedPATCH(req: PayloadRequest, { params }: { params: Promise<{ id: string }> }) {
   // Update Adapter
@@ -94,13 +104,15 @@ async function protectedPATCH(req: PayloadRequest, { params }: { params: Promise
     if (!req.payload || typeof req.payload["uid"] !== "string") {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
-    const { pid, url, mid, not, key } = await req.json();
+    const { pid, url, mid, not, kiv, ken, kau } = await req.json();
     if (
       typeof pid !== 'string' ||
       typeof url !== 'string' ||
       typeof mid !== 'string' ||
       typeof not !== 'string' ||
-      typeof key !== 'string') {
+      typeof kiv !== 'string' ||
+      typeof ken !== 'string' ||
+      typeof kau !== 'string') {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
     const provider: { url: string } | null = await redis.get<{ url: string }>(
@@ -139,12 +151,16 @@ async function protectedPATCH(req: PayloadRequest, { params }: { params: Promise
       })
       transaction.set<{
         uid: string;
-        key: string;
+        kiv: string;
+        ken: string;
+        kau: string;
         url: string;
         mid: string;
       }>([process.env.ADAPTER_PREFIX, tokenKey].join(":"), {
         uid: req.payload["uid"],
-        key,
+        kiv,
+        ken,
+        kau,
         url,
         mid
       })
@@ -163,12 +179,16 @@ async function protectedPATCH(req: PayloadRequest, { params }: { params: Promise
       })
       transaction.set<{
         uid: string;
-        key: string;
+        kiv: string;
+        ken: string;
+        kau: string;
         url: string;
         mid: string;
       }>([process.env.ADAPTER_PREFIX, tokenKey].join(":"), {
         uid: req.payload["uid"],
-        key,
+        kiv,
+        ken,
+        kau,
         url,
         mid
       });
