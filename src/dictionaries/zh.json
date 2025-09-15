@@ -11,10 +11,10 @@
     "agree": "继续使用即表示您同意我们的"
   },
   "legal": {
-    "termsPage": "legal/zh/TERMS_OF_SERVICE.md",
+    "termsPage": "legal/zh/terms_of_service.md",
     "termsTitle": "服务条款",
     "termsSubtitle": "使用我们服务的条款和条件",
-    "policyPage": "legal/zh/PRIVACY_POLICY.md",
+    "policyPage": "legal/zh/privacy_policy.md",
     "policyTitle": "隐私政策",
     "policySubtitle": "我们如何收集、使用和保护您的个人信息"
   },
@@ -60,12 +60,12 @@
   "documentation": {
     "title": "关于 FlexiProxy",
     "subtitle": "了解有关 FlexiProxy 及其使用方法的更多信息",
-    "documentationPage": "docs/zh/DOCUMENTATION.md"
+    "documentationPage": "docs/zh/documentation.md"
   },
   "faq": {
     "title": "常见问题",
     "subtitle": "我们对使用前后的诸多问题进行了整理",
-    "faqPage": "docs/zh/FAQ.md"
+    "faqPage": "docs/zh/faq.md"
   },
   "management": {
     "title": "适配器管理",
