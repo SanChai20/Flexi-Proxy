@@ -36,7 +36,7 @@ async function protectedGET(req: PayloadRequest) {
   } catch (error) {
     console.error("Failed to fetch providers:", error);
     return NextResponse.json(
-      { error: "Failed to fetch providers" },
+      { error: "Internal Error" },
       { status: 500 }
     );
   }
