@@ -106,7 +106,8 @@
     "back": "Back to Management",
     "noteTag": "NOTE",
     "noteTitle": "Add note information",
-    "notePlaceHolder": "Create note for this adapter...(20 words max)"
+    "notePlaceHolder": "Create note for this adapter...(20 words max)",
+    "edit": "Edit"
   },
   "settings": {
     "title": "Settings",

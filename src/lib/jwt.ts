@@ -1,10 +1,11 @@
 "use server";
 
+import { auth } from "@/auth";
 import { JwtPayload } from "jsonwebtoken";
 import jwt from "jsonwebtoken";
 
 export async function jwtSign(
-  payload: Record<string, any>,
+  uidOnly: boolean,
   expiresIn?: number //seconds
 ): Promise<{
   token?: string;
@@ -23,10 +24,24 @@ export async function jwtSign(
     return { token: undefined, error: "Internal error" };
   }
 
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    return { token: undefined, error: "Unauthorized" };
+  }
+
+  let authPayload: Record<string, string> = {
+    uid: session.user.id,
+  };
+
+  if (!uidOnly) {
+    authPayload["ue"] = session.user.email || "unknown";
+    authPayload["un"] = session.user.name || "unknown";
+  }
+
   try {
     // Create JWT payload with user information
     const jwtPayload = {
-      ...payload,
+      ...authPayload,
       jti: crypto.randomUUID(),
     };
 

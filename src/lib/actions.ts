@@ -9,19 +9,12 @@ import { redirect } from "next/navigation";
 export async function getAllTargetProviders(): Promise<
   { id: string; url: string }[]
 > {
-  const user_id: string | undefined = (await auth())?.user?.id;
-  if (user_id === undefined) {
+  const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
+  if (!token) {
+    console.error("Error generating auth token:", error);
     return [];
   }
   try {
-    const { token, error } = await jwtSign(
-      { uid: user_id },
-      VERIFY_TOKEN_EXPIRE_SECONDS
-    );
-    if (!token) {
-      console.error("Error generating auth token:", error);
-      return [];
-    }
     const response = await fetch(
       [process.env.BASE_URL, "api/providers"].join("/"),
       {
@@ -50,19 +43,12 @@ export async function getAllUserAdapters(): Promise<
     create_time: string;
   }[]
 > {
-  const user_id: string | undefined = (await auth())?.user?.id;
-  if (user_id === undefined) {
+  const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
+  if (!token) {
+    console.error("Error generating auth token:", error);
     return [];
   }
   try {
-    const { token, error } = await jwtSign(
-      { uid: user_id },
-      VERIFY_TOKEN_EXPIRE_SECONDS
-    );
-    if (!token) {
-      console.error("Error generating auth token:", error);
-      return [];
-    }
     const response = await fetch(
       [process.env.BASE_URL, "api/adapters"].join("/"),
       {
@@ -86,72 +72,36 @@ export async function createAdapter(
   api_key: string,
   provider_id: string,
   base_url: string,
-  model_id: string
-): Promise<string | undefined> {
-  const user_id: string | undefined = (await auth())?.user?.id;
-  if (user_id === undefined) {
-    return undefined;
+  model_id: string,
+  note_comment: string
+): Promise<boolean> {
+  const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
+  if (token === undefined) {
+    console.error("Error generating auth token:", error);
+    return false;
   }
   try {
-    const { token: verifyToken, error: verifyError } = await jwtSign(
-      { uid: user_id },
-      VERIFY_TOKEN_EXPIRE_SECONDS
-    );
-    if (verifyToken === undefined) {
-      console.error("Error generating auth token:", verifyError);
-      return undefined;
-    }
     const response = await fetch(
       [process.env.BASE_URL, "api/adapters"].join("/"),
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${verifyToken}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           provider_id,
           base_url,
           model_id,
+          note_comment,
         }),
       }
     );
-    if (response.ok) {
-      const { token: keyToken, error: keyError } = await jwtSign({
-        u: user_id,
-        a: api_key,
-        b: base_url,
-        m: model_id,
-      });
-      if (keyToken === undefined) {
-        console.error("Error generating api token:", keyError);
-        return undefined;
-      }
-
-      const { token: tempToken, error: tempError } = await jwtSign(
-        { uid: user_id, s: keyToken },
-        VERIFY_TOKEN_EXPIRE_SECONDS
-      );
-      if (!tempToken) {
-        console.error("Error generating temp token:", tempError);
-        return undefined;
-      }
-      const response = await fetch(
-        [process.env.BASE_URL, "api/token"].join("/"),
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${tempToken}`,
-          },
-        }
-      );
-      const oneTimeToken: undefined | { token: string } = await response.json();
-      return oneTimeToken?.token;
-    }
+    return response.ok;
   } catch (error) {
     console.error("Error creating adapter:", error);
+    return false;
   }
-  return undefined;
 }
 
 export async function retrieveAdapterKey(
@@ -193,24 +143,8 @@ export async function sendContactMessage(
   subject: string,
   message: string
 ): Promise<{ message: string; success: boolean }> {
-  // make sure not in scope of below try catch
-  const session = await auth();
-  if (!(session && session.user && session.user.id)) {
-    return {
-      message: "User not authenticated",
-      success: false,
-    };
-  }
+  const { token, error } = await jwtSign(false, VERIFY_TOKEN_EXPIRE_SECONDS);
   try {
-    const { token, error } = await jwtSign(
-      {
-        uid: session.user.id,
-        un: session.user.name || "User",
-        ue: session.user.email || "Email",
-      },
-      VERIFY_TOKEN_EXPIRE_SECONDS
-    );
-
     if (!token) {
       console.error("Error generating auth token:", error);
       return { message: "Error generating auth token", success: false };

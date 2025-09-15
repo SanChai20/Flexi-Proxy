@@ -1,12 +1,17 @@
 "use client";
 
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { OnceButton } from "@/components/ui/oncebutton";
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { createAdapterAction, updateAdapterAction } from "@/lib/actions";
+import {
+  createAdapterAction,
+  deleteAdapterAction,
+  updateAdapterAction,
+} from "@/lib/actions";
 import { HelpCircleIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -220,6 +225,65 @@ export function AdapterForm({
           </OnceButton>
         </div>
       </div>
+    </form>
+  );
+}
+
+export function EditAdapterDropdownForm({
+  dict,
+  create_time,
+}: {
+  dict: any;
+  create_time: string;
+}) {
+  const router = useRouter();
+  async function onSubmit(formData: FormData) {
+    router.push(
+      `/management/modify?createTime=${encodeURIComponent(
+        formData.get("createTime") as string
+      )}`
+    );
+  }
+  return (
+    <form action={onSubmit}>
+      <input type="hidden" name="createTime" value={create_time} />
+      <DropdownMenuItem
+        className="w-full cursor-pointer text-destructive focus:text-destructive text-xs xs:text-sm"
+        asChild
+      >
+        <button type="submit" className="w-full">
+          {dict?.management?.edit || "Edit"}
+        </button>
+      </DropdownMenuItem>
+    </form>
+  );
+}
+
+export function DeleteAdapterDropdownForm({
+  dict,
+  create_time,
+}: {
+  dict: any;
+  create_time: string;
+}) {
+  const router = useRouter();
+  async function onSubmit(formData: FormData) {
+    const redirectTo = await deleteAdapterAction(formData);
+    if (redirectTo !== undefined) {
+      router.push(redirectTo);
+    }
+  }
+  return (
+    <form action={onSubmit}>
+      <input type="hidden" name="createTime" value={create_time} />
+      <DropdownMenuItem
+        className="w-full cursor-pointer text-destructive focus:text-destructive text-xs xs:text-sm"
+        asChild
+      >
+        <button type="submit" className="w-full">
+          {dict?.management?.delete || "Delete"}
+        </button>
+      </DropdownMenuItem>
     </form>
   );
 }

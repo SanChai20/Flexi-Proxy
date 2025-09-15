@@ -17,9 +17,8 @@ import { getAllUserAdapters } from "@/lib/actions";
 import { redirect } from "next/navigation";
 import ClipboardButton from "@/components/ui/clipboard-button";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
-import AddAdapterButton from "@/components/managed/add-button";
-import { GetAPIKeyForm } from "./apikey-form";
-import { DeleteAdapterForm } from "./delete-form";
+import { DeleteAdapterDropdownForm, EditAdapterDropdownForm } from "./form";
+import CreateAdapterButton from "./create-button";
 
 export default async function ManagementPage(
   props: PageProps<"/[lang]/management">
@@ -44,7 +43,7 @@ export default async function ManagementPage(
             <CardTitle className="text-2xl">
               {dict?.management?.title || "Adapter Management"}
             </CardTitle>
-            <AddAdapterButton dict={dict} />
+            <CreateAdapterButton dict={dict} />
           </div>
           <CardDescription className="text-base mt-2">
             {dict?.management?.subtitle ||
@@ -111,8 +110,11 @@ export default async function ManagementPage(
                           align="end"
                           className="w-32 xs:w-36 rounded-lg"
                         >
-                          <GetAPIKeyForm dict={dict} adapter={adapter} />
-                          <DeleteAdapterForm
+                          <EditAdapterDropdownForm
+                            dict={dict}
+                            create_time={adapter.create_time}
+                          />
+                          <DeleteAdapterDropdownForm
                             dict={dict}
                             create_time={adapter.create_time}
                           />

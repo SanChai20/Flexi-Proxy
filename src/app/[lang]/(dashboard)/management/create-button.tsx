@@ -10,7 +10,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-export default function AddAdapterButton({ dict }: { dict: any }) {
+export default function CreateAdapterButton({ dict }: { dict: any }) {
   const router = useRouter();
   return (
     <TooltipProvider>

@@ -1,22 +1,14 @@
 import { getDictionary } from "@/lib/dictionary";
 import { Locale } from "i18n-config";
 import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
-import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { HelpCircleIcon } from "lucide-react";
-import { OnceButton } from "@/components/ui/oncebutton";
-import { createAdapter, getAllTargetProviders } from "@/lib/actions";
-import { redirect } from "next/navigation";
-import { AdapterForm } from "../adapter-form";
+import { AdapterForm } from "../form";
+import { getAllTargetProviders } from "@/lib/actions";
 
 export default async function ManagementCreatePage(
   props: PageProps<"/[lang]/management/create">

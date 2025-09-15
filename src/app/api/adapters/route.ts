@@ -1,9 +1,7 @@
 import { redis } from "@/lib/database";
 import { PayloadRequest, withAuth } from "@/lib/with-auth";
 import { NextResponse } from "next/server";
-import { REGISTERED_PROVIDER_PREFIX } from "@/lib/utils";
-
-const USER_ADAPTER_PREFIX = "user:adapter:lists";
+import { REGISTERED_PROVIDER_PREFIX, USER_ADAPTER_PREFIX } from "@/lib/utils";
 
 // [Internal] Create Adapter
 async function protectedPOST(req: PayloadRequest) {
@@ -28,17 +26,14 @@ async function protectedPOST(req: PayloadRequest) {
       provider_url: string;
       base_url: string;
       model_id: string;
-    }>(
-      [USER_ADAPTER_PREFIX, req.payload["uid"], create_time].join(":"),
-      {
-        provider_id,
-        provider_url: provider.url,
-        base_url,
-        model_id,
-      }
-    );
+    }>([USER_ADAPTER_PREFIX, req.payload["uid"], create_time].join(":"), {
+      provider_id,
+      provider_url: provider.url,
+      base_url,
+      model_id,
+    });
     return NextResponse.json({
-      create_time
+      create_time,
     });
   } catch (error) {
     console.error("Failed to create adapter: ", error);

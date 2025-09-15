@@ -11,5 +11,7 @@ export function pathCullLocale(pathname: string) {
   return pathname.replace(new RegExp(`^\\/(${pattern})(\\/|$)`), "/");
 }
 
+//TODO...Move To ENV
 export const REGISTERED_PROVIDER_PREFIX = "registered:target:provider";
 export const VERIFY_TOKEN_EXPIRE_SECONDS = 900;
+export const USER_ADAPTER_PREFIX = "user:adapter:lists";

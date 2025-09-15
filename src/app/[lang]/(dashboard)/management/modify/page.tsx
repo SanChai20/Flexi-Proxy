@@ -8,21 +8,22 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { redirect } from "next/navigation";
-import { UpdateAdapterForm } from "./update-form";
+import { AdapterForm } from "../form";
+import { getAllTargetProviders } from "@/lib/actions";
 
 export default async function ManagementModifyPage(
   props: PageProps<"/[lang]/management/modify">
 ) {
   const { lang } = await props.params;
-  const dict = await getDictionary(lang as Locale);
-  const { baseUrl, modelId, providerId } = await props.searchParams;
-  if (
-    typeof baseUrl !== "string" ||
-    typeof modelId !== "string" ||
-    typeof providerId !== "string"
-  ) {
+  const { createTime } = await props.searchParams;
+  if (typeof createTime !== "string") {
     redirect(`/${lang}/management`);
   }
+
+  const dict = await getDictionary(lang as Locale);
+  const providers: { id: string; url: string }[] =
+    await getAllTargetProviders();
+
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
       <Card>
@@ -36,11 +37,10 @@ export default async function ManagementModifyPage(
           </CardDescription>
         </CardHeader>
       </Card>
-      <UpdateAdapterForm
+      <AdapterForm
         dict={dict}
-        baseUrl={baseUrl}
-        modelId={modelId}
-        providerId={providerId}
+        providers={providers}
+        defaultValues={{ baseUrl, modelId, providerId, commentNote }}
       />
     </section>
   );
