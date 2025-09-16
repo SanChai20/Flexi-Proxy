@@ -25,6 +25,7 @@ import {
   DeleteAdapterDropdownForm,
   EditAdapterDropdownForm,
 } from "./form";
+import { jwtSign } from "@/lib/jwt";
 
 export default async function ManagementPage(
   props: PageProps<"/[lang]/management">
@@ -39,7 +40,11 @@ export default async function ManagementPage(
     not: string;
   }[] = await getAllUserAdapters();
   if (adapters.length <= 0) {
-    redirect(`/${lang}/management/create`);
+    const { token, error } = await jwtSign(true, 120);
+    if (token === undefined) {
+      return <div>{error}</div>;
+    }
+    redirect(`/${lang}/management/create?token=${encodeURIComponent(token)}`);
   }
   const maxAllowed = await getMaxAdapterAllowedPermissionsAction();
 

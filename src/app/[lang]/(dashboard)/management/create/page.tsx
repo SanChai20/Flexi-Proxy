@@ -9,11 +9,21 @@ import {
 } from "@/components/ui/card";
 import { AdapterForm } from "../form";
 import { getAllTargetProviders } from "@/lib/actions";
+import { jwtVerify } from "@/lib/jwt";
+import { redirect } from "next/navigation";
 
 export default async function ManagementCreatePage(
   props: PageProps<"/[lang]/management/create">
 ) {
   const { lang } = await props.params;
+  const { token } = await props.searchParams;
+  if (typeof token !== "string") {
+    redirect(`/${lang}/management`);
+  }
+  const { payload, error } = await jwtVerify(token);
+  if (payload === undefined) {
+    redirect(`/${lang}/management`);
+  }
   const dict = await getTrans(lang as Locale);
   const providers: { id: string; url: string }[] =
     await getAllTargetProviders();

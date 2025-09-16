@@ -17,6 +17,7 @@ import { HelpCircleIcon, PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import { jwtSign } from "@/lib/jwt";
 
 export function AdapterForm({
   dict,
@@ -243,11 +244,14 @@ export function EditAdapterDropdownForm({
 }) {
   const router = useRouter();
   async function onSubmit(formData: FormData) {
-    router.push(
-      `/management/modify?aid=${encodeURIComponent(
-        formData.get("adapterId") as string
-      )}`
-    );
+    const { token, error } = await jwtSign(true, 120);
+    if (token !== undefined) {
+      router.push(
+        `/management/modify?aid=${encodeURIComponent(
+          formData.get("adapterId") as string
+        )}&token=${encodeURIComponent(token)}`
+      );
+    }
   }
   return (
     <form action={onSubmit}>
@@ -309,7 +313,10 @@ export function CreateAdapterForm({
   }, [currentAdapterCount, maxAdapterCountAllowed]);
 
   async function onSubmit(formData: FormData) {
-    router.push(`/management/create`);
+    const { token, error } = await jwtSign(true, 120);
+    if (token !== undefined) {
+      router.push(`/management/create?token=${encodeURIComponent(token)}`);
+    }
   }
   return (
     <TooltipProvider>

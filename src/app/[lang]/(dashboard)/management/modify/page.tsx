@@ -10,13 +10,18 @@ import {
 import { redirect } from "next/navigation";
 import { AdapterForm } from "../form";
 import { getAdapterAction, getAllTargetProviders } from "@/lib/actions";
+import { jwtVerify } from "@/lib/jwt";
 
 export default async function ManagementModifyPage(
   props: PageProps<"/[lang]/management/modify">
 ) {
   const { lang } = await props.params;
-  const { aid } = await props.searchParams;
-  if (typeof aid !== "string") {
+  const { aid, token } = await props.searchParams;
+  if (typeof aid !== "string" || typeof token !== "string") {
+    redirect(`/${lang}/management`);
+  }
+  const { payload, error } = await jwtVerify(token);
+  if (payload === undefined) {
     redirect(`/${lang}/management`);
   }
   const dict = await getTrans(lang as Locale);
