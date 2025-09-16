@@ -1,9 +1,7 @@
 "use server";
 
-import { auth } from "@/auth";
 import { jwtSign } from "./jwt";
 import { VERIFY_TOKEN_EXPIRE_SECONDS } from "./utils";
-import { redirect } from "next/navigation";
 import { encrypt } from "./encryption";
 
 // Get all target providers
@@ -68,88 +66,17 @@ export async function getAllUserAdapters(): Promise<
   return [];
 }
 
-// Create new adapter
-export async function createAdapter(
-  api_key: string,
-  provider_id: string,
-  base_url: string,
-  model_id: string,
-  note_comment: string
-): Promise<boolean> {
-  const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
-  if (token === undefined) {
-    console.error("Error generating auth token:", error);
-    return false;
-  }
-  try {
-    const response = await fetch(
-      [process.env.BASE_URL, "api/adapters"].join("/"),
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          provider_id,
-          base_url,
-          model_id,
-          note_comment,
-        }),
-      }
-    );
-    return response.ok;
-  } catch (error) {
-    console.error("Error creating adapter:", error);
-    return false;
-  }
-}
-
-export async function retrieveAdapterKey(
-  oneTimeToken: string
-): Promise<undefined | { secure: string }> {
-  const user_id: string | undefined = (await auth())?.user?.id;
-  if (user_id === undefined) {
-    return undefined;
-  }
-  const { token, error } = await jwtSign(
-    { uid: user_id, t: oneTimeToken },
-    VERIFY_TOKEN_EXPIRE_SECONDS
-  );
-  if (!token) {
-    console.error("Error generating auth token:", error);
-    return undefined;
-  }
-  try {
-    const response = await fetch(
-      [process.env.BASE_URL, "api/token"].join("/"),
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    if (response.ok) {
-      return await response.json();
-    }
-  } catch (error) {
-    console.error("Error generating one-time token:", error);
-  }
-  return undefined;
-}
-
 // Send contact message
 export async function sendContactMessage(
   subject: string,
   message: string
 ): Promise<{ message: string; success: boolean }> {
   const { token, error } = await jwtSign(false, VERIFY_TOKEN_EXPIRE_SECONDS);
+  if (!token) {
+    console.error("Error generating auth token:", error);
+    return { message: "Error generating auth token", success: false };
+  }
   try {
-    if (!token) {
-      console.error("Error generating auth token:", error);
-      return { message: "Error generating auth token", success: false };
-    }
     const response = await fetch(
       [process.env.BASE_URL, "api/contact"].join("/"),
       {
@@ -166,26 +93,6 @@ export async function sendContactMessage(
     console.error("Error sending contact message:", error);
     return { message: "Error sending contact message", success: false };
   }
-}
-
-export async function getAPIKeyAction(
-  formData: FormData
-): Promise<string | undefined> {
-  const adapter = formData.get("adapter") as string;
-  const adapterJSON: {
-    provider_id: string;
-    provider_url: string;
-    base_url: string;
-    model_id: string;
-    create_time: string;
-  } = JSON.parse(adapter);
-  return `/management/modify?baseUrl=${encodeURIComponent(
-    adapterJSON.base_url
-  )}&modelId=${encodeURIComponent(
-    adapterJSON.model_id
-  )}&providerId=${encodeURIComponent(
-    adapterJSON.provider_id
-  )}&createTime=${encodeURIComponent(adapterJSON.create_time)}`;
 }
 
 export async function deleteAdapterAction(
