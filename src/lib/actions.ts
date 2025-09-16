@@ -9,7 +9,7 @@ export async function getAllTargetProviders(): Promise<
   { id: string; url: string }[]
 > {
   const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
-  if (!token) {
+  if (token === undefined) {
     console.error("Error generating auth token:", error);
     return [];
   }
@@ -43,7 +43,7 @@ export async function getAllUserAdapters(): Promise<
   }[]
 > {
   const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
-  if (!token) {
+  if (token === undefined) {
     console.error("Error generating auth token:", error);
     return [];
   }
@@ -72,7 +72,7 @@ export async function sendContactMessage(
   message: string
 ): Promise<{ message: string; success: boolean }> {
   const { token, error } = await jwtSign(false, VERIFY_TOKEN_EXPIRE_SECONDS);
-  if (!token) {
+  if (token === undefined) {
     console.error("Error generating auth token:", error);
     return { message: "Error generating auth token", success: false };
   }
@@ -130,7 +130,7 @@ export async function updateAdapterAction(
   const apiKey = formData.get("apiKey") as string;
   const adapterId = formData.get("adapterId") as string;
   const commentNote: string | null = formData.get("commentNote") as string;
-  if (!process.env.ENCRYPTION_KEY) {
+  if (process.env.ENCRYPTION_KEY === undefined) {
     return false;
   }
   const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
@@ -175,7 +175,7 @@ export async function createAdapterAction(
   const mid = formData.get("modelId") as string;
   const apiKey = formData.get("apiKey") as string;
   const commentNote: string | null = formData.get("commentNote") as string;
-  if (!process.env.ENCRYPTION_KEY) {
+  if (process.env.ENCRYPTION_KEY === undefined) {
     return false;
   }
   const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);

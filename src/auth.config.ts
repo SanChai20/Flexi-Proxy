@@ -235,7 +235,10 @@ const providers: Provider[] = [
   }),
 ];
 
-if (!!(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET)) {
+if (
+  process.env.AUTH_GOOGLE_ID !== undefined &&
+  process.env.AUTH_GOOGLE_SECRET !== undefined
+) {
   providers.push(
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
@@ -243,7 +246,10 @@ if (!!(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET)) {
     })
   );
 }
-if (!!(process.env.AUTH_GITHUB_ID && process.env.AUTH_GITHUB_SECRET)) {
+if (
+  process.env.AUTH_GITHUB_ID !== undefined &&
+  process.env.AUTH_GITHUB_SECRET !== undefined
+) {
   providers.push(
     GitHub({
       clientId: process.env.AUTH_GITHUB_ID,
@@ -251,7 +257,10 @@ if (!!(process.env.AUTH_GITHUB_ID && process.env.AUTH_GITHUB_SECRET)) {
     })
   );
 }
-if (!!(process.env.AUTH_WECHAT_APP_ID && process.env.AUTH_WECHAT_APP_SECRET)) {
+if (
+  process.env.AUTH_WECHAT_APP_ID !== undefined &&
+  process.env.AUTH_WECHAT_APP_SECRET !== undefined
+) {
   providers.push(
     WeChat({
       clientId: process.env.AUTH_WECHAT_APP_ID,

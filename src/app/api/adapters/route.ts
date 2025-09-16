@@ -7,11 +7,11 @@ import { NextResponse } from "next/server";
 // Headers: Authorization Bearer Token(uid)
 async function protectedGET(req: PayloadRequest) {
   // Get Adapters
-  if (!process.env.ADAPTER_PREFIX) {
+  if (process.env.ADAPTER_PREFIX === undefined) {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
   try {
-    if (!req.payload || typeof req.payload["uid"] !== "string") {
+    if (typeof req.payload?.["uid"] !== "string") {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
     const searchPatternPrefix = `${process.env.ADAPTER_PREFIX}:${req.payload["uid"]}:`;
@@ -48,10 +48,7 @@ async function protectedGET(req: PayloadRequest) {
     return NextResponse.json([]);
   } catch (error) {
     console.error("Failed to fetch adapters: ", error);
-    return NextResponse.json(
-      { error: "Internal Error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }
 

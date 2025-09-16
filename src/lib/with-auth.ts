@@ -10,7 +10,7 @@ type Handler = (req: PayloadRequest, context?: any) => Promise<Response>;
 export function withAuth(handler: Handler): Handler {
   return async (req: PayloadRequest, context) => {
     const authHeader = req.headers.get("authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    if (authHeader === null || !authHeader.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { "Content-Type": "application/json" },
@@ -18,7 +18,7 @@ export function withAuth(handler: Handler): Handler {
     }
     const token = authHeader.split(" ")[1];
     const { payload, error } = await jwtVerify(token);
-    if (!payload) {
+    if (payload === undefined) {
       return new Response(JSON.stringify({ error: error }), {
         status: 401,
         headers: { "Content-Type": "application/json" },

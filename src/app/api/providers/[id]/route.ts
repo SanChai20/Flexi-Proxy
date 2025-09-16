@@ -13,18 +13,15 @@ async function protectedGET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   // Get the provider by id
-  if (!process.env.PROVIDER_PREFIX) {
-    return NextResponse.json(
-      { error: "Internal Error" },
-      { status: 500 }
-    );
+  if (process.env.PROVIDER_PREFIX === undefined) {
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
   try {
     const providerId = (await params).id;
     const provider: { url: string } | null = await redis.get<{ url: string }>(
       [process.env.PROVIDER_PREFIX, providerId].join(":")
     );
-    if (!provider) {
+    if (provider === null) {
       return NextResponse.json(
         { error: "Provider not found" },
         { status: 404 }
@@ -33,13 +30,9 @@ async function protectedGET(
     return NextResponse.json(provider);
   } catch (error) {
     console.error("Failed to get provider: ", error);
-    return NextResponse.json(
-      { error: "Internal Error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }
-
 
 // POST
 // API: '/api/providers/[id]'
@@ -52,21 +45,19 @@ async function protectedPOST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   // Create or update the provider
-  if (!process.env.PROVIDER_PREFIX) {
-    return NextResponse.json(
-      { error: "Internal Error" },
-      { status: 500 }
-    );
+  if (process.env.PROVIDER_PREFIX === undefined) {
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 
   try {
     const providerId = (await params).id;
     const { url } = await req.json();
-    if (typeof url !== 'string') {
+    if (typeof url !== "string") {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
     await redis.set<{ url: string }>(
-      [process.env.PROVIDER_PREFIX, providerId].join(":"), { url }
+      [process.env.PROVIDER_PREFIX, providerId].join(":"),
+      { url }
     );
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
@@ -86,11 +77,8 @@ async function protectedDELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   // Delete the provider
-  if (!process.env.PROVIDER_PREFIX) {
-    return NextResponse.json(
-      { error: "Internal Error" },
-      { status: 500 }
-    );
+  if (process.env.PROVIDER_PREFIX === undefined) {
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
   try {
     const providerId = (await params).id;

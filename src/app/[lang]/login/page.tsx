@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 };
 
 const verifyToken = async (token: string | null): Promise<boolean> => {
-  if (!token) return false;
+  if (token === null) return false;
 
   const validateResponse = await fetch(
     [process.env.BASE_URL, "api/verify"].join("/"),
@@ -41,7 +41,7 @@ export default async function LoginPage(props: PageProps<"/[lang]/login">) {
   const { from } = await props.searchParams;
   const dict = await getTrans(lang as Locale);
 
-  if (!from || typeof from !== "string") return <Unauthorized dict={dict} />;
+  if (typeof from !== "string") return <Unauthorized dict={dict} />;
   const isVerified = await verifyToken(from);
   if (!isVerified) return <Unauthorized dict={dict} />;
 

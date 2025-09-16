@@ -108,10 +108,9 @@ const createEmailTemplate = (data: ContactFormData) => `
 
 async function protectedPOST(req: PayloadRequest) {
   if (
-    !req.payload ||
-    typeof req.payload["uid"] !== "string" ||
-    typeof req.payload["un"] !== "string" ||
-    typeof req.payload["ue"] !== "string"
+    typeof req.payload?.["uid"] !== "string" ||
+    typeof req.payload?.["un"] !== "string" ||
+    typeof req.payload?.["ue"] !== "string"
   ) {
     return NextResponse.json({ error: "Missing field" }, { status: 400 });
   }
@@ -143,13 +142,6 @@ async function protectedPOST(req: PayloadRequest) {
     );
   }
 
-  // Check required fields
-  if (!subject || !message) {
-    return NextResponse.json(
-      { message: "All fields are required" },
-      { status: 400 }
-    );
-  }
   const contactData: ContactFormData = {
     name: userName,
     email: userEmail,

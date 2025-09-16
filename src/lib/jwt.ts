@@ -12,15 +12,11 @@ export async function jwtSign(
   error?: string;
 }> {
   // Validate environment variables
-  if (!process.env.JWT_SECRET_KEY) {
-    return { token: undefined, error: "Internal error" };
-  }
-
-  if (!process.env.JWT_ISSUER) {
-    return { token: undefined, error: "Internal error" };
-  }
-
-  if (!process.env.JWT_AUDIENCE) {
+  if (
+    process.env.JWT_SECRET_KEY === undefined ||
+    process.env.JWT_ISSUER === undefined ||
+    process.env.JWT_AUDIENCE === undefined
+  ) {
     return { token: undefined, error: "Internal error" };
   }
 
@@ -74,15 +70,11 @@ export async function jwtVerify(token: string): Promise<{
   error?: string;
 }> {
   // Validate environment variables
-  if (!process.env.JWT_SECRET_KEY) {
-    return { payload: undefined, error: "Internal error" };
-  }
-
-  if (!process.env.JWT_ISSUER) {
-    return { payload: undefined, error: "Internal error" };
-  }
-
-  if (!process.env.JWT_AUDIENCE) {
+  if (
+    process.env.JWT_SECRET_KEY === undefined ||
+    process.env.JWT_ISSUER === undefined ||
+    process.env.JWT_AUDIENCE === undefined
+  ) {
     return { payload: undefined, error: "Internal error" };
   }
 

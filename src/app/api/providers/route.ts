@@ -3,11 +3,8 @@ import { NextResponse } from "next/server";
 import { PayloadRequest, withAuth } from "@/lib/with-auth";
 
 async function protectedGET(req: PayloadRequest) {
-  if (!process.env.PROVIDER_PREFIX) {
-    return NextResponse.json(
-      { error: "Internal Error" },
-      { status: 500 }
-    );
+  if (process.env.PROVIDER_PREFIX === undefined) {
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
   const searchPatternPrefix = `${process.env.PROVIDER_PREFIX}:`;
   try {
@@ -35,10 +32,7 @@ async function protectedGET(req: PayloadRequest) {
     return NextResponse.json([]);
   } catch (error) {
     console.error("Failed to fetch providers:", error);
-    return NextResponse.json(
-      { error: "Internal Error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }
 

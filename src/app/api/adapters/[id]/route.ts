@@ -14,31 +14,38 @@ import { NextResponse } from "next/server";
 //    [string] ken -> encryptedData
 //    [string] kau -> authTag
 // }
-async function protectedPOST(req: PayloadRequest, { params }: { params: Promise<{ id: string }> }) {
+async function protectedPOST(
+  req: PayloadRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   // Create Adapter
-  if (!process.env.ADAPTER_PREFIX || !process.env.PROVIDER_PREFIX) {
+  if (
+    process.env.ADAPTER_PREFIX === undefined ||
+    process.env.PROVIDER_PREFIX === undefined
+  ) {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
   try {
     const adapterId = (await params).id;
-    if (!req.payload || typeof req.payload["uid"] !== "string") {
+    if (typeof req.payload?.["uid"] !== "string") {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
     const { pid, url, mid, not, kiv, ken, kau } = await req.json();
     if (
-      typeof pid !== 'string' ||
-      typeof url !== 'string' ||
-      typeof mid !== 'string' ||
-      typeof not !== 'string' ||
-      typeof kiv !== 'string' ||
-      typeof ken !== 'string' ||
-      typeof kau !== 'string') {
+      typeof pid !== "string" ||
+      typeof url !== "string" ||
+      typeof mid !== "string" ||
+      typeof not !== "string" ||
+      typeof kiv !== "string" ||
+      typeof ken !== "string" ||
+      typeof kau !== "string"
+    ) {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
     const provider: { url: string } | null = await redis.get<{ url: string }>(
       [process.env.PROVIDER_PREFIX, pid].join(":")
     );
-    if (!provider) {
+    if (provider === null) {
       return NextResponse.json({ error: "Missing provider" }, { status: 400 });
     }
     let tokenKey = ["fp", crypto.randomUUID()].join("-");
@@ -52,8 +59,8 @@ async function protectedPOST(req: PayloadRequest, { params }: { params: Promise<
       tk: tokenKey,
       pid,
       pul: provider.url,
-      not
-    })
+      not,
+    });
     transaction.set<{
       uid: string;
       kiv: string;
@@ -67,19 +74,15 @@ async function protectedPOST(req: PayloadRequest, { params }: { params: Promise<
       ken,
       kau,
       url,
-      mid
+      mid,
     });
     await transaction.exec();
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("Failed to create adapter: ", error);
-    return NextResponse.json(
-      { error: "Internal Error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }
-
 
 // PATCH
 // API: '/api/adapters/[id]'
@@ -93,32 +96,39 @@ async function protectedPOST(req: PayloadRequest, { params }: { params: Promise<
 //    [string] ken -> encryptedData
 //    [string] kau -> authTag
 // }
-async function protectedPATCH(req: PayloadRequest, { params }: { params: Promise<{ id: string }> }) {
+async function protectedPATCH(
+  req: PayloadRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   // Update Adapter
-  if (!process.env.ADAPTER_PREFIX || !process.env.PROVIDER_PREFIX) {
+  if (
+    process.env.ADAPTER_PREFIX === undefined ||
+    process.env.PROVIDER_PREFIX === undefined
+  ) {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 
   try {
     const adapterId = (await params).id;
-    if (!req.payload || typeof req.payload["uid"] !== "string") {
+    if (typeof req.payload?.["uid"] !== "string") {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
     const { pid, url, mid, not, kiv, ken, kau } = await req.json();
     if (
-      typeof pid !== 'string' ||
-      typeof url !== 'string' ||
-      typeof mid !== 'string' ||
-      typeof not !== 'string' ||
-      typeof kiv !== 'string' ||
-      typeof ken !== 'string' ||
-      typeof kau !== 'string') {
+      typeof pid !== "string" ||
+      typeof url !== "string" ||
+      typeof mid !== "string" ||
+      typeof not !== "string" ||
+      typeof kiv !== "string" ||
+      typeof ken !== "string" ||
+      typeof kau !== "string"
+    ) {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
     const provider: { url: string } | null = await redis.get<{ url: string }>(
       [process.env.PROVIDER_PREFIX, pid].join(":")
     );
-    if (!provider) {
+    if (provider === null) {
       return NextResponse.json({ error: "Missing provider" }, { status: 400 });
     }
     const adapterRaw: {
@@ -131,24 +141,27 @@ async function protectedPATCH(req: PayloadRequest, { params }: { params: Promise
       pid: string;
       pul: string;
       not: string;
-    }>([process.env.ADAPTER_PREFIX, req.payload["uid"], adapterId].join(":"))
+    }>([process.env.ADAPTER_PREFIX, req.payload["uid"], adapterId].join(":"));
 
     let tokenKey = ["fp", crypto.randomUUID()].join("-");
     let transaction = redis.multi();
     if (adapterRaw !== null) {
       // Remove old make new
-      transaction.del([process.env.ADAPTER_PREFIX, adapterRaw.tk].join(":"))
+      transaction.del([process.env.ADAPTER_PREFIX, adapterRaw.tk].join(":"));
       transaction.set<{
         tk: string;
         pid: string;
         pul: string;
         not: string;
-      }>([process.env.ADAPTER_PREFIX, req.payload["uid"], adapterId].join(":"), {
-        tk: tokenKey,
-        pid,
-        pul: provider.url,
-        not
-      })
+      }>(
+        [process.env.ADAPTER_PREFIX, req.payload["uid"], adapterId].join(":"),
+        {
+          tk: tokenKey,
+          pid,
+          pul: provider.url,
+          not,
+        }
+      );
       transaction.set<{
         uid: string;
         kiv: string;
@@ -162,21 +175,23 @@ async function protectedPATCH(req: PayloadRequest, { params }: { params: Promise
         ken,
         kau,
         url,
-        mid
-      })
-
+        mid,
+      });
     } else {
       transaction.set<{
         tk: string;
         pid: string;
         pul: string;
         not: string;
-      }>([process.env.ADAPTER_PREFIX, req.payload["uid"], adapterId].join(":"), {
-        tk: tokenKey,
-        pid,
-        pul: provider.url,
-        not
-      })
+      }>(
+        [process.env.ADAPTER_PREFIX, req.payload["uid"], adapterId].join(":"),
+        {
+          tk: tokenKey,
+          pid,
+          pul: provider.url,
+          not,
+        }
+      );
       transaction.set<{
         uid: string;
         kiv: string;
@@ -190,31 +205,31 @@ async function protectedPATCH(req: PayloadRequest, { params }: { params: Promise
         ken,
         kau,
         url,
-        mid
+        mid,
       });
     }
     await transaction.exec();
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("Failed to update adapter: ", error);
-    return NextResponse.json(
-      { error: "Internal Error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }
 
 // DELETE
 // API: '/api/adapters/[id]'
 // Headers: Authorization Bearer Token(uid)
-async function protectedDELETE(req: PayloadRequest, { params }: { params: Promise<{ id: string }> }) {
+async function protectedDELETE(
+  req: PayloadRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   // Delete Adapter
-  if (!process.env.ADAPTER_PREFIX) {
+  if (process.env.ADAPTER_PREFIX === undefined) {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
   try {
     const adapterId = (await params).id;
-    if (!req.payload || typeof req.payload["uid"] !== "string") {
+    if (typeof req.payload?.["uid"] !== "string") {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
     const adapterRaw: {
@@ -227,34 +242,36 @@ async function protectedDELETE(req: PayloadRequest, { params }: { params: Promis
       pid: string;
       pul: string;
       not: string;
-    }>([process.env.ADAPTER_PREFIX, req.payload["uid"], adapterId].join(":"))
+    }>([process.env.ADAPTER_PREFIX, req.payload["uid"], adapterId].join(":"));
     if (adapterRaw !== null) {
       let transaction = redis.multi();
-      transaction.del([process.env.ADAPTER_PREFIX, adapterRaw.tk].join(":"))
-      transaction.del([process.env.ADAPTER_PREFIX, req.payload["uid"], adapterId].join(":"))
+      transaction.del([process.env.ADAPTER_PREFIX, adapterRaw.tk].join(":"));
+      transaction.del(
+        [process.env.ADAPTER_PREFIX, req.payload["uid"], adapterId].join(":")
+      );
       await transaction.exec();
     }
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("Failed to delete adapter: ", error);
-    return NextResponse.json(
-      { error: "Internal Error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }
 
 // GET
 // API: '/api/adapters/[id]'
 // Headers: Authorization Bearer Token(uid)
-async function protectedGET(req: PayloadRequest, { params }: { params: Promise<{ id: string }> }) {
+async function protectedGET(
+  req: PayloadRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   // Get Adapter
-  if (!process.env.ADAPTER_PREFIX) {
+  if (process.env.ADAPTER_PREFIX === undefined) {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
   try {
     const adapterId = (await params).id;
-    if (!req.payload || typeof req.payload["uid"] !== "string") {
+    if (typeof req.payload?.["uid"] !== "string") {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
     const adapterRaw: {
@@ -267,7 +284,7 @@ async function protectedGET(req: PayloadRequest, { params }: { params: Promise<{
       pid: string;
       pul: string;
       not: string;
-    }>([process.env.ADAPTER_PREFIX, req.payload["uid"], adapterId].join(":"))
+    }>([process.env.ADAPTER_PREFIX, req.payload["uid"], adapterId].join(":"));
     if (adapterRaw !== null) {
       return NextResponse.json(adapterRaw, { status: 200 });
     } else {
@@ -275,10 +292,7 @@ async function protectedGET(req: PayloadRequest, { params }: { params: Promise<{
     }
   } catch (error) {
     console.error("Failed to delete adapter: ", error);
-    return NextResponse.json(
-      { error: "Internal Error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }
 

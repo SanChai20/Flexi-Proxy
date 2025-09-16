@@ -7,12 +7,12 @@ import { NextResponse } from "next/server";
 // Headers: Authorization Bearer Token(tk)
 async function protectedGET(req: PayloadRequest) {
   // Get Token data
-  if (!process.env.ADAPTER_PREFIX) {
+  if (process.env.ADAPTER_PREFIX === undefined) {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
   try {
     const tk: string | null = req.headers.get("X-API-Key");
-    if (!tk) {
+    if (tk === null) {
       return NextResponse.json({ error: "Missing Field" }, { status: 400 });
     }
     const tokenData: {
