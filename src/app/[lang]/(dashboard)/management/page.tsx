@@ -49,6 +49,7 @@ export default async function ManagementPage(
             <CreateAdapterForm
               dict={dict}
               currentAdapterCount={adapters.length}
+              maxAdapterCountAllowed={}
             />
           </div>
           <CardDescription className="text-base mt-2">

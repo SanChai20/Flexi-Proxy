@@ -322,3 +322,11 @@ export async function updateSettingsAction(
     return false;
   }
 }
+
+
+export async function getPermissionsAction() {
+
+}
+
+
+export async function 

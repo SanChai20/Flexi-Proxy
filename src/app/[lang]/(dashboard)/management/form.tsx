@@ -295,9 +295,11 @@ export function DeleteAdapterDropdownForm({
 export function CreateAdapterForm({
   dict,
   currentAdapterCount,
+  maxAdapterCountAllowed,
 }: {
   dict: any;
   currentAdapterCount: number;
+  maxAdapterCountAllowed: number;
 }) {
   const router = useRouter();
   async function onSubmit(formData: FormData) {
@@ -324,7 +326,7 @@ export function CreateAdapterForm({
         <TooltipContent>
           <p>
             {dict?.management?.adapterAdd || "Add Adapter"}{" "}
-            {`(${currentAdapterCount}/5)`}
+            {`(${currentAdapterCount}/${maxAdapterCountAllowed})`}
           </p>
         </TooltipContent>
       </Tooltip>
