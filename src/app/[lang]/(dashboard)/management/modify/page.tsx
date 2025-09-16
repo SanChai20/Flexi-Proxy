@@ -25,7 +25,7 @@ export default async function ManagementModifyPage(
     redirect(`/${lang}/management`);
   }
   const dict = await getTrans(lang as Locale);
-  const providers: { id: string; url: string }[] =
+  const providers: { id: string; url: string; status: string }[] =
     await getAllTargetProviders();
 
   const adapter:

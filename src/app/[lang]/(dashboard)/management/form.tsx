@@ -25,7 +25,7 @@ export function AdapterForm({
   defaultValues,
 }: {
   dict: any;
-  providers: { id: string; url: string }[];
+  providers: { id: string; url: string; status: string }[];
   defaultValues?: {
     adapterId: string;
     baseUrl: string;
@@ -180,7 +180,7 @@ export function AdapterForm({
                 </option>
                 {providers.map((option) => (
                   <option key={option.id} value={option.id}>
-                    {option.id.toUpperCase()}
+                    {option.id}
                   </option>
                 ))}
               </select>

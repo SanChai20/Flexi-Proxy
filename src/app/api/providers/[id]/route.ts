@@ -2,38 +2,6 @@ import { redis } from "@/lib/redis";
 import { NextResponse } from "next/server";
 import { PayloadRequest, withAuth } from "@/lib/with-auth";
 
-// GET
-// API: '/api/providers/[id]'
-// Headers: Authorization Bearer Token
-// Body: {
-//  [string] url -> provider proxy url
-//}
-async function protectedGET(
-  req: PayloadRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  // Get the provider by id
-  if (process.env.PROVIDER_PREFIX === undefined) {
-    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
-  }
-  try {
-    const providerId = (await params).id;
-    const provider: { url: string } | null = await redis.get<{ url: string }>(
-      [process.env.PROVIDER_PREFIX, providerId].join(":")
-    );
-    if (provider === null) {
-      return NextResponse.json(
-        { error: "Provider not found" },
-        { status: 404 }
-      );
-    }
-    return NextResponse.json(provider);
-  } catch (error) {
-    console.error("Failed to get provider: ", error);
-    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
-  }
-}
-
 // POST
 // API: '/api/providers/[id]'
 // Headers: Authorization Bearer Token
@@ -51,13 +19,18 @@ async function protectedPOST(
 
   try {
     const providerId = (await params).id;
-    const { url } = await req.json();
-    if (typeof url !== "string") {
+    const { url, status, ex } = await req.json();
+    if (
+      typeof url !== "string" ||
+      typeof status !== "string" ||
+      typeof ex !== "number"
+    ) {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
-    await redis.set<{ url: string }>(
+    await redis.set<{ url: string; status: string }>(
       [process.env.PROVIDER_PREFIX, providerId].join(":"),
-      { url }
+      { url, status },
+      { ex }
     );
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
@@ -69,30 +42,4 @@ async function protectedPOST(
   }
 }
 
-// DELETE
-// API: '/api/providers/[id]'
-// Headers: Authorization Bearer Token
-async function protectedDELETE(
-  req: PayloadRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  // Delete the provider
-  if (process.env.PROVIDER_PREFIX === undefined) {
-    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
-  }
-  try {
-    const providerId = (await params).id;
-    await redis.del([process.env.PROVIDER_PREFIX, providerId].join(":"));
-    return NextResponse.json({ success: true }, { status: 200 });
-  } catch (error) {
-    console.error("Failed to delete provider: ", error);
-    return NextResponse.json(
-      { error: "Failed to delete provider" },
-      { status: 500 }
-    );
-  }
-}
-
-export const GET = withAuth(protectedGET);
 export const POST = withAuth(protectedPOST);
-export const DELETE = withAuth(protectedDELETE);

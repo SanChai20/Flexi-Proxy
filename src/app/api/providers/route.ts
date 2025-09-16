@@ -21,7 +21,9 @@ async function protectedGET(req: PayloadRequest) {
     } while (cursor !== 0);
     if (allKeys.length > 0) {
       const ids = allKeys.map((key) => key.replace(searchPatternPrefix, ""));
-      const values = await redis.mget<{ url: string }[]>(...allKeys);
+      const values = await redis.mget<{ url: string; status: string }[]>(
+        ...allKeys
+      );
       return NextResponse.json(
         ids.map((id, index) => ({
           id,

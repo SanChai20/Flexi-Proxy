@@ -25,7 +25,7 @@ export default async function ManagementCreatePage(
     redirect(`/${lang}/management`);
   }
   const dict = await getTrans(lang as Locale);
-  const providers: { id: string; url: string }[] =
+  const providers: { id: string; url: string; status: string }[] =
     await getAllTargetProviders();
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">

@@ -6,7 +6,7 @@ import { encrypt } from "./encryption";
 
 // Get all target providers
 export async function getAllTargetProviders(): Promise<
-  { id: string; url: string }[]
+  { id: string; url: string; status: string }[]
 > {
   const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
   if (token === undefined) {
