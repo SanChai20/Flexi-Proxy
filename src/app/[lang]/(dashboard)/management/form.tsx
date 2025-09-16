@@ -16,6 +16,7 @@ import {
 import { HelpCircleIcon, PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 
 export function AdapterForm({
   dict,
@@ -302,6 +303,11 @@ export function CreateAdapterForm({
   maxAdapterCountAllowed: number;
 }) {
   const router = useRouter();
+  const [reachLimit, setReachLimit] = useState<boolean>(false);
+  useEffect(() => {
+    setReachLimit(currentAdapterCount >= maxAdapterCountAllowed);
+  }, [currentAdapterCount, maxAdapterCountAllowed]);
+
   async function onSubmit(formData: FormData) {
     router.push(`/management/create`);
   }
@@ -309,11 +315,13 @@ export function CreateAdapterForm({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <form action={onSubmit}>
+          <form action={onSubmit} className="flex flex-row items-center">
+            <div className="mr-4 tracking-wider text-muted-foreground">{`(${currentAdapterCount}/${maxAdapterCountAllowed})`}</div>
             <Button
               type="submit"
               variant="outline"
               size="icon"
+              disabled={reachLimit}
               className="h-8 w-8 rounded-full sm:h-9 sm:w-9"
             >
               <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -324,7 +332,7 @@ export function CreateAdapterForm({
           </form>
         </TooltipTrigger>
         <TooltipContent>
-          <p>
+          <p className="tracking-wider text-muted-foreground">
             {dict?.management?.adapterAdd || "Add Adapter"}{" "}
             {`(${currentAdapterCount}/${maxAdapterCountAllowed})`}
           </p>

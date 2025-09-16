@@ -73,13 +73,13 @@ export default async function ManagementPage(
                   <th className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                     {dict?.management?.provider || "Provider"}
                   </th>
-                  <th className="w-3/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
+                  <th className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                     {dict?.management?.baseUrl || "Base URL"}
                   </th>
                   <th className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                     {dict?.management?.apiKey || "API Key"}
                   </th>
-                  <th className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
+                  <th className="w-2/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                     {dict?.management?.note || "Note"}
                   </th>
                   <th className="w-1/6 px-2 py-3 text-xs text-right sm:px-5 sm:py-3.5 sm:text-sm sm:text-right">
@@ -100,7 +100,7 @@ export default async function ManagementPage(
                         {adapter.pid}
                       </span>
                     </td>
-                    <td className="w-3/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
+                    <td className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                       <div className="flex justify-start gap-1 xs:gap-2">
                         <span
                           className="font-mono text-[10px] xs:text-xs md:text-sm text-muted-foreground truncate transition-all duration-300 ease-in-out max-w-[140px] xs:max-w-[120px] sm:max-w-[140px] md:max-w-[180px] lg:max-w-[240px]"
@@ -122,8 +122,8 @@ export default async function ManagementPage(
                         <ClipboardButton text={adapter.tk} />
                       </div>
                     </td>
-                    <td className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
-                      <span className="text-[10px] xs:text-xs md:text-sm">
+                    <td className="w-2/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
+                      <span className="font-mono text-[10px] xs:text-xs md:text-sm text-muted-foreground whitespace-nowrap transition-all duration-300 ease-in-out max-w-[140px] xs:max-w-[120px] sm:max-w-[140px] md:max-w-[180px] lg:max-w-[240px]">
                         {adapter.not}
                       </span>
                     </td>
