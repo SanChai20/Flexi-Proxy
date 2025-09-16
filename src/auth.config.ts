@@ -3,8 +3,6 @@ import type { NextAuthConfig } from "next-auth";
 import GitHub from "next-auth/providers/github";
 import Resend from "next-auth/providers/resend";
 import Google from "next-auth/providers/google";
-// import WeChat from "next-auth/providers/wechat";
-import { Redis } from "@upstash/redis";
 import { Theme } from "@auth/core/types";
 import { UpstashRedisAdapter } from "@auth/upstash-redis-adapter";
 import { redis } from "@/lib/redis";
@@ -257,18 +255,6 @@ if (
     })
   );
 }
-// if (
-//   process.env.AUTH_WECHAT_APP_ID !== undefined &&
-//   process.env.AUTH_WECHAT_APP_SECRET !== undefined
-// ) {
-//   providers.push(
-//     WeChat({
-//       clientId: process.env.AUTH_WECHAT_APP_ID,
-//       clientSecret: process.env.AUTH_WECHAT_APP_SECRET,
-//       platformType: "OfficialAccount",
-//     })
-//   );
-// }
 
 export const providerMap = providers
   .map((provider) => {
