@@ -181,6 +181,10 @@ export function AdapterForm({
                 {providers.map((option) => (
                   <option key={option.id} value={option.id}>
                     {option.id}
+                    {option.status === "unavailable" && " (●灰色)"}
+                    {option.status === "spare" && " (●绿色)"}
+                    {option.status === "busy" && " (●橙色)"}
+                    {option.status === "full" && " (●红色)"}
                   </option>
                 ))}
               </select>
