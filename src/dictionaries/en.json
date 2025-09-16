@@ -1,7 +1,7 @@
 {
   "login": {
-    "title": "FlexiProxy AI",
-    "subtitle": "Sign in to access your OpenAI-compatible Base Urls",
+    "title": "FlexiProxy",
+    "subtitle": "Sign in to access your proxy service",
     "email": "Email Address",
     "emailLogin": "Sign in with Email",
     "use": "Sign in with",
@@ -108,7 +108,11 @@
     "noteTitle": "Add note information",
     "notePlaceHolder": "Create note for this adapter...(20 words max)",
     "edit": "Edit",
-    "note": "Note"
+    "note": "Note",
+    "unavailable": "Unavailable",
+    "spare": "Spare",
+    "busy": "Busy",
+    "full": "Full"
   },
   "settings": {
     "title": "Settings",

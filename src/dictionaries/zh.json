@@ -1,7 +1,7 @@
 {
   "login": {
-    "title": "FlexiProxy AI",
-    "subtitle": "登录以访问您的OpenAI兼容的接口地址",
+    "title": "FlexiProxy",
+    "subtitle": "登录以使用您的代理服务",
     "email": "电子邮箱地址",
     "emailLogin": "通过邮箱登录",
     "use": "使用",
@@ -108,7 +108,11 @@
     "noteTitle": "填写备注信息",
     "notePlaceHolder": "为此适配器创建备注信息...(最多20个字)",
     "edit": "编辑",
-    "note": "备注"
+    "note": "备注",
+    "unavailable": "不可用",
+    "spare": "空闲",
+    "busy": "繁忙",
+    "full": "满载"
   },
   "settings": {
     "title": "设置",

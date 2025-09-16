@@ -34,6 +34,7 @@ export function AdapterForm({
     commentNote: string;
   };
 }) {
+  console.log(providers)
   const router = useRouter();
   async function onSubmit(formData: FormData) {
     let canJump: boolean = false;
@@ -179,12 +180,25 @@ export function AdapterForm({
                   {dict.management?.selectProvider || "Select a provider"}
                 </option>
                 {providers.map((option) => (
-                  <option key={option.id} value={option.id}>
+                  <option
+                    key={option.id}
+                    value={option.id}
+                    disabled={option.status === "unavailable"}
+                    style={{
+                      color: option.status === "unavailable" ? "#9ca3af" :  // gray
+                        option.status === "spare" ? "#10b981" :       // green
+                          option.status === "busy" ? "#f97316" :        // orange
+                            option.status === "full" ? "#ef4444" :        // red
+                              "inherit"                                     // default
+                    }}
+                  >
+                    {" ["}
+                    {option.status === "unavailable" && (dict?.management?.unavailable || "Unavailable")}
+                    {option.status === "spare" && (dict?.management?.spare || "Spare")}
+                    {option.status === "busy" && (dict?.management?.busy || "Busy")}
+                    {option.status === "full" && (dict?.management?.full || "Full")}
+                    {"] "}
                     {option.id}
-                    {option.status === "unavailable" && " (●灰色)"}
-                    {option.status === "spare" && " (●绿色)"}
-                    {option.status === "busy" && " (●橙色)"}
-                    {option.status === "full" && " (●红色)"}
                   </option>
                 ))}
               </select>
@@ -248,7 +262,7 @@ export function EditAdapterDropdownForm({
 }) {
   const router = useRouter();
   async function onSubmit(formData: FormData) {
-    const { token, error } = await jwtSign(true, 120);
+    const { token, error } = await jwtSign(true, 1800);
     if (token !== undefined) {
       router.push(
         `/management/modify?aid=${encodeURIComponent(
@@ -317,7 +331,7 @@ export function CreateAdapterForm({
   }, [currentAdapterCount, maxAdapterCountAllowed]);
 
   async function onSubmit(formData: FormData) {
-    const { token, error } = await jwtSign(true, 120);
+    const { token, error } = await jwtSign(true, 1800);
     if (token !== undefined) {
       router.push(`/management/create?token=${encodeURIComponent(token)}`);
     }

@@ -7,6 +7,8 @@ import { PayloadRequest, withAuth } from "@/lib/with-auth";
 // Headers: Authorization Bearer Token
 // Body: {
 //  [string] url -> provider proxy url
+//  [string] status -> provider proxy status ["unavailable", "spare", "busy", "full"]
+//  [number] ex -> expire seconds
 //}
 async function protectedPOST(
   req: PayloadRequest,
