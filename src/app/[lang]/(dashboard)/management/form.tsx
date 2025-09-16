@@ -292,7 +292,13 @@ export function DeleteAdapterDropdownForm({
   );
 }
 
-export function CreateAdapterForm({ dict }: { dict: any }) {
+export function CreateAdapterForm({
+  dict,
+  currentAdapterCount,
+}: {
+  dict: any;
+  currentAdapterCount: number;
+}) {
   const router = useRouter();
   async function onSubmit(formData: FormData) {
     router.push(`/management/create`);
@@ -316,7 +322,10 @@ export function CreateAdapterForm({ dict }: { dict: any }) {
           </form>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{dict?.management?.adapterAdd || "Add Adapter"}</p>
+          <p>
+            {dict?.management?.adapterAdd || "Add Adapter"}{" "}
+            {`(${currentAdapterCount}/5)`}
+          </p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

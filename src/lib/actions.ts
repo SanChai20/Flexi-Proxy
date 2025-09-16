@@ -235,7 +235,7 @@ export async function getAdapterAction(
       const adapterInfo: { tk: string; pid: string; pul: string; not: string } =
         await adapterResponse.json();
       const tokenResponse = await fetch(
-        [process.env.BASE_URL, "api/token"].join("/"),
+        [process.env.BASE_URL, "api/adapters/token"].join("/"),
         {
           method: "GET",
           headers: {
@@ -278,7 +278,7 @@ export async function getSettingsAction(): Promise<{
   }
   try {
     const response = await fetch(
-      [process.env.BASE_URL, "api/settings"].join("/"),
+      [process.env.BASE_URL, "api/user/settings"].join("/"),
       {
         method: "GET",
         headers: {
@@ -306,7 +306,7 @@ export async function updateSettingsAction(
   }
   try {
     const response = await fetch(
-      [process.env.BASE_URL, "api/settings"].join("/"),
+      [process.env.BASE_URL, "api/user/settings"].join("/"),
       {
         method: "POST",
         headers: {

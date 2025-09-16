@@ -3,7 +3,7 @@ import { PayloadRequest, withAuth } from "@/lib/with-auth";
 import { NextResponse } from "next/server";
 
 // GET
-// API: '/api/settings'
+// API: '/api/user/settings'
 // Headers: Authorization Bearer Token(uid)
 async function protectedGET(req: PayloadRequest) {
   // Get Settings data
@@ -29,7 +29,7 @@ async function protectedGET(req: PayloadRequest) {
 }
 
 // POST
-// API: '/api/settings'
+// API: '/api/user/settings'
 // Headers: Authorization Bearer Token(uid)
 // Body: {
 //  [boolean] cd -> collect data

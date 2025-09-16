@@ -46,7 +46,10 @@ export default async function ManagementPage(
             <CardTitle className="text-2xl">
               {dict?.management?.title || "Adapter Management"}
             </CardTitle>
-            <CreateAdapterForm dict={dict} />
+            <CreateAdapterForm
+              dict={dict}
+              currentAdapterCount={adapters.length}
+            />
           </div>
           <CardDescription className="text-base mt-2">
             {dict?.management?.subtitle ||

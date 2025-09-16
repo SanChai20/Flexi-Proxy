@@ -3,7 +3,7 @@ import { PayloadRequest, withAuth } from "@/lib/with-auth";
 import { NextResponse } from "next/server";
 
 // GET
-// API: '/api/token'
+// API: '/api/adapters/token'
 // Headers: Authorization Bearer Token(tk)
 async function protectedGET(req: PayloadRequest) {
   // Get Token data
