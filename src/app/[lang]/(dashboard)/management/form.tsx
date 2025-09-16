@@ -25,6 +25,7 @@ export function AdapterForm({
   dict: any;
   providers: { id: string; url: string }[];
   defaultValues?: {
+    adapterId: string;
     baseUrl: string;
     modelId: string;
     providerId: string;
@@ -36,17 +37,18 @@ export function AdapterForm({
     let canJump: boolean = false;
     if (defaultValues !== undefined) {
       // Updating Operation
-      //canJump = await updateAdapterAction(formData);
+      canJump = await updateAdapterAction(formData);
     } else {
       // Creating Operation
       canJump = await createAdapterAction(formData);
     }
     if (canJump) {
-      router.push('/management');
+      router.push("/management");
     }
   }
   return (
     <form action={onSubmit} className="mt-6">
+      <input type="hidden" name="adapterId" value={defaultValues?.adapterId} />
       {/* Adapter Configuration Section */}
       <div className="bg-card border border-border rounded-lg overflow-hidden">
         {/* Source Section (OpenAI-Compatible) */}
@@ -270,9 +272,9 @@ export function DeleteAdapterDropdownForm({
 }) {
   const router = useRouter();
   async function onSubmit(formData: FormData) {
-    const redirectTo = await deleteAdapterAction(formData);
-    if (redirectTo !== undefined) {
-      router.push(redirectTo);
+    const canRefresh = await deleteAdapterAction(formData);
+    if (canRefresh) {
+      router.push("/management");
     }
   }
   return (
@@ -293,7 +295,7 @@ export function DeleteAdapterDropdownForm({
 export function CreateAdapterForm({ dict }: { dict: any }) {
   const router = useRouter();
   async function onSubmit(formData: FormData) {
-    router.push(`/management/create`)
+    router.push(`/management/create`);
   }
   return (
     <TooltipProvider>
@@ -304,7 +306,8 @@ export function CreateAdapterForm({ dict }: { dict: any }) {
               type="submit"
               variant="outline"
               size="icon"
-              className="h-8 w-8 rounded-full sm:h-9 sm:w-9">
+              className="h-8 w-8 rounded-full sm:h-9 sm:w-9"
+            >
               <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5" />
               <span className="sr-only">
                 {dict?.management?.adapterAdd || "Add Adapter"}

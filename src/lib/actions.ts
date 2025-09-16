@@ -190,89 +190,74 @@ export async function getAPIKeyAction(
 
 export async function deleteAdapterAction(
   formData: FormData
-): Promise<string | undefined> {
-  const user_id: string | undefined = (await auth())?.user?.id;
-  if (user_id === undefined) {
-    return undefined;
-  }
-  const adapter_id = formData.get("adapterId") as string;
-  const { token, error } = await jwtSign(
-    { uid: user_id },
-    VERIFY_TOKEN_EXPIRE_SECONDS
-  );
-  if (!token) {
+): Promise<boolean> {
+  const adapterId = formData.get("adapterId") as string;
+  const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
+  if (token === undefined) {
     console.error("Error generating auth token:", error);
-    return undefined;
+    return false;
   }
   try {
     const response = await fetch(
-      [process.env.BASE_URL, "api/adapters"].join("/"),
+      [process.env.BASE_URL, "api/adapters", adapterId].join("/"),
       {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.ok;
+  } catch (error) {
+    console.error("Error deleting adapter:", error);
+    return false;
+  }
+}
+
+export async function updateAdapterAction(
+  formData: FormData
+): Promise<boolean> {
+  const pid = formData.get("provider") as string;
+  const url = formData.get("baseUrl") as string;
+  const mid = formData.get("modelId") as string;
+  const apiKey = formData.get("apiKey") as string;
+  const adapterId = formData.get("adapterId") as string;
+  const commentNote: string | null = formData.get("commentNote") as string;
+  if (!process.env.ENCRYPTION_KEY) {
+    return false;
+  }
+  const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
+  if (token === undefined) {
+    console.error("Error generating auth token:", error);
+    return false;
+  }
+  try {
+    const encodedKey: { iv: string; encryptedData: string; authTag: string } =
+      encrypt(apiKey, process.env.ENCRYPTION_KEY);
+    const response = await fetch(
+      [process.env.BASE_URL, "api/adapters", adapterId].join("/"),
+      {
+        method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          create_time,
+          pid,
+          url,
+          mid,
+          not: commentNote !== null ? commentNote : "",
+          kiv: encodedKey.iv,
+          ken: encodedKey.encryptedData,
+          kau: encodedKey.authTag,
         }),
       }
     );
-    if (response.ok) {
-      return "/management";
-    }
-  } catch (error) {
-    console.error("Error deleting adapter:", error);
-  }
-  return undefined;
-}
-
-export async function updateAdapterAction(
-  formData: FormData
-): Promise<string | undefined> {
-  const user_id: string | undefined = (await auth())?.user?.id;
-  if (user_id === undefined) {
-    return undefined;
-  }
-  const apiKey = formData.get("apiKey") as string;
-  const baseUrl = formData.get("baseUrl") as string;
-  const modelId = formData.get("modelId") as string;
-  try {
-    const { token: keyToken, error: keyError } = await jwtSign({
-      u: user_id,
-      a: apiKey,
-      b: baseUrl,
-      m: modelId,
-    });
-    if (keyToken === undefined) {
-      console.error("Error generating key token: ", keyError);
-      return undefined;
-    }
-    const { token: tempToken, error: tempError } = await jwtSign(
-      { uid: user_id, s: keyToken },
-      VERIFY_TOKEN_EXPIRE_SECONDS
-    );
-    if (!tempToken) {
-      console.error("Error generating temp token:", tempError);
-      return undefined;
-    }
-    const response = await fetch(
-      [process.env.BASE_URL, "api/token"].join("/"),
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${tempToken}`,
-        },
-      }
-    );
-    const oneTimeToken: undefined | { token: string } = await response.json();
-    if (oneTimeToken !== undefined) {
-      return `/management/key?token=${encodeURIComponent(oneTimeToken.token)}`;
-    }
+    return response.ok;
   } catch (error) {
     console.error("Error updating adapter:", error);
+    return false;
   }
-  return undefined;
 }
 
 export async function createAdapterAction(
@@ -283,10 +268,6 @@ export async function createAdapterAction(
   const mid = formData.get("modelId") as string;
   const apiKey = formData.get("apiKey") as string;
   const commentNote: string | null = formData.get("commentNote") as string;
-  const user_id: string | undefined = (await auth())?.user?.id;
-  if (user_id === undefined) {
-    return false;
-  }
   if (!process.env.ENCRYPTION_KEY) {
     return false;
   }

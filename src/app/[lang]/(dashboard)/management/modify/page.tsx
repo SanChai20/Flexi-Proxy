@@ -23,7 +23,9 @@ export default async function ManagementModifyPage(
   const providers: { id: string; url: string }[] =
     await getAllTargetProviders();
 
-  const adapter: { url: string; mid: string; pid: string; not: string; } | undefined = await getAdapterAction(aid);
+  const adapter:
+    | { url: string; mid: string; pid: string; not: string }
+    | undefined = await getAdapterAction(aid);
   if (adapter === undefined) {
     redirect(`/${lang}/management`);
   }
@@ -44,7 +46,13 @@ export default async function ManagementModifyPage(
       <AdapterForm
         dict={dict}
         providers={providers}
-        defaultValues={{ baseUrl: adapter.url, modelId: adapter.mid, providerId: adapter.pid, commentNote: adapter.not }}
+        defaultValues={{
+          baseUrl: adapter.url,
+          modelId: adapter.mid,
+          providerId: adapter.pid,
+          commentNote: adapter.not,
+          adapterId: aid,
+        }}
       />
     </section>
   );
