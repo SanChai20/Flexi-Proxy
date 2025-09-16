@@ -112,15 +112,15 @@ export async function retrieveAdapterKey(
   if (user_id === undefined) {
     return undefined;
   }
+  const { token, error } = await jwtSign(
+    { uid: user_id, t: oneTimeToken },
+    VERIFY_TOKEN_EXPIRE_SECONDS
+  );
+  if (!token) {
+    console.error("Error generating auth token:", error);
+    return undefined;
+  }
   try {
-    const { token, error } = await jwtSign(
-      { uid: user_id, t: oneTimeToken },
-      VERIFY_TOKEN_EXPIRE_SECONDS
-    );
-    if (!token) {
-      console.error("Error generating auth token:", error);
-      return undefined;
-    }
     const response = await fetch(
       [process.env.BASE_URL, "api/token"].join("/"),
       {
@@ -196,15 +196,15 @@ export async function deleteAdapterAction(
     return undefined;
   }
   const adapter_id = formData.get("adapterId") as string;
+  const { token, error } = await jwtSign(
+    { uid: user_id },
+    VERIFY_TOKEN_EXPIRE_SECONDS
+  );
+  if (!token) {
+    console.error("Error generating auth token:", error);
+    return undefined;
+  }
   try {
-    const { token, error } = await jwtSign(
-      { uid: user_id },
-      VERIFY_TOKEN_EXPIRE_SECONDS
-    );
-    if (!token) {
-      console.error("Error generating auth token:", error);
-      return undefined;
-    }
     const response = await fetch(
       [process.env.BASE_URL, "api/adapters"].join("/"),
       {
@@ -275,7 +275,6 @@ export async function updateAdapterAction(
   return undefined;
 }
 
-
 export async function createAdapterAction(
   formData: FormData
 ): Promise<boolean> {
@@ -291,16 +290,14 @@ export async function createAdapterAction(
   if (!process.env.ENCRYPTION_KEY) {
     return false;
   }
+  const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
+  if (token === undefined) {
+    console.error("Error generating auth token:", error);
+    return false;
+  }
   try {
-    const { token, error } = await jwtSign(
-      true,
-      VERIFY_TOKEN_EXPIRE_SECONDS
-    );
-    if (token === undefined) {
-      console.error("Error generating auth token:", error);
-      return false;
-    }
-    const encodedKey: { iv: string, encryptedData: string, authTag: string } = encrypt(apiKey, process.env.ENCRYPTION_KEY);
+    const encodedKey: { iv: string; encryptedData: string; authTag: string } =
+      encrypt(apiKey, process.env.ENCRYPTION_KEY);
     const response = await fetch(
       [process.env.BASE_URL, "api/adapters", crypto.randomUUID()].join("/"),
       {
@@ -327,15 +324,58 @@ export async function createAdapterAction(
   }
 }
 
+export async function getAdapterAction(
+  adapterId: string
+): Promise<{ url: string; mid: string; pid: string; not: string } | undefined> {
+  const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
+  if (token === undefined) {
+    console.error("Error generating auth token:", error);
+    return undefined;
+  }
+  try {
+    const adapterResponse = await fetch(
+      [process.env.BASE_URL, "api/adapters", adapterId].join("/"),
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-export async function getAdapterAction(adapterId: string): Promise<{ url: string; mid: string; pid: string; not: string; } | undefined> {
-
-
-
-
-
-
-
-
-  return undefined;
+    if (adapterResponse.ok) {
+      const adapterInfo: { tk: string; pid: string; pul: string; not: string } =
+        await adapterResponse.json();
+      const tokenResponse = await fetch(
+        [process.env.BASE_URL, "api/token"].join("/"),
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "X-API-Key": adapterInfo.tk,
+          },
+        }
+      );
+      if (tokenResponse.ok) {
+        const tokenData: {
+          uid: string;
+          kiv: string;
+          ken: string;
+          kau: string;
+          url: string;
+          mid: string;
+        } = await tokenResponse.json();
+        return {
+          url: tokenData.url,
+          mid: tokenData.mid,
+          pid: adapterInfo.pid,
+          not: adapterInfo.not,
+        };
+      }
+    }
+    return undefined;
+  } catch (error) {
+    console.error("Error getting adapter:", error);
+    return undefined;
+  }
 }
