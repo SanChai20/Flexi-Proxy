@@ -96,14 +96,14 @@ export default async function ManagementPage(
                     className="hover:bg-muted/30 transition-colors duration-150"
                   >
                     <td className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
-                      <span className="text-[10px] xs:text-xs md:text-sm">
+                      <span className="text-[10px] xs:text-xs md:text-sm whitespace-nowrap">
                         {adapter.pid}
                       </span>
                     </td>
                     <td className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                       <div className="flex justify-start gap-1 xs:gap-2">
                         <span
-                          className="font-mono text-[10px] xs:text-xs md:text-sm text-muted-foreground truncate transition-all duration-300 ease-in-out max-w-[140px] xs:max-w-[120px] sm:max-w-[140px] md:max-w-[180px] lg:max-w-[240px]"
+                          className="font-mono text-[10px] xs:text-xs md:text-sm text-muted-foreground whitespace-nowrap truncate transition-all duration-300 ease-in-out max-w-[140px] xs:max-w-[120px] sm:max-w-[140px] md:max-w-[180px] lg:max-w-[240px]"
                           title={adapter.pul}
                         >
                           {adapter.pul}
@@ -114,7 +114,7 @@ export default async function ManagementPage(
                     <td className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                       <div className="flex justify-start gap-1 xs:gap-2">
                         <span
-                          className="font-mono text-[10px] xs:text-xs md:text-sm text-muted-foreground truncate transition-all duration-300 ease-in-out max-w-[80px] xs:max-w-[80px] sm:max-w-[120px] md:max-w-[140px] lg:max-w-[180px]"
+                          className="font-mono text-[10px] xs:text-xs md:text-sm text-muted-foreground whitespace-nowrap truncate transition-all duration-300 ease-in-out max-w-[80px] xs:max-w-[80px] sm:max-w-[120px] md:max-w-[140px] lg:max-w-[180px]"
                           title={adapter.tk}
                         >
                           {adapter.tk}
