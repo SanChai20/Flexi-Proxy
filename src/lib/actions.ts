@@ -323,15 +323,11 @@ export async function updateSettingsAction(
   }
 }
 
-export async function getPermissionsAction(): Promise<{
-  maa: number;
-}> {
+export async function getMaxAdapterAllowedPermissionsAction(): Promise<number> {
   const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
   if (token === undefined) {
     console.error("Error generating auth token:", error);
-    return {
-      maa: 3,
-    };
+    return 3;
   }
   try {
     const response = await fetch(
@@ -344,15 +340,16 @@ export async function getPermissionsAction(): Promise<{
       }
     );
     if (response.ok) {
-      return await response.json();
+      const result = await response.json();
+      return result["maa"];
     }
   } catch (error) {
     console.error("Error getting permissions:", error);
   }
-  return { maa: 3 };
+  return 3;
 }
 
-export async function updatePermissionsAction(
+export async function updateMaxAdapterAllowedPermissionsAction(
   maxAdaptersAllowed: number
 ): Promise<boolean> {
   const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
@@ -369,7 +366,7 @@ export async function updatePermissionsAction(
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ maa: maxAdaptersAllowed }),
       }
     );
     return response.ok;

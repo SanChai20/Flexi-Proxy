@@ -13,7 +13,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getAllUserAdapters } from "@/lib/actions";
+import {
+  getAllUserAdapters,
+  getMaxAdapterAllowedPermissionsAction,
+} from "@/lib/actions";
 import { redirect } from "next/navigation";
 import ClipboardButton from "@/components/ui/clipboard-button";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
@@ -38,6 +41,8 @@ export default async function ManagementPage(
   if (adapters.length <= 0) {
     redirect(`/${lang}/management/create`);
   }
+  const maxAllowed = await getMaxAdapterAllowedPermissionsAction();
+
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
       <Card>
@@ -49,7 +54,7 @@ export default async function ManagementPage(
             <CreateAdapterForm
               dict={dict}
               currentAdapterCount={adapters.length}
-              maxAdapterCountAllowed={}
+              maxAdapterCountAllowed={maxAllowed}
             />
           </div>
           <CardDescription className="text-base mt-2">
