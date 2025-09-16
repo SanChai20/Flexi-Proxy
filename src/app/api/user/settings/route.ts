@@ -43,9 +43,13 @@ async function protectedPOST(req: PayloadRequest) {
     if (typeof req.payload?.["uid"] !== "string") {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
+    const settings: any | null = await redis.get(
+      [process.env.SETTINGS_PREFIX, req.payload["uid"]].join(":")
+    );
     await redis.set<string>(
       [process.env.SETTINGS_PREFIX, req.payload["uid"]].join(":"),
       {
+        ...(settings !== null ? settings : {}),
         ...(await req.json()),
       }
     );

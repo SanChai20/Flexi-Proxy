@@ -323,10 +323,58 @@ export async function updateSettingsAction(
   }
 }
 
-
-export async function getPermissionsAction() {
-
+export async function getPermissionsAction(): Promise<{
+  maa: number;
+}> {
+  const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
+  if (token === undefined) {
+    console.error("Error generating auth token:", error);
+    return {
+      maa: 3,
+    };
+  }
+  try {
+    const response = await fetch(
+      [process.env.BASE_URL, "api/user/permissions"].join("/"),
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (response.ok) {
+      return await response.json();
+    }
+  } catch (error) {
+    console.error("Error getting permissions:", error);
+  }
+  return { maa: 3 };
 }
 
-
-export async function 
+export async function updatePermissionsAction(
+  maxAdaptersAllowed: number
+): Promise<boolean> {
+  const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
+  if (token === undefined) {
+    console.error("Error generating auth token:", error);
+    return false;
+  }
+  try {
+    const response = await fetch(
+      [process.env.BASE_URL, "api/user/permissions"].join("/"),
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
+      }
+    );
+    return response.ok;
+  } catch (error) {
+    console.error("Error getting permissions:", error);
+    return false;
+  }
+}
