@@ -12,7 +12,7 @@ import { UserIcon } from "@/components/ui/icons";
 
 export default async function HomePage(props: PageProps<"/[lang]">) {
   const session = await auth();
-  let userName = session?.user?.name || session?.user?.email || "User";
+  let userName = session?.user?.name || session?.user?.email?.split("@")[0] || "User";
   let userAvatar = session?.user?.image;
   let userEmail = session?.user?.email;
   const { lang } = await props.params;
@@ -43,15 +43,15 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
         )}
 
         <div className="mt-6 px-4 py-2 bg-primary/10 rounded-full">
-          <p className="text-sm font-medium text-primary">Free Plan</p>
+          <p className="text-sm font-medium text-primary">{dict?.home?.free || "Free Plan"}</p>
         </div>
       </div>
 
       <Card className="shadow-lg">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Welcome to FlexiProxy</CardTitle>
+          <CardTitle className="text-2xl">{dict?.home?.title || "Welcome to FlexiProxy"}</CardTitle>
           <CardDescription className="text-base mt-2">
-            Your gateway to OpenAI-compatible API services
+            {dict?.home?.subtitle || "AI Service Proxy Gateway, Breaking Regional & Pricing Barriers"}
           </CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
@@ -61,9 +61,9 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2">Fast & Reliable</h3>
+            <h3 className="text-lg font-semibold mb-2">{dict?.home?.feature1Title || "Fast & Reliable"}</h3>
             <p className="text-muted-foreground text-sm">
-              High-performance proxy with low latency and 99.9% uptime
+              {dict?.home?.feature1Subtitle || "High-performance proxy with low latency and 99.9% uptime"}
             </p>
           </div>
 
@@ -73,9 +73,9 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2">Secure</h3>
+            <h3 className="text-lg font-semibold mb-2">{dict?.home?.feature2Title || "Secure"}</h3>
             <p className="text-muted-foreground text-sm">
-              Enterprise-grade security with end-to-end encryption
+              {dict?.home?.feature2Subtitle || "Security with end-to-end encryption"}
             </p>
           </div>
 
@@ -85,16 +85,16 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2">Easy Integration</h3>
+            <h3 className="text-lg font-semibold mb-2">{dict?.home?.feature3Title || "Easy Setup"}</h3>
             <p className="text-muted-foreground text-sm">
-              Simple setup with OpenAI-compatible endpoints
+              {dict?.home?.feature3Subtitle || "Simple setup with OpenAI-compatible endpoints"}
             </p>
           </div>
         </CardContent>
       </Card>
 
       <div className="mt-8 text-center text-sm text-muted-foreground">
-        <p>Need help? Check out our <a href="#" className="text-primary hover:underline">Documentation</a> or <a href="#" className="text-primary hover:underline">Contact Support</a></p>
+        <p>{dict?.home?.checkout || "Need help? Check out our"} <a href="/documentation" className="text-primary hover:underline">{dict?.home?.documentation || "Documentation"}</a></p>
       </div>
     </section>
   );

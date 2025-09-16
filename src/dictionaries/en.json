@@ -128,7 +128,16 @@
     "policy": "Privacy Policy"
   },
   "home": {
-    "title": "",
-    "subtitle": ""
+    "title": "Welcome to FlexiProxy",
+    "subtitle": "AI Service Proxy Gateway, Breaking Regional & Pricing Barriers",
+    "free": "Free Plan",
+    "feature1Title": "Fast & Reliable",
+    "feature1Subtitle": "High-performance proxy with low latency and 99.9% uptime",
+    "feature2Title": "Secure",
+    "feature2Subtitle": "Security with end-to-end encryption",
+    "feature3Title": "Easy Setup",
+    "feature3Subtitle": "Simple setup with OpenAI-compatible endpoints",
+    "checkout": "Need help? Check out our",
+    "documentation": "Documentation"
   }
 }
