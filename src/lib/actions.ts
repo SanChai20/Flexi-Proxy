@@ -327,7 +327,7 @@ export async function getMaxAdapterAllowedPermissionsAction(): Promise<number> {
   const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
   if (token === undefined) {
     console.error("Error generating auth token:", error);
-    return 3;
+    return 1;
   }
   try {
     const response = await fetch(
@@ -346,7 +346,7 @@ export async function getMaxAdapterAllowedPermissionsAction(): Promise<number> {
   } catch (error) {
     console.error("Error getting permissions:", error);
   }
-  return 3;
+  return 1;
 }
 
 export async function updateMaxAdapterAllowedPermissionsAction(

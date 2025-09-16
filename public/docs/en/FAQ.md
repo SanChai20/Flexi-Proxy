@@ -4,7 +4,7 @@
 
 ### 2. How many adapters can I create at most simultaneously?
 
-> Currently, free users are allowed a maximum quota of 3 adapters. If you need to create more, please contact us or stay tuned for further development updates.
+> Currently, free users are allowed a maximum quota of 1 adapter. If you need to create more, please contact us or stay tuned for further development updates.
 
 ### 3. Why are there multiple selectable options available for the same target provider?
 
