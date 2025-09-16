@@ -17,7 +17,11 @@ import { getAllUserAdapters } from "@/lib/actions";
 import { redirect } from "next/navigation";
 import ClipboardButton from "@/components/ui/clipboard-button";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
-import { CreateAdapterForm, DeleteAdapterDropdownForm, EditAdapterDropdownForm } from "./form";
+import {
+  CreateAdapterForm,
+  DeleteAdapterDropdownForm,
+  EditAdapterDropdownForm,
+} from "./form";
 
 export default async function ManagementPage(
   props: PageProps<"/[lang]/management">
@@ -50,9 +54,8 @@ export default async function ManagementPage(
           </CardDescription>
         </CardHeader>
       </Card>
-
       <div className="mt-6">
-        <div className="border border-border rounded-xl bg-card overflow-hidden shadow-sm">
+        <div className="border border-border bg-card overflow-hidden shadow-sm">
           <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-transparent scrollbar-thumb-muted-foreground/20">
             <table className="w-full min-w-[200px] md:min-w-full">
               {/* ----- Header ----- */}
@@ -149,6 +152,6 @@ export default async function ManagementPage(
           </div>
         </div>
       </div>
-    </section >
+    </section>
   );
 }
