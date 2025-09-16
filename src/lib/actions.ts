@@ -267,3 +267,58 @@ export async function getAdapterAction(
     return undefined;
   }
 }
+
+export async function getSettingsAction(): Promise<{
+  cd: boolean;
+}> {
+  const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
+  if (token === undefined) {
+    console.error("Error generating auth token:", error);
+    return { cd: false };
+  }
+  try {
+    const response = await fetch(
+      [process.env.BASE_URL, "api/settings"].join("/"),
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (response.ok) {
+      return await response.json();
+    }
+  } catch (error) {
+    console.error("Error getting settings:", error);
+  }
+  return { cd: false };
+}
+
+export async function updateSettingsAction(
+  formData: FormData
+): Promise<boolean> {
+  const dataCollection = formData.get("dataCollection") === "on";
+  const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
+  if (token === undefined) {
+    console.error("Error generating auth token:", error);
+    return false;
+  }
+  try {
+    const response = await fetch(
+      [process.env.BASE_URL, "api/settings"].join("/"),
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ cd: dataCollection }),
+      }
+    );
+    return response.ok;
+  } catch (error) {
+    console.error("Error updating settings:", error);
+    return false;
+  }
+}

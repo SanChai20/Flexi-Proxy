@@ -11,21 +11,19 @@ async function protectedGET(req: PayloadRequest) {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
   try {
-    const tokenData: null = await redis.get<{
-      uid: string;
-      kiv: string;
-      ken: string;
-      kau: string;
-      url: string;
-      mid: string;
-    }>([process.env.ADAPTER_PREFIX, tk].join(":"));
-    if (tokenData !== null) {
-      return NextResponse.json(tokenData, { status: 200 });
+    if (typeof req.payload?.["uid"] !== "string") {
+      return NextResponse.json({ error: "Missing field" }, { status: 400 });
+    }
+    const settings: any | null = await redis.get(
+      [process.env.SETTINGS_PREFIX, req.payload["uid"]].join(":")
+    );
+    if (settings !== null) {
+      return NextResponse.json(settings, { status: 200 });
     } else {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
   } catch (error) {
-    console.error("Failed to get token data: ", error);
+    console.error("Failed to get settings data: ", error);
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }
@@ -42,32 +40,18 @@ async function protectedPOST(req: PayloadRequest) {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
   try {
-    const { cd } = await req.json();
-    if (!tk) {
-      return NextResponse.json({ error: "Missing Field" }, { status: 400 });
+    if (typeof req.payload?.["uid"] !== "string") {
+      return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
-    const tokenData: {
-      uid: string;
-      kiv: string;
-      ken: string;
-      kau: string;
-      url: string;
-      mid: string;
-    } | null = await redis.get<{
-      uid: string;
-      kiv: string;
-      ken: string;
-      kau: string;
-      url: string;
-      mid: string;
-    }>([process.env.ADAPTER_PREFIX, tk].join(":"));
-    if (tokenData !== null) {
-      return NextResponse.json(tokenData, { status: 200 });
-    } else {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
-    }
+    await redis.set<string>(
+      [process.env.SETTINGS_PREFIX, req.payload["uid"]].join(":"),
+      {
+        ...(await req.json()),
+      }
+    );
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
-    console.error("Failed to get token data: ", error);
+    console.error("Failed to get settings data: ", error);
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }
