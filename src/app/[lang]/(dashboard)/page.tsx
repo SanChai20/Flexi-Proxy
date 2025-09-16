@@ -10,6 +10,10 @@ import {
 import { getTrans } from "@/lib/dictionary";
 
 export default async function HomePage(props: PageProps<"/[lang]">) {
+  const session = await auth();
+  let userName = session?.user?.name || session?.user?.email || "User";
+  let userAvatar = session?.user?.image;
+  let userEmail = session?.user?.email;
   const { lang } = await props.params;
   const dict = await getTrans(lang as Locale);
   return (
