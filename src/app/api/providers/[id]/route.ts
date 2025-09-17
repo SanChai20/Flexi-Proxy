@@ -1,17 +1,17 @@
 import { redis } from "@/lib/redis";
-import { NextResponse } from "next/server";
-import { PayloadRequest, withAuth } from "@/lib/with-auth";
+import { NextRequest, NextResponse } from "next/server";
+import { AuthRequest, withAuth } from "@/lib/with-auth";
 
 // POST
 // API: '/api/providers/[id]'
-// Headers: Authorization Bearer Token
+// Headers: Authorization Bearer <Token>
 // Body: {
 //  [string] url -> provider proxy url
 //  [string] status -> provider proxy status ["unavailable", "spare", "busy", "full"]
 //  [number] ex -> expire seconds
 //}
 async function protectedPOST(
-  req: PayloadRequest,
+  req: AuthRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   // Create or update the provider

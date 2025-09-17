@@ -446,7 +446,7 @@ export async function getMaxAdapterAllowedPermissionsAction(): Promise<number> {
       }
     }
   }
-  return 1;
+  return 3;
 }
 
 export async function updateMaxAdapterAllowedPermissionsAction(
@@ -477,4 +477,15 @@ export async function updateMaxAdapterAllowedPermissionsAction(
     console.error("Error getting permissions:", error);
     return false;
   }
+}
+
+export async function createOneTimeToken(expiresIn: number): Promise<string> {
+  const token = crypto.randomUUID();
+  await redis.set([process.env.AUTHTOKEN_PREFIX, "tp", token].join(":"), token, { ex: expiresIn });
+  return token;
+}
+
+export async function verifyOnTimeToken(token: string): Promise<boolean> {
+  const result: string | null = await redis.getdel<string>([process.env.AUTHTOKEN_PREFIX, "tp", token].join(":"));
+  return result !== null;
 }

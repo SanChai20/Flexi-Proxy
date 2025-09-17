@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  createOneTimeToken,
   getAllUserAdapters,
   getMaxAdapterAllowedPermissionsAction,
 } from "@/lib/actions";
@@ -25,7 +26,6 @@ import {
   DeleteAdapterDropdownForm,
   EditAdapterDropdownForm,
 } from "./form";
-import { jwtSign } from "@/lib/jwt";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -45,10 +45,7 @@ export default async function ManagementPage(
     not: string;
   }[] = await getAllUserAdapters();
   if (adapters.length <= 0) {
-    const { token, error } = await jwtSign(true, 1800);
-    if (token === undefined) {
-      return <div>{error}</div>;
-    }
+    const token = await createOneTimeToken(1800);
     redirect(`/${lang}/management/create?token=${encodeURIComponent(token)}`);
   }
   const maxAllowed = await getMaxAdapterAllowedPermissionsAction();

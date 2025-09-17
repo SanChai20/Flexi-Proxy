@@ -4,6 +4,7 @@ import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { OnceButton } from "@/components/ui/oncebutton";
 import {
   createAdapterAction,
+  createOneTimeToken,
   deleteAdapterAction,
   updateAdapterAction,
 } from "@/lib/actions";
@@ -17,7 +18,6 @@ import { HelpCircleIcon, PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { jwtSign } from "@/lib/jwt";
 
 export function AdapterForm({
   dict,
@@ -189,12 +189,12 @@ export function AdapterForm({
                         option.status === "unavailable"
                           ? "#9ca3af" // gray
                           : option.status === "spare"
-                          ? "#10b981" // green
-                          : option.status === "busy"
-                          ? "#f97316" // orange
-                          : option.status === "full"
-                          ? "#ef4444" // red
-                          : "inherit", // default
+                            ? "#10b981" // green
+                            : option.status === "busy"
+                              ? "#f97316" // orange
+                              : option.status === "full"
+                                ? "#ef4444" // red
+                                : "inherit", // default
                     }}
                   >
                     {" ["}
@@ -271,14 +271,12 @@ export function EditAdapterDropdownForm({
 }) {
   const router = useRouter();
   async function onSubmit(formData: FormData) {
-    const { token, error } = await jwtSign(true, 1800);
-    if (token !== undefined) {
-      router.push(
-        `/management/modify?aid=${encodeURIComponent(
-          formData.get("adapterId") as string
-        )}&token=${encodeURIComponent(token)}`
-      );
-    }
+    const token = await createOneTimeToken(1800);
+    router.push(
+      `/management/modify?aid=${encodeURIComponent(
+        formData.get("adapterId") as string
+      )}&token=${encodeURIComponent(token)}`
+    );
   }
   return (
     <form action={onSubmit}>
@@ -340,10 +338,8 @@ export function CreateAdapterForm({
   }, [currentAdapterCount, maxAdapterCountAllowed]);
 
   async function onSubmit(formData: FormData) {
-    const { token, error } = await jwtSign(true, 1800);
-    if (token !== undefined) {
-      router.push(`/management/create?token=${encodeURIComponent(token)}`);
-    }
+    const token = await createOneTimeToken(1800);
+    router.push(`/management/create?token=${encodeURIComponent(token)}`);
   }
   return (
     <TooltipProvider>

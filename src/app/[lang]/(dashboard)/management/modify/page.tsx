@@ -9,8 +9,7 @@ import {
 } from "@/components/ui/card";
 import { redirect } from "next/navigation";
 import { AdapterForm } from "../form";
-import { getAdapterAction, getAllTargetProviders } from "@/lib/actions";
-import { jwtVerify } from "@/lib/jwt";
+import { getAdapterAction, getAllTargetProviders, verifyOnTimeToken } from "@/lib/actions";
 
 export default async function ManagementModifyPage(
   props: PageProps<"/[lang]/management/modify">
@@ -20,8 +19,8 @@ export default async function ManagementModifyPage(
   if (typeof aid !== "string" || typeof token !== "string") {
     redirect(`/${lang}/management`);
   }
-  const { payload, error } = await jwtVerify(token);
-  if (payload === undefined) {
+  const isValid = await verifyOnTimeToken(token);
+  if (!isValid) {
     redirect(`/${lang}/management`);
   }
   const dict = await getTrans(lang as Locale);

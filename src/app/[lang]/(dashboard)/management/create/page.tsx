@@ -8,8 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { AdapterForm } from "../form";
-import { getAllTargetProviders } from "@/lib/actions";
-import { jwtVerify } from "@/lib/jwt";
+import { getAllTargetProviders, verifyOnTimeToken } from "@/lib/actions";
 import { redirect } from "next/navigation";
 
 export default async function ManagementCreatePage(
@@ -20,8 +19,8 @@ export default async function ManagementCreatePage(
   if (typeof token !== "string") {
     redirect(`/${lang}/management`);
   }
-  const { payload, error } = await jwtVerify(token);
-  if (payload === undefined) {
+  const isValid = await verifyOnTimeToken(token);
+  if (!isValid) {
     redirect(`/${lang}/management`);
   }
   const dict = await getTrans(lang as Locale);

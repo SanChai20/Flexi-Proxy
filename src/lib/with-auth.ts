@@ -1,14 +1,14 @@
 import { NextRequest } from "next/server";
 import { jwtVerify } from "@/lib/jwt";
+import { redis } from "./redis";
 
-export interface PayloadRequest extends NextRequest {
-  payload?: Record<string, any>;
+export interface AuthRequest extends NextRequest {
+  token?: string;
 }
-
-type Handler = (req: PayloadRequest, context?: any) => Promise<Response>;
+type Handler = (req: AuthRequest, context?: any) => Promise<Response>;
 
 export function withAuth(handler: Handler): Handler {
-  return async (req: PayloadRequest, context) => {
+  return async (req: AuthRequest, context) => {
     const authHeader = req.headers.get("authorization");
     if (authHeader === null || !authHeader.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -17,14 +17,27 @@ export function withAuth(handler: Handler): Handler {
       });
     }
     const token = authHeader.split(" ")[1];
-    const { payload, error } = await jwtVerify(token);
+    if (process.env.AUTHTOKEN_PREFIX === undefined) {
+      return new Response(JSON.stringify({ error: "Internal Error" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const jwtToken: string | null = await redis.get<string>([process.env.AUTHTOKEN_PREFIX, token].join(":"));
+    if (jwtToken === null) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const { payload, error } = await jwtVerify(jwtToken);
     if (payload === undefined) {
       return new Response(JSON.stringify({ error: error }), {
         status: 401,
         headers: { "Content-Type": "application/json" },
       });
     }
-    req.payload = payload;
+    req.token = token;
     // If authenticated, call the original handler
     return handler(req, context);
   };

@@ -1,12 +1,12 @@
 import { redis } from "@/lib/redis";
-import { PayloadRequest, withAuth } from "@/lib/with-auth";
-import { NextResponse } from "next/server";
+import { AuthRequest, withAuth } from "@/lib/with-auth";
+import { NextRequest, NextResponse } from "next/server";
 
 // GET
 // API: '/api/adapters/token'
-// Headers: X-API-Key Token(tk)
-//          Authorization Bearer JWTToken
-async function protectedGET(req: PayloadRequest) {
+// Headers: 'X-API-Key': <Token start from 'fp-'>
+//          'Authorization': Bearer <Token>
+async function protectedGET(req: AuthRequest) {
   // Get Token data
   if (process.env.ADAPTER_PREFIX === undefined) {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
