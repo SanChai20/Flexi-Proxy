@@ -8,6 +8,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "FlexiProxy - Subscription",
+};
 
 export default async function SubscriptionPage(
   props: PageProps<"/[lang]/subscription">

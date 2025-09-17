@@ -10,6 +10,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "FlexiProxy - FAQ",
+};
 
 export default async function FAQPage(props: PageProps<"/[lang]/faq">) {
   const { lang } = await props.params;

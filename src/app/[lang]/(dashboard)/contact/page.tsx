@@ -10,6 +10,11 @@ import {
 import { OnceButton } from "@/components/ui/oncebutton";
 import { sendContactMessage } from "@/lib/actions";
 import { redirect } from "next/navigation";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "FlexiProxy - Contact Us",
+};
 
 export default async function ContactPage(props: PageProps<"/[lang]/contact">) {
   const { lang } = await props.params;

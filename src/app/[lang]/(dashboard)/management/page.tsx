@@ -26,43 +26,15 @@ import {
   EditAdapterDropdownForm,
 } from "./form";
 import { jwtSign } from "@/lib/jwt";
+import { Metadata } from "next";
 
-async function register01() {
-  const { token, error } = await jwtSign(true, 120);
-  const response = await fetch(
-    [process.env.BASE_URL, "api/providers", "anthropic-test-03"].join("/"),
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ url: "https://xxxxxx.flexiproxy.com", status: "busy", ex: 3600 }),
-    }
-  );
-  console.log("register anthropic-test-01 " + response.ok)
-}
-async function register02() {
-  const { token, error } = await jwtSign(true, 120);
-  const response = await fetch(
-    [process.env.BASE_URL, "api/providers", "anthropic-test-04"].join("/"),
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ url: "https://xxxxxx.flexiproxy.com", status: "full", ex: 3600 }),
-    }
-  );
-  console.log("register anthropic-test-02 " + response.ok)
-}
-
+export const metadata: Metadata = {
+  title: "FlexiProxy - Adapter Management",
+};
 
 export default async function ManagementPage(
   props: PageProps<"/[lang]/management">
 ) {
-  //await Promise.all([register01(), register02()]);
   const { lang } = await props.params;
   const dict = await getTrans(lang as Locale);
   let adapters: {
@@ -80,10 +52,6 @@ export default async function ManagementPage(
     redirect(`/${lang}/management/create?token=${encodeURIComponent(token)}`);
   }
   const maxAllowed = await getMaxAdapterAllowedPermissionsAction();
-
-
-
-
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
       <Card>

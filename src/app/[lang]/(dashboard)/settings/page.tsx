@@ -9,6 +9,11 @@ import {
 } from "@/components/ui/card";
 import { SettingsForm } from "./form";
 import { getSettingsAction } from "@/lib/actions";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "FlexiProxy - Settings",
+};
 
 export default async function SettingsPage(
   props: PageProps<"/[lang]/settings">

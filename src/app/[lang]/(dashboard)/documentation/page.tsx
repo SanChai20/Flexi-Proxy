@@ -10,6 +10,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { MarkdownRenderer } from "@/components/ui/markdown-renderer";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "FlexiProxy - Documentation",
+};
 
 export default async function DocumentationPage(
   props: PageProps<"/[lang]/documentation">
