@@ -4,7 +4,8 @@ import { NextResponse } from "next/server";
 
 // GET
 // API: '/api/adapters/token'
-// Headers: Authorization Bearer Token(tk)
+// Headers: X-API-Key Token(tk)
+//          Authorization Bearer JWTToken
 async function protectedGET(req: PayloadRequest) {
   // Get Token data
   if (process.env.ADAPTER_PREFIX === undefined) {
