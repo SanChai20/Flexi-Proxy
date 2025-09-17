@@ -17,7 +17,7 @@ import {
 import { HelpCircleIcon, PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export function AdapterForm({
   dict,
@@ -35,7 +35,7 @@ export function AdapterForm({
   };
 }) {
   const router = useRouter();
-  async function onSubmit(formData: FormData) {
+  const onSubmit = useCallback(async (formData: FormData) => {
     let canJump: boolean = false;
     if (defaultValues !== undefined) {
       // Updating Operation
@@ -47,7 +47,7 @@ export function AdapterForm({
     if (canJump) {
       router.push("/management");
     }
-  }
+  }, [router])
   return (
     <form action={onSubmit} className="mt-6">
       <input type="hidden" name="adapterId" value={defaultValues?.adapterId} />
@@ -269,14 +269,24 @@ export function EditAdapterDropdownForm({
   adapter_id: string;
 }) {
   const router = useRouter();
-  async function onSubmit(formData: FormData) {
-    const token = await createShortTimeToken(3600);
-    router.push(
-      `/management/modify?aid=${encodeURIComponent(
-        formData.get("adapterId") as string
-      )}&token=${encodeURIComponent(token)}`
-    );
-  }
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const onSubmit = useCallback(async (formData: FormData) => {
+    if (isSubmitting) {
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const token = await createShortTimeToken(3600);
+      router.push(
+        `/management/modify?aid=${encodeURIComponent(
+          formData.get("adapterId") as string
+        )}&token=${encodeURIComponent(token)}`
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [isSubmitting, router]);
+
   return (
     <form action={onSubmit}>
       <input type="hidden" name="adapterId" value={adapter_id} />
@@ -284,7 +294,7 @@ export function EditAdapterDropdownForm({
         className="w-full cursor-pointer text-destructive focus:text-destructive text-xs xs:text-sm"
         asChild
       >
-        <button type="submit" className="w-full">
+        <button type="submit" className="w-full" disabled={isSubmitting}>
           {dict?.management?.edit || "Edit"}
         </button>
       </DropdownMenuItem>
@@ -300,12 +310,21 @@ export function DeleteAdapterDropdownForm({
   adapter_id: string;
 }) {
   const router = useRouter();
-  async function onSubmit(formData: FormData) {
-    const canRefresh = await deleteAdapterAction(formData);
-    if (canRefresh) {
-      router.push("/management");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const onSubmit = useCallback(async (formData: FormData) => {
+    if (isSubmitting) {
+      return;
     }
-  }
+    setIsSubmitting(true);
+    try {
+      const canRefresh = await deleteAdapterAction(formData);
+      if (canRefresh) {
+        router.push("/management");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [isSubmitting, router])
   return (
     <form action={onSubmit}>
       <input type="hidden" name="adapterId" value={adapter_id} />
@@ -313,7 +332,7 @@ export function DeleteAdapterDropdownForm({
         className="w-full cursor-pointer text-destructive focus:text-destructive text-xs xs:text-sm"
         asChild
       >
-        <button type="submit" className="w-full">
+        <button type="submit" className="w-full" disabled={isSubmitting}>
           {dict?.management?.delete || "Delete"}
         </button>
       </DropdownMenuItem>
@@ -331,15 +350,24 @@ export function CreateAdapterForm({
   maxAdapterCountAllowed: number;
 }) {
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [reachLimit, setReachLimit] = useState<boolean>(false);
   useEffect(() => {
     setReachLimit(currentAdapterCount >= maxAdapterCountAllowed);
   }, [currentAdapterCount, maxAdapterCountAllowed]);
 
-  async function onSubmit(formData: FormData) {
-    const token = await createShortTimeToken(3600);
-    router.push(`/management/create?token=${encodeURIComponent(token)}`);
-  }
+  const onSubmit = useCallback(async (formData: FormData) => {
+    if (isSubmitting) {
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const token = await createShortTimeToken(3600);
+      router.push(`/management/create?token=${encodeURIComponent(token)}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [isSubmitting, router])
   return (
     <TooltipProvider>
       <Tooltip>
@@ -350,7 +378,7 @@ export function CreateAdapterForm({
               type="submit"
               variant="outline"
               size="icon"
-              disabled={reachLimit}
+              disabled={reachLimit || isSubmitting}
               className="h-8 w-8 rounded-full sm:h-9 sm:w-9"
             >
               <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5" />
