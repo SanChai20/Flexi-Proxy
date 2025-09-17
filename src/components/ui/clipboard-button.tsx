@@ -23,7 +23,6 @@ const ClipboardButton: React.FC<ClipboardButtonProps> = ({
   const copyToClipboard = async () => {
     try {
       if (!text) {
-        console.warn("No text to copy");
         return;
       }
 

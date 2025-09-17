@@ -34,7 +34,6 @@ export function AdapterForm({
     commentNote: string;
   };
 }) {
-  console.log(providers);
   const router = useRouter();
   async function onSubmit(formData: FormData) {
     let canJump: boolean = false;
