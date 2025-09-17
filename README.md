@@ -105,6 +105,7 @@ FlexiProxy is a service proxy based on the OpenAI-Compatible API, designed to pr
 -   **🤝 Broad Compatibility**: Supports any service provider offering an OpenAI-Compatible API (e.g., DeepSeek, DeepInfra, Qwen, xAI Grok, etc.).
 
 ### 🚀 Quick Start
+> See more details, please refer to [website](https://flexiproxy.com/documentation)
 
 #### 1. Create an Adapter
 
@@ -150,6 +151,7 @@ If you encounter any issues or have suggestions, please feel free to contact us:
 ---
 
 *最后更新 | Last Updated: 2025年9月14日 | September 14, 2025*
+
 
 
 
