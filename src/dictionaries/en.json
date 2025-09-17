@@ -11,10 +11,10 @@
     "agree": "By continuing, you agree to our"
   },
   "legal": {
-    "termsPage": "legal/en/terms_of_service.md",
+    "termsPage": "legal/en/TERMS_OF_SERVICE.md",
     "termsTitle": "Terms of Service",
     "termsSubtitle": "Terms and conditions for using our services",
-    "policyPage": "legal/en/privacy_policy.md",
+    "policyPage": "legal/en/PRIVACY_POLICY.md",
     "policyTitle": "Privacy Policy",
     "policySubtitle": "How we collect, use, and protect your personal information"
   },
@@ -60,12 +60,12 @@
   "documentation": {
     "title": "About FlexiProxy",
     "subtitle": "Learn more about FlexiProxy, its features, and how to use it",
-    "documentationPage": "docs/en/documentation.md"
+    "documentationPage": "docs/en/DOCUMENTATION.md"
   },
   "faq": {
     "title": "Frequently Asked Questions",
     "subtitle": "We've compiled answers to common questions about our service",
-    "faqPage": "docs/en/faq.md"
+    "faqPage": "docs/en/FAQ.md"
   },
   "management": {
     "title": "Adapter Management",
