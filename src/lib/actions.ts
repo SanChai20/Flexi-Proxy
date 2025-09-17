@@ -3,28 +3,39 @@
 import { jwtSign } from "./jwt";
 import { VERIFY_TOKEN_EXPIRE_SECONDS } from "./utils";
 import { encrypt } from "./encryption";
+import { redis } from "./redis";
+import { auth } from "@/auth";
 
 // Get all target providers
 export async function getAllTargetProviders(): Promise<
   { id: string; url: string; status: string }[]
 > {
-  const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
-  if (token === undefined) {
-    console.error("Error generating auth token:", error);
+  if (process.env.PROVIDER_PREFIX === undefined) {
+    console.error("getAllTargetProviders - PROVIDER_PREFIX env not set");
     return [];
   }
   try {
-    const response = await fetch(
-      [process.env.BASE_URL, "api/providers"].join("/"),
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    if (response.ok) {
-      return await response.json();
+    const searchPatternPrefix = `${process.env.PROVIDER_PREFIX}:`;
+    // Scan all keys with the prefix
+    let allKeys: string[] = [];
+    let cursor = 0;
+    do {
+      const [newCursor, keys] = await redis.scan(cursor, {
+        match: `${searchPatternPrefix}*`,
+        count: 100,
+      });
+      allKeys.push(...keys);
+      cursor = Number(newCursor);
+    } while (cursor !== 0);
+    if (allKeys.length > 0) {
+      const ids = allKeys.map((key) => key.replace(searchPatternPrefix, ""));
+      const values = await redis.mget<{ url: string; status: string }[]>(
+        ...allKeys
+      );
+      return ids.map((id, index) => ({
+        id,
+        ...(values[index] || {}),
+      }));
     }
   } catch (error) {
     console.error("Error fetching providers:", error);
@@ -42,28 +53,50 @@ export async function getAllUserAdapters(): Promise<
     not: string;
   }[]
 > {
-  const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
-  if (token === undefined) {
-    console.error("Error generating auth token:", error);
+  if (process.env.ADAPTER_PREFIX === undefined) {
+    console.error("getAllUserAdapters - ADAPTER_PREFIX env not set");
+    return [];
+  }
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    console.error("getAllUserAdapters - Unauthorized");
     return [];
   }
   try {
-    const response = await fetch(
-      [process.env.BASE_URL, "api/adapters"].join("/"),
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    if (response.ok) {
-      return await response.json();
+    const searchPatternPrefix = `${process.env.ADAPTER_PREFIX}:${session.user.id}:`;
+
+    let allKeys: string[] = [];
+    let cursor = 0;
+    do {
+      const [newCursor, keys] = await redis.scan(cursor, {
+        match: `${searchPatternPrefix}*`,
+        count: 100,
+      });
+      allKeys.push(...keys);
+      cursor = Number(newCursor);
+    } while (cursor !== 0);
+    if (allKeys.length > 0) {
+      const adapterIds = allKeys.map((key) =>
+        key.replace(searchPatternPrefix, "")
+      );
+      const values = await redis.mget<
+        {
+          tk: string;
+          pid: string;
+          pul: string;
+          not: string;
+        }[]
+      >(...allKeys);
+      return adapterIds.map((adapterId, index) => ({
+        aid: adapterId,
+        ...(values[index] || {}),
+      }));
     }
+    return [];
   } catch (error) {
     console.error("Error fetching adapters:", error);
+    return [];
   }
-  return [];
 }
 
 // Send contact message
