@@ -103,22 +103,36 @@ export async function deleteAdapterAction(
   formData: FormData
 ): Promise<boolean> {
   const adapterId = formData.get("adapterId") as string;
-  const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
-  if (token === undefined) {
-    console.error("Error generating auth token:", error);
+  if (process.env.ADAPTER_PREFIX === undefined) {
+    console.error("deleteAdapterAction - ADAPTER_PREFIX env not set");
+    return false;
+  }
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    console.error("deleteAdapterAction - Unauthorized");
     return false;
   }
   try {
-    const response = await fetch(
-      [process.env.BASE_URL, "api/adapters", adapterId].join("/"),
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    return response.ok;
+    const adapterRaw: {
+      tk: string;
+      pid: string;
+      pul: string;
+      not: string;
+    } | null = await redis.get<{
+      tk: string;
+      pid: string;
+      pul: string;
+      not: string;
+    }>([process.env.ADAPTER_PREFIX, session.user.id, adapterId].join(":"));
+    if (adapterRaw !== null) {
+      let transaction = redis.multi();
+      transaction.del([process.env.ADAPTER_PREFIX, adapterRaw.tk].join(":"));
+      transaction.del(
+        [process.env.ADAPTER_PREFIX, session.user.id, adapterId].join(":")
+      );
+      await transaction.exec();
+    }
+    return true;
   } catch (error) {
     console.error("Error deleting adapter:", error);
     return false;
@@ -128,43 +142,114 @@ export async function deleteAdapterAction(
 export async function updateAdapterAction(
   formData: FormData
 ): Promise<boolean> {
-  const pid = formData.get("provider") as string;
-  const url = formData.get("baseUrl") as string;
-  const mid = formData.get("modelId") as string;
-  const apiKey = formData.get("apiKey") as string;
-  const adapterId = formData.get("adapterId") as string;
-  const commentNote: string | null = formData.get("commentNote") as string;
-  if (process.env.ENCRYPTION_KEY === undefined) {
+  if (
+    process.env.ENCRYPTION_KEY === undefined ||
+    process.env.ADAPTER_PREFIX === undefined ||
+    process.env.PROVIDER_PREFIX === undefined
+  ) {
+    console.error("updateAdapterAction - env not set");
     return false;
   }
-  const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
-  if (token === undefined) {
-    console.error("Error generating auth token:", error);
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    console.error("updateAdapterAction - Unauthorized");
     return false;
   }
+
   try {
+    const pid = formData.get("provider") as string;
+    const url = formData.get("baseUrl") as string;
+    const mid = formData.get("modelId") as string;
+    const apiKey = formData.get("apiKey") as string;
+    const adapterId = formData.get("adapterId") as string;
+    const commentNote: string | null = formData.get("commentNote") as string;
+    const not = commentNote !== null ? commentNote : "";
     const encodedKey: { iv: string; encryptedData: string; authTag: string } =
       encrypt(apiKey, process.env.ENCRYPTION_KEY);
-    const response = await fetch(
-      [process.env.BASE_URL, "api/adapters", adapterId].join("/"),
-      {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          pid,
-          url,
-          mid,
-          not: commentNote !== null ? commentNote : "",
-          kiv: encodedKey.iv,
-          ken: encodedKey.encryptedData,
-          kau: encodedKey.authTag,
-        }),
-      }
+    const kiv = encodedKey.iv;
+    const ken = encodedKey.encryptedData;
+    const kau = encodedKey.authTag;
+
+    const provider: { url: string } | null = await redis.get<{ url: string }>(
+      [process.env.PROVIDER_PREFIX, pid].join(":")
     );
-    return response.ok;
+    if (provider === null) {
+      console.error("updateAdapterAction - Missing provider");
+      return false;
+    }
+    const adapterRaw: {
+      tk: string;
+      pid: string;
+      pul: string;
+      not: string;
+    } | null = await redis.get<{
+      tk: string;
+      pid: string;
+      pul: string;
+      not: string;
+    }>([process.env.ADAPTER_PREFIX, session.user.id, adapterId].join(":"));
+
+    let tokenKey = ["fp", crypto.randomUUID()].join("-");
+    let transaction = redis.multi();
+    if (adapterRaw !== null) {
+      // Remove old make new
+      transaction.del([process.env.ADAPTER_PREFIX, adapterRaw.tk].join(":"));
+      transaction.set<{
+        tk: string;
+        pid: string;
+        pul: string;
+        not: string;
+      }>([process.env.ADAPTER_PREFIX, session.user.id, adapterId].join(":"), {
+        tk: tokenKey,
+        pid,
+        pul: provider.url,
+        not,
+      });
+      transaction.set<{
+        uid: string;
+        kiv: string;
+        ken: string;
+        kau: string;
+        url: string;
+        mid: string;
+      }>([process.env.ADAPTER_PREFIX, tokenKey].join(":"), {
+        uid: session.user.id,
+        kiv,
+        ken,
+        kau,
+        url,
+        mid,
+      });
+    } else {
+      transaction.set<{
+        tk: string;
+        pid: string;
+        pul: string;
+        not: string;
+      }>([process.env.ADAPTER_PREFIX, session.user.id, adapterId].join(":"), {
+        tk: tokenKey,
+        pid,
+        pul: provider.url,
+        not,
+      });
+      transaction.set<{
+        uid: string;
+        kiv: string;
+        ken: string;
+        kau: string;
+        url: string;
+        mid: string;
+      }>([process.env.ADAPTER_PREFIX, tokenKey].join(":"), {
+        uid: session.user.id,
+        kiv,
+        ken,
+        kau,
+        url,
+        mid,
+      });
+    }
+    await transaction.exec();
+    return true;
   } catch (error) {
     console.error("Error updating adapter:", error);
     return false;
