@@ -1,6 +1,5 @@
+import { auth } from "@/auth";
 import { redis } from "@/lib/redis";
-import { PayloadRequest, withAuth } from "@/lib/with-auth";
-import { NextResponse } from "next/server";
 import { Resend, CreateEmailResponse } from "resend";
 
 interface ContactFormData {
@@ -106,40 +105,36 @@ const createEmailTemplate = (data: ContactFormData) => `
 </html>
 `;
 
-async function protectedPOST(req: PayloadRequest) {
-  if (
-    typeof req.payload?.["uid"] !== "string" ||
-    typeof req.payload?.["un"] !== "string" ||
-    typeof req.payload?.["ue"] !== "string"
-  ) {
-    return NextResponse.json({ error: "Missing field" }, { status: 400 });
+export async function sendContactMessage(
+  subject: string,
+  message: string
+): Promise<{ message: string; success: boolean }> {
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    return { message: "Unauthorized", success: false };
   }
+  let userId = session.user.id;
+  let userEmail = sanitizeString(session.user.email || "unknown");
+  let userName = sanitizeString(
+    session.user.name || session.user.email?.split("@")[0] || "unknown"
+  );
 
-  const userId = req.payload["uid"];
   const ipSubmittedExpiryInSeconds: number = await redis.ttl(
     [USER_CONTACT_PREFIX, userId].join(":")
   );
   if (ipSubmittedExpiryInSeconds > 0) {
-    return NextResponse.json(
-      {
-        message:
-          "Only one message is allowed per day. Please try again tomorrow.",
-      },
-      { status: 429 }
-    ); // Using 429 Too Many Requests status code
+    return {
+      message:
+        "Only one message is allowed per day. Please try again tomorrow.",
+      success: false,
+    };
   }
-  const reqBody = await req.json();
-  const subject = sanitizeString(reqBody["subject"] as string);
-  const message = sanitizeString(reqBody["message"] as string);
-  const userName = sanitizeString(req.payload["un"]);
-  const userEmail = sanitizeString(req.payload["ue"]);
+  subject = sanitizeString(subject);
+  message = sanitizeString(subject);
 
   // Validate email if provided
-  if (userEmail && !validateEmail(userEmail)) {
-    return NextResponse.json(
-      { message: "Invalid email format" },
-      { status: 400 }
-    );
+  if (!validateEmail(userEmail)) {
+    return { message: "Invalid email format", success: false };
   }
 
   const contactData: ContactFormData = {
@@ -161,18 +156,13 @@ async function protectedPOST(req: PayloadRequest) {
       await redis.set([USER_CONTACT_PREFIX, userId].join(":"), "", {
         ex: 86400,
       }); // Store for 24 hours
-      return NextResponse.json(
-        { message: "Contact form submitted successfully" },
-        { status: 200 }
-      );
+      return { message: "Contact form submitted successfully", success: true };
     }
   } catch (error) {
     console.error("Error storing contact form data:", error);
   }
-  return NextResponse.json(
-    { message: "Failed to submit contact form, please try again later" },
-    { status: 500 }
-  );
+  return {
+    message: "Failed to submit contact form, please try again later",
+    success: false,
+  };
 }
-
-export const POST = withAuth(protectedPOST);

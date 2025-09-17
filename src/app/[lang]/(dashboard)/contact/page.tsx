@@ -8,9 +8,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { OnceButton } from "@/components/ui/oncebutton";
-import { sendContactMessage } from "@/lib/actions";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
+import { sendContactMessage } from "@/lib/contact";
 
 export const metadata: Metadata = {
   title: "FlexiProxy - Contact Us",

@@ -99,35 +99,6 @@ export async function getAllUserAdapters(): Promise<
   }
 }
 
-// Send contact message
-export async function sendContactMessage(
-  subject: string,
-  message: string
-): Promise<{ message: string; success: boolean }> {
-  const { token, error } = await jwtSign(false, VERIFY_TOKEN_EXPIRE_SECONDS);
-  if (token === undefined) {
-    console.error("Error generating auth token:", error);
-    return { message: "Error generating auth token", success: false };
-  }
-  try {
-    const response = await fetch(
-      [process.env.BASE_URL, "api/contact"].join("/"),
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ subject, message }),
-      }
-    );
-    return { message: (await response.json()).message, success: response.ok };
-  } catch (error) {
-    console.error("Error sending contact message:", error);
-    return { message: "Error sending contact message", success: false };
-  }
-}
-
 export async function deleteAdapterAction(
   formData: FormData
 ): Promise<boolean> {
