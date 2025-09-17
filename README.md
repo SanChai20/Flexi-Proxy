@@ -5,12 +5,12 @@
   <strong>A powerful and flexible OpenAI-Compatible API Proxy Gateway</strong>
 </p>
 
-<p align="center">
+
   [![GitHub](https://img.shields.io/badge/GitHub-0.7.0-blue?logo=github)](https://github.com/SanChai20/Flexi-Proxy)
   [![GitHub](https://img.shields.io/badge/GitHub-0.7.0-blue?logo=github)](https://github.com/SanChai20/Flexi-Proxy)
   [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
   [![Status](https://img.shields.io/badge/Status-Active-brightgreen.svg)](https://github.com/SanChai20/Flexi-Proxy)
-</p>
+
 
 <p align="center">
   <a href="#-中文">中文</a> •
@@ -66,3 +66,4 @@ FlexiProxy 是一个基于 OpenAI-Compatible API 的服务代理，旨在为不�
 # Windows CMD
 setx ANTHROPIC_AUTH_TOKEN "YOUR_TARGET_PROVIDER_API_KEY"
 setx ANTHROPIC_BASE_URL "YOUR_TARGET_PROVIDER_BASE_URL"
+
