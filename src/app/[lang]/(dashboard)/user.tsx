@@ -23,7 +23,10 @@ export async function User({ dict }: { dict: any }) {
           className="overflow-hidden rounded-full"
         >
           <Image
-            src={user?.image ?? "/user-solid-full.svg"}
+            src={
+              user?.image ??
+              [process.env.BASE_URL, "user-solid-full.svg"].join("/")
+            }
             width={28}
             height={28}
             alt="Avatar"
@@ -32,10 +35,16 @@ export async function User({ dict }: { dict: any }) {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>{user?.name ?? user?.email ?? "User"}</DropdownMenuLabel>
+        <DropdownMenuLabel>
+          {user?.name ?? user?.email ?? "User"}
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <Link href="/settings"><DropdownMenuItem>{dict["navigation"]["settings"]}</DropdownMenuItem></Link>
-        <Link href="/contact"><DropdownMenuItem>{dict["navigation"]["contact"]}</DropdownMenuItem></Link>
+        <Link href="/settings">
+          <DropdownMenuItem>{dict["navigation"]["settings"]}</DropdownMenuItem>
+        </Link>
+        <Link href="/contact">
+          <DropdownMenuItem>{dict["navigation"]["contact"]}</DropdownMenuItem>
+        </Link>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
           <form
