@@ -9,7 +9,7 @@
 
 [![GitHub](https://img.shields.io/badge/FlexiProxy-0.7.0-blue?logo=github)](https://github.com/SanChai20/Flexi-Proxy)
 [![GitHub](https://img.shields.io/badge/FlexiProxyProvider-0.0.1-blue?logo=github)](https://github.com/SanChai20/Flexi-Proxy-Provider)
-[![License](https://img.shields.io/badge/License-MIT-green?logo=license)](LICENSE.md)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE.md)
 [![Website](https://img.shields.io/badge/Website-Active-brightgreen.svg)](https://flexiproxy.com)
 
 </div>
