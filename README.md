@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="https://via.placeholder.com/150x50/007bff/ffffff?text=FlexiProxy+Logo" alt="FlexiProxy Logo">
-</p>
-
 <h1 align="center">FlexiProxy</h1>
 <p align="center">
   <strong>一个强大灵活的 OpenAI 兼容 API 代理网关</strong>
@@ -179,4 +175,5 @@ If you encounter any issues or have suggestions, please feel free to contact us:
 ---
 
 *最后更新 | Last Updated: 2025年9月14日 | September 14, 2025*
+
 
