@@ -7,9 +7,8 @@ import { Analytics } from "@vercel/analytics/next";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "FlexiProxy - AI",
-  description:
-    "A service that provides API Base URLs and acts as a backend proxy for clients like Claude Code.",
+  title: "FlexiProxy",
+  description: "AI Service Proxy Gateway, Breaking Regional & Pricing Barriers",
 };
 
 export async function generateStaticParams() {
