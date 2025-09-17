@@ -259,42 +259,73 @@ export async function updateAdapterAction(
 export async function createAdapterAction(
   formData: FormData
 ): Promise<boolean> {
-  const pid = formData.get("provider") as string;
-  const url = formData.get("baseUrl") as string;
-  const mid = formData.get("modelId") as string;
-  const apiKey = formData.get("apiKey") as string;
-  const commentNote: string | null = formData.get("commentNote") as string;
-  if (process.env.ENCRYPTION_KEY === undefined) {
+  if (
+    process.env.ENCRYPTION_KEY === undefined ||
+    process.env.ADAPTER_PREFIX === undefined ||
+    process.env.PROVIDER_PREFIX === undefined
+  ) {
+    console.error("createAdapterAction - env not set");
     return false;
   }
-  const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
-  if (token === undefined) {
-    console.error("Error generating auth token:", error);
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    console.error("createAdapterAction - Unauthorized");
     return false;
   }
   try {
+    const pid = formData.get("provider") as string;
+    const url = formData.get("baseUrl") as string;
+    const mid = formData.get("modelId") as string;
+    const apiKey = formData.get("apiKey") as string;
+    const commentNote: string | null = formData.get("commentNote") as string;
+    const not = commentNote !== null ? commentNote : "";
     const encodedKey: { iv: string; encryptedData: string; authTag: string } =
       encrypt(apiKey, process.env.ENCRYPTION_KEY);
-    const response = await fetch(
-      [process.env.BASE_URL, "api/adapters", crypto.randomUUID()].join("/"),
+    const kiv = encodedKey.iv;
+    const ken = encodedKey.encryptedData;
+    const kau = encodedKey.authTag;
+    const provider: { url: string } | null = await redis.get<{ url: string }>(
+      [process.env.PROVIDER_PREFIX, pid].join(":")
+    );
+    if (provider === null) {
+      console.error("createAdapterAction - Missing provider");
+      return false;
+    }
+    let tokenKey = ["fp", crypto.randomUUID()].join("-");
+    let transaction = redis.multi();
+    transaction.set<{
+      tk: string;
+      pid: string;
+      pul: string;
+      not: string;
+    }>(
+      [process.env.ADAPTER_PREFIX, session.user.id, crypto.randomUUID()].join(
+        ":"
+      ),
       {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          pid,
-          url,
-          mid,
-          not: commentNote !== null ? commentNote : "",
-          kiv: encodedKey.iv,
-          ken: encodedKey.encryptedData,
-          kau: encodedKey.authTag,
-        }),
+        tk: tokenKey,
+        pid,
+        pul: provider.url,
+        not,
       }
     );
-    return response.ok;
+    transaction.set<{
+      uid: string;
+      kiv: string;
+      ken: string;
+      kau: string;
+      url: string;
+      mid: string;
+    }>([process.env.ADAPTER_PREFIX, tokenKey].join(":"), {
+      uid: session.user.id,
+      kiv,
+      ken,
+      kau,
+      url,
+      mid,
+    });
+    await transaction.exec();
+    return true;
   } catch (error) {
     console.error("Error creating adapter:", error);
     return false;
@@ -304,49 +335,49 @@ export async function createAdapterAction(
 export async function getAdapterAction(
   adapterId: string
 ): Promise<{ url: string; mid: string; pid: string; not: string } | undefined> {
-  const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
-  if (token === undefined) {
-    console.error("Error generating auth token:", error);
+  if (process.env.ADAPTER_PREFIX === undefined) {
+    console.error("getAdapterAction - env not set");
+    return undefined;
+  }
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    console.error("getAdapterAction - Unauthorized");
     return undefined;
   }
   try {
-    const adapterResponse = await fetch(
-      [process.env.BASE_URL, "api/adapters", adapterId].join("/"),
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    if (adapterResponse.ok) {
-      const adapterInfo: { tk: string; pid: string; pul: string; not: string } =
-        await adapterResponse.json();
-      const tokenResponse = await fetch(
-        [process.env.BASE_URL, "api/adapters/token"].join("/"),
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "X-API-Key": adapterInfo.tk,
-          },
-        }
-      );
-      if (tokenResponse.ok) {
-        const tokenData: {
-          uid: string;
-          kiv: string;
-          ken: string;
-          kau: string;
-          url: string;
-          mid: string;
-        } = await tokenResponse.json();
+    const adapterRaw: {
+      tk: string;
+      pid: string;
+      pul: string;
+      not: string;
+    } | null = await redis.get<{
+      tk: string;
+      pid: string;
+      pul: string;
+      not: string;
+    }>([process.env.ADAPTER_PREFIX, session.user.id, adapterId].join(":"));
+    if (adapterRaw !== null) {
+      const adapterTokenData: {
+        uid: string;
+        kiv: string;
+        ken: string;
+        kau: string;
+        url: string;
+        mid: string;
+      } | null = await redis.get<{
+        uid: string;
+        kiv: string;
+        ken: string;
+        kau: string;
+        url: string;
+        mid: string;
+      }>([process.env.ADAPTER_PREFIX, adapterRaw.tk].join(":"));
+      if (adapterTokenData !== null) {
         return {
-          url: tokenData.url,
-          mid: tokenData.mid,
-          pid: adapterInfo.pid,
-          not: adapterInfo.not,
+          url: adapterTokenData.url,
+          mid: adapterTokenData.mid,
+          pid: adapterRaw.pid,
+          not: adapterRaw.not,
         };
       }
     }
@@ -360,26 +391,16 @@ export async function getAdapterAction(
 export async function getSettingsAction(): Promise<{
   cd: boolean;
 }> {
-  const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
-  if (token === undefined) {
-    console.error("Error generating auth token:", error);
-    return { cd: false };
-  }
-  try {
-    const response = await fetch(
-      [process.env.BASE_URL, "api/user/settings"].join("/"),
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+  const session = await auth();
+  if (!!(session && session.user && session.user.id)) {
+    if (process.env.SETTINGS_PREFIX !== undefined) {
+      const settings: any | null = await redis.get(
+        [process.env.SETTINGS_PREFIX, session.user.id].join(":")
+      );
+      if (settings !== null) {
+        return settings;
       }
-    );
-    if (response.ok) {
-      return await response.json();
     }
-  } catch (error) {
-    console.error("Error getting settings:", error);
   }
   return { cd: false };
 }
@@ -387,25 +408,28 @@ export async function getSettingsAction(): Promise<{
 export async function updateSettingsAction(
   formData: FormData
 ): Promise<boolean> {
-  const dataCollection = formData.get("dataCollection") === "on";
-  const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
-  if (token === undefined) {
-    console.error("Error generating auth token:", error);
+  if (process.env.SETTINGS_PREFIX === undefined) {
+    console.error("updateSettingsAction - env not set");
+    return false;
+  }
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    console.error("updateSettingsAction - Unauthorized");
     return false;
   }
   try {
-    const response = await fetch(
-      [process.env.BASE_URL, "api/user/settings"].join("/"),
+    const dataCollection = formData.get("dataCollection") === "on";
+    const settings: any | null = await redis.get(
+      [process.env.SETTINGS_PREFIX, session.user.id].join(":")
+    );
+    await redis.set<string>(
+      [process.env.SETTINGS_PREFIX, session.user.id].join(":"),
       {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ cd: dataCollection }),
+        ...(settings !== null ? settings : {}),
+        cd: dataCollection,
       }
     );
-    return response.ok;
+    return true;
   } catch (error) {
     console.error("Error updating settings:", error);
     return false;
@@ -413,27 +437,16 @@ export async function updateSettingsAction(
 }
 
 export async function getMaxAdapterAllowedPermissionsAction(): Promise<number> {
-  const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
-  if (token === undefined) {
-    console.error("Error generating auth token:", error);
-    return 1;
-  }
-  try {
-    const response = await fetch(
-      [process.env.BASE_URL, "api/user/permissions"].join("/"),
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+  const session = await auth();
+  if (!!(session && session.user && session.user.id)) {
+    if (process.env.PERMISSIONS_PREFIX !== undefined) {
+      const permissions: any | null = await redis.get(
+        [process.env.PERMISSIONS_PREFIX, session.user.id].join(":")
+      );
+      if (permissions !== null) {
+        return permissions["maa"];
       }
-    );
-    if (response.ok) {
-      const result = await response.json();
-      return result["maa"];
     }
-  } catch (error) {
-    console.error("Error getting permissions:", error);
   }
   return 1;
 }
@@ -441,24 +454,27 @@ export async function getMaxAdapterAllowedPermissionsAction(): Promise<number> {
 export async function updateMaxAdapterAllowedPermissionsAction(
   maxAdaptersAllowed: number
 ): Promise<boolean> {
-  const { token, error } = await jwtSign(true, VERIFY_TOKEN_EXPIRE_SECONDS);
-  if (token === undefined) {
-    console.error("Error generating auth token:", error);
+  if (process.env.PERMISSIONS_PREFIX === undefined) {
+    console.error("updateMaxAdapterAllowedPermissionsAction - env not set");
+    return false;
+  }
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    console.error("updateMaxAdapterAllowedPermissionsAction - Unauthorized");
     return false;
   }
   try {
-    const response = await fetch(
-      [process.env.BASE_URL, "api/user/permissions"].join("/"),
+    const permissions: any | null = await redis.get(
+      [process.env.PERMISSIONS_PREFIX, session.user.id].join(":")
+    );
+    await redis.set<string>(
+      [process.env.PERMISSIONS_PREFIX, session.user.id].join(":"),
       {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ maa: maxAdaptersAllowed }),
+        ...(permissions !== null ? permissions : {}),
+        maa: maxAdaptersAllowed,
       }
     );
-    return response.ok;
+    return true;
   } catch (error) {
     console.error("Error getting permissions:", error);
     return false;
