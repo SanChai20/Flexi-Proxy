@@ -34,7 +34,7 @@ export function AdapterForm({
     commentNote: string;
   };
 }) {
-  console.log(providers)
+  console.log(providers);
   const router = useRouter();
   async function onSubmit(formData: FormData) {
     let canJump: boolean = false;
@@ -185,18 +185,27 @@ export function AdapterForm({
                     value={option.id}
                     disabled={option.status === "unavailable"}
                     style={{
-                      color: option.status === "unavailable" ? "#9ca3af" :  // gray
-                        option.status === "spare" ? "#10b981" :       // green
-                          option.status === "busy" ? "#f97316" :        // orange
-                            option.status === "full" ? "#ef4444" :        // red
-                              "inherit"                                     // default
+                      color:
+                        option.status === "unavailable"
+                          ? "#9ca3af" // gray
+                          : option.status === "spare"
+                          ? "#10b981" // green
+                          : option.status === "busy"
+                          ? "#f97316" // orange
+                          : option.status === "full"
+                          ? "#ef4444" // red
+                          : "inherit", // default
                     }}
                   >
                     {" ["}
-                    {option.status === "unavailable" && (dict?.management?.unavailable || "Unavailable")}
-                    {option.status === "spare" && (dict?.management?.spare || "Spare")}
-                    {option.status === "busy" && (dict?.management?.busy || "Busy")}
-                    {option.status === "full" && (dict?.management?.full || "Full")}
+                    {option.status === "unavailable" &&
+                      (dict?.management?.unavailable || "Unavailable")}
+                    {option.status === "spare" &&
+                      (dict?.management?.spare || "Spare")}
+                    {option.status === "busy" &&
+                      (dict?.management?.busy || "Busy")}
+                    {option.status === "full" &&
+                      (dict?.management?.full || "Full")}
                     {"] "}
                     {option.id}
                   </option>
