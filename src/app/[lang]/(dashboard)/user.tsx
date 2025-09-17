@@ -52,8 +52,11 @@ export async function User({ dict }: { dict: any }) {
               "use server";
               await signOut();
             }}
+            className="w-full"
           >
-            <button type="submit">{dict["user"]["signout"]}</button>
+            <button type="submit" className="w-full text-left">
+              {dict["user"]["signout"]}
+            </button>
           </form>
         </DropdownMenuItem>
       </DropdownMenuContent>
