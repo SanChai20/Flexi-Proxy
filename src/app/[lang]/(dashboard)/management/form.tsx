@@ -4,7 +4,7 @@ import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { OnceButton } from "@/components/ui/oncebutton";
 import {
   createAdapterAction,
-  createOneTimeToken,
+  createShortTimeToken,
   deleteAdapterAction,
   updateAdapterAction,
 } from "@/lib/actions";
@@ -270,7 +270,7 @@ export function EditAdapterDropdownForm({
 }) {
   const router = useRouter();
   async function onSubmit(formData: FormData) {
-    const token = await createOneTimeToken(1800);
+    const token = await createShortTimeToken(3600);
     router.push(
       `/management/modify?aid=${encodeURIComponent(
         formData.get("adapterId") as string
@@ -337,7 +337,7 @@ export function CreateAdapterForm({
   }, [currentAdapterCount, maxAdapterCountAllowed]);
 
   async function onSubmit(formData: FormData) {
-    const token = await createOneTimeToken(1800);
+    const token = await createShortTimeToken(3600);
     router.push(`/management/create?token=${encodeURIComponent(token)}`);
   }
   return (

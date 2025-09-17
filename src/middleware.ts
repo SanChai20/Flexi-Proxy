@@ -57,6 +57,7 @@ function navigateRoutes(
   requestUrl: string
 ): NextResponse<unknown> {
   const parts = pathName.replace(/^\/+|\/+$/g, "").split("/");
+  console.log(parts)
   if (
     parts.length >= 1 &&
     parts[0] !== undefined &&

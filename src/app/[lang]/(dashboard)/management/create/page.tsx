@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { AdapterForm } from "../form";
-import { getAllTargetProviders, verifyOnTimeToken } from "@/lib/actions";
+import { getAllTargetProviders, verifyShortTimeToken } from "@/lib/actions";
 import { redirect } from "next/navigation";
 
 export default async function ManagementCreatePage(
@@ -19,7 +19,7 @@ export default async function ManagementCreatePage(
   if (typeof token !== "string") {
     redirect(`/${lang}/management`);
   }
-  const isValid = await verifyOnTimeToken(token);
+  const isValid = await verifyShortTimeToken(token);
   if (!isValid) {
     redirect(`/${lang}/management`);
   }

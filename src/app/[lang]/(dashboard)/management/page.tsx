@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  createOneTimeToken,
+  createShortTimeToken,
   getAllUserAdapters,
   getMaxAdapterAllowedPermissionsAction,
 } from "@/lib/actions";
@@ -45,7 +45,7 @@ export default async function ManagementPage(
     not: string;
   }[] = await getAllUserAdapters();
   if (adapters.length <= 0) {
-    const token = await createOneTimeToken(1800);
+    const token = await createShortTimeToken(3600);
     redirect(`/${lang}/management/create?token=${encodeURIComponent(token)}`);
   }
   const maxAllowed = await getMaxAdapterAllowedPermissionsAction();

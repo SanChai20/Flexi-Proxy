@@ -479,13 +479,13 @@ export async function updateMaxAdapterAllowedPermissionsAction(
   }
 }
 
-export async function createOneTimeToken(expiresIn: number): Promise<string> {
+export async function createShortTimeToken(expiresIn: number): Promise<string> {
   const token = crypto.randomUUID();
   await redis.set([process.env.AUTHTOKEN_PREFIX, "tp", token].join(":"), token, { ex: expiresIn });
   return token;
 }
 
-export async function verifyOnTimeToken(token: string): Promise<boolean> {
-  const result: string | null = await redis.getdel<string>([process.env.AUTHTOKEN_PREFIX, "tp", token].join(":"));
-  return result !== null;
+export async function verifyShortTimeToken(token: string): Promise<boolean> {
+  const ttl: number = await redis.ttl([process.env.AUTHTOKEN_PREFIX, "tp", token].join(":"));
+  return ttl > 0;
 }
