@@ -22,14 +22,14 @@ export async function User({ dict }: { dict: any }) {
           size="icon"
           className="overflow-hidden rounded-full"
         >
-          <Image
+          <img
             src={
               user?.image ??
               [process.env.BASE_URL, "user-solid-full.svg"].join("/")
             }
+            alt={user?.name || user?.email || "User"}
             width={28}
             height={28}
-            alt="Avatar"
             className="overflow-hidden rounded-full dark:invert"
           />
         </Button>
