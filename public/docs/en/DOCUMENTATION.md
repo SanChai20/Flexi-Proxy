@@ -57,7 +57,7 @@ FlexiProxy is a service proxy that provides OpenAI-Compatible API compatibility 
 
 
 5. There is a ⚙ icon at the far right of each adapter row. Clicking it will reveal the following functions in a popup:
-- **Get API Key**: If the **API Key** is accidentally lost, you can regenerate it through this function, repeating **Step 3**
+- **Edit**: If the **API Key** is accidentally lost, you can regenerate it through this function, repeating **Step 3**
 - **Delete**: Delete the current adapter. There is a maximum limit for user-created adapters. If you cannot create new ones, please delete existing ones
 
 ## b. Using as Target Platform
