@@ -9,7 +9,7 @@
 
 [![GitHub](https://img.shields.io/badge/GitHub-0.7.0-blue?logo=github)](https://github.com/SanChai20/Flexi-Proxy)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE.md)
-[![Status](https://img.shields.io/badge/Status-Active-brightgreen.svg)](https://github.com/SanChai20/Flexi-Proxy)
+[![Website](https://img.shields.io/badge/Website-Active-brightgreen.svg)](https://flexiproxy.com)
 
 </div>
 
@@ -175,6 +175,7 @@ If you encounter any issues or have suggestions, please feel free to contact us:
 ---
 
 *最后更新 | Last Updated: 2025年9月14日 | September 14, 2025*
+
 
 
 
