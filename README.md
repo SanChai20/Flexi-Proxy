@@ -70,12 +70,15 @@ setx ANTHROPIC_BASE_URL "YOUR_TARGET_PROVIDER_BASE_URL"
 ### ❓ 常见问题
 
 **Q: FlexiProxy 会存储我的 API Key 吗？**
+
 A: 会的，但您的源 API Key 在安全加密后仅用于请求转发的。生成的目标 API Key 是访问您个人适配器的凭证，请像保管源 Key 一样保管它。
 
 **Q: 适配器数量有限制吗？**
+
 A: 是的，目前对免费用户有可创建适配器数量的限制。您可以通过删除不再使用的适配器来释放名额。
 
 **Q: 我丢失了生成的目标 API Key 怎么办？**
+
 A: 在管理面板中，点击对应适配器的 ⚙️ 设置图标，选择"编辑"即可重新生成。旧 Key 将立即失效。
 
 ### 📞 联系我们
@@ -134,12 +137,15 @@ setx ANTHROPIC_BASE_URL "YOUR_TARGET_PROVIDER_BASE_URL"
 ### ❓ FAQ
 
 **Q: Does FlexiProxy store my API Key?**
+
 A: Yes, But your source API Key is encrypted and used securely only for request forwarding. The generated target API Key is the credential for accessing your personal adapter; please guard it as you would your source Key.
 
 **Q: Is there a limit to the number of adapters?**
+
 A: Yes, there are currently limits on the number of adapters free users can create. You can free up slots by deleting unused adapters.
 
 **Q: What if I lose the generated target API Key?**
+
 A: In the management panel, click the ⚙️ settings icon for the corresponding adapter and select "Edit" to regenerate it. The old Key will become invalid immediately.
 
 ### 📞 Contact Us
@@ -151,6 +157,7 @@ If you encounter any issues or have suggestions, please feel free to contact us:
 ---
 
 *最后更新 | Last Updated: 2025年9月14日 | September 14, 2025*
+
 
 
 
