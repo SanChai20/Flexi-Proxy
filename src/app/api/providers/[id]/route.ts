@@ -9,6 +9,7 @@ import { AuthRequest, withAuth } from "@/lib/with-auth";
 //  [string] url -> provider proxy url
 //  [string] status -> provider proxy status ["unavailable", "spare", "busy", "full"]
 //  [number] ex -> expire seconds
+//  [boolean] adv -> if advanced or not
 //}
 async function protectedPOST(
   req: AuthRequest,
@@ -21,17 +22,18 @@ async function protectedPOST(
 
   try {
     const providerId = (await params).id;
-    const { url, status, ex } = await req.json();
+    const { url, status, ex, adv } = await req.json();
     if (
       typeof url !== "string" ||
       typeof status !== "string" ||
-      typeof ex !== "number"
+      typeof ex !== "number" ||
+      typeof adv !== "boolean"
     ) {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
-    await redis.set<{ url: string; status: string }>(
+    await redis.set<{ url: string; status: string; adv: boolean }>(
       [process.env.PROVIDER_PREFIX, providerId].join(":"),
-      { url, status },
+      { url, status, adv },
       { ex }
     );
     return NextResponse.json({ success: true }, { status: 200 });

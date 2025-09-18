@@ -6,7 +6,7 @@ import { auth } from "@/auth";
 
 // Get all target providers
 export async function getAllTargetProviders(): Promise<
-  { id: string; url: string; status: string }[]
+  { id: string; url: string; status: string; adv: boolean }[]
 > {
   if (process.env.PROVIDER_PREFIX === undefined) {
     console.error("getAllTargetProviders - PROVIDER_PREFIX env not set");
@@ -27,7 +27,7 @@ export async function getAllTargetProviders(): Promise<
     } while (cursor !== 0);
     if (allKeys.length > 0) {
       const ids = allKeys.map((key) => key.replace(searchPatternPrefix, ""));
-      const values = await redis.mget<{ url: string; status: string }[]>(
+      const values = await redis.mget<{ url: string; status: string; adv: boolean }[]>(
         ...allKeys
       );
       return ids.map((id, index) => ({
@@ -168,7 +168,7 @@ export async function updateAdapterAction(
     const ken = encodedKey.encryptedData;
     const kau = encodedKey.authTag;
 
-    const provider: { url: string } | null = await redis.get<{ url: string }>(
+    const provider: { url: string; status: string; adv: boolean } | null = await redis.get<{ url: string; status: string; adv: boolean }>(
       [process.env.PROVIDER_PREFIX, pid].join(":")
     );
     if (provider === null) {
@@ -282,7 +282,7 @@ export async function createAdapterAction(
     const kiv = encodedKey.iv;
     const ken = encodedKey.encryptedData;
     const kau = encodedKey.authTag;
-    const provider: { url: string } | null = await redis.get<{ url: string }>(
+    const provider: { url: string; status: string; adv: boolean } | null = await redis.get<{ url: string; status: string; adv: boolean }>(
       [process.env.PROVIDER_PREFIX, pid].join(":")
     );
     if (provider === null) {
@@ -441,12 +441,12 @@ export async function getMaxAdapterAllowedPermissionsAction(): Promise<number> {
       const permissions: any | null = await redis.get(
         [process.env.PERMISSIONS_PREFIX, session.user.id].join(":")
       );
-      if (permissions !== null) {
+      if (permissions !== null && typeof permissions["maa"] === 'number') {
         return permissions["maa"];
       }
     }
   }
-  return 3;
+  return 2;
 }
 
 export async function updateMaxAdapterAllowedPermissionsAction(
@@ -465,7 +465,7 @@ export async function updateMaxAdapterAllowedPermissionsAction(
     const permissions: any | null = await redis.get(
       [process.env.PERMISSIONS_PREFIX, session.user.id].join(":")
     );
-    await redis.set<string>(
+    await redis.set(
       [process.env.PERMISSIONS_PREFIX, session.user.id].join(":"),
       {
         ...(permissions !== null ? permissions : {}),
@@ -478,6 +478,53 @@ export async function updateMaxAdapterAllowedPermissionsAction(
     return false;
   }
 }
+
+export async function getAdvProviderRequestPermissionsAction(): Promise<boolean> {
+  const session = await auth();
+  if (!!(session && session.user && session.user.id)) {
+    if (process.env.PERMISSIONS_PREFIX !== undefined) {
+      const permissions: any | null = await redis.get(
+        [process.env.PERMISSIONS_PREFIX, session.user.id].join(":")
+      );
+      if (permissions !== null && typeof permissions["adv"] === 'boolean') {
+        return permissions["adv"];
+      }
+    }
+  }
+  return false;
+}
+
+export async function updateAdvProviderRequestPermissionsAction(
+  advProviderRequest: boolean
+): Promise<boolean> {
+  if (process.env.PERMISSIONS_PREFIX === undefined) {
+    console.error("updateAdvProviderRequestPermissionsAction - env not set");
+    return false;
+  }
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    console.error("updateAdvProviderRequestPermissionsAction - Unauthorized");
+    return false;
+  }
+  try {
+    const permissions: any | null = await redis.get(
+      [process.env.PERMISSIONS_PREFIX, session.user.id].join(":")
+    );
+    await redis.set(
+      [process.env.PERMISSIONS_PREFIX, session.user.id].join(":"),
+      {
+        ...(permissions !== null ? permissions : {}),
+        adv: advProviderRequest,
+      }
+    );
+    return true;
+  } catch (error) {
+    console.error("Error getting permissions:", error);
+    return false;
+  }
+}
+
+
 
 export async function createShortTimeToken(expiresIn: number): Promise<string> {
   const token = crypto.randomUUID();

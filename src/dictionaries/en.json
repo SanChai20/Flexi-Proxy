@@ -112,7 +112,9 @@
     "unavailable": "Unavailable",
     "spare": "Spare",
     "busy": "Busy",
-    "full": "Full"
+    "full": "Full",
+    "free": "Free",
+    "pro": "Pro"
   },
   "settings": {
     "title": "Settings",

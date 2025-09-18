@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { redirect } from "next/navigation";
 import { AdapterForm } from "../form";
-import { getAdapterAction, getAllTargetProviders, verifyShortTimeToken } from "@/lib/actions";
+import { getAdapterAction, getAdvProviderRequestPermissionsAction, getAllTargetProviders, verifyShortTimeToken } from "@/lib/actions";
 
 export default async function ManagementModifyPage(
   props: PageProps<"/[lang]/management/modify">
@@ -24,7 +24,8 @@ export default async function ManagementModifyPage(
     redirect(`/${lang}/management`);
   }
   const dict = await getTrans(lang as Locale);
-  const providers: { id: string; url: string; status: string }[] =
+  const canRequestAdvProvider = await getAdvProviderRequestPermissionsAction();
+  const providers: { id: string; url: string; status: string; adv: boolean }[] =
     await getAllTargetProviders();
 
   const adapter:
@@ -50,6 +51,7 @@ export default async function ManagementModifyPage(
       <AdapterForm
         dict={dict}
         providers={providers}
+        advRequest={canRequestAdvProvider}
         defaultValues={{
           baseUrl: adapter.url,
           modelId: adapter.mid,

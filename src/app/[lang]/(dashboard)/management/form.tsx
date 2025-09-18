@@ -22,10 +22,12 @@ import { useCallback, useEffect, useState } from "react";
 export function AdapterForm({
   dict,
   providers,
+  advRequest,
   defaultValues,
 }: {
   dict: any;
-  providers: { id: string; url: string; status: string }[];
+  providers: { id: string; url: string; status: string; adv: boolean }[];
+  advRequest: boolean;
   defaultValues?: {
     adapterId: string;
     baseUrl: string;
@@ -182,7 +184,7 @@ export function AdapterForm({
                   <option
                     key={option.id}
                     value={option.id}
-                    disabled={option.status === "unavailable"}
+                    disabled={option.status === "unavailable" || (advRequest ? false : option.adv)}
                     style={{
                       color:
                         option.status === "unavailable"
@@ -205,6 +207,9 @@ export function AdapterForm({
                       (dict?.management?.busy || "Busy")}
                     {option.status === "full" &&
                       (dict?.management?.full || "Full")}
+                    {"] "}
+                    {" ["}
+                    {option.adv ? (dict?.management?.pro || "Pro") : (dict?.management?.free || "Free")}
                     {"] "}
                     {option.id}
                   </option>

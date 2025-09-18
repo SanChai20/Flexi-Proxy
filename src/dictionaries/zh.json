@@ -112,7 +112,9 @@
     "unavailable": "不可用",
     "spare": "空闲",
     "busy": "繁忙",
-    "full": "满载"
+    "full": "满载",
+    "free": "免费版",
+    "pro": "付费版"
   },
   "settings": {
     "title": "设置",
