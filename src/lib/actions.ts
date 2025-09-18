@@ -1,6 +1,6 @@
 "use server";
 
-import { encrypt } from "./encryption";
+import { symmetricEncrypt } from "./encryption";
 import { redis } from "./redis";
 import { auth } from "@/auth";
 
@@ -27,9 +27,9 @@ export async function getAllTargetProviders(): Promise<
     } while (cursor !== 0);
     if (allKeys.length > 0) {
       const ids = allKeys.map((key) => key.replace(searchPatternPrefix, ""));
-      const values = await redis.mget<{ url: string; status: string; adv: boolean }[]>(
-        ...allKeys
-      );
+      const values = await redis.mget<
+        { url: string; status: string; adv: boolean }[]
+      >(...allKeys);
       return ids.map((id, index) => ({
         id,
         ...(values[index] || {}),
@@ -52,7 +52,10 @@ export async function getAllUserAdapters(): Promise<
     ava: boolean;
   }[]
 > {
-  if (process.env.ADAPTER_PREFIX === undefined || process.env.PROVIDER_PREFIX === undefined) {
+  if (
+    process.env.ADAPTER_PREFIX === undefined ||
+    process.env.PROVIDER_PREFIX === undefined
+  ) {
     console.error("getAllUserAdapters - env not set");
     return [];
   }
@@ -91,11 +94,21 @@ export async function getAllUserAdapters(): Promise<
           not: string;
         }[]
       >(...allKeys);
-      const providerIds: string[] = values.map(item => [process.env.PROVIDER_PREFIX, item.pid].join(":"));
-      const providers: (null | { url: string; status: string; adv: boolean })[] = await redis.mget<{ url: string; status: string; adv: boolean }[]>(...providerIds);
+      const providerIds: string[] = values.map((item) =>
+        [process.env.PROVIDER_PREFIX, item.pid].join(":")
+      );
+      const providers: (null | {
+        url: string;
+        status: string;
+        adv: boolean;
+      })[] = await redis.mget<{ url: string; status: string; adv: boolean }[]>(
+        ...providerIds
+      );
       return adapterIds.map((adapterId, index) => ({
         aid: adapterId,
-        ava: providers[index] !== null && providers[index].status !== "unavailable",
+        ava:
+          providers[index] !== null &&
+          providers[index].status !== "unavailable",
         ...(values[index] || {}),
       }));
     }
@@ -172,14 +185,15 @@ export async function updateAdapterAction(
     const commentNote: string | null = formData.get("commentNote") as string;
     const not = commentNote !== null ? commentNote : "";
     const encodedKey: { iv: string; encryptedData: string; authTag: string } =
-      encrypt(apiKey, process.env.ENCRYPTION_KEY);
+      symmetricEncrypt(apiKey, process.env.ENCRYPTION_KEY);
     const kiv = encodedKey.iv;
     const ken = encodedKey.encryptedData;
     const kau = encodedKey.authTag;
 
-    const provider: { url: string; status: string; adv: boolean } | null = await redis.get<{ url: string; status: string; adv: boolean }>(
-      [process.env.PROVIDER_PREFIX, pid].join(":")
-    );
+    const provider: { url: string; status: string; adv: boolean } | null =
+      await redis.get<{ url: string; status: string; adv: boolean }>(
+        [process.env.PROVIDER_PREFIX, pid].join(":")
+      );
     if (provider === null) {
       console.error("updateAdapterAction - Missing provider");
       return false;
@@ -287,13 +301,14 @@ export async function createAdapterAction(
     const commentNote: string | null = formData.get("commentNote") as string;
     const not = commentNote !== null ? commentNote : "";
     const encodedKey: { iv: string; encryptedData: string; authTag: string } =
-      encrypt(apiKey, process.env.ENCRYPTION_KEY);
+      symmetricEncrypt(apiKey, process.env.ENCRYPTION_KEY);
     const kiv = encodedKey.iv;
     const ken = encodedKey.encryptedData;
     const kau = encodedKey.authTag;
-    const provider: { url: string; status: string; adv: boolean } | null = await redis.get<{ url: string; status: string; adv: boolean }>(
-      [process.env.PROVIDER_PREFIX, pid].join(":")
-    );
+    const provider: { url: string; status: string; adv: boolean } | null =
+      await redis.get<{ url: string; status: string; adv: boolean }>(
+        [process.env.PROVIDER_PREFIX, pid].join(":")
+      );
     if (provider === null) {
       console.error("createAdapterAction - Missing provider");
       return false;
@@ -450,7 +465,7 @@ export async function getMaxAdapterAllowedPermissionsAction(): Promise<number> {
       const permissions: any | null = await redis.get(
         [process.env.PERMISSIONS_PREFIX, session.user.id].join(":")
       );
-      if (permissions !== null && typeof permissions["maa"] === 'number') {
+      if (permissions !== null && typeof permissions["maa"] === "number") {
         return permissions["maa"];
       }
     }
@@ -495,7 +510,7 @@ export async function getAdvProviderRequestPermissionsAction(): Promise<boolean>
       const permissions: any | null = await redis.get(
         [process.env.PERMISSIONS_PREFIX, session.user.id].join(":")
       );
-      if (permissions !== null && typeof permissions["adv"] === 'boolean') {
+      if (permissions !== null && typeof permissions["adv"] === "boolean") {
         return permissions["adv"];
       }
     }
@@ -533,15 +548,19 @@ export async function updateAdvProviderRequestPermissionsAction(
   }
 }
 
-
-
 export async function createShortTimeToken(expiresIn: number): Promise<string> {
   const token = crypto.randomUUID();
-  await redis.set([process.env.AUTHTOKEN_PREFIX, "tp", token].join(":"), token, { ex: expiresIn });
+  await redis.set(
+    [process.env.AUTHTOKEN_PREFIX, "tp", token].join(":"),
+    token,
+    { ex: expiresIn }
+  );
   return token;
 }
 
 export async function verifyShortTimeToken(token: string): Promise<boolean> {
-  const ttl: number = await redis.ttl([process.env.AUTHTOKEN_PREFIX, "tp", token].join(":"));
+  const ttl: number = await redis.ttl(
+    [process.env.AUTHTOKEN_PREFIX, "tp", token].join(":")
+  );
   return ttl > 0;
 }
