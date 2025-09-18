@@ -4,7 +4,7 @@ import { AuthRequest, withAuth } from "@/lib/with-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 // GET
-// API: '/api/adapters/token'
+// API: '/api/adapters'
 // Headers: 'X-API-Key': <Token start from 'fp-'>
 //          'X-Public-Key': <Public secret key issued from verified server>
 //          'Authorization': Bearer <Token>
