@@ -49,10 +49,11 @@ export async function getAllUserAdapters(): Promise<
     pid: string;
     pul: string;
     not: string;
+    ava: boolean;
   }[]
 > {
-  if (process.env.ADAPTER_PREFIX === undefined) {
-    console.error("getAllUserAdapters - ADAPTER_PREFIX env not set");
+  if (process.env.ADAPTER_PREFIX === undefined || process.env.PROVIDER_PREFIX === undefined) {
+    console.error("getAllUserAdapters - env not set");
     return [];
   }
   const session = await auth();
@@ -77,7 +78,12 @@ export async function getAllUserAdapters(): Promise<
       const adapterIds = allKeys.map((key) =>
         key.replace(searchPatternPrefix, "")
       );
-      const values = await redis.mget<
+      const values: {
+        tk: string;
+        pid: string;
+        pul: string;
+        not: string;
+      }[] = await redis.mget<
         {
           tk: string;
           pid: string;
@@ -85,8 +91,11 @@ export async function getAllUserAdapters(): Promise<
           not: string;
         }[]
       >(...allKeys);
+      const providerIds: string[] = values.map(item => [process.env.PROVIDER_PREFIX, item.pid].join(":"));
+      const providers: (null | { url: string; status: string; adv: boolean })[] = await redis.mget<{ url: string; status: string; adv: boolean }[]>(...providerIds);
       return adapterIds.map((adapterId, index) => ({
         aid: adapterId,
+        ava: providers[index] !== null && providers[index].status !== "unavailable",
         ...(values[index] || {}),
       }));
     }

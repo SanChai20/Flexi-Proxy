@@ -187,7 +187,7 @@ export function AdapterForm({
                     disabled={option.status === "unavailable" || (advRequest ? false : option.adv)}
                     style={{
                       color:
-                        option.status === "unavailable"
+                        option.status === "unavailable" || (advRequest ? false : option.adv)
                           ? "#9ca3af" // gray
                           : option.status === "spare"
                             ? "#10b981" // green
