@@ -8,7 +8,6 @@ export const i18nRouteWhitelist = [
   "contact",
   "contact/feedback",
   "documentation",
-  // "subscription",
   "management",
   "management/create",
   "management/modify",
@@ -19,7 +18,6 @@ export const i18nRouteWhitelist = [
 export const protectedRouteList = [
   "contact",
   "documentation",
-  // "subscription",
   "management",
   "settings",
   "faq",
@@ -29,7 +27,6 @@ export const dashboardRouteWhitelist = [
   "",
   "contact",
   "settings",
-  // "subscription",
   "documentation",
   "management",
   "faq",

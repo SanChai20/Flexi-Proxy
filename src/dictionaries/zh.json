@@ -49,7 +49,6 @@
     "create": "创建适配器",
     "modify": "修改适配器",
     "key": "API Key",
-    "subscription": "订阅计划",
     "documentation": "说明文档",
     "contact": "联系我们",
     "feedback": "反馈",
@@ -122,10 +121,6 @@
     "collection": "数据采集",
     "collectionSubtitle": "是否开启数据采集以用于分析",
     "apply": "应用更改"
-  },
-  "subscription": {
-    "title": "订阅计划",
-    "subtitle": "管理您的订阅计划和账单"
   },
   "footer": {
     "company": "FlexiProxy",

@@ -49,7 +49,6 @@
     "create": "Create Adapter",
     "modify": "Modify Adapter",
     "key": "API Key",
-    "subscription": "Subscriptions",
     "documentation": "Documentation",
     "contact": "Contact Us",
     "feedback": "Feedback",
@@ -122,10 +121,6 @@
     "collection": "Data Collection",
     "collectionSubtitle": "Enable or disable data collection for analytics",
     "apply": "Apply Changes"
-  },
-  "subscription": {
-    "title": "Subscriptions",
-    "subtitle": "Manage your subscription plans and billing"
   },
   "footer": {
     "company": "FlexiProxy",
