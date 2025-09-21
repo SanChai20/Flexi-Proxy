@@ -20,11 +20,11 @@ async function protectedPOST(req: AuthRequest) {
     transaction.set<string>(
       [process.env.AUTHTOKEN_PREFIX, token].join(":"),
       jwtToken,
-      { ex: 900 }
+      { ex: 1800 }
     );
     transaction.del([process.env.AUTHTOKEN_PREFIX, req.token].join(":"));
     await transaction.exec();
-    return NextResponse.json({ token, expiresIn: 900 }, { status: 200 });
+    return NextResponse.json({ token, expiresIn: 1800 }, { status: 200 });
   } catch (error) {
     console.error("Failed to exchange token: ", error);
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
