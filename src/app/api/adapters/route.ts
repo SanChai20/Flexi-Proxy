@@ -3,12 +3,12 @@ import { redis } from "@/lib/redis";
 import { AuthRequest, withAuth } from "@/lib/with-auth";
 import { NextRequest, NextResponse } from "next/server";
 
-// GET
+// POST
 // API: '/api/adapters'
 // Headers: 'X-API-Key': <Token start from 'fp-'>
 //          'X-Public-Key': <Public secret key issued from verified server>
 //          'Authorization': Bearer <Token>
-async function protectedGET(req: AuthRequest) {
+async function protectedPOST(req: AuthRequest) {
   // Get Token data
   if (
     process.env.ADAPTER_PREFIX === undefined ||
@@ -75,4 +75,4 @@ async function protectedGET(req: AuthRequest) {
   }
 }
 
-export const GET = withAuth(protectedGET);
+export const POST = withAuth(protectedPOST);
