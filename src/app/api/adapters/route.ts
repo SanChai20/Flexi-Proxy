@@ -21,8 +21,8 @@ async function protectedGET(req: AuthRequest) {
     if (tk === null) {
       return NextResponse.json({ error: "Missing Field" }, { status: 400 });
     }
-    const publicKey: string | null = req.headers.get("X-Public-Key");
-    if (publicKey === null) {
+    const { public_key } = await req.json();
+    if (typeof public_key !== "string") {
       return NextResponse.json({ error: "Missing Field" }, { status: 400 });
     }
     const tokenData: {
@@ -49,7 +49,7 @@ async function protectedGET(req: AuthRequest) {
         },
         process.env.ENCRYPTION_KEY
       );
-      const data = asymmetricEncrypt(apiKey, publicKey);
+      const data = asymmetricEncrypt(apiKey, public_key);
       return NextResponse.json(
         {
           uid: tokenData.uid,
