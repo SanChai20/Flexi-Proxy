@@ -21,10 +21,12 @@ async function protectedGET(req: AuthRequest) {
     if (tk === null) {
       return NextResponse.json({ error: "Missing Field" }, { status: 400 });
     }
+    console.warn(`tk: ${tk}`)
     const { public_key } = await req.json();
     if (typeof public_key !== "string") {
       return NextResponse.json({ error: "Missing Field" }, { status: 400 });
     }
+    console.warn(`public_key: ${public_key}`)
     const tokenData: {
       uid: string;
       kiv: string;
@@ -40,7 +42,10 @@ async function protectedGET(req: AuthRequest) {
       url: string;
       mid: string;
     }>([process.env.ADAPTER_PREFIX, tk].join(":"));
+
+    console.warn(`tokenData: ${JSON.stringify(tokenData)}`)
     if (tokenData !== null) {
+      console.warn(`apiKey: before111111111111111111111111111`)
       const apiKey = symmetricDecrypt(
         {
           iv: tokenData.kiv,
@@ -49,7 +54,9 @@ async function protectedGET(req: AuthRequest) {
         },
         process.env.ENCRYPTION_KEY
       );
+      console.warn(`apiKey: ${apiKey}`)
       const data = asymmetricEncrypt(apiKey, public_key);
+      console.warn(`data: ${data.encryptedData}`)
       return NextResponse.json(
         {
           uid: tokenData.uid,
