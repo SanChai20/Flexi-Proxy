@@ -1,6 +1,6 @@
 {
   "env": {
     "ANTHROPIC_BASE_URL": "http://192.168.0.69:4000",
-    "ANTHROPIC_AUTH_TOKEN": "fp-deb0add2-4e1c-471a-9396-3b43044d31bf"
+    "ANTHROPIC_AUTH_TOKEN": ""
   }
 }
