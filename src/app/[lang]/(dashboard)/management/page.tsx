@@ -104,7 +104,10 @@ export default async function ManagementPage(
                   >
                     <td className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                       <span className="text-[10px] xs:text-xs md:text-sm whitespace-nowrap">
-                        {adapter.pid}{adapter.ava ? "" : dict?.management?.unavailable}
+                        {adapter.pid}
+                        {adapter.ava
+                          ? ""
+                          : " (" + dict?.management?.unavailable + ")"}
                       </span>
                     </td>
                     <td className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
