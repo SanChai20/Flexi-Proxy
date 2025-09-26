@@ -123,7 +123,10 @@ export async function deleteAdapterAction(
   formData: FormData
 ): Promise<boolean> {
   const adapterId = formData.get("adapterId") as string;
-  if (process.env.ADAPTER_PREFIX === undefined) {
+  if (
+    process.env.ADAPTER_PREFIX === undefined ||
+    process.env.ADAPTER_KEY_PREFIX === undefined
+  ) {
     console.error("deleteAdapterAction - ADAPTER_PREFIX env not set");
     return false;
   }
@@ -146,6 +149,13 @@ export async function deleteAdapterAction(
     }>([process.env.ADAPTER_PREFIX, session.user.id, adapterId].join(":"));
     if (adapterRaw !== null) {
       let transaction = redis.multi();
+      transaction.del(
+        [
+          process.env.ADAPTER_PREFIX,
+          process.env.ADAPTER_KEY_PREFIX,
+          adapterRaw.tk,
+        ].join(":")
+      );
       transaction.del([process.env.ADAPTER_PREFIX, adapterRaw.tk].join(":"));
       transaction.del(
         [process.env.ADAPTER_PREFIX, session.user.id, adapterId].join(":")
@@ -165,6 +175,7 @@ export async function updateAdapterAction(
   if (
     process.env.ENCRYPTION_KEY === undefined ||
     process.env.ADAPTER_PREFIX === undefined ||
+    process.env.ADAPTER_KEY_PREFIX === undefined ||
     process.env.PROVIDER_PREFIX === undefined
   ) {
     console.error("updateAdapterAction - env not set");
@@ -214,6 +225,13 @@ export async function updateAdapterAction(
     let transaction = redis.multi();
     if (adapterRaw !== null) {
       // Remove old make new
+      transaction.del(
+        [
+          process.env.ADAPTER_PREFIX,
+          process.env.ADAPTER_KEY_PREFIX,
+          adapterRaw.tk,
+        ].join(":")
+      );
       transaction.del([process.env.ADAPTER_PREFIX, adapterRaw.tk].join(":"));
       transaction.set<{
         tk: string;
@@ -228,19 +246,25 @@ export async function updateAdapterAction(
       });
       transaction.set<{
         uid: string;
-        kiv: string;
-        ken: string;
-        kau: string;
         url: string;
         mid: string;
       }>([process.env.ADAPTER_PREFIX, tokenKey].join(":"), {
         uid: session.user.id,
-        kiv,
-        ken,
-        kau,
         url,
         mid,
       });
+      transaction.set<{
+        kiv: string;
+        ken: string;
+        kau: string;
+      }>(
+        [
+          process.env.ADAPTER_PREFIX,
+          process.env.ADAPTER_KEY_PREFIX,
+          tokenKey,
+        ].join(":"),
+        { kiv, ken, kau }
+      );
     } else {
       transaction.set<{
         tk: string;
@@ -255,19 +279,25 @@ export async function updateAdapterAction(
       });
       transaction.set<{
         uid: string;
-        kiv: string;
-        ken: string;
-        kau: string;
         url: string;
         mid: string;
       }>([process.env.ADAPTER_PREFIX, tokenKey].join(":"), {
         uid: session.user.id,
-        kiv,
-        ken,
-        kau,
         url,
         mid,
       });
+      transaction.set<{
+        kiv: string;
+        ken: string;
+        kau: string;
+      }>(
+        [
+          process.env.ADAPTER_PREFIX,
+          process.env.ADAPTER_KEY_PREFIX,
+          tokenKey,
+        ].join(":"),
+        { kiv, ken, kau }
+      );
     }
     await transaction.exec();
     return true;
@@ -283,6 +313,7 @@ export async function createAdapterAction(
   if (
     process.env.ENCRYPTION_KEY === undefined ||
     process.env.ADAPTER_PREFIX === undefined ||
+    process.env.ADAPTER_KEY_PREFIX === undefined ||
     process.env.PROVIDER_PREFIX === undefined
   ) {
     console.error("createAdapterAction - env not set");
@@ -333,19 +364,29 @@ export async function createAdapterAction(
     );
     transaction.set<{
       uid: string;
-      kiv: string;
-      ken: string;
-      kau: string;
       url: string;
       mid: string;
     }>([process.env.ADAPTER_PREFIX, tokenKey].join(":"), {
       uid: session.user.id,
-      kiv,
-      ken,
-      kau,
       url,
       mid,
     });
+    transaction.set<{
+      kiv: string;
+      ken: string;
+      kau: string;
+    }>(
+      [
+        process.env.ADAPTER_PREFIX,
+        process.env.ADAPTER_KEY_PREFIX,
+        tokenKey,
+      ].join(":"),
+      {
+        kiv,
+        ken,
+        kau,
+      }
+    );
     await transaction.exec();
     return true;
   } catch (error) {
@@ -381,16 +422,10 @@ export async function getAdapterAction(
     if (adapterRaw !== null) {
       const adapterTokenData: {
         uid: string;
-        kiv: string;
-        ken: string;
-        kau: string;
         url: string;
         mid: string;
       } | null = await redis.get<{
         uid: string;
-        kiv: string;
-        ken: string;
-        kau: string;
         url: string;
         mid: string;
       }>([process.env.ADAPTER_PREFIX, adapterRaw.tk].join(":"));
