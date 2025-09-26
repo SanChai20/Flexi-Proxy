@@ -470,7 +470,7 @@ export async function getMaxAdapterAllowedPermissionsAction(): Promise<number> {
       }
     }
   }
-  return 2;
+  return 3;
 }
 
 export async function updateMaxAdapterAllowedPermissionsAction(
