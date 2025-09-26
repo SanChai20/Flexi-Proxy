@@ -6,10 +6,11 @@ import { NextRequest, NextResponse } from "next/server";
 // POST
 // API: '/api/adapters'
 // Headers: 'X-API-Key': <Token start from 'fp-'>
-//          'X-Public-Key': <Public secret key issued from verified server>
 //          'Authorization': Bearer <Token>
+// Body: {
+//  public_key: <Public secret key issued from verified server>
+//}
 async function protectedPOST(req: AuthRequest) {
-  // Get Token data
   if (
     process.env.ADAPTER_PREFIX === undefined ||
     process.env.ENCRYPTION_KEY === undefined
