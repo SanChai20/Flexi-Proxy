@@ -21,47 +21,47 @@ For users who only hold a single set of OpenAI-compatible API credentials, Flexi
 
 1. Before creating a token pass, prepare your OpenAI-compatible Base URL and API Key from an existing LLM provider. Examples are listed below (refer to the official documentation for accuracy). Any platform supporting OpenAI-compatible APIs can be used:
 
-- [DeepSeek](https://www.deepseek.com/)
-    - Base URL: **https://api.deepseek.com/v1**
-    - API Key: Obtain [here](https://platform.deepseek.com/)
-    - Model IDs: **deepseek-chat**, **deepseek-reasoner**, etc. See [DeepSeek API Documentation](https://api-docs.deepseek.com/) for details
+   - [DeepSeek](https://www.deepseek.com/)
+       - Base URL: **https://api.deepseek.com/v1**
+       - API Key: Obtain [here](https://platform.deepseek.com/)
+       - Model IDs: **deepseek-chat**, **deepseek-reasoner**, etc. See [DeepSeek API Documentation](https://api-docs.deepseek.com/) for details
 
-- [DeepInfra](https://deepinfra.com/)
-    - Base URL: **https://api.deepinfra.com/v1/openai**
-    - API Key: Obtain [here](https://deepinfra.com/dash/api_keys)
-    - Model IDs: **openai/gpt-oss-120b**, **zai-org/GLM-4.5**, etc. See [DeepInfra Models](https://deepinfra.com/models) for details
+   - [DeepInfra](https://deepinfra.com/)
+       - Base URL: **https://api.deepinfra.com/v1/openai**
+       - API Key: Obtain [here](https://deepinfra.com/dash/api_keys)
+       - Model IDs: **openai/gpt-oss-120b**, **zai-org/GLM-4.5**, etc. See [DeepInfra Models](https://deepinfra.com/models) for details
 
-- [Alibaba Qwen](https://bailian.console.aliyun.com/)
-    - Base URL: **https://dashscope.aliyuncs.com/compatible-mode/v1**
-    - API Key: Obtain [here](https://bailian.console.aliyun.com/?tab=model#/api-key)
-    - Model IDs: **qwen3-coder-plus**, **qwen-plus**, etc. See [Model Square](https://bailian.console.aliyun.com/) for details
+   - [Alibaba Qwen](https://bailian.console.aliyun.com/)
+       - Base URL: **https://dashscope.aliyuncs.com/compatible-mode/v1**
+       - API Key: Obtain [here](https://bailian.console.aliyun.com/?tab=model#/api-key)
+       - Model IDs: **qwen3-coder-plus**, **qwen-plus**, etc. See [Model Square](https://bailian.console.aliyun.com/) for details
 
-- [xAI Grok](https://x.ai/)
-    - Base URL: **https://api.x.ai/v1**
-    - API Key: Obtain [here](https://console.x.ai/team/default/api-keys)
-    - Model IDs: **grok-3**, **grok-4**, etc. See [xAI Documentation](https://docs.x.ai/docs/models) for details
+   - [xAI Grok](https://x.ai/)
+       - Base URL: **https://api.x.ai/v1**
+       - API Key: Obtain [here](https://console.x.ai/team/default/api-keys)
+       - Model IDs: **grok-3**, **grok-4**, etc. See [xAI Documentation](https://docs.x.ai/docs/models) for details
 
 
 2. In the sidebar, select the Management Panel icon. If this is your first time, you will be redirected to the Create Token Pass page. Enter the required information based on the provider details above.
 
-- **Important**: Your API Key will be used **only for forwarding service requests**.
-- Select the desired proxy gateway server under **Provider**.
-- After completing the fields, click **Confirm**.
+   - **Important**: Your API Key will be used **only for forwarding service requests**.
+   - Select the desired proxy gateway server under **Provider**.
+   - After completing the fields, click **Confirm**.
 
 
-![](https://flexiproxy.com/screenshots/en/create.PNG)
+    ![](https://flexiproxy.com/screenshots/en/create.PNG)
 
-3. Upon successful creation, a new **Token Pass (API Key)** for the proxy gateway will be generated. You will be redirected to the **Token Management** page, which also displays the **Base URL**. From here, you may add additional token passes.
+1. Upon successful creation, a new **Token Pass (API Key)** for the proxy gateway will be generated. You will be redirected to the **Token Management** page, which also displays the **Base URL**. From here, you may add additional token passes.
    
-![](https://flexiproxy.com/screenshots/en/manage.PNG)
+    ![](https://flexiproxy.com/screenshots/en/manage.PNG)
 
 
 4. On the right side of each token entry, there is a ⚙ icon. Clicking it will open a dialog with the following options:
 
-- **Edit**: Replace the **source service** API Key and regenerate the token pass.
-- **Delete**: Remove the current token pass. Since there is a maximum token limit per user, you may need to delete existing tokens to create new ones.
+   - **Edit**: Replace the **source service** API Key and regenerate the token pass.
+   - **Delete**: Remove the current token pass. Since there is a maximum token limit per user, you may need to delete existing tokens to create new ones.
 
-![](https://flexiproxy.com/screenshots/en/modify.PNG)
+    ![](https://flexiproxy.com/screenshots/en/modify.PNG)
 
 ## b. Client Usage
 

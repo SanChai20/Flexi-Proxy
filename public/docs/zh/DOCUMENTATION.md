@@ -19,40 +19,40 @@ FlexiProxy 基于 LiteLLM 提供 OpenAI 兼容的代理服务，支持通过统�
 
 1. 创建通行令牌前请先准备好现有LLM供应商平台的OpenAI-Compatible Base URL和API Key，以下平台样例可供参考（以官网为准），凡是支持OpenAI-Compatible API的平台都可使用：
 
-- [DeepSeek](https://www.deepseek.com/)
-    - Base URL: **https://api.deepseek.com/v1**
-    - API Key: 前往[此处](https://platform.deepseek.com/)获取
-    - 模型 ID: **deepseek-chat**、**deepseek-reasoner**等，详情参考[DeepSeek API文档](https://api-docs.deepseek.com/)
+   - [DeepSeek](https://www.deepseek.com/)
+       - Base URL: **https://api.deepseek.com/v1**
+       - API Key: 前往[此处](https://platform.deepseek.com/)获取
+       - 模型 ID: **deepseek-chat**、**deepseek-reasoner**等，详情参考[DeepSeek API文档](https://api-docs.deepseek.com/)
 
-- [DeepInfra](https://deepinfra.com/)
-    - Base URL: **https://api.deepinfra.com/v1/openai**
-    - API Key: 前往[此处](https://deepinfra.com/dash/api_keys)获取
-    - 模型 ID: **openai/gpt-oss-120b**、**zai-org/GLM-4.5**等，详情参考[DeepInfra Models](https://deepinfra.com/models)
+   - [DeepInfra](https://deepinfra.com/)
+       - Base URL: **https://api.deepinfra.com/v1/openai**
+       - API Key: 前往[此处](https://deepinfra.com/dash/api_keys)获取
+       - 模型 ID: **openai/gpt-oss-120b**、**zai-org/GLM-4.5**等，详情参考[DeepInfra Models](https://deepinfra.com/models)
 
-- [Alibaba Qwen](https://bailian.console.aliyun.com/)
-    - Base URL: **https://dashscope.aliyuncs.com/compatible-mode/v1**
-    - API Key: 前往[此处](https://bailian.console.aliyun.com/?tab=model#/api-key)获取
-    - 模型 ID: **qwen3-coder-plus**、**qwen-plus**等，详情参考[模型广场](https://bailian.console.aliyun.com/)
+   - [Alibaba Qwen](https://bailian.console.aliyun.com/)
+       - Base URL: **https://dashscope.aliyuncs.com/compatible-mode/v1**
+       - API Key: 前往[此处](https://bailian.console.aliyun.com/?tab=model#/api-key)获取
+       - 模型 ID: **qwen3-coder-plus**、**qwen-plus**等，详情参考[模型广场](https://bailian.console.aliyun.com/)
 
-- [xAI Grok](https://x.ai/)
-    - Base URL: **https://api.x.ai/v1**
-    - API Key: 前往[此处](https://console.x.ai/team/default/api-keys)获取
-    - 模型 ID: **grok-3**、**grok-4**等，详情参考[xAI 文档](https://docs.x.ai/docs/models)
+   - [xAI Grok](https://x.ai/)
+       - Base URL: **https://api.x.ai/v1**
+       - API Key: 前往[此处](https://console.x.ai/team/default/api-keys)获取
+       - 模型 ID: **grok-3**、**grok-4**等，详情参考[xAI 文档](https://docs.x.ai/docs/models)
 
 
 2. 选择并点击左侧侧边栏中的**管理面板**图标，如果首次创建，会自动跳转至**创建通行令牌**的页面，根据以上信息可填写**源服务**（**请注意！您提供的 API Key 我们将只用于服务请求**），在**服务商**处选择代理网关服务器，填写完毕后点击确认
 
-![](https://flexiproxy.com/screenshots/zh/create.PNG)
+    ![](https://flexiproxy.com/screenshots/zh/create.PNG)
 
 3. 创建成功后会生成代理网关服务商可用的**通行令牌（API Key）**，若创建成功将自动跳转至**令牌管理**界面（同时会展示出 Base URL），此页面下可自行添加新的通行令牌
 
-![](https://flexiproxy.com/screenshots/zh/manage.PNG)
+    ![](https://flexiproxy.com/screenshots/zh/manage.PNG)
 
 4. 通行令牌每一行最右方有一个⚙图标，点击后会在弹框中找到如下功能
-- **编辑**: 如果**源服务** API Key 需要更换，可以通过此功能重新生成通行令牌
-- **删除**: 删除当前通行令牌，对于用户创建的令牌存在最大数量限制，如果无法创建新的，请删除原有的
+   - **编辑**: 如果**源服务** API Key 需要更换，可以通过此功能重新生成通行令牌
+   - **删除**: 删除当前通行令牌，对于用户创建的令牌存在最大数量限制，如果无法创建新的，请删除原有的
 
-![](https://flexiproxy.com/screenshots/zh/modify.PNG)
+    ![](https://flexiproxy.com/screenshots/zh/modify.PNG)
 
 
 ## b. 客户端使用
