@@ -58,6 +58,15 @@ async function protectedPOST(req: AuthRequest) {
     if (typeof public_key !== "string") {
       return NextResponse.json({ error: "Missing Field" }, { status: 400 });
     }
+    const tokenData: {
+      uid: string;
+      url: string;
+      mid: string;
+    } | null = await redis.get<{
+      uid: string;
+      url: string;
+      mid: string;
+    }>([process.env.ADAPTER_PREFIX, tk].join(":"));
     const tokenKeyData: {
       kiv: string;
       ken: string;
@@ -79,7 +88,7 @@ async function protectedPOST(req: AuthRequest) {
         process.env.ENCRYPTION_KEY
       );
       const data = asymmetricEncrypt(apiKey, public_key);
-      return NextResponse.json({ enc: data.encryptedData }, { status: 200 });
+      return NextResponse.json({ enc: data.encryptedData, ...tokenData }, { status: 200 });
     } else {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
