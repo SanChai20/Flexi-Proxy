@@ -6,7 +6,7 @@
 
 > Free users are currently allowed up to three token passes. If you need to create more, please contact us or stay tuned for future updates.
 
-### 3. Why are there multiple options available for the proxy service?
+### 3. Why are there multiple options available for the proxy gateway service?
 
 > This is because proxy services are deployed across different regions or countries. Please select the option that best fits your specific use case.
 
