@@ -1,6 +1,6 @@
 <h1 align="center">FlexiProxy</h1>
 <p align="center">
-  <strong>一个强大灵活的 OpenAI-Compatible API 代理网关</strong>
+  <strong>一个简单灵活的 OpenAI-Compatible API 代理网关</strong>
   <br/>
   <strong>A powerful and flexible OpenAI-Compatible API Proxy Gateway</strong>
 </p>
@@ -84,4 +84,4 @@ If you encounter any issues or have suggestions during use, feel free to contact
 
 ---
 
-*最后更新 | Last Updated: 2025年9月23日 | September 23, 2025*
+*最后更新 | Last Updated: 2025年9月27日 | September 27, 2025*

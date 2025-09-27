@@ -56,7 +56,7 @@ export default async function ManagementPage(
         <CardHeader>
           <div className="flex flex-row items-center justify-between">
             <CardTitle className="text-2xl">
-              {dict?.management?.title || "Adapter Management"}
+              {dict?.management?.title || "Token Pass Management"}
             </CardTitle>
             <CreateAdapterForm
               dict={dict}
@@ -66,7 +66,7 @@ export default async function ManagementPage(
           </div>
           <CardDescription className="text-base mt-2">
             {dict?.management?.subtitle ||
-              "Adapt the OpenAI-Compatible API to the target provider's API service"}
+              "Managing Token Pass of OpenAI-Compatible Proxy Services"}
           </CardDescription>
         </CardHeader>
       </Card>
@@ -78,13 +78,13 @@ export default async function ManagementPage(
               <thead className="bg-muted/50 text-muted-foreground">
                 <tr>
                   <th className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
-                    {dict?.management?.provider || "Provider"}
+                    {dict?.management?.provider || "Proxy Gateway"}
                   </th>
                   <th className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                     {dict?.management?.baseUrl || "Base URL"}
                   </th>
                   <th className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
-                    {dict?.management?.apiKey || "API Key"}
+                    {dict?.management?.tokenPass || "Token Pass (API Key)"}
                   </th>
                   <th className="w-2/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                     {dict?.management?.note || "Note"}

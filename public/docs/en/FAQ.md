@@ -2,9 +2,9 @@
 
 > Absolutely! This is exactly what we support. Not only DeepSeek, but any API that is compatible with the OpenAI interface specification can be used. For more details, please refer to the documentation.
 
-### 2. What is the maximum number of proxy adapters I can create at the same time?
+### 2. What is the maximum number of proxy token pass I can create at the same time?
 
-> Free users are currently allowed up to three adapters. If you need to create more, please contact us or stay tuned for future updates.
+> Free users are currently allowed up to three token passes. If you need to create more, please contact us or stay tuned for future updates.
 
 ### 3. Why are there multiple options available for the proxy service?
 
