@@ -4,21 +4,22 @@
 
 # A. Overview
 
-FlexiProxy is a service proxy that provides OpenAI-Compatible API compatibility for different target supplier platforms. It allows users to use different backend services under existing LLM clients, solving the problem of expensive or unavailable large language model backend services in certain regions for clients that are easy to use.
+FlexiProxy is built on LiteLLM to provide an OpenAI-compatible proxy service, enabling access to over 100 large language models (LLMs) through a unified interface. It allows users to seamlessly switch between backend service providers while using existing LLM clients (such as Claude Code), effectively addressing issues where LLM services are costly or unavailable in specific regions.
+
+For users who only hold a single set of OpenAI-compatible API credentials, FlexiProxy also makes it possible to experience different LLM clients via proxy.
 
 # B. Key Features
 
-- [x] **Regional Flexibility**: Overcome regional restrictions and pricing issues
-- [x] **Data Statistics**: Optional usage tracking and statistics (disabled by default)
-- [x] **Simple Configuration**: Easy setup for mapping client requests to provider endpoints through adapters
+- [x] **Regional Flexibility**: Overcome regional restrictions and pricing barriers.
+- [x] **Simple Configuration**: Easy setup and quick token pass generation.
 
 # C. User Guide
 
-> The adapter uses user-provided API information for background requests while maintaining compatibility with target platform APIs. Therefore, FlexiProxy does not directly provide large language model services but acts as an intermediary for request forwarding.
+> The proxy backend uses the API information provided by users to perform requests. FlexiProxy itself does not directly provide LLM services; it acts as an intermediary layer to forward requests.
 
-## a. Creating an Adapter
+## a. Creating a Token Pass
 
-1. Before creating an adapter, prepare the OpenAI-Compatible Base URL and API Key of your existing LLM supplier platform. The following platform examples are for reference (based on official websites). Any platform that supports the OpenAI-Compatible API can be used:
+1. Before creating a token pass, prepare your OpenAI-compatible Base URL and API Key from an existing LLM provider. Examples are listed below (refer to the official documentation for accuracy). Any platform supporting OpenAI-compatible APIs can be used:
 
 - [DeepSeek](https://www.deepseek.com/)
     - Base URL: **https://api.deepseek.com/v1**
@@ -41,58 +42,56 @@ FlexiProxy is a service proxy that provides OpenAI-Compatible API compatibility 
     - Model IDs: **grok-3**, **grok-4**, etc. See [xAI Documentation](https://docs.x.ai/docs/models) for details
 
 
-2. Select and click the **Management** icon in the left sidebar. If creating for the first time, you will be automatically redirected to the **Create Adapter** page. Based on the above information, you can fill in the **SOURCE** (**Note! The API Key you provide only used for service requests**). Select the target supplier platform under **TARGET**. Here we use **Anthropic** as an example. After filling in the information, click confirm.
+2. In the sidebar, select the Management Panel icon. If this is your first time, you will be redirected to the Create Token Pass page. Enter the required information based on the provider details above.
 
-![](https://flexiproxy.com/screenshots/en/createadapter.PNG)
-
-
-3. After successful creation, a target platform available **API Key** will be generated (you will be redirected to the **API Key** interface). Users need to copy and properly save it. If accidentally lost during subsequent use, refer to **Step 5**.
-
-![](https://flexiproxy.com/screenshots/en/apikey.PNG)
+- **Important**: Your API Key will be used **only for forwarding service requests**.
+- Select the desired proxy gateway server under **Provider**.
+- After completing the fields, click **Confirm**.
 
 
-4. After completing the above steps, click the **Back to Management** button. The **Management** page allows you to add new adapters, and will also display the target platform available **Base URL**, but will not show the **API Key** from the previous step.
+![](https://flexiproxy.com/screenshots/en/create.PNG)
 
-![](https://flexiproxy.com/screenshots/en/management.PNG)
+3. Upon successful creation, a new **Token Pass (API Key)** for the proxy gateway will be generated. You will be redirected to the **Token Management** page, which also displays the **Base URL**. From here, you may add additional token passes.
+   
+![](https://flexiproxy.com/screenshots/en/manage.PNG)
 
 
-5. There is a ⚙ icon at the far right of each adapter row. Clicking it will reveal the following functions in a popup:
-- **Edit**: If the **API Key** is accidentally lost, you can regenerate it through this function, repeating **Step 3**
-- **Delete**: Delete the current adapter. There is a maximum limit for user-created adapters. If you cannot create new ones, please delete existing ones
+4. On the right side of each token entry, there is a ⚙ icon. Clicking it will open a dialog with the following options:
 
-## b. Using as Target Platform
+- **Edit**: Replace the **source service** API Key and regenerate the token pass.
+- **Delete**: Remove the current token pass. Since there is a maximum token limit per user, you may need to delete existing tokens to create new ones.
 
-After completing adapter creation, two fields are key: one is the target platform available **Base URL** in the **Management**, and the other is the new **API Key** generated through the **SOURCE**. Below are examples using two common LLM clients to illustrate how to use them:
+![](https://flexiproxy.com/screenshots/en/modify.PNG)
 
-- **Visual Studio Code - Cline Plugin** (naturally supports OpenAI-Compatible API, used here for example purposes)
+## b. Client Usage
 
-    Continuing with **Anthropic** as an example, select **Model/API Provider** in the Cline window below, and configure as follows in the popup:
-
-    - API Provider: **Anthropic**
-    - Anthropic API Key: **Fill in the API Key generated from the above steps**
-    - Use custom base URL: **Check this option, then fill in the Base URL from the management panel**
+After token creation, two fields are essential: **Base URL** and **Token Pass**. Below is an example of how to configure them in a commonly used LLM client:
 
 - **Claude Code**
 
-    We won't elaborate on how to install Claude Code, only explaining how to configure it. Claude Code configures **Base URL** and **API Key** through two methods: Method one is through system environment variables, and method two is through the Claude Code Settings file. For details, refer to Anthropic's [relevant documentation](https://docs.anthropic.com/en/docs/claude-code/llm-gateway#litellm-configuration)
+    We won’t cover installation here, only configuration. Claude Code supports two configuration methods for **Base URL** and **Token Pass**:
 
-    Using Windows system as an example, configuring via method one:
+    - via system environment variables, or
+    - via the Claude Code Settings file.
 
-    - Using Cmd command line window, set the following variables, replacing YOUR_TARGET_PROVIDER_API_KEY and YOUR_TARGET_PROVIDER_BASE_URL with the API Key and Base URL obtained above
+    For details, refer to Anthropic’s [documentation](https://docs.anthropic.com/en/docs/claude-code/llm-gateway#litellm-configuration)
+
+    **Example (Windows, using environment variables):**
+    - Open the **Command Prompt (CMD)** and set the following variables, replacing `YOUR_TARGET_PROVIDER_API_KEY` and `YOUR_TARGET_PROVIDER_BASE_URL` with your generated **Token Pass** and **Base URL**:
         ```cmd
         setx ANTHROPIC_AUTH_TOKEN "YOUR_TARGET_PROVIDER_API_KEY"
         setx ANTHROPIC_BASE_URL "YOUR_TARGET_PROVIDER_BASE_URL"
         ```
-    - Open a new CMD window and run the following commands to check if environment variables are effective
+    - Open a new CMD window and verify:
         ```cmd
         echo %ANTHROPIC_AUTH_TOKEN%
         echo %ANTHROPIC_BASE_URL%
         ```
-    - Start Claude Code normally to use it
+    - Start Claude Code as usual.
 
-    Configuring via method two:
+    **Example (Settings file method):**
 
-    - Create a .claude directory and create a **settings.json** file in the directory with the following content:
+    - Create a .claude directory and a **settings.json** file inside it with the following content:
         ```json
         {
             "env": {
@@ -101,9 +100,9 @@ After completing adapter creation, two fields are key: one is the target platfor
             }
         }
         ```
-    - When starting with the **claude** command, you need to specify the configuration file
+    - Launch Claude Code with the settings file:
         ```
         claude --settings="./your/path/to/.claude/settings.json"
         ```
 
-Other platform clients are not listed here. If you have any questions during use, please contact us.
+Other LLM clients follow similar configuration steps and are not listed here. If you encounter any issues while using the service, please feel free to contact us.

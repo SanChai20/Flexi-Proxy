@@ -42,28 +42,22 @@ FlexiProxy 基于 LiteLLM 提供 OpenAI 兼容的代理服务，支持通过统�
 
 2. 选择并点击左侧侧边栏中的**管理面板**图标，如果首次创建，会自动跳转至**创建通行令牌**的页面，根据以上信息可填写**源服务**（**请注意！您提供的 API Key 我们将只用于服务请求**），在**服务商**处选择代理网关服务器，填写完毕后点击确认
 
-![](https://flexiproxy.com/screenshots/zh/2.PNG)
+![](https://flexiproxy.com/screenshots/zh/create.PNG)
 
 3. 创建成功后会生成代理网关服务商可用的**通行令牌（API Key）**，若创建成功将自动跳转至**令牌管理**界面（同时会展示出 Base URL），此页面下可自行添加新的通行令牌
 
-![](https://flexiproxy.com/screenshots/zh/3.PNG)
+![](https://flexiproxy.com/screenshots/zh/manage.PNG)
 
 4. 通行令牌每一行最右方有一个⚙图标，点击后会在弹框中找到如下功能
 - **编辑**: 如果**源服务** API Key 需要更换，可以通过此功能重新生成通行令牌
 - **删除**: 删除当前通行令牌，对于用户创建的令牌存在最大数量限制，如果无法创建新的，请删除原有的
 
+![](https://flexiproxy.com/screenshots/zh/modify.PNG)
 
-## b. 作为目标平台使用
 
-创建适配器完成后，有两个字段是关键的，一个是**管理面板**中目标平台可用的**Base URL**，另一个是通过**源服务**生成的新的**API Key**，下面以两个常用的LLM客户端为例，举例说明如何使用：
+## b. 客户端使用
 
-- **Visual Studio Code - Cline插件** (天然支持OpenAI-Compatible API，这里仅用于举例)
-
-    我们继续以**Anthropic**为例，在Cline窗口下方选择**Model/API Provider**，在弹框中按照如下配置:
-
-    - API Provider: **Anthropic**
-    - Anthropic API Key: **填写上述步骤生成的API Key** 
-    - Use custom base URL: **勾选此选项，然后填写管理面板下的Base URL**
+创建令牌完成后，有两个字段是关键的，一个是**Base URL**，另一个是**通行令牌**，下面以常用的LLM客户端为例，举例说明如何使用：
 
 - **Claude Code**
 
@@ -71,7 +65,7 @@ FlexiProxy 基于 LiteLLM 提供 OpenAI 兼容的代理服务，支持通过统�
     
     以Windows系统为例，按照方式一进行配置:
 
-    - 使用Cmd命令行窗口，设置如下变量，并用上述获取到的API Key和Base URL分别代替 YOUR_TARGET_PROVIDER_API_KEY 和 YOUR_TARGET_PROVIDER_BASE_URL
+    - 使用Cmd命令行窗口，设置如下变量，并用上述获取到的**通行令牌**和**Base URL**分别代替 YOUR_TARGET_PROVIDER_API_KEY 和 YOUR_TARGET_PROVIDER_BASE_URL
         ```cmd
         setx ANTHROPIC_AUTH_TOKEN "YOUR_TARGET_PROVIDER_API_KEY"
         setx ANTHROPIC_BASE_URL "YOUR_TARGET_PROVIDER_BASE_URL"
