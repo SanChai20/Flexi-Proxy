@@ -37,19 +37,22 @@ export function AdapterForm({
   };
 }) {
   const router = useRouter();
-  const onSubmit = useCallback(async (formData: FormData) => {
-    let canJump: boolean = false;
-    if (defaultValues !== undefined) {
-      // Updating Operation
-      canJump = await updateAdapterAction(formData);
-    } else {
-      // Creating Operation
-      canJump = await createAdapterAction(formData);
-    }
-    if (canJump) {
-      router.push("/management");
-    }
-  }, [router])
+  const onSubmit = useCallback(
+    async (formData: FormData) => {
+      let canJump: boolean = false;
+      if (defaultValues !== undefined) {
+        // Updating Operation
+        canJump = await updateAdapterAction(formData);
+      } else {
+        // Creating Operation
+        canJump = await createAdapterAction(formData);
+      }
+      if (canJump) {
+        router.push("/management");
+      }
+    },
+    [router]
+  );
   return (
     <form action={onSubmit} className="mt-6">
       <input type="hidden" name="adapterId" value={defaultValues?.adapterId} />
@@ -184,22 +187,29 @@ export function AdapterForm({
                   <option
                     key={option.id}
                     value={option.id}
-                    disabled={option.status === "unavailable" || (advRequest ? false : option.adv)}
+                    disabled={
+                      option.status === "" ||
+                      option.status === "unavailable" ||
+                      (advRequest ? false : option.adv)
+                    }
                     style={{
                       color:
-                        option.status === "unavailable" || (advRequest ? false : option.adv)
+                        option.status === "" ||
+                        option.status === "unavailable" ||
+                        (advRequest ? false : option.adv)
                           ? "#9ca3af" // gray
                           : option.status === "spare"
-                            ? "#10b981" // green
-                            : option.status === "busy"
-                              ? "#f97316" // orange
-                              : option.status === "full"
-                                ? "#ef4444" // red
-                                : "inherit", // default
+                          ? "#10b981" // green
+                          : option.status === "busy"
+                          ? "#f97316" // orange
+                          : option.status === "full"
+                          ? "#ef4444" // red
+                          : "inherit", // default
                     }}
                   >
                     {" ["}
-                    {option.status === "unavailable" &&
+                    {(option.status === "" ||
+                      option.status === "unavailable") &&
                       (dict?.management?.unavailable || "Unavailable")}
                     {option.status === "spare" &&
                       (dict?.management?.spare || "Spare")}
@@ -209,7 +219,9 @@ export function AdapterForm({
                       (dict?.management?.full || "Full")}
                     {"] "}
                     {" ["}
-                    {option.adv ? (dict?.management?.pro || "Pro") : (dict?.management?.free || "Free")}
+                    {option.adv
+                      ? dict?.management?.pro || "Pro"
+                      : dict?.management?.free || "Free"}
                     {"] "}
                     {option.id}
                   </option>
@@ -275,22 +287,25 @@ export function EditAdapterDropdownForm({
 }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const onSubmit = useCallback(async (formData: FormData) => {
-    if (isSubmitting) {
-      return;
-    }
-    setIsSubmitting(true);
-    try {
-      const token = await createShortTimeToken(3600);
-      router.push(
-        `/management/modify?aid=${encodeURIComponent(
-          formData.get("adapterId") as string
-        )}&token=${encodeURIComponent(token)}`
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [isSubmitting, router]);
+  const onSubmit = useCallback(
+    async (formData: FormData) => {
+      if (isSubmitting) {
+        return;
+      }
+      setIsSubmitting(true);
+      try {
+        const token = await createShortTimeToken(3600);
+        router.push(
+          `/management/modify?aid=${encodeURIComponent(
+            formData.get("adapterId") as string
+          )}&token=${encodeURIComponent(token)}`
+        );
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [isSubmitting, router]
+  );
 
   return (
     <form action={onSubmit}>
@@ -316,20 +331,23 @@ export function DeleteAdapterDropdownForm({
 }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const onSubmit = useCallback(async (formData: FormData) => {
-    if (isSubmitting) {
-      return;
-    }
-    setIsSubmitting(true);
-    try {
-      const canRefresh = await deleteAdapterAction(formData);
-      if (canRefresh) {
-        router.push("/management");
+  const onSubmit = useCallback(
+    async (formData: FormData) => {
+      if (isSubmitting) {
+        return;
       }
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [isSubmitting, router])
+      setIsSubmitting(true);
+      try {
+        const canRefresh = await deleteAdapterAction(formData);
+        if (canRefresh) {
+          router.push("/management");
+        }
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [isSubmitting, router]
+  );
   return (
     <form action={onSubmit}>
       <input type="hidden" name="adapterId" value={adapter_id} />
@@ -361,18 +379,21 @@ export function CreateAdapterForm({
     setReachLimit(currentAdapterCount >= maxAdapterCountAllowed);
   }, [currentAdapterCount, maxAdapterCountAllowed]);
 
-  const onSubmit = useCallback(async (formData: FormData) => {
-    if (isSubmitting) {
-      return;
-    }
-    setIsSubmitting(true);
-    try {
-      const token = await createShortTimeToken(3600);
-      router.push(`/management/create?token=${encodeURIComponent(token)}`);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [isSubmitting, router])
+  const onSubmit = useCallback(
+    async (formData: FormData) => {
+      if (isSubmitting) {
+        return;
+      }
+      setIsSubmitting(true);
+      try {
+        const token = await createShortTimeToken(3600);
+        router.push(`/management/create?token=${encodeURIComponent(token)}`);
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [isSubmitting, router]
+  );
   return (
     <TooltipProvider>
       <Tooltip>
