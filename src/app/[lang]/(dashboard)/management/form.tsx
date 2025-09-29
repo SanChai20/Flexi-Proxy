@@ -62,7 +62,7 @@ export function AdapterForm({
         <div className="p-6">
           <h3 className="text-md font-semibold text-foreground mb-4 flex items-center">
             <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2 flex-shrink-0">
-              {dict?.management?.adapterSource || "SOURCE"}
+              {dict?.management?.tokenPassSource || "SOURCE"}
             </span>
             <span className="truncate">
               {dict?.management?.sourceTitle ||
@@ -153,10 +153,10 @@ export function AdapterForm({
         <div className="p-6">
           <h3 className="text-md font-semibold text-foreground mb-4 flex items-center">
             <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2 flex-shrink-0">
-              {dict?.management?.adapterTarget || "TARGET"}
+              {dict?.management?.proxyServer || "PROXY SERVER"}
             </span>
             <span className="truncate">
-              {dict?.management?.targetTitle || "Select Target API Provider"}
+              {dict?.management?.targetTitle || "Select Proxy Service"}
             </span>
           </h3>
           <div className="space-y-4">
@@ -165,7 +165,7 @@ export function AdapterForm({
                 htmlFor="provider"
                 className="block text-sm font-medium text-foreground"
               >
-                {dict?.management?.provider || "Provider"}
+                {dict?.management?.provider || "Proxy Gateway"}
               </label>
               <select
                 id="provider"
@@ -181,7 +181,7 @@ export function AdapterForm({
                 required
               >
                 <option value="">
-                  {dict.management?.selectProvider || "Select a provider"}
+                  {dict.management?.selectProvider || "Select a service provider"}
                 </option>
                 {providers.map((option) => (
                   <option
@@ -253,7 +253,7 @@ export function AdapterForm({
                 className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition max-w-full"
                 placeholder={
                   dict?.management?.notePlaceHolder ||
-                  "Create note for this adapter...(20 words max)"
+                  "Create note for this pass...(20 words max)"
                 }
                 maxLength={20}
               ></textarea>
@@ -409,14 +409,14 @@ export function CreateAdapterForm({
             >
               <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5" />
               <span className="sr-only">
-                {dict?.management?.adapterAdd || "Add Adapter"}
+                {dict?.management?.tokenCreate || "Create Token Pass"}
               </span>
             </Button>
           </form>
         </TooltipTrigger>
         <TooltipContent>
           <p className="tracking-wider text-muted-foreground">
-            {dict?.management?.adapterAdd || "Add Adapter"}{" "}
+            {dict?.management?.tokenCreate || "Create Token Pass"}{" "}
             {`(${currentAdapterCount}/${maxAdapterCountAllowed})`}
           </p>
         </TooltipContent>

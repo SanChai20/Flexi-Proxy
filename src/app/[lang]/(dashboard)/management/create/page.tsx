@@ -32,11 +32,11 @@ export default async function ManagementCreatePage(
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">
-            {dict?.management?.adapterTitle || "Create Adapter"}
+            {dict?.management?.tokenPassTitle || "Create Token Pass"}
           </CardTitle>
           <CardDescription className="text-base">
-            {dict?.management?.adapterSubtitle ||
-              "Obtain a Base URL adapted to the Target Provider API"}
+            {dict?.management?.tokenPassSubtitle ||
+              "Obtain an Access Token for the Proxy Gateway Service"}
           </CardDescription>
         </CardHeader>
       </Card>

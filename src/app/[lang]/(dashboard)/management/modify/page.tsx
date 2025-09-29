@@ -40,11 +40,11 @@ export default async function ManagementModifyPage(
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">
-            {dict?.management?.keyTitle || "API Key Management"}
+            {dict?.management?.keyTitle || "Modify Token Pass"}
           </CardTitle>
           <CardDescription className="text-base">
             {dict?.management?.keySubtitle ||
-              "Get available API key for target provider"}
+              "Refresh the Access Token for the Proxy Gateway Service"}
           </CardDescription>
         </CardHeader>
       </Card>

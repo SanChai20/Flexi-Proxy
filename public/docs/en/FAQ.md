@@ -1,15 +1,15 @@
-### 1. I currently have a ready-to-use DeepSeek API Key. Can I use it with Claude Code?
+### 1. Can I use an existing DeepSeek API Key with Claude Code?
 
-> Of course! That's exactly what we're doing here. If you wish to use it for Claude Code, simply select Anthropic as the target provider. Not only DeepSeek API, but any API compatible with the OpenAI interface specification can be used. For details, please refer to the documentation.
+> Absolutely! This is exactly what we support. Not only DeepSeek, but any API that is compatible with the OpenAI interface specification can be used. For more details, please refer to the documentation.
 
-### 2. How many adapters can I create at most simultaneously?
+### 2. What is the maximum number of proxy token pass I can create at the same time?
 
-> Currently, free users are allowed a maximum quota of 2 adapters. If you need to create more, please contact us or stay tuned for further development updates.
+> Free users are currently allowed up to three token passes. If you need to create more, please contact us or stay tuned for future updates.
 
-### 3. Why are there multiple selectable options available for the same target provider?
+### 3. Why are there multiple options available for the proxy gateway service?
 
-> This is because the provider proxy services are deployed in different regions or countries. Please make your selection based on your specific usage scenario.
+> This is because proxy services are deployed across different regions or countries. Please select the option that best fits your specific use case.
 
-### 4. I've provided sensitive data such as my API Key. Will there be security concerns?
+### 4. Will providing sensitive data such as my API Key pose any security risks?
 
-> No, there won't be! The API credential data you provide will only be used for service requests. We do not process, use, or disclose it for any other purpose. As a relay service provider, we do not store, analyze, or use the content of API requests—except to forward them to their intended destination. Furthermore, when you stop using this service, you may actively request data deletion.
+> No! Any API credentials you provide are used solely for service requests. We do not process, use, or disclose them for any other purpose. As a forwarding service, we do not store, analyze, or otherwise use the content of API requests, except to forward them to their intended destination. Additionally, when you stop using the service, you can proactively clear your data.
