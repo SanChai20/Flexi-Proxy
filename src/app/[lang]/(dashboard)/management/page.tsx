@@ -29,7 +29,7 @@ import {
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "FlexiProxy - Adapter Management",
+  title: "FlexiProxy - Token Pass Management",
 };
 
 export default async function ManagementPage(
