@@ -6,6 +6,7 @@ import {
   createAdapterAction,
   createShortTimeToken,
   deleteAdapterAction,
+  getUserAdapterModifyVersion,
   updateAdapterAction,
 } from "@/lib/actions";
 import {
@@ -23,11 +24,13 @@ export function AdapterForm({
   dict,
   providers,
   advRequest,
+  version,
   defaultValues,
 }: {
   dict: any;
   providers: { id: string; url: string; status: string; adv: boolean }[];
   advRequest: boolean;
+  version: number;
   defaultValues?: {
     adapterId: string;
     baseUrl: string;
@@ -39,16 +42,21 @@ export function AdapterForm({
   const router = useRouter();
   const onSubmit = useCallback(
     async (formData: FormData) => {
-      let canJump: boolean = false;
-      if (defaultValues !== undefined) {
-        // Updating Operation
-        canJump = await updateAdapterAction(formData);
-      } else {
-        // Creating Operation
-        canJump = await createAdapterAction(formData);
-      }
-      if (canJump) {
+      const currentVersion = await getUserAdapterModifyVersion();
+      if (currentVersion !== version) {
         router.push("/management");
+      } else {
+        let canJump: boolean = false;
+        if (defaultValues !== undefined) {
+          // Updating Operation
+          canJump = await updateAdapterAction(formData);
+        } else {
+          // Creating Operation
+          canJump = await createAdapterAction(formData);
+        }
+        if (canJump) {
+          router.push("/management");
+        }
       }
     },
     [router]
@@ -181,7 +189,8 @@ export function AdapterForm({
                 required
               >
                 <option value="">
-                  {dict.management?.selectProvider || "Select a service provider"}
+                  {dict.management?.selectProvider ||
+                    "Select a service provider"}
                 </option>
                 {providers.map((option) => (
                   <option

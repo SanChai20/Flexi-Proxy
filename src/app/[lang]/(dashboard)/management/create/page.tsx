@@ -8,7 +8,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { AdapterForm } from "../form";
-import { getAdvProviderRequestPermissionsAction, getAllTargetProviders, verifyShortTimeToken } from "@/lib/actions";
+import {
+  getAdvProviderRequestPermissionsAction,
+  getAllTargetProviders,
+  getUserAdapterModifyVersion,
+  verifyShortTimeToken,
+} from "@/lib/actions";
 import { redirect } from "next/navigation";
 
 export default async function ManagementCreatePage(
@@ -27,6 +32,11 @@ export default async function ManagementCreatePage(
   const canRequestAdvProvider = await getAdvProviderRequestPermissionsAction();
   const providers: { id: string; url: string; status: string; adv: boolean }[] =
     await getAllTargetProviders();
+
+  const userVersion = await getUserAdapterModifyVersion();
+  if (userVersion === undefined) {
+    redirect(`/${lang}/management`);
+  }
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
       <Card>
@@ -40,7 +50,12 @@ export default async function ManagementCreatePage(
           </CardDescription>
         </CardHeader>
       </Card>
-      <AdapterForm dict={dict} providers={providers} advRequest={canRequestAdvProvider} />
+      <AdapterForm
+        dict={dict}
+        providers={providers}
+        advRequest={canRequestAdvProvider}
+        version={userVersion}
+      />
     </section>
   );
 }

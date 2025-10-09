@@ -9,7 +9,13 @@ import {
 } from "@/components/ui/card";
 import { redirect } from "next/navigation";
 import { AdapterForm } from "../form";
-import { getAdapterAction, getAdvProviderRequestPermissionsAction, getAllTargetProviders, verifyShortTimeToken } from "@/lib/actions";
+import {
+  getAdapterAction,
+  getAdvProviderRequestPermissionsAction,
+  getAllTargetProviders,
+  getUserAdapterModifyVersion,
+  verifyShortTimeToken,
+} from "@/lib/actions";
 
 export default async function ManagementModifyPage(
   props: PageProps<"/[lang]/management/modify">
@@ -34,7 +40,10 @@ export default async function ManagementModifyPage(
   if (adapter === undefined) {
     redirect(`/${lang}/management`);
   }
-
+  const userVersion = await getUserAdapterModifyVersion();
+  if (userVersion === undefined) {
+    redirect(`/${lang}/management`);
+  }
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
       <Card>
@@ -52,6 +61,7 @@ export default async function ManagementModifyPage(
         dict={dict}
         providers={providers}
         advRequest={canRequestAdvProvider}
+        version={userVersion}
         defaultValues={{
           baseUrl: adapter.url,
           modelId: adapter.mid,

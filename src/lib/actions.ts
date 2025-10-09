@@ -125,7 +125,8 @@ export async function deleteAdapterAction(
   const adapterId = formData.get("adapterId") as string;
   if (
     process.env.ADAPTER_PREFIX === undefined ||
-    process.env.ADAPTER_KEY_PREFIX === undefined
+    process.env.ADAPTER_KEY_PREFIX === undefined ||
+    process.env.USER_MODIFY_VERSION_PREFIX === undefined
   ) {
     console.error("deleteAdapterAction - ADAPTER_PREFIX env not set");
     return false;
@@ -160,6 +161,10 @@ export async function deleteAdapterAction(
       transaction.del(
         [process.env.ADAPTER_PREFIX, session.user.id, adapterId].join(":")
       );
+      transaction.incrby(
+        [process.env.USER_MODIFY_VERSION_PREFIX, session.user.id].join(":"),
+        1
+      );
       await transaction.exec();
     }
     return true;
@@ -176,7 +181,8 @@ export async function updateAdapterAction(
     process.env.ENCRYPTION_KEY === undefined ||
     process.env.ADAPTER_PREFIX === undefined ||
     process.env.ADAPTER_KEY_PREFIX === undefined ||
-    process.env.PROVIDER_PREFIX === undefined
+    process.env.PROVIDER_PREFIX === undefined ||
+    process.env.USER_MODIFY_VERSION_PREFIX === undefined
   ) {
     console.error("updateAdapterAction - env not set");
     return false;
@@ -223,6 +229,10 @@ export async function updateAdapterAction(
 
     let tokenKey = ["fp", crypto.randomUUID()].join("-");
     let transaction = redis.multi();
+    transaction.incrby(
+      [process.env.USER_MODIFY_VERSION_PREFIX, session.user.id].join(":"),
+      1
+    );
     if (adapterRaw !== null) {
       // Remove old make new
       transaction.del(
@@ -314,7 +324,8 @@ export async function createAdapterAction(
     process.env.ENCRYPTION_KEY === undefined ||
     process.env.ADAPTER_PREFIX === undefined ||
     process.env.ADAPTER_KEY_PREFIX === undefined ||
-    process.env.PROVIDER_PREFIX === undefined
+    process.env.PROVIDER_PREFIX === undefined ||
+    process.env.USER_MODIFY_VERSION_PREFIX === undefined
   ) {
     console.error("createAdapterAction - env not set");
     return false;
@@ -346,6 +357,10 @@ export async function createAdapterAction(
     }
     let tokenKey = ["fp", crypto.randomUUID()].join("-");
     let transaction = redis.multi();
+    transaction.incrby(
+      [process.env.USER_MODIFY_VERSION_PREFIX, session.user.id].join(":"),
+      1
+    );
     transaction.set<{
       tk: string;
       pid: string;
@@ -441,6 +456,32 @@ export async function getAdapterAction(
     return undefined;
   } catch (error) {
     console.error("Error getting adapter:", error);
+    return undefined;
+  }
+}
+
+export async function getUserAdapterModifyVersion(): Promise<
+  number | undefined
+> {
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    return undefined;
+  }
+  if (process.env.USER_MODIFY_VERSION_PREFIX === undefined) {
+    console.error("getUserAdapterModifyVersion - env not set");
+    return undefined;
+  }
+  try {
+    const versionNumber = await redis.get<number>(
+      [process.env.USER_MODIFY_VERSION_PREFIX, session.user.id].join(":")
+    );
+    if (versionNumber !== null) {
+      return versionNumber;
+    } else {
+      return 0;
+    }
+  } catch (error) {
+    console.error("Error incrementing version:", error);
     return undefined;
   }
 }
