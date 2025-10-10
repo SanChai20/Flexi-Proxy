@@ -1,4 +1,4 @@
-Last Updated: September 27, 2025
+Last Updated: Oct. 10, 2025
 
 ## 1. Acceptance of Terms
 
@@ -6,7 +6,7 @@ By accessing or using the FlexiProxy service (the "Service"), you agree to be bo
 
 ## 2. Service Description
 
-FlexiProxy provides a proxy service that allows users to interface with and call APIs from over a hundred providers through a unified platform. The Service acts as an intermediary between users and third-party API providers, forwarding requests on your behalf.
+FlexiProxy provides a proxy service that allows users to interface with and call APIs from multiple providers through a unified platform. The Service acts as an intermediary between users and third-party API providers, forwarding requests on your behalf.
 
 ## 3. User Responsibilities
 
