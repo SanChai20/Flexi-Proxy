@@ -1,6 +1,6 @@
-### 1. Can I use an existing DeepSeek API Key with Claude Code?
+### 1. I already have a working OpenRouter API key — can I use it in Claude Code to access some of the models it provides?
 
-> Absolutely! This is exactly what we support. Not only DeepSeek, but any API that is compatible with the OpenAI interface specification can be used. For more details, please refer to the documentation.
+> Of course! That’s exactly what we’re working on. However, please note that different clients may have specific requirements for the models they support — for example, some might require tool support. For more details, please refer to the documentation.
 
 ### 2. What is the maximum number of proxy token pass I can create at the same time?
 
