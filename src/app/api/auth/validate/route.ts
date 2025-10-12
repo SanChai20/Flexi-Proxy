@@ -60,12 +60,14 @@ async function protectedPOST(req: AuthRequest) {
     }
     const tokenData: {
       uid: string;
-      url: string;
+      pro: string;
       mid: string;
+      llm: string;
     } | null = await redis.get<{
       uid: string;
-      url: string;
+      pro: string;
       mid: string;
+      llm: string;
     }>([process.env.ADAPTER_PREFIX, tk].join(":"));
     const tokenKeyData: {
       kiv: string;

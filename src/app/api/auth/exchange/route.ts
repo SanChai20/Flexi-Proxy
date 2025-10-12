@@ -15,7 +15,7 @@ import { jwtSign } from "@/lib/jwt";
 async function protectedPOST(req: AuthRequest) {
   if (
     process.env.AUTHTOKEN_PREFIX === undefined ||
-    process.env.PROVIDER_PREFIX === undefined
+    process.env.PROXY_PREFIX === undefined
   ) {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
@@ -43,7 +43,7 @@ async function protectedPOST(req: AuthRequest) {
     );
     transaction.del([process.env.AUTHTOKEN_PREFIX, req.token].join(":"));
     transaction.set<{ url: string; status: string; adv: boolean }>(
-      [process.env.PROVIDER_PREFIX, id].join(":"),
+      [process.env.PROXY_PREFIX, id].join(":"),
       { url, status, adv },
       { ex: 3600 }
     );

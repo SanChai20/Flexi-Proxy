@@ -12,10 +12,12 @@ import { AdapterForm } from "../form";
 import {
   getAdapterAction,
   getAdvProviderRequestPermissionsAction,
-  getAllTargetProviders,
+  getAllProxyServers,
   getUserAdapterModifyVersion,
   verifyShortTimeToken,
 } from "@/lib/actions";
+import path from "path";
+import fs from "fs";
 
 export default async function ManagementModifyPage(
   props: PageProps<"/[lang]/management/modify">
@@ -31,11 +33,11 @@ export default async function ManagementModifyPage(
   }
   const dict = await getTrans(lang as Locale);
   const canRequestAdvProvider = await getAdvProviderRequestPermissionsAction();
-  const providers: { id: string; url: string; status: string; adv: boolean }[] =
-    await getAllTargetProviders();
+  const proxies: { id: string; url: string; status: string; adv: boolean }[] =
+    await getAllProxyServers();
 
   const adapter:
-    | { url: string; mid: string; pid: string; not: string }
+    | { pro: string; mid: string; pid: string; not: string; llm: string }
     | undefined = await getAdapterAction(aid);
   if (adapter === undefined) {
     redirect(`/${lang}/management`);
@@ -44,6 +46,13 @@ export default async function ManagementModifyPage(
   if (userVersion === undefined) {
     redirect(`/${lang}/management`);
   }
+  const docPath = path.join(
+    process.cwd(),
+    "public",
+    dict.management.providerPage
+  );
+  const docContent = fs.readFileSync(docPath, "utf8");
+  const data: Record<string, { id: string, website: string }> = JSON.parse(docContent);
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
       <Card>
@@ -59,15 +68,20 @@ export default async function ManagementModifyPage(
       </Card>
       <AdapterForm
         dict={dict}
-        providers={providers}
+        proxies={proxies}
+        providers={Object.entries(data).map(([name, info]) => ({
+          name,
+          ...info,
+        }))}
         advRequest={canRequestAdvProvider}
         version={userVersion}
         defaultValues={{
-          baseUrl: adapter.url,
           modelId: adapter.mid,
-          providerId: adapter.pid,
+          proxyId: adapter.pid,
+          providerId: adapter.pro,
           commentNote: adapter.not,
           adapterId: aid,
+          litellmParams: adapter.llm
         }}
       />
     </section>

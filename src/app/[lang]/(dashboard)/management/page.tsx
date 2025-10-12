@@ -66,7 +66,7 @@ export default async function ManagementPage(
           </div>
           <CardDescription className="text-base mt-2">
             {dict?.management?.subtitle ||
-              "Managing Token Pass of OpenAI-Compatible Proxy Services"}
+              "Managing Token Pass of LLM Proxy Services"}
           </CardDescription>
         </CardHeader>
       </Card>

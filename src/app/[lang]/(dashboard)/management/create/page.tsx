@@ -10,11 +10,13 @@ import {
 import { AdapterForm } from "../form";
 import {
   getAdvProviderRequestPermissionsAction,
-  getAllTargetProviders,
+  getAllProxyServers,
   getUserAdapterModifyVersion,
   verifyShortTimeToken,
 } from "@/lib/actions";
 import { redirect } from "next/navigation";
+import path from "path";
+import fs from "fs";
 
 export default async function ManagementCreatePage(
   props: PageProps<"/[lang]/management/create">
@@ -30,13 +32,20 @@ export default async function ManagementCreatePage(
   }
   const dict = await getTrans(lang as Locale);
   const canRequestAdvProvider = await getAdvProviderRequestPermissionsAction();
-  const providers: { id: string; url: string; status: string; adv: boolean }[] =
-    await getAllTargetProviders();
+  const proxies: { id: string; url: string; status: string; adv: boolean }[] =
+    await getAllProxyServers();
 
   const userVersion = await getUserAdapterModifyVersion();
   if (userVersion === undefined) {
     redirect(`/${lang}/management`);
   }
+  const docPath = path.join(
+    process.cwd(),
+    "public",
+    dict.management.providerPage
+  );
+  const docContent = fs.readFileSync(docPath, "utf8");
+  const data: Record<string, { id: string, website: string }> = JSON.parse(docContent);
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
       <Card>
@@ -52,7 +61,11 @@ export default async function ManagementCreatePage(
       </Card>
       <AdapterForm
         dict={dict}
-        providers={providers}
+        proxies={proxies}
+        providers={Object.entries(data).map(([name, info]) => ({
+          name,
+          ...info,
+        }))}
         advRequest={canRequestAdvProvider}
         version={userVersion}
       />

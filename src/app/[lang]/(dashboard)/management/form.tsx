@@ -15,31 +15,35 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { HelpCircleIcon, PlusIcon } from "lucide-react";
+import { ExternalLink, Eye, EyeOff, HelpCircleIcon, PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useState } from "react";
 
 export function AdapterForm({
   dict,
+  proxies,
   providers,
   advRequest,
   version,
   defaultValues,
 }: {
   dict: any;
-  providers: { id: string; url: string; status: string; adv: boolean }[];
+  proxies: { id: string; url: string; status: string; adv: boolean }[];
+  providers: { name: string; id: string; website: string }[];
   advRequest: boolean;
   version: number;
   defaultValues?: {
     adapterId: string;
-    baseUrl: string;
     modelId: string;
+    proxyId: string;
     providerId: string;
     commentNote: string;
+    litellmParams: string;
   };
 }) {
   const router = useRouter();
+  const [showApiKey, setShowApiKey] = useState(false);
   const onSubmit = useCallback(
     async (formData: FormData) => {
       const currentVersion = await getUserAdapterModifyVersion();
@@ -66,7 +70,7 @@ export function AdapterForm({
       <input type="hidden" name="adapterId" value={defaultValues?.adapterId} />
       {/* Adapter Configuration Section */}
       <div className="bg-card border border-border rounded-lg overflow-hidden">
-        {/* Source Section (OpenAI-Compatible) */}
+        {/* Source Section */}
         <div className="p-6">
           <h3 className="text-md font-semibold text-foreground mb-4 flex items-center">
             <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2 flex-shrink-0">
@@ -74,7 +78,7 @@ export function AdapterForm({
             </span>
             <span className="truncate">
               {dict?.management?.sourceTitle ||
-                "Configure OpenAI-Compatible Endpoint"}
+                "Configure Model"}
             </span>
           </h3>
           <div className="space-y-4">
@@ -82,10 +86,11 @@ export function AdapterForm({
               <div className="space-y-2">
                 <div className="flex items-center">
                   <label
-                    htmlFor="baseUrl"
+                    htmlFor="provider"
                     className="block text-sm font-medium text-foreground"
                   >
-                    {dict?.management?.baseUrl || "Base URL"}
+                    {<span className="text-destructive mr-1">*</span>}
+                    {dict?.management?.providerOptions || "Provider"}
                   </label>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -93,71 +98,155 @@ export function AdapterForm({
                     </TooltipTrigger>
                     <TooltipContent side="top" className="max-w-xs">
                       <p>
-                        {dict?.management?.baseUrlTip ||
-                          "Enter the base URL for the API endpoint"}
+                        {dict?.management?.providerOptionsTip ||
+                          "E.g. Anthropic, Deepseek, OpenRouter etc."}
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                  {/* <div className="flex-grow" />
+                  <ExternalLink className="h-4 w-4" /> */}
+                </div>
+                <select
+                  id="provider"
+                  name="provider"
+                  defaultValue={
+                    providers.some(
+                      (provider) => provider.id === defaultValues?.providerId
+                    )
+                      ? defaultValues?.providerId
+                      : undefined
+                  }
+                  className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI0IDI0IiBzdHJva2U9IiNjY2NjY2MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJtNiA5IDYgNiA2LTYiLz48L3N2Zz4=')] bg-no-repeat bg-[right_12px_center] bg-[length:16px_16px] appearance-none max-w-full"
+                  required
+                >
+                  <option value="">
+                    {dict.management?.selectProvider ||
+                      "Select a provider"}
+                  </option>
+                  {providers.map((option) => (
+                    <option
+                      key={option.id}
+                      value={option.id}
+                    >
+                      {option.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center">
+                  <label
+                    htmlFor="modelId"
+                    className="block text-sm font-medium text-foreground"
+                  >
+                    {<span className="text-destructive mr-1">*</span>}
+                    {dict?.management?.modelId || "Model ID"}
+                  </label>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <HelpCircleIcon className="h-4 w-4 ml-2 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-xs">
+                      <p>
+                        {dict?.management?.modelIdOptionsTip ||
+                          "You can check the specific options on each provider's official website, such as OpenAI’s gpt-4 and gpt-3.5-turbo, or DeepSeek’s deepseek-chat."}
                       </p>
                     </TooltipContent>
                   </Tooltip>
                 </div>
                 <input
-                  type="url"
-                  id="baseUrl"
-                  name="baseUrl"
-                  defaultValue={defaultValues?.baseUrl}
+                  type="text"
+                  id="modelId"
+                  name="modelId"
+                  defaultValue={defaultValues?.modelId}
                   className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition max-w-full"
                   placeholder={
-                    dict?.management?.baseUrlPlaceHolder ||
-                    "https://api.deepseek.com/v1"
-                  }
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <label
-                  htmlFor="apiKey"
-                  className="block text-sm font-medium text-foreground"
-                >
-                  {dict?.management?.apiKey || "API Key"}
-                </label>
-                <input
-                  type="password"
-                  id="apiKey"
-                  name="apiKey"
-                  className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
-                  placeholder={
-                    dict?.management?.apiKeyPlaceHolder ||
-                    "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                    dict?.management?.modelIdPlaceHolder || "qwen/qwen3-coder-30b-a3b-instruct"
                   }
                   required
                 />
               </div>
             </div>
             <div className="space-y-2">
-              <label
-                htmlFor="modelId"
-                className="block text-sm font-medium text-foreground"
-              >
-                {dict?.management?.modelId || "Model ID"}
-              </label>
+              <div className="flex items-center">
+                <label
+                  htmlFor="apiKey"
+                  className="block text-sm font-medium text-foreground"
+                >
+                  {<span className="text-destructive mr-1">*</span>}
+                  {dict?.management?.apiKey || "API Key"}
+                </label>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircleIcon className="h-4 w-4 ml-2 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-xs">
+                    <p>
+                      {dict?.management?.apiKeyTip ||
+                        "It will be used for requests only and will be securely managed."}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+              <div className="relative w-full">
+                <input
+                  type={showApiKey ? "text" : "password"}
+                  id="apiKey"
+                  name="apiKey"
+                  className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition pr-10"
+                  placeholder={dict?.management?.apiKeyPlaceHolder || "Type..."}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowApiKey(!showApiKey)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition"
+                  tabIndex={-1}
+                >
+                  {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center">
+                <label
+                  htmlFor="litellmParams"
+                  className="block text-sm font-medium text-foreground"
+                >
+                  {dict?.management?.litellmParams || "LiteLLM Params"}
+                </label>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircleIcon className="h-4 w-4 ml-2 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-xs">
+                    <p>
+                      {dict?.management?.litellmParamsTip ||
+                        "Optional litellm params used for making a litellm.completion() call."}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
               <input
                 type="text"
-                id="modelId"
-                name="modelId"
-                defaultValue={defaultValues?.modelId}
-                className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition max-w-full"
+                id="litellmParams"
+                name="litellmParams"
+                className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
                 placeholder={
-                  dict?.management?.modelIdPlaceHolder || "deepseek-chat"
+                  dict?.management?.litellmParamsPlaceHolder ||
+                  '{ "rpm": 100, "timeout": 0, "stream_timeout": 0 }'
                 }
-                required
+                required={false}
               />
             </div>
+
           </div>
         </div>
 
         {/* Divider between sections */}
         <div className="border-t border-border"></div>
 
-        {/* Target Section (API Provider) */}
+        {/* Proxy Section */}
         <div className="p-6">
           <h3 className="text-md font-semibold text-foreground mb-4 flex items-center">
             <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2 flex-shrink-0">
@@ -169,30 +258,44 @@ export function AdapterForm({
           </h3>
           <div className="space-y-4">
             <div className="space-y-2">
-              <label
-                htmlFor="provider"
-                className="block text-sm font-medium text-foreground"
-              >
-                {dict?.management?.provider || "Proxy Gateway"}
-              </label>
+              <div className="flex items-center">
+                <label
+                  htmlFor="proxy"
+                  className="block text-sm font-medium text-foreground"
+                >
+                  {<span className="text-destructive mr-1">*</span>}
+                  {dict?.management?.proxy || "Proxy Gateway"}
+                </label>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircleIcon className="h-4 w-4 ml-2 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-xs">
+                    <p>
+                      {dict?.management?.proxyTip ||
+                        "You can choose a LiteLLM proxy service based on your location and server load."}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
               <select
-                id="provider"
-                name="provider"
+                id="proxy"
+                name="proxy"
                 defaultValue={
-                  providers.some(
-                    (provider) => provider.id === defaultValues?.providerId
+                  proxies.some(
+                    (proxy) => proxy.id === defaultValues?.proxyId
                   )
-                    ? defaultValues?.providerId
+                    ? defaultValues?.proxyId
                     : undefined
                 }
                 className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI0IDI0IiBzdHJva2U9IiNjY2NjY2MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJtNiA5IDYgNiA2LTYiLz48L3N2Zz4=')] bg-no-repeat bg-[right_12px_center] bg-[length:16px_16px] appearance-none max-w-full"
                 required
               >
                 <option value="">
-                  {dict.management?.selectProvider ||
-                    "Select a service provider"}
+                  {dict.management?.selectProxy ||
+                    "Select a proxy server"}
                 </option>
-                {providers.map((option) => (
+                {proxies.map((option) => (
                   <option
                     key={option.id}
                     value={option.id}
@@ -204,16 +307,16 @@ export function AdapterForm({
                     style={{
                       color:
                         option.status === "" ||
-                        option.status === "unavailable" ||
-                        (advRequest ? false : option.adv)
+                          option.status === "unavailable" ||
+                          (advRequest ? false : option.adv)
                           ? "#9ca3af" // gray
                           : option.status === "spare"
-                          ? "#10b981" // green
-                          : option.status === "busy"
-                          ? "#f97316" // orange
-                          : option.status === "full"
-                          ? "#ef4444" // red
-                          : "inherit", // default
+                            ? "#10b981" // green
+                            : option.status === "busy"
+                              ? "#f97316" // orange
+                              : option.status === "full"
+                                ? "#ef4444" // red
+                                : "inherit", // default
                     }}
                   >
                     {" ["}

@@ -1,0 +1,86 @@
+{
+    "AI/ML API": {
+        "id": "aiml",
+        "website": "https://aimlapi.com/"
+    },
+    "Anthropic": {
+        "id": "anthropic",
+        "website": "https://anthropic.com/"
+    },
+    "Cerebras": {
+        "id": "cerebras",
+        "website": "https://cerebras.ai/"
+    },
+    "Cohere": {
+        "id": "cohere",
+        "website": "https://cohere.com/"
+    },
+    "Databricks (Qwen API)": {
+        "id": "databricks",
+        "website": "https://databricks.com/"
+    },
+    "DeepInfra": {
+        "id": "deepinfra",
+        "website": "https://deepinfra.com/"
+    },
+    "Deepgram": {
+        "id": "deepgram",
+        "website": "https://deepgram.com/"
+    },
+    "DeepSeek": {
+        "id": "deepseek",
+        "website": "https://deepseek.com/"
+    },
+    "Fireworks AI": {
+        "id": "fireworks_ai",
+        "website": "https://fireworks.ai/"
+    },
+    "Google AI Studio": {
+        "id": "gemini",
+        "website": "https://aistudio.google.com/"
+    },
+    "Groq": {
+        "id": "groq",
+        "website": "https://groq.com/"
+    },
+    "Jina AI": {
+        "id": "jina_ai",
+        "website": "https://jina.ai/"
+    },
+    "Mistral AI": {
+        "id": "mistral",
+        "website": "https://mistral.ai/"
+    },
+    "OpenRouter": {
+        "id": "openrouter",
+        "website": "https://openrouter.ai/"
+    },
+    "Oracle Cloud Infrastructure (OCI)": {
+        "id": "oci",
+        "website": "https://oracle.com/cloud/"
+    },
+    "Perplexity": {
+        "id": "perplexity",
+        "website": "https://perplexity.ai/"
+    },
+    "Sambanova": {
+        "id": "sambanova",
+        "website": "https://sambanova.ai/"
+    },
+    "Together AI": {
+        "id": "together_ai",
+        "website": "https://together.ai/"
+    },
+    "VolcEngine": {
+        "id": "volcengine",
+        "website": "https://volcengine.com/"
+    },
+    "Voyage AI": {
+        "id": "voyage",
+        "website": "https://voyageai.com/"
+    },
+    "xAI": {
+        "id": "xai",
+        "website": "https://x.ai/"
+    }
+}

@@ -4,16 +4,16 @@ import { symmetricEncrypt } from "./encryption";
 import { redis } from "./redis";
 import { auth } from "@/auth";
 
-// Get all target providers
-export async function getAllTargetProviders(): Promise<
+// Get all proxy servers
+export async function getAllProxyServers(): Promise<
   { id: string; url: string; status: string; adv: boolean }[]
 > {
-  if (process.env.PROVIDER_PREFIX === undefined) {
-    console.error("getAllTargetProviders - PROVIDER_PREFIX env not set");
+  if (process.env.PROXY_PREFIX === undefined) {
+    console.error("getAllProxyServers - PROXY_PREFIX env not set");
     return [];
   }
   try {
-    const searchPatternPrefix = `${process.env.PROVIDER_PREFIX}:`;
+    const searchPatternPrefix = `${process.env.PROXY_PREFIX}:`;
     // Scan all keys with the prefix
     let allKeys: string[] = [];
     let cursor = 0;
@@ -54,7 +54,7 @@ export async function getAllUserAdapters(): Promise<
 > {
   if (
     process.env.ADAPTER_PREFIX === undefined ||
-    process.env.PROVIDER_PREFIX === undefined
+    process.env.PROXY_PREFIX === undefined
   ) {
     console.error("getAllUserAdapters - env not set");
     return [];
@@ -95,7 +95,7 @@ export async function getAllUserAdapters(): Promise<
         }[]
       >(...allKeys);
       const providerIds: string[] = values.map((item) =>
-        [process.env.PROVIDER_PREFIX, item.pid].join(":")
+        [process.env.PROXY_PREFIX, item.pid].join(":")
       );
       const providers: (null | {
         url: string;
@@ -181,7 +181,7 @@ export async function updateAdapterAction(
     process.env.ENCRYPTION_KEY === undefined ||
     process.env.ADAPTER_PREFIX === undefined ||
     process.env.ADAPTER_KEY_PREFIX === undefined ||
-    process.env.PROVIDER_PREFIX === undefined ||
+    process.env.PROXY_PREFIX === undefined ||
     process.env.USER_MODIFY_VERSION_PREFIX === undefined
   ) {
     console.error("updateAdapterAction - env not set");
@@ -194,8 +194,9 @@ export async function updateAdapterAction(
   }
 
   try {
-    const pid = formData.get("provider") as string;
-    const url = formData.get("baseUrl") as string;
+    const pid = formData.get("proxy") as string;
+    const pro = formData.get("provider") as string;
+    const llm = formData.get("litellmParams") as string;
     const mid = formData.get("modelId") as string;
     const apiKey = formData.get("apiKey") as string;
     const adapterId = formData.get("adapterId") as string;
@@ -207,12 +208,12 @@ export async function updateAdapterAction(
     const ken = encodedKey.encryptedData;
     const kau = encodedKey.authTag;
 
-    const provider: { url: string; status: string; adv: boolean } | null =
+    const proxy: { url: string; status: string; adv: boolean } | null =
       await redis.get<{ url: string; status: string; adv: boolean }>(
-        [process.env.PROVIDER_PREFIX, pid].join(":")
+        [process.env.PROXY_PREFIX, pid].join(":")
       );
-    if (provider === null) {
-      console.error("updateAdapterAction - Missing provider");
+    if (proxy === null) {
+      console.error("updateAdapterAction - Missing proxy");
       return false;
     }
     const adapterRaw: {
@@ -251,17 +252,19 @@ export async function updateAdapterAction(
       }>([process.env.ADAPTER_PREFIX, session.user.id, adapterId].join(":"), {
         tk: tokenKey,
         pid,
-        pul: provider.url,
+        pul: proxy.url,
         not,
       });
       transaction.set<{
         uid: string;
-        url: string;
+        pro: string;
         mid: string;
+        llm: string;
       }>([process.env.ADAPTER_PREFIX, tokenKey].join(":"), {
         uid: session.user.id,
-        url,
+        pro,
         mid,
+        llm,
       });
       transaction.set<{
         kiv: string;
@@ -284,17 +287,19 @@ export async function updateAdapterAction(
       }>([process.env.ADAPTER_PREFIX, session.user.id, adapterId].join(":"), {
         tk: tokenKey,
         pid,
-        pul: provider.url,
+        pul: proxy.url,
         not,
       });
       transaction.set<{
         uid: string;
-        url: string;
+        pro: string;
         mid: string;
+        llm: string;
       }>([process.env.ADAPTER_PREFIX, tokenKey].join(":"), {
         uid: session.user.id,
-        url,
+        pro,
         mid,
+        llm
       });
       transaction.set<{
         kiv: string;
@@ -324,7 +329,7 @@ export async function createAdapterAction(
     process.env.ENCRYPTION_KEY === undefined ||
     process.env.ADAPTER_PREFIX === undefined ||
     process.env.ADAPTER_KEY_PREFIX === undefined ||
-    process.env.PROVIDER_PREFIX === undefined ||
+    process.env.PROXY_PREFIX === undefined ||
     process.env.USER_MODIFY_VERSION_PREFIX === undefined
   ) {
     console.error("createAdapterAction - env not set");
@@ -336,8 +341,9 @@ export async function createAdapterAction(
     return false;
   }
   try {
-    const pid = formData.get("provider") as string;
-    const url = formData.get("baseUrl") as string;
+    const pid = formData.get("proxy") as string;
+    const pro = formData.get("provider") as string;
+    const llm = formData.get("litellmParams") as string;
     const mid = formData.get("modelId") as string;
     const apiKey = formData.get("apiKey") as string;
     const commentNote: string | null = formData.get("commentNote") as string;
@@ -347,12 +353,12 @@ export async function createAdapterAction(
     const kiv = encodedKey.iv;
     const ken = encodedKey.encryptedData;
     const kau = encodedKey.authTag;
-    const provider: { url: string; status: string; adv: boolean } | null =
+    const proxy: { url: string; status: string; adv: boolean } | null =
       await redis.get<{ url: string; status: string; adv: boolean }>(
-        [process.env.PROVIDER_PREFIX, pid].join(":")
+        [process.env.PROXY_PREFIX, pid].join(":")
       );
-    if (provider === null) {
-      console.error("createAdapterAction - Missing provider");
+    if (proxy === null) {
+      console.error("createAdapterAction - Missing proxy");
       return false;
     }
     let tokenKey = ["fp", crypto.randomUUID()].join("-");
@@ -373,18 +379,20 @@ export async function createAdapterAction(
       {
         tk: tokenKey,
         pid,
-        pul: provider.url,
+        pul: proxy.url,
         not,
       }
     );
     transaction.set<{
       uid: string;
-      url: string;
+      pro: string;
       mid: string;
+      llm: string;
     }>([process.env.ADAPTER_PREFIX, tokenKey].join(":"), {
       uid: session.user.id,
-      url,
+      pro,
       mid,
+      llm
     });
     transaction.set<{
       kiv: string;
@@ -412,7 +420,7 @@ export async function createAdapterAction(
 
 export async function getAdapterAction(
   adapterId: string
-): Promise<{ url: string; mid: string; pid: string; not: string } | undefined> {
+): Promise<{ pro: string; mid: string; pid: string; not: string; llm: string } | undefined> {
   if (process.env.ADAPTER_PREFIX === undefined) {
     console.error("getAdapterAction - env not set");
     return undefined;
@@ -437,19 +445,22 @@ export async function getAdapterAction(
     if (adapterRaw !== null) {
       const adapterTokenData: {
         uid: string;
-        url: string;
+        pro: string;
         mid: string;
+        llm: string;
       } | null = await redis.get<{
         uid: string;
-        url: string;
+        pro: string;
         mid: string;
+        llm: string;
       }>([process.env.ADAPTER_PREFIX, adapterRaw.tk].join(":"));
       if (adapterTokenData !== null) {
         return {
-          url: adapterTokenData.url,
+          pro: adapterTokenData.pro,
           mid: adapterTokenData.mid,
           pid: adapterRaw.pid,
           not: adapterRaw.not,
+          llm: adapterTokenData.llm,
         };
       }
     }
