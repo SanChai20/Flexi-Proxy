@@ -1,8 +1,8 @@
 <h1 align="center">FlexiProxy</h1>
 <p align="center">
-  <strong>一个简单灵活的 OpenAI-Compatible API 代理网关</strong>
+  <strong>一个简单灵活的大语言模型服务代理网关</strong>
   <br/>
-  <strong>A powerful and flexible OpenAI-Compatible API Proxy Gateway</strong>
+  <strong>A powerful and flexible LLM Proxy Gateway</strong>
 </p>
 
 <div align="center">
@@ -24,19 +24,19 @@
 
 ### 概述
 
-FlexiProxy 提供 OpenAI 兼容的代理服务，支持通过统一接口调用 100 多种大语言模型。它允许用户在使用现有 LLM 客户端（如Claude Code 等）时，灵活地切换后端服务提供商，有效解决特定区域模型服务昂贵或不可用的问题。同样对于只持有一套OpenAI-Compatible API凭证的用户来说可以借此代理服务体验不同的 LLM 客户端。
+FlexiProxy 基于 LiteLLM 轻量库提供 LLM 代理服务，支持通过统一接口调用多种大语言模型。它允许用户在使用现有 LLM 客户端（如Claude Code 等）时，灵活地切换后端服务提供商，有效解决特定区域模型服务昂贵或不可用的问题。同样对于只持有一套 API 凭证的用户来说可以借此代理服务体验不同的 LLM 客户端。
 
 ### 核心价值
 
-1. 通用服务 - 一个LLM供应商支持任意客户端接入
-2. 灵活切换 - 一个客户端可自由选择并切换LLM服务
+1. 通用服务 - 一个LLM供应商支持多个客户端接入
+2. 灵活切换 - 一个客户端可自由选择并切换LLM后端
 
 ### 主要特性
 
 -   **🌍 区域灵活性**: 轻松绕过地域限制，选择更具性价比的模型服务
 -   **⚙️ 简单配置**: 通过直观的 Web 界面轻松创建和管理代理服务
 -   **🔒 密钥安全**: 您的源 API Key 仅用于服务请求转发，我们会安全处理。授权的 API Key 由您自主管理
--   **🤝 广泛兼容**: 支持任何提供 OpenAI-Compatible API 的服务提供商（如 DeepSeek, DeepInfra, Qwen, xAI Grok 等）
+-   **🤝 广泛兼容**: 支持多个服务提供商（如 DeepInfra, Qwen, xAI Grok 等）
 
 ### 快速开始
 
@@ -56,19 +56,19 @@ FlexiProxy 提供 OpenAI 兼容的代理服务，支持通过统一接口调用 
 
 ### Overview
 
-FlexiProxy provides an OpenAI-compatible proxy service that supports calling over 100 large language models through a unified interface. It allows users to flexibly switch backend service providers when using existing LLM clients (such as Claude Code, etc.), effectively solving the issues of expensive or unavailable model services in specific regions. Similarly, for users who only hold one set of OpenAI-Compatible API credentials, they can experience different LLM clients through this proxy service.
+FlexiProxy is an LLM proxy service built on the lightweight LiteLLM library, providing a unified interface to access multiple large language models. It allows users to flexibly switch backend providers while using existing LLM clients (such as Claude Code), effectively solving issues like high costs or regional unavailability of certain model services. It also enables users with a single API credential to experience different LLM clients through this proxy service.
 
 ### Core Values
 
-1. Universal Service - One LLM provider supports access from any client
-2. Flexible Switching - One client can freely select and switch LLM services
+1. Universal Service - One LLM provider supports multiple client integrations
+2. Flexible Switching - A single client can freely choose and switch between LLM backends
 
 ### Key Features
 
--   **🌍 Regional Flexibility**: Easily bypass regional restrictions and select more cost-effective model services
--   **⚙️ Simple Configuration**: Easily create and manage proxy services through an intuitive web interface
--   **🔒 Key Security**: Your source API Key is only used for service request forwarding; we handle it securely. Authorized API Keys are managed by you
--   **🤝 Broad Compatibility**: Supports any service provider that offers OpenAI-Compatible APIs (such as DeepSeek, DeepInfra, Qwen, xAI Grok, etc.)
+-   **🌍 Regional Flexibility**: Easily bypass regional restrictions and choose more cost-effective model services
+-   **⚙️ Simple Configuration**: Intuitive web interface for easy proxy setup and management
+-   **🔒 Key Security**: Your original API key is used only for secure request forwarding, and all authorized keys are fully managed by you
+-   **🤝 Broad Compatibility**: Supports multiple model providers, such as DeepInfra, Qwen, and xAI Grok
 
 ### Quick Start
 
@@ -84,4 +84,4 @@ If you encounter any issues or have suggestions during use, feel free to contact
 
 ---
 
-*最后更新 | Last Updated: 2025年9月27日 | September 27, 2025*
+*最后更新 | Last Updated: 2025年10月12日 | Oct. 12, 2025*
