@@ -251,6 +251,7 @@ export function AdapterForm({
                 type="text"
                 id="litellmParams"
                 name="litellmParams"
+                defaultValue={defaultValues?.litellmParams}
                 className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
                 placeholder={
                   dict?.management?.litellmParamsPlaceHolder ||
