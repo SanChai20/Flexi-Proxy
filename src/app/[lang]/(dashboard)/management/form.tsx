@@ -15,7 +15,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ExternalLink, Eye, EyeOff, HelpCircleIcon, PlusIcon } from "lucide-react";
+import {
+  ExternalLink,
+  Eye,
+  EyeOff,
+  HelpCircleIcon,
+  PlusIcon,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useState } from "react";
@@ -44,6 +50,13 @@ export function AdapterForm({
 }) {
   const router = useRouter();
   const [showApiKey, setShowApiKey] = useState(false);
+  const [selectedProviderId, setSelectedProviderId] = useState(
+    providers.some((p) => p.id === defaultValues?.providerId)
+      ? defaultValues?.providerId
+      : ""
+  );
+  const selectedProvider = providers.find((p) => p.id === selectedProviderId);
+
   const onSubmit = useCallback(
     async (formData: FormData) => {
       const currentVersion = await getUserAdapterModifyVersion();
@@ -77,8 +90,7 @@ export function AdapterForm({
               {dict?.management?.tokenPassSource || "SOURCE"}
             </span>
             <span className="truncate">
-              {dict?.management?.sourceTitle ||
-                "Configure Model"}
+              {dict?.management?.sourceTitle || "Configure Model"}
             </span>
           </h3>
           <div className="space-y-4">
@@ -89,9 +101,10 @@ export function AdapterForm({
                     htmlFor="provider"
                     className="block text-sm font-medium text-foreground"
                   >
-                    {<span className="text-destructive mr-1">*</span>}
+                    <span className="text-destructive mr-1">*</span>
                     {dict?.management?.providerOptions || "Provider"}
                   </label>
+
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <HelpCircleIcon className="h-4 w-4 ml-2 text-muted-foreground cursor-help" />
@@ -103,31 +116,33 @@ export function AdapterForm({
                       </p>
                     </TooltipContent>
                   </Tooltip>
-                  {/* <div className="flex-grow" />
-                  <ExternalLink className="h-4 w-4" /> */}
+
+                  {selectedProvider?.website && (
+                    <a
+                      href={selectedProvider.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-auto text-muted-foreground hover:text-primary transition"
+                      title={`Go to ${selectedProvider.name} official website`}
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  )}
                 </div>
+
                 <select
                   id="provider"
                   name="provider"
-                  defaultValue={
-                    providers.some(
-                      (provider) => provider.id === defaultValues?.providerId
-                    )
-                      ? defaultValues?.providerId
-                      : undefined
-                  }
+                  value={selectedProviderId}
+                  onChange={(e) => setSelectedProviderId(e.target.value)}
                   className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI0IDI0IiBzdHJva2U9IiNjY2NjY2MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJtNiA5IDYgNiA2LTYiLz48L3N2Zz4=')] bg-no-repeat bg-[right_12px_center] bg-[length:16px_16px] appearance-none max-w-full"
                   required
                 >
                   <option value="">
-                    {dict.management?.selectProvider ||
-                      "Select a provider"}
+                    {dict.management?.selectProvider || "Select a provider"}
                   </option>
                   {providers.map((option) => (
-                    <option
-                      key={option.id}
-                      value={option.id}
-                    >
+                    <option key={option.id} value={option.id}>
                       {option.name}
                     </option>
                   ))}
@@ -161,7 +176,8 @@ export function AdapterForm({
                   defaultValue={defaultValues?.modelId}
                   className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition max-w-full"
                   placeholder={
-                    dict?.management?.modelIdPlaceHolder || "qwen/qwen3-coder-30b-a3b-instruct"
+                    dict?.management?.modelIdPlaceHolder ||
+                    "qwen/qwen3-coder-30b-a3b-instruct"
                   }
                   required
                 />
@@ -203,7 +219,11 @@ export function AdapterForm({
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition"
                   tabIndex={-1}
                 >
-                  {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showApiKey ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -239,7 +259,6 @@ export function AdapterForm({
                 required={false}
               />
             </div>
-
           </div>
         </div>
 
@@ -282,9 +301,7 @@ export function AdapterForm({
                 id="proxy"
                 name="proxy"
                 defaultValue={
-                  proxies.some(
-                    (proxy) => proxy.id === defaultValues?.proxyId
-                  )
+                  proxies.some((proxy) => proxy.id === defaultValues?.proxyId)
                     ? defaultValues?.proxyId
                     : undefined
                 }
@@ -292,8 +309,7 @@ export function AdapterForm({
                 required
               >
                 <option value="">
-                  {dict.management?.selectProxy ||
-                    "Select a proxy server"}
+                  {dict.management?.selectProxy || "Select a proxy server"}
                 </option>
                 {proxies.map((option) => (
                   <option
@@ -307,16 +323,16 @@ export function AdapterForm({
                     style={{
                       color:
                         option.status === "" ||
-                          option.status === "unavailable" ||
-                          (advRequest ? false : option.adv)
+                        option.status === "unavailable" ||
+                        (advRequest ? false : option.adv)
                           ? "#9ca3af" // gray
                           : option.status === "spare"
-                            ? "#10b981" // green
-                            : option.status === "busy"
-                              ? "#f97316" // orange
-                              : option.status === "full"
-                                ? "#ef4444" // red
-                                : "inherit", // default
+                          ? "#10b981" // green
+                          : option.status === "busy"
+                          ? "#f97316" // orange
+                          : option.status === "full"
+                          ? "#ef4444" // red
+                          : "inherit", // default
                     }}
                   >
                     {" ["}
