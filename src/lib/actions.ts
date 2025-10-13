@@ -651,3 +651,21 @@ export async function verifyShortTimeToken(token: string): Promise<boolean> {
   );
   return ttl > 0;
 }
+
+export async function getProxyServerModels(proxyId: string): Promise<{ [key: string]: string[]; } | null> {
+  if (process.env.PROXY_MODELS_PREFIX === undefined) {
+    console.error("getProxyServerModels - env not set");
+    return null;
+  }
+  try {
+    const models_by_provider: string | null = await redis.get<string>(
+      [process.env.PROXY_MODELS_PREFIX, proxyId].join(":")
+    );
+    if (models_by_provider !== null) {
+      return JSON.parse(models_by_provider);
+    }
+  } catch (error) {
+    console.error("Error getting models:", error);
+  }
+  return null;
+}
