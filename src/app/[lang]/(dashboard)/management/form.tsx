@@ -323,7 +323,7 @@ export function AdapterForm({
                     className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition max-w-full"
                     placeholder={
                       dict?.management?.modelIdPlaceHolder ||
-                      "qwen/qwen3-coder-30b-a3b-instruct"
+                      "Select Model ID..."
                     }
                     list="modelList"
                     required

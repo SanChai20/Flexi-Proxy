@@ -89,7 +89,7 @@
     "proxyTip": "可根据地理位置与繁忙程度进行选择 LiteLLM 代理服务",
     "confirm": "确认",
     "apiKeyPlaceHolder": "Type...",
-    "modelIdPlaceHolder": "qwen/qwen3-coder-30b-a3b-instruct",
+    "modelIdPlaceHolder": "选择模型",
     "selectProvider": "选择供应商",
     "selectProxy": "选择代理服务",
     "litellmParams": "LiteLLM 参数",

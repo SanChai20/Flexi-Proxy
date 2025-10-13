@@ -658,14 +658,12 @@ export async function getProxyServerModels(proxyId: string): Promise<{ [key: str
     return null;
   }
   try {
-    const models_by_provider: string | null = await redis.get<string>(
+    return await redis.get(
       [process.env.PROXY_MODELS_PREFIX, proxyId].join(":")
     );
-    if (models_by_provider !== null) {
-      return JSON.parse(models_by_provider);
-    }
   } catch (error) {
     console.error("Error getting models:", error);
+    return null;
   }
-  return null;
+
 }

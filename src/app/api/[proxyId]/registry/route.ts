@@ -15,7 +15,7 @@ async function protectedPOST(req: AuthRequest, { params }: { params: Promise<{ p
     try {
         const { proxyId } = await params;
         const { models_by_provider } = await req.json();
-        await redis.set<string>([process.env.PROXY_MODELS_PREFIX, proxyId].join(":"), JSON.stringify(models_by_provider));
+        await redis.set([process.env.PROXY_MODELS_PREFIX, proxyId].join(":"), models_by_provider);
         return NextResponse.json({ success: true }, { status: 200 });
     } catch (error) {
         console.error("Failed to registry models: ", error);
