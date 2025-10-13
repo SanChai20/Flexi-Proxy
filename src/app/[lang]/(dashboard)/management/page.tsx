@@ -78,7 +78,7 @@ export default async function ManagementPage(
               <thead className="bg-muted/50 text-muted-foreground">
                 <tr>
                   <th className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
-                    {dict?.management?.provider || "Proxy Gateway"}
+                    {dict?.management?.proxy || "Proxy Gateway"}
                   </th>
                   <th className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm sm:text-left">
                     {dict?.management?.baseUrl || "Base URL"}
