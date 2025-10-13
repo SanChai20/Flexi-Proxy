@@ -1,12 +1,10 @@
 [![GitHub](https://img.shields.io/badge/GitHub-0.7.0-blue?logo=github)](https://github.com/SanChai20/Flexi-Proxy)
 
-*Last updated: September 27, 2025*
+*Last updated: Oct. 13, 2025*
 
 # A. Overview
 
-FlexiProxy is built on LiteLLM to provide an OpenAI-compatible proxy service, enabling access to over 100 large language models (LLMs) through a unified interface. It allows users to seamlessly switch between backend service providers while using existing LLM clients (such as Claude Code), effectively addressing issues where LLM services are costly or unavailable in specific regions.
-
-For users who only hold a single set of OpenAI-compatible API credentials, FlexiProxy also makes it possible to experience different LLM clients via proxy.
+FlexiProxy is a lightweight LLM proxy service built on top of the LiteLLM library. It enables users to access multiple large language models through a unified interface. With FlexiProxy, users can seamlessly switch between different backend providers while using existing LLM clients (such as Claude Code), effectively addressing issues like high costs or limited model availability in certain regions. It also allows users with a single API credential to experience various LLM clients through the same proxy service.
 
 # B. Key Features
 
@@ -15,43 +13,40 @@ For users who only hold a single set of OpenAI-compatible API credentials, Flexi
 
 # C. User Guide
 
-> The proxy backend uses the API information provided by users to perform requests. FlexiProxy itself does not directly provide LLM services; it acts as an intermediary layer to forward requests.
+> The proxy server uses the API information provided by the user to make backend requests. Therefore, FlexiProxy does not directly provide large language model services; instead, it acts as an intermediary layer that forwards requests between the client and the model provider.
 
 ## a. Creating a Token Pass
 
-1. Before creating a token pass, prepare your OpenAI-compatible Base URL and API Key from an existing LLM provider. Examples are listed below (refer to the official documentation for accuracy). Any platform supporting OpenAI-compatible APIs can be used:
+1. Before creating an access token, please prepare your existing LLM provider’s API key and model ID. FlexiProxy currently supports the following providers:
 
-   - [DeepSeek](https://www.deepseek.com/)
-       - Base URL: **https://api.deepseek.com/v1**
-       - API Key: Obtain [here](https://platform.deepseek.com/)
-       - Model IDs: **deepseek-chat**, **deepseek-reasoner**, etc. See [DeepSeek API Documentation](https://api-docs.deepseek.com/) for details
-
+   - [AI/ML API](https://aimlapi.com/)
+   - [Anthropic](https://anthropic.com/)
+   - [Cerebras](https://cerebras.ai/)
+   - [Cohere](https://cohere.com/)
+   - [Databricks (Qwen API)](https://databricks.com/)
    - [DeepInfra](https://deepinfra.com/)
-       - Base URL: **https://api.deepinfra.com/v1/openai**
-       - API Key: Obtain [here](https://deepinfra.com/dash/api_keys)
-       - Model IDs: **openai/gpt-oss-120b**, **zai-org/GLM-4.5**, etc. See [DeepInfra Models](https://deepinfra.com/models) for details
+   - [Deepgram](https://deepgram.com/)
+   - [DeepSeek](https://deepseek.com/)
+   - [Fireworks AI](https://fireworks.ai/)
+   - [Google AI Studio](https://aistudio.google.com/)
+   - [Groq](https://groq.com/)
+   - [Jina AI](https://jina.ai/)
+   - [Mistral AI](https://mistral.ai/)
+   - [OpenRouter](https://openrouter.ai/)
+   - [Oracle Cloud Infrastructure (OCI)](https://oracle.com/cloud/)
+   - [Perplexity](https://perplexity.ai/)
+   - [Sambanova](https://sambanova.ai/)
+   - [Together AI](https://together.ai/)
+   - [VolcEngine](https://volcengine.com/)
+   - [Voyage AI](https://voyageai.com/)
+   - [xAI](https://x.ai/)
 
-   - [Alibaba Qwen](https://bailian.console.aliyun.com/)
-       - Base URL: **https://dashscope.aliyuncs.com/compatible-mode/v1**
-       - API Key: Obtain [here](https://bailian.console.aliyun.com/?tab=model#/api-key)
-       - Model IDs: **qwen3-coder-plus**, **qwen-plus**, etc. See [Model Square](https://bailian.console.aliyun.com/) for details
 
-   - [xAI Grok](https://x.ai/)
-       - Base URL: **https://api.x.ai/v1**
-       - API Key: Obtain [here](https://console.x.ai/team/default/api-keys)
-       - Model IDs: **grok-3**, **grok-4**, etc. See [xAI Documentation](https://docs.x.ai/docs/models) for details
-
-
-2. In the sidebar, select the Management Panel icon. If this is your first time, you will be redirected to the Create Token Pass page. Enter the required information based on the provider details above.
-
-   - **Important**: Your API Key will be used **only for forwarding service requests**.
-   - Select the desired proxy gateway server under **Provider**.
-   - After completing the fields, click **Confirm**.
-
+2. Select and click the **Management Panel** icon in the left sidebar. If this is your first time creating a token, you’ll be automatically redirected to the **Create Token Pass** page. Based on the information above, fill in the **SOURCE** section (**Note: Your provided API key will only be used for service requests**) to configure the model. Then, choose a proxy gateway server under **PROXY SERVER**, and once all fields are completed, click Confirm. The following example demonstrates this process using the OpenRouter provider:
 
     ![](https://flexiproxy.com/screenshots/en/create.PNG)
 
-1. Upon successful creation, a new **Token Pass (API Key)** for the proxy gateway will be generated. You will be redirected to the **Token Management** page, which also displays the **Base URL**. From here, you may add additional token passes.
+3. Upon successful creation, a new **Token Pass (API Key)** for the proxy gateway will be generated. You will be redirected to the **Token Management** page, which also displays the **Base URL**. From here, you may add additional token passes.
    
     ![](https://flexiproxy.com/screenshots/en/manage.PNG)
 
@@ -65,7 +60,7 @@ For users who only hold a single set of OpenAI-compatible API credentials, Flexi
 
 ## b. Client Usage
 
-After token creation, two fields are essential: **Base URL** and **Token Pass**. Below is an example of how to configure them in a commonly used LLM client:
+After creating the token, there are two key fields to note: **Base URL** and **Token Pass**. The following example demonstrates how to use them with Claude Code:
 
 - **Claude Code**
 
