@@ -89,7 +89,7 @@
     "proxyTip": "You can choose a LiteLLM proxy service based on your location and server load.",
     "confirm": "Confirm",
     "apiKeyPlaceHolder": "Type...",
-    "modelIdPlaceHolder": "qwen/qwen3-coder-30b-a3b-instruct",
+    "modelIdPlaceHolder": "Select Model ID...",
     "selectProvider": "Select a provider",
     "selectProxy": "Select a proxy server",
     "litellmParams": "LiteLLM Params",
