@@ -23,20 +23,19 @@ export default async function ManagementCreatePage(
 ) {
   const { lang } = await props.params;
   const { token } = await props.searchParams;
-  if (typeof token !== "string") {
+  if (typeof token !== "string" || !(await verifyShortTimeToken(token))) {
     redirect(`/${lang}/management`);
   }
-  const isValid = await verifyShortTimeToken(token);
-  if (!isValid) {
-    redirect(`/${lang}/management`);
-  }
-  const dict = await getTrans(lang as Locale);
-  const canRequestAdvProvider = await getAdvProviderRequestPermissionsAction();
-  const proxies: { id: string; url: string; status: string; adv: boolean }[] =
-    await getAllProxyServers();
+  const [dict, canRequestAdvProvider, proxies, userVersion] = await Promise.all(
+    [
+      getTrans(lang as Locale),
+      getAdvProviderRequestPermissionsAction(),
+      getAllProxyServers(),
+      getUserAdapterModifyVersion(),
+    ]
+  );
 
-  const userVersion = await getUserAdapterModifyVersion();
-  if (userVersion === undefined) {
+  if (!userVersion) {
     redirect(`/${lang}/management`);
   }
   const docPath = path.join(
@@ -45,7 +44,8 @@ export default async function ManagementCreatePage(
     dict.management.providerPage
   );
   const docContent = fs.readFileSync(docPath, "utf8");
-  const data: Record<string, { id: string, website: string }> = JSON.parse(docContent);
+  const data: Record<string, { id: string; website: string }> =
+    JSON.parse(docContent);
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
       <Card>

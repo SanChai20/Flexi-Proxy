@@ -36,8 +36,7 @@ export default async function ManagementPage(
   props: PageProps<"/[lang]/management">
 ) {
   const { lang } = await props.params;
-  const dict = await getTrans(lang as Locale);
-  let adapters: {
+  const adapters: {
     aid: string;
     tk: string;
     pid: string;
@@ -45,11 +44,15 @@ export default async function ManagementPage(
     not: string;
     ava: boolean;
   }[] = await getAllUserAdapters();
-  if (adapters.length <= 0) {
+  if (!adapters || adapters.length === 0) {
     const token = await createShortTimeToken(3600);
     redirect(`/${lang}/management/create?token=${encodeURIComponent(token)}`);
   }
-  const maxAllowed = await getMaxAdapterAllowedPermissionsAction();
+  const [dict, maxAllowed] = await Promise.all([
+    getTrans(lang as Locale),
+    getMaxAdapterAllowedPermissionsAction(),
+  ]);
+
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
       <Card>
