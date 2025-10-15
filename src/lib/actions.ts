@@ -3,7 +3,7 @@
 import { symmetricEncrypt } from "./encryption";
 import { redis } from "./redis";
 import { auth } from "@/auth";
-import { unstable_cache } from "next/cache";
+import { revalidateTag, unstable_cache } from "next/cache";
 
 // Get all proxy servers
 export const getAllProxyServers = unstable_cache(
@@ -47,7 +47,7 @@ export const getAllProxyServers = unstable_cache(
     return [];
   },
   ["proxy-servers"],
-  { revalidate: 60, tags: ["proxy-servers"] }
+  { revalidate: 600, tags: ["proxy-servers"] }
 );
 
 // Get all adapters for the authenticated user
@@ -61,77 +61,85 @@ export async function getAllUserAdapters(): Promise<
     ava: boolean;
   }[]
 > {
-  if (
-    process.env.ADAPTER_PREFIX === undefined ||
-    process.env.PROXY_PREFIX === undefined
-  ) {
-    console.error("getAllUserAdapters - env not set");
-    return [];
-  }
   const session = await auth();
   if (!(session && session.user && session.user.id)) {
     console.error("getAllUserAdapters - Unauthorized");
     return [];
   }
-  try {
-    const searchPatternPrefix = `${process.env.ADAPTER_PREFIX}:${session.user.id}:`;
-
-    let allKeys: string[] = [];
-    let cursor = 0;
-    let iterations = 0;
-    const MAX_ITERATIONS = 100; // Prevent infinite loops
-    do {
-      if (iterations++ > MAX_ITERATIONS) {
-        console.error("SCAN exceeded max iterations");
-        break;
+  const userId = session.user.id;
+  const getCachedAdapters = unstable_cache(
+    async (uid: string) => {
+      if (
+        process.env.ADAPTER_PREFIX === undefined ||
+        process.env.PROXY_PREFIX === undefined
+      ) {
+        console.error("getAllUserAdapters - env not set");
+        return [];
       }
-      const [newCursor, keys] = await redis.scan(cursor, {
-        match: `${searchPatternPrefix}*`,
-        count: 100,
-      });
-      allKeys.push(...keys);
-      cursor = Number(newCursor);
-    } while (cursor !== 0);
-    if (allKeys.length > 0) {
-      const adapterIds = allKeys.map((key) =>
-        key.replace(searchPatternPrefix, "")
-      );
-      const values: {
-        tk: string;
-        pid: string;
-        pul: string;
-        not: string;
-      }[] = await redis.mget<
-        {
-          tk: string;
-          pid: string;
-          pul: string;
-          not: string;
-        }[]
-      >(...allKeys);
-      const providerIds: string[] = values.map((item) =>
-        [process.env.PROXY_PREFIX, item.pid].join(":")
-      );
-      const providers: (null | {
-        url: string;
-        status: string;
-        adv: boolean;
-      })[] = await redis.mget<{ url: string; status: string; adv: boolean }[]>(
-        ...providerIds
-      );
-      return adapterIds.map((adapterId, index) => ({
-        aid: adapterId,
-        ava:
-          providers[index] !== null &&
-          providers[index].status !== "unavailable",
-        ...(values[index] || {}),
-      }));
-    }
-    return [];
-  } catch (error) {
-    console.error("Error fetching adapters:", error);
-    return [];
-  }
+      try {
+        const searchPatternPrefix = `${process.env.ADAPTER_PREFIX}:${uid}:`;
+
+        let allKeys: string[] = [];
+        let cursor = 0;
+        let iterations = 0;
+        const MAX_ITERATIONS = 100; // Prevent infinite loops
+        do {
+          if (iterations++ > MAX_ITERATIONS) {
+            console.error("SCAN exceeded max iterations");
+            break;
+          }
+          const [newCursor, keys] = await redis.scan(cursor, {
+            match: `${searchPatternPrefix}*`,
+            count: 100,
+          });
+          allKeys.push(...keys);
+          cursor = Number(newCursor);
+        } while (cursor !== 0);
+        if (allKeys.length > 0) {
+          const adapterIds = allKeys.map((key) =>
+            key.replace(searchPatternPrefix, "")
+          );
+          const values: {
+            tk: string;
+            pid: string;
+            pul: string;
+            not: string;
+          }[] = await redis.mget<
+            {
+              tk: string;
+              pid: string;
+              pul: string;
+              not: string;
+            }[]
+          >(...allKeys);
+          const providerIds: string[] = values.map((item) =>
+            [process.env.PROXY_PREFIX, item.pid].join(":")
+          );
+          const providers: (null | {
+            url: string;
+            status: string;
+            adv: boolean;
+          })[] = await redis.mget<
+            { url: string; status: string; adv: boolean }[]
+          >(...providerIds);
+          return adapterIds.map((adapterId, index) => ({
+            aid: adapterId,
+            ava:
+              providers[index] !== null &&
+              providers[index].status !== "unavailable",
+            ...(values[index] || {}),
+          }));
+        }
+        return [];
+      } catch (error) {
+        console.error("Error fetching adapters:", error);
+        return [];
+      }
+    },
+    ["user-adapters"],
+    { revalidate: 300, tags: [`user-adapters:${userId}`] }
+  );
+  return getCachedAdapters(userId);
 }
 
 export async function deleteAdapterAction(
@@ -182,6 +190,8 @@ export async function deleteAdapterAction(
       );
       await transaction.exec();
     }
+    revalidateTag(`user-adapters:${session.user.id}`);
+    revalidateTag(`user-adapter:${session.user.id}:${adapterId}`);
     return true;
   } catch (error) {
     console.error("Error deleting adapter:", error);
@@ -330,6 +340,8 @@ export async function updateAdapterAction(
       );
     }
     await transaction.exec();
+    revalidateTag(`user-adapters:${session.user.id}`);
+    revalidateTag(`user-adapter:${session.user.id}:${adapterId}`);
     return true;
   } catch (error) {
     console.error("Error updating adapter:", error);
@@ -426,6 +438,7 @@ export async function createAdapterAction(
       }
     );
     await transaction.exec();
+    revalidateTag(`user-adapters:${session.user.id}`);
     return true;
   } catch (error) {
     console.error("Error creating adapter:", error);
@@ -439,54 +452,62 @@ export async function getAdapterAction(
   | { pro: string; mid: string; pid: string; not: string; llm: string }
   | undefined
 > {
-  if (process.env.ADAPTER_PREFIX === undefined) {
-    console.error("getAdapterAction - env not set");
-    return undefined;
-  }
   const session = await auth();
   if (!(session && session.user && session.user.id)) {
     console.error("getAdapterAction - Unauthorized");
     return undefined;
   }
-  try {
-    const adapterRaw: {
-      tk: string;
-      pid: string;
-      pul: string;
-      not: string;
-    } | null = await redis.get<{
-      tk: string;
-      pid: string;
-      pul: string;
-      not: string;
-    }>([process.env.ADAPTER_PREFIX, session.user.id, adapterId].join(":"));
-    if (adapterRaw !== null) {
-      const adapterTokenData: {
-        uid: string;
-        pro: string;
-        mid: string;
-        llm: string;
-      } | null = await redis.get<{
-        uid: string;
-        pro: string;
-        mid: string;
-        llm: string;
-      }>([process.env.ADAPTER_PREFIX, adapterRaw.tk].join(":"));
-      if (adapterTokenData !== null) {
-        return {
-          pro: adapterTokenData.pro,
-          mid: adapterTokenData.mid,
-          pid: adapterRaw.pid,
-          not: adapterRaw.not,
-          llm: adapterTokenData.llm,
-        };
+  const userId = session.user.id;
+  const getCachedAdapter = unstable_cache(
+    async (uid: string, aid: string) => {
+      if (process.env.ADAPTER_PREFIX === undefined) {
+        console.error("getAdapterAction - env not set");
+        return undefined;
       }
-    }
-    return undefined;
-  } catch (error) {
-    console.error("Error getting adapter:", error);
-    return undefined;
-  }
+      try {
+        const adapterRaw: {
+          tk: string;
+          pid: string;
+          pul: string;
+          not: string;
+        } | null = await redis.get<{
+          tk: string;
+          pid: string;
+          pul: string;
+          not: string;
+        }>([process.env.ADAPTER_PREFIX, uid, aid].join(":"));
+        if (adapterRaw !== null) {
+          const adapterTokenData: {
+            uid: string;
+            pro: string;
+            mid: string;
+            llm: string;
+          } | null = await redis.get<{
+            uid: string;
+            pro: string;
+            mid: string;
+            llm: string;
+          }>([process.env.ADAPTER_PREFIX, adapterRaw.tk].join(":"));
+          if (adapterTokenData !== null) {
+            return {
+              pro: adapterTokenData.pro,
+              mid: adapterTokenData.mid,
+              pid: adapterRaw.pid,
+              not: adapterRaw.not,
+              llm: adapterTokenData.llm,
+            };
+          }
+        }
+        return undefined;
+      } catch (error) {
+        console.error("Error getting adapter:", error);
+        return undefined;
+      }
+    },
+    ["user-adapter"],
+    { revalidate: 300, tags: [`user-adapter:${userId}:${adapterId}`] }
+  );
+  return getCachedAdapter(userId, adapterId);
 }
 
 export async function getUserAdapterModifyVersion(): Promise<
@@ -673,16 +694,23 @@ export async function verifyShortTimeToken(token: string): Promise<boolean> {
 export async function getProxyServerModels(
   proxyId: string
 ): Promise<{ [key: string]: string[] } | null> {
-  if (process.env.PROXY_MODELS_PREFIX === undefined) {
-    console.error("getProxyServerModels - env not set");
-    return null;
-  }
-  try {
-    return await redis.get(
-      [process.env.PROXY_MODELS_PREFIX, proxyId].join(":")
-    );
-  } catch (error) {
-    console.error("Error getting models:", error);
-    return null;
-  }
+  const getCachedProxyServerModels = unstable_cache(
+    async (pid: string) => {
+      if (process.env.PROXY_MODELS_PREFIX === undefined) {
+        console.error("getProxyServerModels - env not set");
+        return null;
+      }
+      try {
+        return await redis.get<{ [key: string]: string[] }>(
+          [process.env.PROXY_MODELS_PREFIX, pid].join(":")
+        );
+      } catch (error) {
+        console.error("Error getting models:", error);
+        return null;
+      }
+    },
+    ["server-models"],
+    { revalidate: 600, tags: [`server-models:${proxyId}`] }
+  );
+  return getCachedProxyServerModels(proxyId);
 }

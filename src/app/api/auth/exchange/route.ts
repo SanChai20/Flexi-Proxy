@@ -2,6 +2,7 @@ import { redis } from "@/lib/redis";
 import { NextRequest, NextResponse } from "next/server";
 import { AuthRequest, withAuth } from "@/lib/with-auth";
 import { jwtSign } from "@/lib/jwt";
+import { revalidateTag } from "next/cache";
 
 // POST
 // API: '/api/auth/exchange'
@@ -48,6 +49,7 @@ async function protectedPOST(req: AuthRequest) {
       { ex: 3600 }
     );
     await transaction.exec();
+    revalidateTag("proxy-servers");
     return NextResponse.json({ token, expiresIn: 3600 }, { status: 200 });
   } catch (error) {
     console.error("Failed to exchange token: ", error);
