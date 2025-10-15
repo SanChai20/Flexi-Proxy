@@ -51,83 +51,88 @@ export const getAllProxyServers = unstable_cache(
 );
 
 // Get all adapters for the authenticated user
-export const getAllUserAdapters = unstable_cache(
-  async () => {
-    if (
-      process.env.ADAPTER_PREFIX === undefined ||
-      process.env.PROXY_PREFIX === undefined
-    ) {
-      console.error("getAllUserAdapters - env not set");
-      return [];
-    }
-    const session = await auth();
-    if (!(session && session.user && session.user.id)) {
-      console.error("getAllUserAdapters - Unauthorized");
-      return [];
-    }
-    try {
-      const searchPatternPrefix = `${process.env.ADAPTER_PREFIX}:${session.user.id}:`;
+export async function getAllUserAdapters(): Promise<
+  {
+    aid: string;
+    tk: string;
+    pid: string;
+    pul: string;
+    not: string;
+    ava: boolean;
+  }[]
+> {
+  if (
+    process.env.ADAPTER_PREFIX === undefined ||
+    process.env.PROXY_PREFIX === undefined
+  ) {
+    console.error("getAllUserAdapters - env not set");
+    return [];
+  }
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    console.error("getAllUserAdapters - Unauthorized");
+    return [];
+  }
+  try {
+    const searchPatternPrefix = `${process.env.ADAPTER_PREFIX}:${session.user.id}:`;
 
-      let allKeys: string[] = [];
-      let cursor = 0;
-      let iterations = 0;
-      const MAX_ITERATIONS = 100; // Prevent infinite loops
-      do {
-        if (iterations++ > MAX_ITERATIONS) {
-          console.error("SCAN exceeded max iterations");
-          break;
-        }
-        const [newCursor, keys] = await redis.scan(cursor, {
-          match: `${searchPatternPrefix}*`,
-          count: 100,
-        });
-        allKeys.push(...keys);
-        cursor = Number(newCursor);
-      } while (cursor !== 0);
-      if (allKeys.length > 0) {
-        const adapterIds = allKeys.map((key) =>
-          key.replace(searchPatternPrefix, "")
-        );
-        const values: {
+    let allKeys: string[] = [];
+    let cursor = 0;
+    let iterations = 0;
+    const MAX_ITERATIONS = 100; // Prevent infinite loops
+    do {
+      if (iterations++ > MAX_ITERATIONS) {
+        console.error("SCAN exceeded max iterations");
+        break;
+      }
+      const [newCursor, keys] = await redis.scan(cursor, {
+        match: `${searchPatternPrefix}*`,
+        count: 100,
+      });
+      allKeys.push(...keys);
+      cursor = Number(newCursor);
+    } while (cursor !== 0);
+    if (allKeys.length > 0) {
+      const adapterIds = allKeys.map((key) =>
+        key.replace(searchPatternPrefix, "")
+      );
+      const values: {
+        tk: string;
+        pid: string;
+        pul: string;
+        not: string;
+      }[] = await redis.mget<
+        {
           tk: string;
           pid: string;
           pul: string;
           not: string;
-        }[] = await redis.mget<
-          {
-            tk: string;
-            pid: string;
-            pul: string;
-            not: string;
-          }[]
-        >(...allKeys);
-        const providerIds: string[] = values.map((item) =>
-          [process.env.PROXY_PREFIX, item.pid].join(":")
-        );
-        const providers: (null | {
-          url: string;
-          status: string;
-          adv: boolean;
-        })[] = await redis.mget<
-          { url: string; status: string; adv: boolean }[]
-        >(...providerIds);
-        return adapterIds.map((adapterId, index) => ({
-          aid: adapterId,
-          ava:
-            providers[index] !== null &&
-            providers[index].status !== "unavailable",
-          ...(values[index] || {}),
-        }));
-      }
-      return [];
-    } catch (error) {
-      console.error("Error fetching adapters:", error);
-      return [];
+        }[]
+      >(...allKeys);
+      const providerIds: string[] = values.map((item) =>
+        [process.env.PROXY_PREFIX, item.pid].join(":")
+      );
+      const providers: (null | {
+        url: string;
+        status: string;
+        adv: boolean;
+      })[] = await redis.mget<{ url: string; status: string; adv: boolean }[]>(
+        ...providerIds
+      );
+      return adapterIds.map((adapterId, index) => ({
+        aid: adapterId,
+        ava:
+          providers[index] !== null &&
+          providers[index].status !== "unavailable",
+        ...(values[index] || {}),
+      }));
     }
-  },
-  ["user-adapters"],
-  { revalidate: 60, tags: ["user-adapters"] }
-);
+    return [];
+  } catch (error) {
+    console.error("Error fetching adapters:", error);
+    return [];
+  }
+}
 
 export async function deleteAdapterAction(
   formData: FormData
