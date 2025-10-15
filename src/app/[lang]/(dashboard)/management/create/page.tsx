@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { AdapterForm } from "../form";
 import {
-  getAdvProviderRequestPermissionsAction,
+  getCachedUserPermissions,
   getAllProxyServers,
   getUserAdapterModifyVersion,
   verifyShortTimeToken,
@@ -26,14 +26,12 @@ export default async function ManagementCreatePage(
   if (typeof token !== "string" || !(await verifyShortTimeToken(token))) {
     redirect(`/${lang}/management`);
   }
-  const [dict, canRequestAdvProvider, proxies, userVersion] = await Promise.all(
-    [
-      getTrans(lang as Locale),
-      getAdvProviderRequestPermissionsAction(),
-      getAllProxyServers(),
-      getUserAdapterModifyVersion(),
-    ]
-  );
+  const [dict, permissions, proxies, userVersion] = await Promise.all([
+    getTrans(lang as Locale),
+    getCachedUserPermissions(),
+    getAllProxyServers(),
+    getUserAdapterModifyVersion(),
+  ]);
 
   if (!userVersion) {
     redirect(`/${lang}/management`);
@@ -66,7 +64,7 @@ export default async function ManagementCreatePage(
           name,
           ...info,
         }))}
-        advRequest={canRequestAdvProvider}
+        advRequest={permissions?.adv ?? false}
         version={userVersion}
       />
     </section>

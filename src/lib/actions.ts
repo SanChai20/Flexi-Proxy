@@ -584,92 +584,59 @@ export async function updateSettingsAction(
   }
 }
 
-export async function getMaxAdapterAllowedPermissionsAction(): Promise<number> {
-  const session = await auth();
-  if (!!(session && session.user && session.user.id)) {
-    if (process.env.PERMISSIONS_PREFIX !== undefined) {
-      const permissions: any | null = await redis.get(
-        [process.env.PERMISSIONS_PREFIX, session.user.id].join(":")
-      );
-      if (permissions !== null && typeof permissions["maa"] === "number") {
-        return permissions["maa"];
-      }
-    }
-  }
-  return 3;
+interface UserPermissions {
+  maa?: number; // max adapters allowed
+  adv?: boolean; // advanced provider request
 }
 
-export async function updateMaxAdapterAllowedPermissionsAction(
-  maxAdaptersAllowed: number
+export async function getCachedUserPermissions(): Promise<UserPermissions | null> {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) return null;
+
+  const getCached = unstable_cache(
+    async (uid: string) => {
+      if (!process.env.PERMISSIONS_PREFIX) return null;
+
+      const permissions = await redis.get<UserPermissions>(
+        `${process.env.PERMISSIONS_PREFIX}:${uid}`
+      );
+      return permissions;
+    },
+    ["user-permissions"],
+    {
+      tags: [`user-permissions:${userId}`],
+      revalidate: 300,
+    }
+  );
+
+  return getCached(userId);
+}
+
+export async function updateUserPermissions(
+  updates: Partial<UserPermissions>
 ): Promise<boolean> {
-  if (process.env.PERMISSIONS_PREFIX === undefined) {
-    console.error("updateMaxAdapterAllowedPermissionsAction - env not set");
+  if (!process.env.PERMISSIONS_PREFIX) {
+    console.error("PERMISSIONS_PREFIX not set");
     return false;
   }
   const session = await auth();
-  if (!(session && session.user && session.user.id)) {
-    console.error("updateMaxAdapterAllowedPermissionsAction - Unauthorized");
-    return false;
-  }
+  const userId = session?.user?.id;
+  if (!userId) return false;
   try {
-    const permissions: any | null = await redis.get(
-      [process.env.PERMISSIONS_PREFIX, session.user.id].join(":")
-    );
-    await redis.set(
-      [process.env.PERMISSIONS_PREFIX, session.user.id].join(":"),
-      {
-        ...(permissions !== null ? permissions : {}),
-        maa: maxAdaptersAllowed,
-      }
-    );
+    const key = `${process.env.PERMISSIONS_PREFIX}:${userId}`;
+    const current = await redis.get<UserPermissions>(key);
+
+    await redis.set(key, {
+      ...(current ?? {}),
+      ...updates,
+    });
+
+    revalidateTag(`user-permissions:${userId}`);
+
     return true;
   } catch (error) {
-    console.error("Error getting permissions:", error);
-    return false;
-  }
-}
-
-export async function getAdvProviderRequestPermissionsAction(): Promise<boolean> {
-  const session = await auth();
-  if (!!(session && session.user && session.user.id)) {
-    if (process.env.PERMISSIONS_PREFIX !== undefined) {
-      const permissions: any | null = await redis.get(
-        [process.env.PERMISSIONS_PREFIX, session.user.id].join(":")
-      );
-      if (permissions !== null && typeof permissions["adv"] === "boolean") {
-        return permissions["adv"];
-      }
-    }
-  }
-  return false;
-}
-
-export async function updateAdvProviderRequestPermissionsAction(
-  advProviderRequest: boolean
-): Promise<boolean> {
-  if (process.env.PERMISSIONS_PREFIX === undefined) {
-    console.error("updateAdvProviderRequestPermissionsAction - env not set");
-    return false;
-  }
-  const session = await auth();
-  if (!(session && session.user && session.user.id)) {
-    console.error("updateAdvProviderRequestPermissionsAction - Unauthorized");
-    return false;
-  }
-  try {
-    const permissions: any | null = await redis.get(
-      [process.env.PERMISSIONS_PREFIX, session.user.id].join(":")
-    );
-    await redis.set(
-      [process.env.PERMISSIONS_PREFIX, session.user.id].join(":"),
-      {
-        ...(permissions !== null ? permissions : {}),
-        adv: advProviderRequest,
-      }
-    );
-    return true;
-  } catch (error) {
-    console.error("Error getting permissions:", error);
+    console.error("Error updating permissions:", error);
     return false;
   }
 }

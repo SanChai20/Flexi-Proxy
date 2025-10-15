@@ -16,7 +16,7 @@ import {
 import {
   createShortTimeToken,
   getAllUserAdapters,
-  getMaxAdapterAllowedPermissionsAction,
+  getCachedUserPermissions,
 } from "@/lib/actions";
 import { redirect } from "next/navigation";
 import ClipboardButton from "@/components/ui/clipboard-button";
@@ -48,9 +48,9 @@ export default async function ManagementPage(
     const token = await createShortTimeToken(3600);
     redirect(`/${lang}/management/create?token=${encodeURIComponent(token)}`);
   }
-  const [dict, maxAllowed] = await Promise.all([
+  const [dict, permissions] = await Promise.all([
     getTrans(lang as Locale),
-    getMaxAdapterAllowedPermissionsAction(),
+    getCachedUserPermissions(),
   ]);
 
   return (
@@ -64,7 +64,7 @@ export default async function ManagementPage(
             <CreateAdapterForm
               dict={dict}
               currentAdapterCount={adapters.length}
-              maxAdapterCountAllowed={maxAllowed}
+              maxAdapterCountAllowed={permissions?.maa ?? 3}
             />
           </div>
           <CardDescription className="text-base mt-2">

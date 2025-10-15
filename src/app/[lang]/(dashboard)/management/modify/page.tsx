@@ -11,7 +11,7 @@ import { redirect } from "next/navigation";
 import { AdapterForm } from "../form";
 import {
   getAdapterAction,
-  getAdvProviderRequestPermissionsAction,
+  getCachedUserPermissions,
   getAllProxyServers,
   getUserAdapterModifyVersion,
   verifyShortTimeToken,
@@ -31,14 +31,13 @@ export default async function ManagementModifyPage(
   if (!isValid) {
     redirect(`/${lang}/management`);
   }
-  const [dict, canRequestAdvProvider, proxies, adapter, userVersion] =
-    await Promise.all([
-      getTrans(lang as Locale),
-      getAdvProviderRequestPermissionsAction(),
-      getAllProxyServers(),
-      getAdapterAction(aid),
-      getUserAdapterModifyVersion(),
-    ]);
+  const [dict, permissions, proxies, adapter, userVersion] = await Promise.all([
+    getTrans(lang as Locale),
+    getCachedUserPermissions(),
+    getAllProxyServers(),
+    getAdapterAction(aid),
+    getUserAdapterModifyVersion(),
+  ]);
 
   if (!adapter || !userVersion) {
     redirect(`/${lang}/management`);
@@ -72,7 +71,7 @@ export default async function ManagementModifyPage(
           name,
           ...info,
         }))}
-        advRequest={canRequestAdvProvider}
+        advRequest={permissions?.adv ?? false}
         version={userVersion}
         defaultValues={{
           modelId: adapter.mid,
