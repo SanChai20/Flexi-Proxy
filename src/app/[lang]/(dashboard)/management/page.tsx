@@ -143,14 +143,8 @@ export default async function ManagementPage(
                     {/* Settings 图标 + 下拉菜单 */}
                     <td className="w-1/6 px-2 py-3 text-xs text-right sm:px-5 sm:py-3.5 sm:text-sm sm:text-right">
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button
-                            type="button"
-                            className="inline-flex items-center justify-center p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-150 md:p-1.5"
-                            aria-label="Adapter settings"
-                          >
-                            <Cog6ToothIcon className="h-3 w-3 xs:h-4 xs:w-4 md:h-5 md:w-5" />
-                          </button>
+                        <DropdownMenuTrigger className="inline-flex items-center justify-center p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-150 md:p-1.5">
+                          <Cog6ToothIcon className="h-5 w-5" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
                           align="end"
