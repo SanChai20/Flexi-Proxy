@@ -192,6 +192,7 @@ export async function deleteAdapterAction(
     }
     revalidateTag(`user-adapters:${session.user.id}`);
     revalidateTag(`user-adapter:${session.user.id}:${adapterId}`);
+    revalidateTag(`user-adapter-version:${session.user.id}`);
     return true;
   } catch (error) {
     console.error("Error deleting adapter:", error);
@@ -342,6 +343,7 @@ export async function updateAdapterAction(
     await transaction.exec();
     revalidateTag(`user-adapters:${session.user.id}`);
     revalidateTag(`user-adapter:${session.user.id}:${adapterId}`);
+    revalidateTag(`user-adapter-version:${session.user.id}`);
     return true;
   } catch (error) {
     console.error("Error updating adapter:", error);
@@ -439,6 +441,7 @@ export async function createAdapterAction(
     );
     await transaction.exec();
     revalidateTag(`user-adapters:${session.user.id}`);
+    revalidateTag(`user-adapter-version:${session.user.id}`);
     return true;
   } catch (error) {
     console.error("Error creating adapter:", error);
@@ -517,40 +520,62 @@ export async function getUserAdapterModifyVersion(): Promise<
   if (!(session && session.user && session.user.id)) {
     return undefined;
   }
-  if (process.env.USER_MODIFY_VERSION_PREFIX === undefined) {
-    console.error("getUserAdapterModifyVersion - env not set");
-    return undefined;
-  }
-  try {
-    const versionNumber = await redis.get<number>(
-      [process.env.USER_MODIFY_VERSION_PREFIX, session.user.id].join(":")
-    );
-    if (versionNumber !== null) {
-      return versionNumber;
-    } else {
-      return 0;
-    }
-  } catch (error) {
-    console.error("Error incrementing version:", error);
-    return undefined;
-  }
+  const userId = session.user.id;
+  const getCachedVersion = unstable_cache(
+    async (uid: string) => {
+      if (process.env.USER_MODIFY_VERSION_PREFIX === undefined) {
+        console.error("getUserAdapterModifyVersion - env not set");
+        return undefined;
+      }
+      try {
+        const versionNumber = await redis.get<number>(
+          [process.env.USER_MODIFY_VERSION_PREFIX, uid].join(":")
+        );
+        if (versionNumber !== null) {
+          return versionNumber;
+        } else {
+          return 0;
+        }
+      } catch (error) {
+        console.error("Error incrementing version:", error);
+        return undefined;
+      }
+    },
+    ["user-adapter-version"],
+    { revalidate: 300, tags: [`user-adapter-version:${userId}`] }
+  );
+  return getCachedVersion(userId);
 }
 
-export async function getSettingsAction(): Promise<{
-  cd: boolean;
-}> {
+interface UserSettings {
+  cd: boolean; // collect data?
+}
+
+const DefaultUserSettings: UserSettings = {
+  cd: false,
+};
+
+export async function getSettingsAction(): Promise<UserSettings> {
   const session = await auth();
-  if (!!(session && session.user && session.user.id)) {
-    if (process.env.SETTINGS_PREFIX !== undefined) {
-      const settings: any | null = await redis.get(
-        [process.env.SETTINGS_PREFIX, session.user.id].join(":")
-      );
-      if (settings !== null) {
-        return settings;
+  const userId = session?.user?.id;
+  if (!userId) return { cd: false };
+
+  const getCached = unstable_cache(
+    async (uid: string) => {
+      if (process.env.SETTINGS_PREFIX !== undefined) {
+        const settings: any | null = await redis.get<UserSettings>(
+          [process.env.SETTINGS_PREFIX, uid].join(":")
+        );
+        if (settings !== null) {
+          return settings;
+        }
       }
-    }
-  }
-  return { cd: false };
+      return DefaultUserSettings;
+    },
+    ["user-settings"],
+    { revalidate: 600, tags: [`user-settings:${userId}`] }
+  );
+  return getCached(userId);
 }
 
 export async function updateSettingsAction(
@@ -577,6 +602,7 @@ export async function updateSettingsAction(
         cd: dataCollection,
       }
     );
+    revalidateTag(`user-settings:${session.user.id}`);
     return true;
   } catch (error) {
     console.error("Error updating settings:", error);
@@ -585,23 +611,32 @@ export async function updateSettingsAction(
 }
 
 interface UserPermissions {
-  maa?: number; // max adapters allowed
-  adv?: boolean; // advanced provider request
+  maa: number; // max adapters allowed
+  adv: boolean; // advanced provider request
 }
 
-export async function getCachedUserPermissions(): Promise<UserPermissions | null> {
+const DefaultUserPermissions: UserPermissions = {
+  maa: 3,
+  adv: false,
+};
+
+export async function getCachedUserPermissions(): Promise<UserPermissions> {
   const session = await auth();
   const userId = session?.user?.id;
-  if (!userId) return null;
+  if (!userId) return DefaultUserPermissions;
 
   const getCached = unstable_cache(
     async (uid: string) => {
-      if (!process.env.PERMISSIONS_PREFIX) return null;
+      if (!process.env.PERMISSIONS_PREFIX) return DefaultUserPermissions;
 
       const permissions = await redis.get<UserPermissions>(
         `${process.env.PERMISSIONS_PREFIX}:${uid}`
       );
-      return permissions;
+      if (permissions !== null) {
+        return permissions;
+      } else {
+        return DefaultUserPermissions;
+      }
     },
     ["user-permissions"],
     {

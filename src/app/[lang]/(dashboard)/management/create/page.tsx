@@ -64,7 +64,7 @@ export default async function ManagementCreatePage(
           name,
           ...info,
         }))}
-        advRequest={permissions?.adv ?? false}
+        advRequest={permissions.adv}
         version={userVersion}
       />
     </section>

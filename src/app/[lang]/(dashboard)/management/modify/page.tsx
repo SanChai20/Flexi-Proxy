@@ -71,7 +71,7 @@ export default async function ManagementModifyPage(
           name,
           ...info,
         }))}
-        advRequest={permissions?.adv ?? false}
+        advRequest={permissions.adv}
         version={userVersion}
         defaultValues={{
           modelId: adapter.mid,
