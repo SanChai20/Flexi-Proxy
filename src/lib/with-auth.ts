@@ -7,7 +7,12 @@ export interface AuthRequest extends NextRequest {
   token: string;
   userId?: string;
 }
-type Handler = (req: AuthRequest, context?: any) => Promise<Response>;
+
+type AuthHandler<TParams = any> = (
+  req: AuthRequest,
+  context: { params: Promise<TParams> }
+) => Promise<Response>;
+
 interface JWTPayload {
   userId?: string;
   [key: string]: any;
@@ -51,8 +56,13 @@ function getClientIdentifier(req: NextRequest, token?: string): string {
   return ip || "unknown";
 }
 
-export function withAuth(handler: Handler): Handler {
-  return async (req: AuthRequest, context) => {
+export function withAuth<TParams = any>(
+  handler: AuthHandler<TParams>
+): (
+  request: NextRequest,
+  context: { params: Promise<TParams> }
+) => Promise<Response> {
+  return async (req: NextRequest, context: { params: Promise<TParams> }) => {
     try {
       const authHeader = req.headers.get("authorization");
       const token = extractBearerToken(authHeader);
@@ -103,10 +113,12 @@ export function withAuth(handler: Handler): Handler {
           401
         );
       }
+      const authReq = Object.assign(req, {
+        token,
+        userId: (payload as JWTPayload).userId,
+      }) as AuthRequest;
 
-      req.token = token;
-      req.userId = (payload as JWTPayload).userId;
-      return handler(req, context);
+      return handler(authReq, context);
     } catch (error) {
       console.error("Auth middleware error:", error);
       return createErrorResponse("Internal Server Error", 500);
