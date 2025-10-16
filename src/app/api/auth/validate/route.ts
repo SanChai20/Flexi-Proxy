@@ -25,11 +25,11 @@ async function protectedGET(req: AuthRequest) {
     if (tk === null) {
       return NextResponse.json({ error: "Missing Field" }, { status: 400 });
     }
-    const count = await redis.exists(
-      [ENV.ADAPTER_PREFIX, tk].join(":"),
-      [ENV.ADAPTER_PREFIX, ENV.ADAPTER_KEY_PREFIX, tk].join(":")
-    );
-    if (count > 1) {
+    const [tokenData, tokenKeyData] = await Promise.all([
+      redis.get([ENV.ADAPTER_PREFIX, tk].join(":")),
+      redis.get([ENV.ADAPTER_PREFIX, ENV.ADAPTER_KEY_PREFIX, tk].join(":")),
+    ]);
+    if (tokenData && tokenKeyData) {
       return NextResponse.json({ msg: "success" }, { status: 200 });
     } else {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
