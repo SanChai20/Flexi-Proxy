@@ -1,16 +1,12 @@
-"use server";
-
 import { auth } from "@/auth";
-import { JwtPayload } from "jsonwebtoken";
-import jwt from "jsonwebtoken";
+import * as jose from "jose";
 
-export async function jwtSign(
-  expiresIn?: number //seconds
-): Promise<{
+const SECRET = new TextEncoder().encode(process.env.JWT_SECRET_KEY!);
+
+export async function jwtSign(expiresIn?: number /*seconds*/): Promise<{
   token?: string;
   error?: string;
 }> {
-  // Validate environment variables
   if (
     process.env.JWT_SECRET_KEY === undefined ||
     process.env.JWT_ISSUER === undefined ||
@@ -19,31 +15,28 @@ export async function jwtSign(
     return { token: undefined, error: "Internal error" };
   }
   try {
-    // Create JWT payload with user information
-    const jwtPayload: JwtPayload = {
+    const jwtPayload: jose.JWTPayload = {
       iss: process.env.JWT_ISSUER,
       aud: process.env.JWT_AUDIENCE,
-      jti: crypto.randomUUID()
+      jti: crypto.randomUUID(),
     };
     if (expiresIn !== undefined) {
       jwtPayload.exp = Math.floor(Date.now() / 1000) + expiresIn;
     }
-    const token: string = jwt.sign(
-      jwtPayload,
-      process.env.JWT_SECRET_KEY
-    );
-    return { token };
-  } catch (error) {
-    console.error("JWT signing error:", error);
+    const jwt: string = await new jose.SignJWT(jwtPayload)
+      .setProtectedHeader({ alg: "HS256" })
+      .sign(SECRET);
+    return { token: jwt, error: undefined };
+  } catch (err) {
+    console.error("JWT signing error:", err);
     return { token: undefined, error: "Token signing failed" };
   }
 }
 
 export async function jwtVerify(token: string): Promise<{
-  payload?: JwtPayload;
+  payload?: jose.JWTPayload;
   error?: string;
 }> {
-
   if (
     process.env.JWT_SECRET_KEY === undefined ||
     process.env.JWT_ISSUER === undefined ||
@@ -51,13 +44,12 @@ export async function jwtVerify(token: string): Promise<{
   ) {
     return { payload: undefined, error: "Internal error" };
   }
-
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY, {
+    const { payload } = await jose.jwtVerify(token, SECRET, {
       issuer: process.env.JWT_ISSUER,
       audience: process.env.JWT_AUDIENCE,
-    }) as JwtPayload;
-    return { payload: decoded };
+    });
+    return { payload: payload, error: undefined };
   } catch (error: any) {
     console.error("JWT verification error:", error);
     if (error.name === "TokenExpiredError") {

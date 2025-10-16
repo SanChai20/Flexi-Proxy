@@ -1,4 +1,4 @@
-import { jwtSign } from "@/lib/jwt";
+import { jwtSign } from "@/lib/jwt-edge";
 import { redis } from "@/lib/redis";
 
 // necessary env: [AUTHTOKEN_PREFIX] [JWT_SECRET_KEY] [JWT_ISSUER] [JWT_AUDIENCE] [UPSTASH_REDIS_REST_URL] [UPSTASH_REDIS_REST_TOKEN]

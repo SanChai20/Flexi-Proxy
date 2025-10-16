@@ -1,7 +1,7 @@
 import { redis } from "@/lib/redis";
 import { NextRequest, NextResponse } from "next/server";
 import { AuthRequest, withAuth } from "@/lib/with-auth";
-import { jwtSign } from "@/lib/jwt";
+import { jwtSign } from "@/lib/jwt-edge";
 import { revalidateTag } from "next/cache";
 
 export const preferredRegion = ["iad1", "cle1"];
