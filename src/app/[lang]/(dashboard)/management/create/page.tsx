@@ -33,7 +33,7 @@ export default async function ManagementCreatePage(
     getUserAdapterModifyVersion(),
   ]);
 
-  if (!userVersion) {
+  if (userVersion === undefined) {
     redirect(`/${lang}/management`);
   }
   const docPath = path.join(

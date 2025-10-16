@@ -39,7 +39,7 @@ export default async function ManagementModifyPage(
     getUserAdapterModifyVersion(),
   ]);
 
-  if (!adapter || !userVersion) {
+  if (!adapter || userVersion === undefined) {
     redirect(`/${lang}/management`);
   }
 
