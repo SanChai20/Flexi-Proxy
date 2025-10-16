@@ -4,8 +4,7 @@ import { AuthRequest, withAuth } from "@/lib/with-auth";
 import { jwtSign } from "@/lib/jwt";
 import { revalidateTag } from "next/cache";
 
-export const runtime = "edge";
-export const preferredRegion = "home";
+export const preferredRegion = ["iad1", "cle1"];
 
 const ENV = {
   AUTHTOKEN_PREFIX: process.env.AUTHTOKEN_PREFIX!,
