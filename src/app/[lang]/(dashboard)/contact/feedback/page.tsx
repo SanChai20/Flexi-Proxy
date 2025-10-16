@@ -2,7 +2,6 @@ import { getTrans } from "@/lib/dictionary";
 import { Locale } from "i18n-config";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,

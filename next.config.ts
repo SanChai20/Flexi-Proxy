@@ -1,8 +1,10 @@
 import type { NextConfig } from "next";
+import bundleAnalyzer from "@next/bundle-analyzer";
 
-const nextConfig: NextConfig = {
-  /* config options here */
-  allowedDevOrigins: ['local-origin.dev', '*.local-origin.dev'],
-};
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+});
 
-export default nextConfig;
+export default withBundleAnalyzer({
+  allowedDevOrigins: ["local-origin.dev", "*.local-origin.dev"],
+} satisfies NextConfig);
