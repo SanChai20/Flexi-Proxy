@@ -23,7 +23,7 @@ async function protectedPOST(
       [process.env.PROXY_MODELS_PREFIX, proxyId].join(":"),
       models_by_provider
     );
-    Promise.resolve().then(() => revalidateTag(`server-models:${proxyId}`));
+    revalidateTag(`server-models:${proxyId}`);
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     console.error("Failed to registry models: ", error);

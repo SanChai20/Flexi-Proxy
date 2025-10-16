@@ -40,17 +40,17 @@ async function protectedPOST(req: AuthRequest) {
     const token = crypto.randomUUID();
     const transaction = redis.multi();
     transaction.set<string>([ENV.AUTHTOKEN_PREFIX, token].join(":"), jwtToken, {
-      ex: 3600,
+      ex: 14400,
     });
     transaction.del([ENV.AUTHTOKEN_PREFIX, req.token].join(":"));
     transaction.set<{ url: string; status: string; adv: boolean }>(
       [ENV.PROXY_PREFIX, id].join(":"),
       { url, status, adv },
-      { ex: 3600 }
+      { ex: 14400 }
     );
     await transaction.exec();
     revalidateTag("proxy-servers");
-    return NextResponse.json({ token, expiresIn: 3600 }, { status: 200 });
+    return NextResponse.json({ token, expiresIn: 14400 }, { status: 200 });
   } catch (error) {
     console.error("Failed to exchange token: ", error);
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
