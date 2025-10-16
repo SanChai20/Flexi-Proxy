@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { jwtVerify } from "@/lib/jwt-edge";
+import { jwtVerify } from "@/lib/jwt";
 import { redis } from "./redis";
 import { Ratelimit } from "@upstash/ratelimit";
 

@@ -1,9 +1,9 @@
-import { asymmetricEncrypt, symmetricDecrypt } from "@/lib/encryption-edge";
+import { asymmetricEncrypt, symmetricDecrypt } from "@/lib/encryption";
 import { redis } from "@/lib/redis";
 import { AuthRequest, withAuth } from "@/lib/with-auth";
 import { NextResponse } from "next/server";
 
-export const runtime = "edge";
+// export const runtime = "edge";
 export const preferredRegion = ["iad1", "cle1"];
 
 const ENV = {
@@ -88,7 +88,7 @@ async function protectedPOST(req: AuthRequest) {
       kau: string;
     }>([ENV.ADAPTER_PREFIX, ENV.ADAPTER_KEY_PREFIX, tk].join(":"));
     if (tokenKeyData != null) {
-      const apiKey = await symmetricDecrypt(
+      const apiKey = symmetricDecrypt(
         {
           iv: tokenKeyData.kiv,
           encryptedData: tokenKeyData.ken,
@@ -96,7 +96,7 @@ async function protectedPOST(req: AuthRequest) {
         },
         ENV.ENCRYPTION_KEY
       );
-      const data = await asymmetricEncrypt(apiKey, public_key);
+      const data = asymmetricEncrypt(apiKey, public_key);
       return NextResponse.json(
         { enc: data.encryptedData, ...tokenData },
         { status: 200 }

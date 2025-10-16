@@ -1,6 +1,6 @@
 "use server";
 
-import { symmetricEncrypt } from "./encryption-edge";
+import { symmetricEncrypt } from "./encryption";
 import { redis } from "./redis";
 import { auth } from "@/auth";
 import { revalidateTag, unstable_cache } from "next/cache";
@@ -229,7 +229,7 @@ export async function updateAdapterAction(
     const commentNote: string | null = formData.get("commentNote") as string;
     const not = commentNote !== null ? commentNote : "";
     const encodedKey: { iv: string; encryptedData: string; authTag: string } =
-      await symmetricEncrypt(apiKey, process.env.ENCRYPTION_KEY);
+      symmetricEncrypt(apiKey, process.env.ENCRYPTION_KEY);
     const kiv = encodedKey.iv;
     const ken = encodedKey.encryptedData;
     const kau = encodedKey.authTag;
@@ -378,7 +378,7 @@ export async function createAdapterAction(
     const commentNote: string | null = formData.get("commentNote") as string;
     const not = commentNote !== null ? commentNote : "";
     const encodedKey: { iv: string; encryptedData: string; authTag: string } =
-      await symmetricEncrypt(apiKey, process.env.ENCRYPTION_KEY);
+      symmetricEncrypt(apiKey, process.env.ENCRYPTION_KEY);
     const kiv = encodedKey.iv;
     const ken = encodedKey.encryptedData;
     const kau = encodedKey.authTag;
