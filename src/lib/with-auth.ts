@@ -3,7 +3,7 @@ import { jwtVerify } from "@/lib/jwt";
 import { redis } from "./redis";
 
 export interface AuthRequest extends NextRequest {
-  token?: string;
+  token: string;
 }
 type Handler = (req: AuthRequest, context?: any) => Promise<Response>;
 
@@ -23,7 +23,9 @@ export function withAuth(handler: Handler): Handler {
         headers: { "Content-Type": "application/json" },
       });
     }
-    const jwtToken: string | null = await redis.get<string>([process.env.AUTHTOKEN_PREFIX, token].join(":"));
+    const jwtToken: string | null = await redis.get<string>(
+      [process.env.AUTHTOKEN_PREFIX, token].join(":")
+    );
     if (jwtToken === null) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
