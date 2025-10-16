@@ -36,23 +36,15 @@ export default async function ManagementPage(
   props: PageProps<"/[lang]/management">
 ) {
   const { lang } = await props.params;
-  const adapters: {
-    aid: string;
-    tk: string;
-    pid: string;
-    pul: string;
-    not: string;
-    ava: boolean;
-  }[] = await getAllUserAdapters();
+  const [dict, permissions, adapters] = await Promise.all([
+    getTrans(lang as Locale),
+    getCachedUserPermissions(),
+    getAllUserAdapters(),
+  ]);
   if (!adapters || adapters.length === 0) {
     const token = await createShortTimeToken(3600);
     redirect(`/${lang}/management/create?token=${encodeURIComponent(token)}`);
   }
-  const [dict, permissions] = await Promise.all([
-    getTrans(lang as Locale),
-    getCachedUserPermissions(),
-  ]);
-
   return (
     <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
       <Card>
