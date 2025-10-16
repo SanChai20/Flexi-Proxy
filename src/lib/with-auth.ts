@@ -4,7 +4,7 @@ import { redis } from "./redis";
 import { Ratelimit } from "@upstash/ratelimit";
 
 export interface AuthRequest extends NextRequest {
-  token: string;
+  token?: string;
 }
 type Handler = (req: AuthRequest, context?: any) => Promise<Response>;
 
