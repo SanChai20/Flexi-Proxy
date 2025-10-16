@@ -45,19 +45,12 @@ async function protectedGET(req: AuthRequest) {
 
   try {
     const { tokenKey, keyDataKey } = getRedisKeys(tk);
-
-    const pipeline = redis.pipeline();
-    pipeline.exists(tokenKey);
-    pipeline.exists(keyDataKey);
-    const results = await pipeline.exec();
-    const bothExist = results?.every((result): boolean => {
-      const [err, value] = result as [Error | null, number];
-      return !err && value === 1;
-    });
-    return NextResponse.json(
-      bothExist ? { msg: "success" } : { error: "Unauthorized" },
-      { status: bothExist ? 200 : 401 }
-    );
+    const count = await redis.exists(tokenKey, keyDataKey);
+    if (count > 1) {
+      return NextResponse.json({ msg: "success" }, { status: 200 });
+    } else {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
   } catch (error) {
     console.error("Failed to validate key:", error);
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
