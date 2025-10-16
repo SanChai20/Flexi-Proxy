@@ -3,6 +3,9 @@ import { redis } from "@/lib/redis";
 import { AuthRequest, withAuth } from "@/lib/with-auth";
 import { NextResponse } from "next/server";
 
+export const runtime = "edge";
+export const preferredRegion = "home";
+
 const ENV = {
   ADAPTER_PREFIX: process.env.ADAPTER_PREFIX!,
   ADAPTER_KEY_PREFIX: process.env.ADAPTER_KEY_PREFIX!,
@@ -14,12 +17,6 @@ const ENV = {
 // Headers: 'X-API-Key': <Token start from 'fp-'>
 //          'Authorization': Bearer <Token>
 async function protectedGET(req: AuthRequest) {
-  const metrics = {
-    total: Date.now(),
-    redis: 0,
-    auth: 0,
-  };
-
   if (
     ENV.ADAPTER_PREFIX === undefined ||
     ENV.ADAPTER_KEY_PREFIX === undefined
@@ -27,20 +24,14 @@ async function protectedGET(req: AuthRequest) {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
   try {
-    const authStart = Date.now();
     const tk: string | null = req.headers.get("X-API-Key");
     if (tk === null) {
       return NextResponse.json({ error: "Missing Field" }, { status: 400 });
     }
-    metrics.auth = Date.now() - authStart;
-    const redisStart = Date.now();
     const [tokenData, tokenKeyData] = await Promise.all([
       redis.get([ENV.ADAPTER_PREFIX, tk].join(":")),
       redis.get([ENV.ADAPTER_PREFIX, ENV.ADAPTER_KEY_PREFIX, tk].join(":")),
     ]);
-    metrics.redis = Date.now() - redisStart;
-    metrics.total = Date.now() - metrics.total;
-    console.log("Performance metrics:", metrics);
     if (tokenData && tokenKeyData) {
       return NextResponse.json({ msg: "success" }, { status: 200 });
     } else {

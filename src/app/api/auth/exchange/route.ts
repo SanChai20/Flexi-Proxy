@@ -4,6 +4,9 @@ import { AuthRequest, withAuth } from "@/lib/with-auth";
 import { jwtSign } from "@/lib/jwt";
 import { revalidateTag } from "next/cache";
 
+export const runtime = "edge";
+export const preferredRegion = "home";
+
 const ENV = {
   AUTHTOKEN_PREFIX: process.env.AUTHTOKEN_PREFIX!,
   PROXY_PREFIX: process.env.PROXY_PREFIX!,
