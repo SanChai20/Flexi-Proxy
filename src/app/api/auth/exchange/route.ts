@@ -84,20 +84,7 @@ async function protectedPOST(req: AuthRequest) {
       { url, status, adv },
       { ex: TOKEN_EXPIRY }
     );
-    const results = await transaction.exec();
-    if (
-      !results ||
-      results.some((result) => {
-        const [err] = result as [Error | null, unknown];
-        return err !== null;
-      })
-    ) {
-      console.error("Transaction failed:", results);
-      return NextResponse.json(
-        { error: "Database operation failed" },
-        { status: 500 }
-      );
-    }
+    await transaction.exec();
     Promise.resolve().then(() => revalidateTag("proxy-servers"));
     return NextResponse.json(
       {
