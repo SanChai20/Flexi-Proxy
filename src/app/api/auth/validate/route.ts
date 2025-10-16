@@ -3,7 +3,6 @@ import { redis } from "@/lib/redis";
 import { AuthRequest, withAuth } from "@/lib/with-auth";
 import { NextResponse } from "next/server";
 
-// export const runtime = "edge";
 export const preferredRegion = ["iad1", "cle1"];
 
 const ENV = {
