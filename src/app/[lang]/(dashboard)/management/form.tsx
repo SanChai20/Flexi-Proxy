@@ -595,7 +595,7 @@ export function EditAdapterDropdownForm({
     <form onSubmit={handleSubmit}>
       <input type="hidden" name="adapterId" value={adapter_id} />
       <DropdownMenuItem
-        className="w-full cursor-pointer text-destructive focus:text-destructive text-xs xs:text-sm"
+        className="w-full cursor-pointer text-foreground focus:text-foreground text-xs xs:text-sm"
         asChild
       >
         <button type="submit" className="w-full" disabled={isSubmitting}>
