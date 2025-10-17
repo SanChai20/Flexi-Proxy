@@ -11,37 +11,6 @@ const ENV = {
   ENCRYPTION_KEY: process.env.ENCRYPTION_KEY!,
 };
 
-// GET
-// API: '/api/auth/validate'
-// Headers: 'X-API-Key': <Token start from 'fp-'>
-//          'Authorization': Bearer <Token>
-async function protectedGET(req: AuthRequest) {
-  if (
-    ENV.ADAPTER_PREFIX === undefined ||
-    ENV.ADAPTER_KEY_PREFIX === undefined
-  ) {
-    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
-  }
-  try {
-    const tk: string | null = req.headers.get("X-API-Key");
-    if (tk === null) {
-      return NextResponse.json({ error: "Missing Field" }, { status: 400 });
-    }
-    const [tokenData, tokenKeyData] = await Promise.all([
-      redis.get([ENV.ADAPTER_PREFIX, tk].join(":")),
-      redis.get([ENV.ADAPTER_PREFIX, ENV.ADAPTER_KEY_PREFIX, tk].join(":")),
-    ]);
-    if (tokenData && tokenKeyData) {
-      return NextResponse.json({ msg: "success" }, { status: 200 });
-    } else {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-  } catch (error) {
-    console.error("Failed to validate key: ", error);
-    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
-  }
-}
-
 // POST
 // API: '/api/auth/validate'
 // Headers: 'X-API-Key': <Token start from 'fp-'>
@@ -77,6 +46,9 @@ async function protectedPOST(req: AuthRequest) {
       mid: string;
       llm: string;
     }>([ENV.ADAPTER_PREFIX, tk].join(":"));
+    if (tokenData === null) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
     const tokenKeyData: {
       kiv: string;
       ken: string;
@@ -109,5 +81,4 @@ async function protectedPOST(req: AuthRequest) {
   }
 }
 
-export const GET = withAuth(protectedGET);
 export const POST = withAuth(protectedPOST);
