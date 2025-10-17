@@ -1,14 +1,6 @@
 import { getTrans } from "@/lib/dictionary";
 import { Locale } from "i18n-config";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { AdapterForm } from "../form";
-import {
   getCachedUserPermissions,
   getAllProxyServers,
   getUserAdapterModifyVersion,
@@ -17,17 +9,39 @@ import {
 import { redirect } from "next/navigation";
 import path from "path";
 import fs from "fs";
+import { Suspense } from "react";
+import CreateManagementClient from "./client";
+import CreateManagementSkeleton from "./skeleton";
 
 export default async function ManagementCreatePage(
   props: PageProps<"/[lang]/management/create">
 ) {
   const { lang } = await props.params;
   const { token } = await props.searchParams;
+
   if (typeof token !== "string" || !(await verifyShortTimeToken(token))) {
     redirect(`/${lang}/management`);
   }
-  const [dict, permissions, proxies, userVersion] = await Promise.all([
-    getTrans(lang as Locale),
+
+  const dict = await getTrans(lang as Locale);
+
+  return (
+    <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
+      <Suspense fallback={<CreateManagementSkeleton dict={dict} />}>
+        <CreateManagementContent lang={lang} dict={dict} />
+      </Suspense>
+    </section>
+  );
+}
+
+async function CreateManagementContent({
+  lang,
+  dict,
+}: {
+  lang: string;
+  dict: any;
+}) {
+  const [permissions, proxies, userVersion] = await Promise.all([
     getCachedUserPermissions(),
     getAllProxyServers(),
     getUserAdapterModifyVersion(),
@@ -36,6 +50,7 @@ export default async function ManagementCreatePage(
   if (userVersion === undefined) {
     redirect(`/${lang}/management`);
   }
+
   const docPath = path.join(
     process.cwd(),
     "public",
@@ -44,29 +59,19 @@ export default async function ManagementCreatePage(
   const docContent = fs.readFileSync(docPath, "utf8");
   const data: Record<string, { id: string; website: string }> =
     JSON.parse(docContent);
+
+  const providers = Object.entries(data).map(([name, info]) => ({
+    name,
+    ...info,
+  }));
+
   return (
-    <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">
-            {dict?.management?.tokenPassTitle || "Create Token Pass"}
-          </CardTitle>
-          <CardDescription className="text-base">
-            {dict?.management?.tokenPassSubtitle ||
-              "Obtain an Access Token for the Proxy Gateway Service"}
-          </CardDescription>
-        </CardHeader>
-      </Card>
-      <AdapterForm
-        dict={dict}
-        proxies={proxies}
-        providers={Object.entries(data).map(([name, info]) => ({
-          name,
-          ...info,
-        }))}
-        advRequest={permissions.adv}
-        version={userVersion}
-      />
-    </section>
+    <CreateManagementClient
+      dict={dict}
+      proxies={proxies}
+      providers={providers}
+      advRequest={permissions.adv}
+      version={userVersion}
+    />
   );
 }
