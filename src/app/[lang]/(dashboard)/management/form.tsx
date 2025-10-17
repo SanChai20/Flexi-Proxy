@@ -85,14 +85,15 @@ export function AdapterForm({
   const selectedProvider = supportedProviders.find(
     (p) => p.id === selectedProviderId
   );
-
-  const handleProxyChange = useCallback(
-    async (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const proxyId = e.target.value;
+  const fetchAndSetProxyModels = useCallback(
+    async (proxyId: string, clearModel = false) => {
       setSelectedProxyId(proxyId);
       setSupportedProviders([]);
       setModelsByProvider({});
-      setModelId(""); // Clear modelId when proxy changes
+
+      if (clearModel) {
+        setModelId("");
+      }
 
       if (!proxyId) {
         return;
@@ -117,6 +118,20 @@ export function AdapterForm({
     [providers]
   );
 
+  const handleProxyChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      fetchAndSetProxyModels(e.target.value, true);
+    },
+    [fetchAndSetProxyModels]
+  );
+
+  const initializeProxy = useCallback(
+    (proxyId: string) => {
+      fetchAndSetProxyModels(proxyId, false);
+    },
+    [fetchAndSetProxyModels]
+  );
+
   const handleProviderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedProviderId(e.target.value);
     setModelId(""); // Clear modelId when provider changes
@@ -124,9 +139,7 @@ export function AdapterForm({
 
   useEffect(() => {
     if (defaultValues?.proxyId) {
-      handleProxyChange({
-        target: { value: defaultValues.proxyId },
-      } as React.ChangeEvent<HTMLSelectElement>);
+      initializeProxy(defaultValues.proxyId);
     }
   }, [defaultValues?.proxyId, handleProxyChange]);
 
