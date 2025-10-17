@@ -76,6 +76,7 @@ export function AdapterForm({
       ? defaultValues?.proxyId
       : ""
   );
+  const [modelId, setModelId] = useState(defaultValues?.modelId || "");
   const [supportedProviders, setSupportedProviders] =
     useState<{ name: string; id: string; website: string }[]>(providers);
   const [modelsByProvider, setModelsByProvider] = useState<
@@ -91,6 +92,8 @@ export function AdapterForm({
       setSelectedProxyId(proxyId);
       setSupportedProviders([]);
       setModelsByProvider({});
+      setModelId(""); // Clear modelId when proxy changes
+
       if (!proxyId) {
         return;
       }
@@ -113,6 +116,11 @@ export function AdapterForm({
     },
     [providers]
   );
+
+  const handleProviderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedProviderId(e.target.value);
+    setModelId(""); // Clear modelId when provider changes
+  };
 
   useEffect(() => {
     if (defaultValues?.proxyId) {
@@ -316,13 +324,13 @@ export function AdapterForm({
                     id="provider"
                     name="provider"
                     value={selectedProviderId}
-                    onChange={(e) => setSelectedProviderId(e.target.value)}
+                    onChange={handleProviderChange}
                     className="w-full px-4 py-3 text-foreground bg-background border border-input rounded-lg 
-                             focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring 
-                             transition-all duration-200 hover:border-ring/50
-                             bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI0IDI0IiBzdHJva2U9IiNjY2NjY2MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJtNiA5IDYgNiA2LTYiLz48L3N2Zz4=')] 
-                             bg-no-repeat bg-[right_12px_center] bg-[length:16px_16px] appearance-none
-                             shadow-sm"
+             focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring 
+             transition-all duration-200 hover:border-ring/50
+             bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI0IDI0IiBzdHJva2U9IiNjY2NjY2MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJtNiA5IDYgNiA2LTYiLz48L3N2Zz4=')] 
+             bg-no-repeat bg-[right_12px_center] bg-[length:16px_16px] appearance-none
+             shadow-sm"
                     required
                   >
                     <option value="">
@@ -363,10 +371,11 @@ export function AdapterForm({
                     type="text"
                     id="modelId"
                     name="modelId"
-                    defaultValue={defaultValues?.modelId}
+                    value={modelId}
+                    onChange={(e) => setModelId(e.target.value)}
                     className="w-full px-4 py-3 text-foreground bg-background border border-input rounded-lg 
-                             focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring 
-                             transition-all duration-200 hover:border-ring/50 shadow-sm"
+             focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring 
+             transition-all duration-200 hover:border-ring/50 shadow-sm"
                     placeholder={
                       dict?.management?.modelIdPlaceHolder ||
                       "Select Model ID..."
