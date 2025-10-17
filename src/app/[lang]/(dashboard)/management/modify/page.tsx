@@ -8,11 +8,12 @@ import {
   getUserAdapterModifyVersion,
   verifyShortTimeToken,
 } from "@/lib/actions";
-import path from "path";
-import fs from "fs";
 import { Suspense } from "react";
 import ModifyManagementClient from "./client";
 import ModifyManagementSkeleton from "./skeleton";
+
+import data from "public/config/providers.json";
+const providerData: Record<string, { id: string; website: string }> = data;
 
 export default async function ManagementModifyPage(
   props: PageProps<"/[lang]/management/modify">
@@ -60,16 +61,7 @@ async function ModifyManagementContent({
     redirect(`/${lang}/management`);
   }
 
-  const docPath = path.join(
-    process.cwd(),
-    "public",
-    dict.management.providerPage
-  );
-  const docContent = fs.readFileSync(docPath, "utf8");
-  const data: Record<string, { id: string; website: string }> =
-    JSON.parse(docContent);
-
-  const providers = Object.entries(data).map(([name, info]) => ({
+  const providers = Object.entries(providerData).map(([name, info]) => ({
     name,
     ...info,
   }));

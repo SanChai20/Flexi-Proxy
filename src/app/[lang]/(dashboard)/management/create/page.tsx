@@ -7,11 +7,12 @@ import {
   verifyShortTimeToken,
 } from "@/lib/actions";
 import { redirect } from "next/navigation";
-import path from "path";
-import fs from "fs";
 import { Suspense } from "react";
 import CreateManagementClient from "./client";
 import CreateManagementSkeleton from "./skeleton";
+
+import data from "public/config/providers.json";
+const providerData: Record<string, { id: string; website: string }> = data;
 
 export default async function ManagementCreatePage(
   props: PageProps<"/[lang]/management/create">
@@ -51,16 +52,7 @@ async function CreateManagementContent({
     redirect(`/${lang}/management`);
   }
 
-  const docPath = path.join(
-    process.cwd(),
-    "public",
-    dict.management.providerPage
-  );
-  const docContent = fs.readFileSync(docPath, "utf8");
-  const data: Record<string, { id: string; website: string }> =
-    JSON.parse(docContent);
-
-  const providers = Object.entries(data).map(([name, info]) => ({
+  const providers = Object.entries(providerData).map(([name, info]) => ({
     name,
     ...info,
   }));
