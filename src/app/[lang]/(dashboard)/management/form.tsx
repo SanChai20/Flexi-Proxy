@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 
 const Tooltip = dynamic(
@@ -492,34 +492,44 @@ export function AdapterForm({
 export function EditAdapterDropdownForm({
   dict,
   adapter_id,
+  onSubmitStart,
+  onSubmitEnd,
 }: {
   dict: any;
   adapter_id: string;
+  onSubmitStart: () => void;
+  onSubmitEnd: () => void;
 }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const onSubmit = useCallback(
-    async (formData: FormData) => {
-      if (isSubmitting) {
-        return;
-      }
-      setIsSubmitting(true);
-      try {
-        const token = await createShortTimeToken(3600);
-        router.push(
-          `/management/modify?aid=${encodeURIComponent(
-            formData.get("adapterId") as string
-          )}&token=${encodeURIComponent(token)}`
-        );
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
-    [isSubmitting, router]
-  );
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    onSubmitStart();
+
+    try {
+      const formData = new FormData(e.currentTarget);
+      const token = await createShortTimeToken(3600);
+      router.push(
+        `/management/modify?aid=${encodeURIComponent(
+          formData.get("adapterId") as string
+        )}&token=${encodeURIComponent(token)}`
+      );
+    } catch (error) {
+      console.error("Edit adapter error:", error);
+      setIsSubmitting(false);
+      onSubmitEnd();
+    }
+  };
 
   return (
-    <form action={onSubmit}>
+    <form onSubmit={handleSubmit}>
       <input type="hidden" name="adapterId" value={adapter_id} />
       <DropdownMenuItem
         className="w-full cursor-pointer text-destructive focus:text-destructive text-xs xs:text-sm"
@@ -536,31 +546,42 @@ export function EditAdapterDropdownForm({
 export function DeleteAdapterDropdownForm({
   dict,
   adapter_id,
+  onSubmitStart,
+  onSubmitEnd,
 }: {
   dict: any;
   adapter_id: string;
+  onSubmitStart: () => void;
+  onSubmitEnd: () => void;
 }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const onSubmit = useCallback(
-    async (formData: FormData) => {
-      if (isSubmitting) {
-        return;
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    onSubmitStart();
+
+    try {
+      const formData = new FormData(e.currentTarget);
+      const canRefresh = await deleteAdapterAction(formData);
+      if (canRefresh) {
+        router.push("/management");
       }
-      setIsSubmitting(true);
-      try {
-        const canRefresh = await deleteAdapterAction(formData);
-        if (canRefresh) {
-          router.push("/management");
-        }
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
-    [isSubmitting, router]
-  );
+    } catch (error) {
+      console.error("Delete adapter error:", error);
+      setIsSubmitting(false);
+      onSubmitEnd();
+    }
+  };
+
   return (
-    <form action={onSubmit}>
+    <form onSubmit={handleSubmit}>
       <input type="hidden" name="adapterId" value={adapter_id} />
       <DropdownMenuItem
         className="w-full cursor-pointer text-destructive focus:text-destructive text-xs xs:text-sm"
@@ -591,27 +612,29 @@ export function CreateAdapterForm({
     setReachLimit(currentAdapterCount >= maxAdapterCountAllowed);
   }, [currentAdapterCount, maxAdapterCountAllowed]);
 
-  const onSubmit = useCallback(
-    async (formData: FormData) => {
-      if (isSubmitting) {
-        return;
-      }
-      setIsSubmitting(true);
-      try {
-        const token = await createShortTimeToken(3600);
-        router.push(`/management/create?token=${encodeURIComponent(token)}`);
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
-    [isSubmitting, router]
-  );
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (isSubmitting || reachLimit) {
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const token = await createShortTimeToken(3600);
+      router.push(`/management/create?token=${encodeURIComponent(token)}`);
+    } catch (error) {
+      console.error("Failed to create token:", error);
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <form action={onSubmit} className="flex flex-row items-center">
+          <form onSubmit={handleSubmit} className="flex flex-row items-center">
             <div className="mr-4 tracking-wider text-muted-foreground">{`(${currentAdapterCount}/${maxAdapterCountAllowed})`}</div>
             <Button
               type="submit"
