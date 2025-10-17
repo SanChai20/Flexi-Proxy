@@ -2,7 +2,6 @@ import { getTrans } from "@/lib/dictionary";
 import { Locale } from "i18n-config";
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -10,7 +9,6 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -20,7 +18,7 @@ import {
 } from "@/lib/actions";
 import { redirect } from "next/navigation";
 import ClipboardButton from "@/components/ui/clipboard-button";
-import { Cog6ToothIcon } from "@heroicons/react/24/outline";
+import { Settings } from "lucide-react";
 import {
   CreateAdapterForm,
   DeleteAdapterDropdownForm,
@@ -136,7 +134,7 @@ export default async function ManagementPage(
                     <td className="w-1/6 px-2 py-3 text-xs text-right sm:px-5 sm:py-3.5 sm:text-sm sm:text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger className="inline-flex items-center justify-center p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors duration-150 md:p-1.5">
-                          <Cog6ToothIcon className="h-5 w-5" />
+                          <Settings className="h-5 w-5" />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
                           align="end"
