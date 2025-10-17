@@ -42,7 +42,6 @@ const DropdownMenuItem = dynamic(
   () => import("@/components/ui/dropdown-menu").then((m) => m.DropdownMenuItem),
   { ssr: false }
 );
-
 export function AdapterForm({
   dict,
   proxies,
@@ -131,10 +130,8 @@ export function AdapterForm({
       } else {
         let canJump: boolean = false;
         if (defaultValues !== undefined) {
-          // Updating Operation
           canJump = await updateAdapterAction(formData);
         } else {
-          // Creating Operation
           canJump = await createAdapterAction(formData);
         }
         if (canJump) {
@@ -144,155 +141,173 @@ export function AdapterForm({
     },
     [router, version, defaultValues]
   );
+
   return (
-    <form action={onSubmit} className="mt-6">
+    <form action={onSubmit} className="mt-8 max-w-4xl mx-auto">
       <input type="hidden" name="adapterId" value={defaultValues?.adapterId} />
-      {/* Adapter Configuration Section */}
-      <div className="bg-card border border-border rounded-lg overflow-hidden">
+
+      {/* Main Container with Enhanced Shadow */}
+      <div className="bg-card border border-border rounded-xl shadow-lg overflow-hidden">
         {/* Proxy Section */}
-        <div className="p-6">
-          <h3 className="text-md font-semibold text-foreground mb-4 flex items-center">
-            <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2 flex-shrink-0">
+        <div className="p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-md shadow-sm">
               {dict?.management?.proxyServer || "PROXY SERVER"}
-            </span>
-            <span className="truncate">
+            </div>
+            <h3 className="text-lg font-semibold text-foreground">
               {dict?.management?.targetTitle || "Select Proxy Service"}
-            </span>
-          </h3>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center">
-                <label
-                  htmlFor="proxy"
-                  className="block text-sm font-medium text-foreground"
-                >
-                  {<span className="text-destructive mr-1">*</span>}
-                  {dict?.management?.proxy || "Proxy Gateway"}
-                </label>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <HelpCircleIcon className="h-4 w-4 ml-2 text-muted-foreground cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-xs">
-                    <p>
-                      {dict?.management?.proxyTip ||
-                        "You can choose a LiteLLM proxy service based on your location and server load."}
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              <select
-                id="proxy"
-                name="proxy"
-                value={selectedProxyId}
-                onChange={handleProxyChange}
-                className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI0IDI0IiBzdHJva2U9IiNjY2NjY2MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJtNiA5IDYgNiA2LTYiLz48L3N2Zz4=')] bg-no-repeat bg-[right_12px_center] bg-[length:16px_16px] appearance-none max-w-full"
-                required
+            </h3>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <label
+                htmlFor="proxy"
+                className="text-sm font-medium text-foreground flex items-center gap-1.5"
               >
-                <option value="">
-                  {dict.management?.selectProxy || "Select a proxy server"}
-                </option>
-                {proxies.map((option) => (
-                  <option
-                    key={option.id}
-                    value={option.id}
-                    disabled={
+                <span className="text-destructive">*</span>
+                {dict?.management?.proxy || "Proxy Gateway"}
+              </label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <HelpCircleIcon className="h-4 w-4 text-muted-foreground cursor-help hover:text-foreground transition-colors" />
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs">
+                  <p>
+                    {dict?.management?.proxyTip ||
+                      "You can choose a LiteLLM proxy service based on your location and server load."}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+
+            <select
+              id="proxy"
+              name="proxy"
+              value={selectedProxyId}
+              onChange={handleProxyChange}
+              className="w-full px-4 py-3 text-foreground bg-background border border-input rounded-lg 
+                       focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring 
+                       transition-all duration-200 hover:border-ring/50
+                       bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI0IDI0IiBzdHJva2U9IiNjY2NjY2MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJtNiA5IDYgNiA2LTYiLz48L3N2Zz4=')] 
+                       bg-no-repeat bg-[right_12px_center] bg-[length:16px_16px] appearance-none
+                       shadow-sm"
+              required
+            >
+              <option value="">
+                {dict.management?.selectProxy || "Select a proxy server"}
+              </option>
+              {proxies.map((option) => (
+                <option
+                  key={option.id}
+                  value={option.id}
+                  disabled={
+                    option.status === "" ||
+                    option.status === "unavailable" ||
+                    (advRequest ? false : option.adv)
+                  }
+                  style={{
+                    color:
                       option.status === "" ||
                       option.status === "unavailable" ||
                       (advRequest ? false : option.adv)
-                    }
-                    style={{
-                      color:
-                        option.status === "" ||
-                        option.status === "unavailable" ||
-                        (advRequest ? false : option.adv)
-                          ? "#9ca3af" // gray
-                          : option.status === "spare"
-                          ? "#10b981" // green
-                          : option.status === "busy"
-                          ? "#f97316" // orange
-                          : option.status === "full"
-                          ? "#ef4444" // red
-                          : "inherit", // default
-                    }}
-                  >
-                    {" ["}
-                    {(option.status === "" ||
-                      option.status === "unavailable") &&
-                      (dict?.management?.unavailable || "Unavailable")}
-                    {option.status === "spare" &&
-                      (dict?.management?.spare || "Spare")}
-                    {option.status === "busy" &&
-                      (dict?.management?.busy || "Busy")}
-                    {option.status === "full" &&
-                      (dict?.management?.full || "Full")}
-                    {"] "}
-                    {" ["}
-                    {option.adv
-                      ? dict?.management?.pro || "Pro"
-                      : dict?.management?.free || "Free"}
-                    {"] "}
-                    {option.id}
-                  </option>
-                ))}
-              </select>
-            </div>
+                        ? "#9ca3af"
+                        : option.status === "spare"
+                        ? "#10b981"
+                        : option.status === "busy"
+                        ? "#f97316"
+                        : option.status === "full"
+                        ? "#ef4444"
+                        : "inherit",
+                  }}
+                >
+                  {" ["}
+                  {(option.status === "" || option.status === "unavailable") &&
+                    (dict?.management?.unavailable || "Unavailable")}
+                  {option.status === "spare" &&
+                    (dict?.management?.spare || "Spare")}
+                  {option.status === "busy" &&
+                    (dict?.management?.busy || "Busy")}
+                  {option.status === "full" &&
+                    (dict?.management?.full || "Full")}
+                  {"] ["}
+                  {option.adv
+                    ? dict?.management?.pro || "Pro"
+                    : dict?.management?.free || "Free"}
+                  {"] "}
+                  {option.id}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
-        {/* Divider between sections */}
-        <div className="border-t border-border"></div>
+        {/* Enhanced Divider */}
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-border"></div>
+          </div>
+          <div className="relative flex justify-center">
+            <span className="bg-card px-4 text-xs text-muted-foreground">
+              •••
+            </span>
+          </div>
+        </div>
 
         {/* Source Section */}
         <div
-          className={`p-6 transition ${
+          className={`p-8 transition-all duration-300 ${
             selectedProxyId
               ? "opacity-100"
-              : "opacity-50 pointer-events-none select-none"
+              : "opacity-40 pointer-events-none select-none"
           }`}
         >
           <fieldset disabled={!selectedProxyId}>
-            <h3 className="text-md font-semibold text-foreground mb-4 flex items-center">
-              <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2 flex-shrink-0">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-md shadow-sm">
                 {dict?.management?.tokenPassSource || "SOURCE"}
-              </span>
-              <span className="truncate">
+              </div>
+              <h3 className="text-lg font-semibold text-foreground">
                 {dict?.management?.sourceTitle || "Configure Model"}
-              </span>
-            </h3>
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <div className="flex items-center">
-                    <label
-                      htmlFor="provider"
-                      className="block text-sm font-medium text-foreground"
-                    >
-                      <span className="text-destructive mr-1">*</span>
-                      {dict?.management?.providerOptions || "Provider"}
-                    </label>
+              </h3>
+            </div>
 
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <HelpCircleIcon className="h-4 w-4 ml-2 text-muted-foreground cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-xs">
-                        <p>
-                          {dict?.management?.providerOptionsTip ||
-                            "E.g. Anthropic, Deepseek, OpenRouter etc."}
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
+            <div className="space-y-6">
+              {/* Provider and Model Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Provider Select */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <label
+                        htmlFor="provider"
+                        className="text-sm font-medium text-foreground flex items-center gap-1.5"
+                      >
+                        <span className="text-destructive">*</span>
+                        {dict?.management?.providerOptions || "Provider"}
+                      </label>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <HelpCircleIcon className="h-4 w-4 text-muted-foreground cursor-help hover:text-foreground transition-colors" />
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-xs">
+                          <p>
+                            {dict?.management?.providerOptionsTip ||
+                              "E.g. Anthropic, Deepseek, OpenRouter etc."}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
 
                     {selectedProvider?.website && (
                       <a
                         href={selectedProvider.website}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="ml-auto text-muted-foreground hover:text-primary transition"
+                        className="text-muted-foreground hover:text-primary transition-colors group"
                         title={`Go to ${selectedProvider.name} official website`}
                       >
-                        <ExternalLink className="h-4 w-4" />
+                        <ExternalLink className="h-4 w-4 group-hover:scale-110 transition-transform" />
                       </a>
                     )}
                   </div>
@@ -302,7 +317,12 @@ export function AdapterForm({
                     name="provider"
                     value={selectedProviderId}
                     onChange={(e) => setSelectedProviderId(e.target.value)}
-                    className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI0IDI0IiBzdHJva2U9IiNjY2NjY2MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJtNiA5IDYgNiA2LTYiLz48L3N2Zz4=')] bg-no-repeat bg-[right_12px_center] bg-[length:16px_16px] appearance-none max-w-full"
+                    className="w-full px-4 py-3 text-foreground bg-background border border-input rounded-lg 
+                             focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring 
+                             transition-all duration-200 hover:border-ring/50
+                             bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI0IDI0IiBzdHJva2U9IiNjY2NjY2MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJtNiA5IDYgNiA2LTYiLz48L3N2Zz4=')] 
+                             bg-no-repeat bg-[right_12px_center] bg-[length:16px_16px] appearance-none
+                             shadow-sm"
                     required
                   >
                     <option value="">
@@ -315,33 +335,38 @@ export function AdapterForm({
                     ))}
                   </select>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex items-center">
+
+                {/* Model ID Input */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
                     <label
                       htmlFor="modelId"
-                      className="block text-sm font-medium text-foreground"
+                      className="text-sm font-medium text-foreground flex items-center gap-1.5"
                     >
-                      {<span className="text-destructive mr-1">*</span>}
+                      <span className="text-destructive">*</span>
                       {dict?.management?.modelId || "Model ID"}
                     </label>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <HelpCircleIcon className="h-4 w-4 ml-2 text-muted-foreground cursor-help" />
+                        <HelpCircleIcon className="h-4 w-4 text-muted-foreground cursor-help hover:text-foreground transition-colors" />
                       </TooltipTrigger>
                       <TooltipContent side="top" className="max-w-xs">
                         <p>
                           {dict?.management?.modelIdOptionsTip ||
-                            "You can check the specific options on each provider's official website, such as OpenAI’s gpt-4 and gpt-3.5-turbo, or DeepSeek’s deepseek-chat."}
+                            "You can check the specific options on each provider's official website, such as OpenAI's gpt-4 and gpt-3.5-turbo, or DeepSeek's deepseek-chat."}
                         </p>
                       </TooltipContent>
                     </Tooltip>
                   </div>
+
                   <input
                     type="text"
                     id="modelId"
                     name="modelId"
                     defaultValue={defaultValues?.modelId}
-                    className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition max-w-full"
+                    className="w-full px-4 py-3 text-foreground bg-background border border-input rounded-lg 
+                             focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring 
+                             transition-all duration-200 hover:border-ring/50 shadow-sm"
                     placeholder={
                       dict?.management?.modelIdPlaceHolder ||
                       "Select Model ID..."
@@ -359,18 +384,20 @@ export function AdapterForm({
                     )}
                 </div>
               </div>
-              <div className="space-y-2">
-                <div className="flex items-center">
+
+              {/* API Key Input */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
                   <label
                     htmlFor="apiKey"
-                    className="block text-sm font-medium text-foreground"
+                    className="text-sm font-medium text-foreground flex items-center gap-1.5"
                   >
-                    {<span className="text-destructive mr-1">*</span>}
+                    <span className="text-destructive">*</span>
                     {dict?.management?.apiKey || "API Key"}
                   </label>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <HelpCircleIcon className="h-4 w-4 ml-2 text-muted-foreground cursor-help" />
+                      <HelpCircleIcon className="h-4 w-4 text-muted-foreground cursor-help hover:text-foreground transition-colors" />
                     </TooltipTrigger>
                     <TooltipContent side="top" className="max-w-xs">
                       <p>
@@ -380,12 +407,15 @@ export function AdapterForm({
                     </TooltipContent>
                   </Tooltip>
                 </div>
-                <div className="relative w-full">
+
+                <div className="relative group">
                   <input
                     type={showApiKey ? "text" : "password"}
                     id="apiKey"
                     name="apiKey"
-                    className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition pr-10"
+                    className="w-full px-4 py-3 pr-12 text-foreground bg-background border border-input rounded-lg 
+                             focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring 
+                             transition-all duration-200 hover:border-ring/50 shadow-sm"
                     placeholder={
                       dict?.management?.apiKeyPlaceHolder || "Type..."
                     }
@@ -394,7 +424,9 @@ export function AdapterForm({
                   <button
                     type="button"
                     onClick={() => setShowApiKey(!showApiKey)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-md
+                             text-muted-foreground hover:text-foreground hover:bg-muted/50
+                             transition-all duration-200"
                     tabIndex={-1}
                   >
                     {showApiKey ? (
@@ -405,17 +437,19 @@ export function AdapterForm({
                   </button>
                 </div>
               </div>
-              <div className="space-y-2">
-                <div className="flex items-center">
+
+              {/* LiteLLM Params */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
                   <label
                     htmlFor="litellmParams"
-                    className="block text-sm font-medium text-foreground"
+                    className="text-sm font-medium text-foreground"
                   >
                     {dict?.management?.litellmParams || "LiteLLM Params"}
                   </label>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <HelpCircleIcon className="h-4 w-4 ml-2 text-muted-foreground cursor-help" />
+                      <HelpCircleIcon className="h-4 w-4 text-muted-foreground cursor-help hover:text-foreground transition-colors" />
                     </TooltipTrigger>
                     <TooltipContent side="top" className="max-w-xs">
                       <p>
@@ -425,61 +459,81 @@ export function AdapterForm({
                     </TooltipContent>
                   </Tooltip>
                 </div>
+
                 <input
                   type="text"
                   id="litellmParams"
                   name="litellmParams"
                   defaultValue={defaultValues?.litellmParams}
-                  className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition"
+                  className="w-full px-4 py-3 text-foreground bg-background border border-input rounded-lg 
+                           focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring 
+                           transition-all duration-200 hover:border-ring/50 shadow-sm font-mono text-sm"
                   placeholder={
                     dict?.management?.litellmParamsPlaceHolder ||
                     '{ "rpm": 100, "timeout": 0, "stream_timeout": 0 }'
                   }
-                  required={false}
                 />
               </div>
             </div>
           </fieldset>
         </div>
 
-        {/* Divider between sections */}
-        <div className="border-t border-border"></div>
-
-        <div className="p-6">
-          <h3 className="text-md font-semibold text-foreground mb-4 flex items-center">
-            <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2 flex-shrink-0">
-              {dict?.management?.noteTag || "NOTE"}
+        {/* Enhanced Divider */}
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-border"></div>
+          </div>
+          <div className="relative flex justify-center">
+            <span className="bg-card px-4 text-xs text-muted-foreground">
+              •••
             </span>
-            <span className="truncate">
-              {dict?.management?.noteTitle || "Add note information"}
-            </span>
-          </h3>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <textarea
-                id="commentNote"
-                name="commentNote"
-                defaultValue={defaultValues?.commentNote}
-                rows={3}
-                className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition max-w-full"
-                placeholder={
-                  dict?.management?.notePlaceHolder ||
-                  "Create note for this pass...(20 words max)"
-                }
-                maxLength={20}
-              ></textarea>
-            </div>
           </div>
         </div>
 
-        {/* Divider between sections */}
+        {/* Note Section */}
+        <div className="p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-md shadow-sm">
+              {dict?.management?.noteTag || "NOTE"}
+            </div>
+            <h3 className="text-lg font-semibold text-foreground">
+              {dict?.management?.noteTitle || "Add note information"}
+            </h3>
+          </div>
+
+          <div className="space-y-3">
+            <textarea
+              id="commentNote"
+              name="commentNote"
+              defaultValue={defaultValues?.commentNote}
+              rows={3}
+              className="w-full px-4 py-3 text-foreground bg-background border border-input rounded-lg 
+                       focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring 
+                       transition-all duration-200 hover:border-ring/50 resize-none shadow-sm"
+              placeholder={
+                dict?.management?.notePlaceHolder ||
+                "Create note for this pass...(20 words max)"
+              }
+              maxLength={20}
+            ></textarea>
+            <p className="text-xs text-muted-foreground">
+              {dict?.management?.noteHint || "Maximum 20 characters"}
+            </p>
+          </div>
+        </div>
+
+        {/* Enhanced Divider */}
         <div className="border-t border-border"></div>
 
         {/* Submit Button */}
-        <div className="p-6">
+        <div className="p-8">
           <OnceButton
             type="submit"
-            className="w-full rounded-lg bg-primary text-primary-foreground px-4 py-2 transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-ring max-w-full"
+            className="w-full rounded-lg bg-primary text-primary-foreground px-6 py-3.5
+                     font-medium shadow-md hover:shadow-lg
+                     transition-all duration-200 hover:opacity-90 hover:scale-[1.02]
+                     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring
+                     active:scale-[0.98]"
           >
             {dict?.management?.confirm || "Confirm"}
           </OnceButton>
