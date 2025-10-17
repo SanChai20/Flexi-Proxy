@@ -10,12 +10,6 @@ import {
   getProxyServerModels,
 } from "@/lib/actions";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
   ExternalLink,
   Eye,
   EyeOff,
@@ -27,6 +21,22 @@ import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
+const Tooltip = dynamic(
+  () => import("@/components/ui/tooltip").then((m) => m.Tooltip),
+  { ssr: false }
+);
+const TooltipContent = dynamic(
+  () => import("@/components/ui/tooltip").then((m) => m.TooltipContent),
+  { ssr: false }
+);
+const TooltipProvider = dynamic(
+  () => import("@/components/ui/tooltip").then((m) => m.TooltipProvider),
+  { ssr: false }
+);
+const TooltipTrigger = dynamic(
+  () => import("@/components/ui/tooltip").then((m) => m.TooltipTrigger),
+  { ssr: false }
+);
 const DropdownMenuItem = dynamic(
   () => import("@/components/ui/dropdown-menu").then((m) => m.DropdownMenuItem),
   { ssr: false }
