@@ -15,6 +15,7 @@ import {
   EyeOff,
   HelpCircleIcon,
   PlusIcon,
+  Loader2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -585,6 +586,7 @@ export function CreateAdapterForm({
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [reachLimit, setReachLimit] = useState<boolean>(false);
+
   useEffect(() => {
     setReachLimit(currentAdapterCount >= maxAdapterCountAllowed);
   }, [currentAdapterCount, maxAdapterCountAllowed]);
@@ -604,6 +606,7 @@ export function CreateAdapterForm({
     },
     [isSubmitting, router]
   );
+
   return (
     <TooltipProvider>
       <Tooltip>
@@ -617,7 +620,11 @@ export function CreateAdapterForm({
               disabled={reachLimit || isSubmitting}
               className="h-8 w-8 rounded-full sm:h-9 sm:w-9"
             >
-              <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+              {isSubmitting ? (
+                <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
+              ) : (
+                <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+              )}
               <span className="sr-only">
                 {dict?.management?.tokenCreate || "Create Token Pass"}
               </span>
