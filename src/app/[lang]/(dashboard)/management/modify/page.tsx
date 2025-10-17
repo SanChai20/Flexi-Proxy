@@ -33,7 +33,7 @@ export default async function ManagementModifyPage(
   const dict = await getTrans(lang as Locale);
 
   return (
-    <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
+    <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0 select-none">
       <Suspense fallback={<ModifyManagementSkeleton dict={dict} />}>
         <ModifyManagementContent lang={lang} dict={dict} aid={aid} />
       </Suspense>

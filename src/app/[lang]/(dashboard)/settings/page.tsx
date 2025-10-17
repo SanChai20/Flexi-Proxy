@@ -22,7 +22,7 @@ export default async function SettingsPage(
   const dict = await getTrans(lang as Locale);
   const settings: { cd: boolean } = await getSettingsAction();
   return (
-    <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0">
+    <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0 select-none">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">

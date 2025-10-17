@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function Footer({ dict }: { dict: any }) {
   return (
-    <footer className="border-t bg-background mt-auto">
+    <footer className="border-t bg-background mt-auto select-none">
       <div className="container py-4 md:py-4 sm:pl-16 lg:pl-[84px]">
         <div className="flex flex-col items-center justify-center gap-4 md:flex-row md:justify-center md:gap-8">
           <div className="text-sm text-muted-foreground">
