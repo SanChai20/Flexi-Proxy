@@ -635,7 +635,10 @@ export function CreateAdapterForm({
       <Tooltip>
         <TooltipTrigger asChild>
           <form onSubmit={handleSubmit} className="flex flex-row items-center">
-            <div className="mr-4 tracking-wider text-muted-foreground">{`(${currentAdapterCount}/${maxAdapterCountAllowed})`}</div>
+            <div className="mr-4 px-2 py-0.5 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs font-semibold tracking-wide">
+              {`${currentAdapterCount}/${maxAdapterCountAllowed}`}
+            </div>
+
             <Button
               type="submit"
               variant="outline"
@@ -657,7 +660,9 @@ export function CreateAdapterForm({
         <TooltipContent>
           <p className="tracking-wider text-muted-foreground">
             {dict?.management?.tokenCreate || "Create Token Pass"}{" "}
-            {`(${currentAdapterCount}/${maxAdapterCountAllowed})`}
+            <span className="font-medium">
+              ({currentAdapterCount}/{maxAdapterCountAllowed})
+            </span>
           </p>
         </TooltipContent>
       </Tooltip>
