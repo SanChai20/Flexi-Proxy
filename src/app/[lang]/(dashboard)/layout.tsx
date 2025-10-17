@@ -10,17 +10,6 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { User } from "./user";
 import Providers from "./providers";
 import { NavItem } from "./nav-item";
@@ -28,6 +17,30 @@ import DashboardBreadcrumb from "./breadcrumb";
 import { Locale } from "i18n-config";
 import { getTrans } from "@/lib/dictionary";
 import { Footer } from "@/components/ui/footer";
+import dynamic from "next/dynamic";
+
+const Tooltip = dynamic(() =>
+  import("@/components/ui/tooltip").then((m) => m.Tooltip)
+);
+const TooltipContent = dynamic(() =>
+  import("@/components/ui/tooltip").then((m) => m.TooltipContent)
+);
+const TooltipTrigger = dynamic(() =>
+  import("@/components/ui/tooltip").then((m) => m.TooltipTrigger)
+);
+
+const Sheet = dynamic(() =>
+  import("@/components/ui/sheet").then((m) => m.Sheet)
+);
+const SheetContent = dynamic(() =>
+  import("@/components/ui/sheet").then((m) => m.SheetContent)
+);
+const SheetTitle = dynamic(() =>
+  import("@/components/ui/sheet").then((m) => m.SheetTitle)
+);
+const SheetTrigger = dynamic(() =>
+  import("@/components/ui/sheet").then((m) => m.SheetTrigger)
+);
 
 export default async function DashboardLayout(props: LayoutProps<"/[lang]">) {
   const { lang } = await props.params;

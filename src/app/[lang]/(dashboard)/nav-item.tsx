@@ -1,15 +1,24 @@
 "use client";
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { pathCullLocale } from "@/lib/utils";
 import clsx from "clsx";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+
+const Tooltip = dynamic(
+  () => import("@/components/ui/tooltip").then((m) => m.Tooltip),
+  { ssr: false }
+);
+const TooltipContent = dynamic(
+  () => import("@/components/ui/tooltip").then((m) => m.TooltipContent),
+  { ssr: false }
+);
+const TooltipTrigger = dynamic(
+  () => import("@/components/ui/tooltip").then((m) => m.TooltipTrigger),
+  { ssr: false }
+);
 
 export function NavItem({
   href,
@@ -34,7 +43,9 @@ export function NavItem({
           className={clsx(
             "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8",
             {
-              "bg-accent text-black": pathNameWithoutLocale === href || pathNameWithoutLocale.startsWith(href + "/"),
+              "bg-accent text-black":
+                pathNameWithoutLocale === href ||
+                pathNameWithoutLocale.startsWith(href + "/"),
             }
           )}
         >
