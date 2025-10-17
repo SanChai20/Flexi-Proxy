@@ -1,6 +1,5 @@
 "use client";
 
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { OnceButton } from "@/components/ui/oncebutton";
 import {
   createAdapterAction,
@@ -8,7 +7,7 @@ import {
   deleteAdapterAction,
   getUserAdapterModifyVersion,
   updateAdapterAction,
-  getProxyServerModels
+  getProxyServerModels,
 } from "@/lib/actions";
 import {
   Tooltip,
@@ -26,6 +25,12 @@ import {
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+
+const DropdownMenuItem = dynamic(
+  () => import("@/components/ui/dropdown-menu").then((m) => m.DropdownMenuItem),
+  { ssr: false }
+);
 
 export function AdapterForm({
   dict,
@@ -61,13 +66,14 @@ export function AdapterForm({
       ? defaultValues?.proxyId
       : ""
   );
-  const [supportedProviders, setSupportedProviders] = useState<
-    { name: string; id: string; website: string }[]
-  >(providers);
+  const [supportedProviders, setSupportedProviders] =
+    useState<{ name: string; id: string; website: string }[]>(providers);
   const [modelsByProvider, setModelsByProvider] = useState<
     Record<string, string[]>
   >({});
-  const selectedProvider = supportedProviders.find((p) => p.id === selectedProviderId);
+  const selectedProvider = supportedProviders.find(
+    (p) => p.id === selectedProviderId
+  );
 
   const handleProxyChange = useCallback(
     async (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -100,7 +106,9 @@ export function AdapterForm({
 
   useEffect(() => {
     if (defaultValues?.proxyId) {
-      handleProxyChange({ target: { value: defaultValues.proxyId } } as React.ChangeEvent<HTMLSelectElement>);
+      handleProxyChange({
+        target: { value: defaultValues.proxyId },
+      } as React.ChangeEvent<HTMLSelectElement>);
     }
   }, [defaultValues?.proxyId, handleProxyChange]);
 
@@ -130,7 +138,6 @@ export function AdapterForm({
       <input type="hidden" name="adapterId" value={defaultValues?.adapterId} />
       {/* Adapter Configuration Section */}
       <div className="bg-card border border-border rounded-lg overflow-hidden">
-
         {/* Proxy Section */}
         <div className="p-6">
           <h3 className="text-md font-semibold text-foreground mb-4 flex items-center">
@@ -186,16 +193,16 @@ export function AdapterForm({
                     style={{
                       color:
                         option.status === "" ||
-                          option.status === "unavailable" ||
-                          (advRequest ? false : option.adv)
+                        option.status === "unavailable" ||
+                        (advRequest ? false : option.adv)
                           ? "#9ca3af" // gray
                           : option.status === "spare"
-                            ? "#10b981" // green
-                            : option.status === "busy"
-                              ? "#f97316" // orange
-                              : option.status === "full"
-                                ? "#ef4444" // red
-                                : "inherit", // default
+                          ? "#10b981" // green
+                          : option.status === "busy"
+                          ? "#f97316" // orange
+                          : option.status === "full"
+                          ? "#ef4444" // red
+                          : "inherit", // default
                     }}
                   >
                     {" ["}
@@ -226,10 +233,13 @@ export function AdapterForm({
         <div className="border-t border-border"></div>
 
         {/* Source Section */}
-        <div className={`p-6 transition ${selectedProxyId
-          ? "opacity-100"
-          : "opacity-50 pointer-events-none select-none"
-          }`}>
+        <div
+          className={`p-6 transition ${
+            selectedProxyId
+              ? "opacity-100"
+              : "opacity-50 pointer-events-none select-none"
+          }`}
+        >
           <fieldset disabled={!selectedProxyId}>
             <h3 className="text-md font-semibold text-foreground mb-4 flex items-center">
               <span className="bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded mr-2 flex-shrink-0">
@@ -328,13 +338,14 @@ export function AdapterForm({
                     list="modelList"
                     required
                   />
-                  {selectedProviderId && modelsByProvider[selectedProviderId] && (
-                    <datalist id="modelList">
-                      {modelsByProvider[selectedProviderId].map((m) => (
-                        <option key={m} value={m} />
-                      ))}
-                    </datalist>
-                  )}
+                  {selectedProviderId &&
+                    modelsByProvider[selectedProviderId] && (
+                      <datalist id="modelList">
+                        {modelsByProvider[selectedProviderId].map((m) => (
+                          <option key={m} value={m} />
+                        ))}
+                      </datalist>
+                    )}
                 </div>
               </div>
               <div className="space-y-2">
@@ -364,7 +375,9 @@ export function AdapterForm({
                     id="apiKey"
                     name="apiKey"
                     className="w-full px-4 py-2.5 text-foreground bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring transition pr-10"
-                    placeholder={dict?.management?.apiKeyPlaceHolder || "Type..."}
+                    placeholder={
+                      dict?.management?.apiKeyPlaceHolder || "Type..."
+                    }
                     required
                   />
                   <button
@@ -417,7 +430,6 @@ export function AdapterForm({
             </div>
           </fieldset>
         </div>
-
 
         {/* Divider between sections */}
         <div className="border-t border-border"></div>

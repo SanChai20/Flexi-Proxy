@@ -7,11 +7,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   createShortTimeToken,
   getAllUserAdapters,
   getCachedUserPermissions,
@@ -25,6 +20,17 @@ import {
   EditAdapterDropdownForm,
 } from "./form";
 import { Metadata } from "next";
+import dynamic from "next/dynamic";
+
+const DropdownMenu = dynamic(() =>
+  import("@/components/ui/dropdown-menu").then((m) => m.DropdownMenu)
+);
+const DropdownMenuContent = dynamic(() =>
+  import("@/components/ui/dropdown-menu").then((m) => m.DropdownMenuContent)
+);
+const DropdownMenuTrigger = dynamic(() =>
+  import("@/components/ui/dropdown-menu").then((m) => m.DropdownMenuTrigger)
+);
 
 export const metadata: Metadata = {
   title: "FlexiProxy - Token Pass Management",
