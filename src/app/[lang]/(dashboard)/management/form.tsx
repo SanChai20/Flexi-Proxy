@@ -374,7 +374,7 @@ export function AdapterForm({
                       <TooltipContent side="top" className="max-w-xs">
                         <p>
                           {dict?.management?.modelIdOptionsTip ||
-                            "You can check the specific options on each provider's official website, such as OpenAI's gpt-4 and gpt-3.5-turbo, or DeepSeek's deepseek-chat."}
+                            "Use any model ID from your provider (e.g., `gpt-4`, `deepseek-chat`). Follow the format shown - you're not limited to listed options. See provider docs for available models."}
                         </p>
                       </TooltipContent>
                     </Tooltip>

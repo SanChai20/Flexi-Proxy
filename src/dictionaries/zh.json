@@ -82,7 +82,7 @@
     "apiKeyTip": "API Key 将只用于请求，并会被安全管理",
     "tokenPass": "通行令牌",
     "modelId": "模型 ID",
-    "modelIdOptionsTip": "具体可在各个供应商平台官网查看，如：OpenAI 的 gpt-4、gpt-3.5-turbo，DeepSeek 的 deepseek-chat 等",
+    "modelIdOptionsTip": "模型 ID 遵循列表中的格式（如 `gpt-4`、`deepseek-chat`）。您可以使用供应商支持的任何模型，不限于已列出的选项。请查看供应商官方文档获取可用模型列表",
     "providerOptions": "Provider",
     "providerOptionsTip": "E.g. Anthropic, Deepseek, OpenRouter etc.",
     "proxy": "代理网关",
