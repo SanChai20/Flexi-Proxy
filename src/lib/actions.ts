@@ -221,6 +221,15 @@ export async function updateAdapterAction(
 
   try {
     const pid = formData.get("proxy") as string;
+    const proxy: { url: string; status: string; adv: boolean } | null =
+      await redis.get<{ url: string; status: string; adv: boolean }>(
+        [process.env.PROXY_PREFIX, pid].join(":")
+      );
+    if (proxy === null) {
+      console.error("updateAdapterAction - Missing proxy");
+      return false;
+    }
+
     const pro = formData.get("provider") as string;
     const llm = formData.get("litellmParams") as string;
     const mid = formData.get("modelId") as string;
@@ -234,14 +243,6 @@ export async function updateAdapterAction(
     const ken = encodedKey.encryptedData;
     const kau = encodedKey.authTag;
 
-    const proxy: { url: string; status: string; adv: boolean } | null =
-      await redis.get<{ url: string; status: string; adv: boolean }>(
-        [process.env.PROXY_PREFIX, pid].join(":")
-      );
-    if (proxy === null) {
-      console.error("updateAdapterAction - Missing proxy");
-      return false;
-    }
     const adapterRaw: {
       tk: string;
       pid: string;
