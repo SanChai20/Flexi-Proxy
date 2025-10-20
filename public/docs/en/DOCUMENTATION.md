@@ -1,4 +1,4 @@
-[![GitHub](https://img.shields.io/badge/GitHub-0.8.0-blue?logo=github)](https://github.com/SanChai20/Flexi-Proxy)
+[![GitHub](https://img.shields.io/badge/GitHub-0.8.1-blue?logo=github)](https://github.com/SanChai20/Flexi-Proxy)
 
 *Last updated: Oct. 13, 2025*
 

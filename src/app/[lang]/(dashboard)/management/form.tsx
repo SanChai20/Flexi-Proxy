@@ -16,6 +16,10 @@ import {
   HelpCircleIcon,
   PlusIcon,
   Loader2,
+  CheckCircle2,
+  AlertCircle,
+  XCircle,
+  ChevronDown,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -42,6 +46,40 @@ const DropdownMenuItem = dynamic(
   () => import("@/components/ui/dropdown-menu").then((m) => m.DropdownMenuItem),
   { ssr: false }
 );
+
+const getProxyStatusConfig = (status: string) => {
+  switch (status) {
+    case "spare":
+      return {
+        icon: <CheckCircle2 className="h-4 w-4" />,
+        color: "text-emerald-500",
+        bg: "bg-emerald-50 dark:bg-emerald-950/30",
+        border: "border-emerald-200 dark:border-emerald-800",
+      };
+    case "busy":
+      return {
+        icon: <AlertCircle className="h-4 w-4" />,
+        color: "text-orange-500",
+        bg: "bg-orange-50 dark:bg-orange-950/30",
+        border: "border-orange-200 dark:border-orange-800",
+      };
+    case "full":
+      return {
+        icon: <XCircle className="h-4 w-4" />,
+        color: "text-red-500",
+        bg: "bg-red-50 dark:bg-red-950/30",
+        border: "border-red-200 dark:border-red-800",
+      };
+    default:
+      return {
+        icon: <XCircle className="h-4 w-4" />,
+        color: "text-gray-400",
+        bg: "bg-gray-50 dark:bg-gray-900/30",
+        border: "border-gray-200 dark:border-gray-700",
+      };
+  }
+};
+
 export function AdapterForm({
   dict,
   proxies,
@@ -82,9 +120,28 @@ export function AdapterForm({
   const [modelsByProvider, setModelsByProvider] = useState<
     Record<string, string[]>
   >({});
+
+  const [isProxyDropdownOpen, setIsProxyDropdownOpen] = useState(false);
+  const proxyDropdownRef = useRef<HTMLDivElement>(null);
+
   const selectedProvider = supportedProviders.find(
     (p) => p.id === selectedProviderId
   );
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        proxyDropdownRef.current &&
+        !proxyDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsProxyDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const fetchAndSetProxyModels = useCallback(
     async (proxyId: string, clearModel = false) => {
       setSelectedProxyId(proxyId);
@@ -134,14 +191,14 @@ export function AdapterForm({
 
   const handleProviderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedProviderId(e.target.value);
-    setModelId(""); // Clear modelId when provider changes
+    setModelId("");
   };
 
   useEffect(() => {
     if (defaultValues?.proxyId) {
       initializeProxy(defaultValues.proxyId);
     }
-  }, [defaultValues?.proxyId, handleProxyChange]);
+  }, [defaultValues?.proxyId, initializeProxy]);
 
   const onSubmit = useCallback(
     async (formData: FormData) => {
@@ -202,64 +259,177 @@ export function AdapterForm({
               </Tooltip>
             </div>
 
-            <select
-              id="proxy"
-              name="proxy"
-              value={selectedProxyId}
-              onChange={handleProxyChange}
-              className="w-full px-4 py-3 text-foreground bg-background border border-input rounded-lg 
-                       focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring 
-                       transition-all duration-200 hover:border-ring/50
-                       bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgZmlsbD0ibm9uZSIgdmlld0JveD0iMCAwIDI0IDI0IiBzdHJva2U9IiNjY2NjY2MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJtNiA5IDYgNiA2LTYiLz48L3N2Zz4=')] 
-                       bg-no-repeat bg-[right_12px_center] bg-[length:16px_16px] appearance-none
-                       shadow-sm"
-              required
-            >
-              <option value="">
-                {dict.management?.selectProxy || "Select a proxy server"}
-              </option>
-              {proxies.map((option) => (
-                <option
-                  key={option.id}
-                  value={option.id}
-                  disabled={
-                    option.status === "" ||
-                    option.status === "unavailable" ||
-                    (advRequest ? false : option.adv)
-                  }
-                  style={{
-                    color:
-                      option.status === "" ||
-                      option.status === "unavailable" ||
-                      (advRequest ? false : option.adv)
-                        ? "#9ca3af"
-                        : option.status === "spare"
-                        ? "#10b981"
-                        : option.status === "busy"
-                        ? "#f97316"
-                        : option.status === "full"
-                        ? "#ef4444"
-                        : "inherit",
-                  }}
-                >
-                  {" ["}
-                  {(option.status === "" || option.status === "unavailable") &&
-                    (dict?.management?.unavailable || "Unavailable")}
-                  {option.status === "spare" &&
-                    (dict?.management?.spare || "Spare")}
-                  {option.status === "busy" &&
-                    (dict?.management?.busy || "Busy")}
-                  {option.status === "full" &&
-                    (dict?.management?.full || "Full")}
-                  {"] ["}
-                  {option.adv
-                    ? dict?.management?.pro || "Pro"
-                    : dict?.management?.free || "Free"}
-                  {"] "}
-                  {option.id}
+            <div className="relative" ref={proxyDropdownRef}>
+              <select
+                id="proxy"
+                name="proxy"
+                value={selectedProxyId}
+                onChange={handleProxyChange}
+                className="absolute inset-0 opacity-0 w-full h-full cursor-pointer z-10"
+                required
+                style={{ pointerEvents: "none" }}
+              >
+                <option value="">
+                  {dict.management?.selectProxy || "Select a proxy server"}
                 </option>
-              ))}
-            </select>
+                {proxies.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.id}
+                  </option>
+                ))}
+              </select>
+
+              <button
+                type="button"
+                onClick={() => setIsProxyDropdownOpen(!isProxyDropdownOpen)}
+                className="w-full px-4 py-3 text-left text-foreground bg-background border border-input rounded-lg 
+                          focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring 
+                          transition-all duration-200 hover:border-ring/50 shadow-sm
+                          flex items-center justify-between gap-3 group relative z-0"
+              >
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  {selectedProxyId ? (
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      {(() => {
+                        const proxy = proxies.find(
+                          (p) => p.id === selectedProxyId
+                        );
+                        if (!proxy) return null;
+                        const config = getProxyStatusConfig(proxy.status);
+                        return (
+                          <>
+                            <span className={`flex-shrink-0 ${config.color}`}>
+                              {config.icon}
+                            </span>
+                            <span className="font-medium truncate">
+                              {proxy.id}
+                            </span>
+                            <div className="flex items-center gap-1.5 flex-shrink-0">
+                              <span
+                                className={`px-2 py-0.5 rounded text-xs font-medium ${config.color} ${config.bg} ${config.border} border`}
+                              >
+                                {proxy.status === "spare" &&
+                                  (dict?.management?.spare || "Spare")}
+                                {proxy.status === "busy" &&
+                                  (dict?.management?.busy || "Busy")}
+                                {proxy.status === "full" &&
+                                  (dict?.management?.full || "Full")}
+                                {(proxy.status === "" ||
+                                  proxy.status === "unavailable") &&
+                                  (dict?.management?.unavailable ||
+                                    "Unavailable")}
+                              </span>
+                              <span
+                                className={`px-2 py-0.5 rounded text-xs font-medium ${
+                                  proxy.adv
+                                    ? "text-amber-600 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800"
+                                    : "text-blue-600 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800"
+                                }`}
+                              >
+                                {proxy.adv
+                                  ? dict?.management?.pro || "Pro"
+                                  : dict?.management?.free || "Free"}
+                              </span>
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </div>
+                  ) : (
+                    <span className="text-muted-foreground">
+                      {dict.management?.selectProxy || "Select a proxy server"}
+                    </span>
+                  )}
+                </div>
+                <ChevronDown
+                  className={`h-4 w-4 text-muted-foreground transition-transform duration-200 flex-shrink-0 ${
+                    isProxyDropdownOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {isProxyDropdownOpen && (
+                <div
+                  className="absolute z-50 w-full mt-2 bg-background border border-border rounded-lg shadow-lg 
+                            max-h-64 overflow-y-auto animate-in fade-in-0 zoom-in-95"
+                >
+                  <div className="py-1">
+                    {proxies.map((option) => {
+                      const isDisabled =
+                        option.status === "" ||
+                        option.status === "unavailable" ||
+                        (advRequest ? false : option.adv);
+                      const config = getProxyStatusConfig(option.status);
+                      const isSelected = selectedProxyId === option.id;
+
+                      return (
+                        <button
+                          key={option.id}
+                          type="button"
+                          onClick={() => {
+                            if (!isDisabled) {
+                              handleProxyChange({
+                                target: { value: option.id },
+                              } as React.ChangeEvent<HTMLSelectElement>);
+                              setIsProxyDropdownOpen(false);
+                            }
+                          }}
+                          disabled={isDisabled}
+                          className={`w-full px-4 py-3 text-left flex items-center gap-3 transition-colors
+                            ${
+                              isDisabled
+                                ? "opacity-50 cursor-not-allowed"
+                                : "hover:bg-muted cursor-pointer"
+                            }
+                            ${isSelected ? "bg-muted/50" : ""}
+                          `}
+                        >
+                          <span className={`flex-shrink-0 ${config.color}`}>
+                            {config.icon}
+                          </span>
+                          <span
+                            className={`font-medium flex-1 min-w-0 truncate ${
+                              isDisabled
+                                ? "text-muted-foreground"
+                                : "text-foreground"
+                            }`}
+                          >
+                            {option.id}
+                          </span>
+                          <div className="flex items-center gap-1.5 flex-shrink-0">
+                            <span
+                              className={`px-2 py-0.5 rounded text-xs font-medium ${config.color} ${config.bg} ${config.border} border`}
+                            >
+                              {option.status === "spare" &&
+                                (dict?.management?.spare || "Spare")}
+                              {option.status === "busy" &&
+                                (dict?.management?.busy || "Busy")}
+                              {option.status === "full" &&
+                                (dict?.management?.full || "Full")}
+                              {(option.status === "" ||
+                                option.status === "unavailable") &&
+                                (dict?.management?.unavailable ||
+                                  "Unavailable")}
+                            </span>
+                            <span
+                              className={`px-2 py-0.5 rounded text-xs font-medium ${
+                                option.adv
+                                  ? "text-amber-600 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800"
+                                  : "text-blue-600 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800"
+                              }`}
+                            >
+                              {option.adv
+                                ? dict?.management?.pro || "Pro"
+                                : dict?.management?.free || "Free"}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
