@@ -1,6 +1,6 @@
 [![GitHub](https://img.shields.io/badge/GitHub-0.8.2-blue?logo=github)](https://github.com/SanChai20/Flexi-Proxy)
 
-*Last updated: Oct. 13, 2025*
+*Last updated: Oct. 21, 2025*
 
 # A. Overview
 
@@ -63,6 +63,8 @@ FlexiProxy is a lightweight LLM proxy service built on top of the LiteLLM librar
 After creating the token, there are two key fields to note: **Base URL** and **Token Pass**. The following example demonstrates how to use them with Claude Code:
 
 - **Claude Code**
+
+    > Some models usable with Claude Code: GLM series, Qwen series, Gemini series, etc.
 
     We won’t cover installation here, only configuration. Claude Code supports two configuration methods for **Base URL** and **Token Pass**:
 

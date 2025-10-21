@@ -1,6 +1,6 @@
 [![GitHub](https://img.shields.io/badge/GitHub-0.8.2-blue?logo=github)](https://github.com/SanChai20/Flexi-Proxy) 
 
-*最后更新：2025年10月13日*
+*最后更新：2025年10月21日*
 
 # A. 概述
 
@@ -61,6 +61,8 @@ FlexiProxy 基于 LiteLLM 轻量库提供 LLM 的代理服务，支持通过统�
 创建令牌完成后，有两个字段是关键的，一个是**Base URL**，另一个是**通行令牌**，下面以 Claude Code 为例，举例说明如何使用：
 
 - **Claude Code**
+
+    > 一些可用于Claude Code的模型：GLM系列、Qwen系列、Gemini系列等
 
     这里不展开如何安装Claude Code，只说明如何配置。Claude Code通过两种方式来配置**Base URL**和**API Key**，方式一是通过系统环境变量，方式二是通过Claude Code Settings文件配置，详情可以参考Anthropic的[相关文档](https://docs.anthropic.com/en/docs/claude-code/llm-gateway#litellm-configuration)
     
