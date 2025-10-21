@@ -95,6 +95,7 @@
     "litellmParams": "LiteLLM 参数",
     "litellmParamsTip": "用于调用 litellm.completion() 时可选的 litellm 参数",
     "litellmParamsPlaceHolder": "{ \"rpm\": 100, \"timeout\": 0, \"stream_timeout\": 0 }",
+    "noProxyAvailable": "暂无可用代理服务器",
     "actions": "操作",
     "delete": "删除",
     "keyTitle": "修改通行令牌",

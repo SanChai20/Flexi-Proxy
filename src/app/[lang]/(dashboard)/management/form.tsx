@@ -20,6 +20,7 @@ import {
   AlertCircle,
   XCircle,
   ChevronDown,
+  Server,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -349,83 +350,92 @@ export function AdapterForm({
               </button>
 
               {isProxyDropdownOpen && (
-                <div
-                  className="absolute z-50 w-full mt-2 bg-background border border-border rounded-lg shadow-lg 
-                            max-h-64 overflow-y-auto animate-in fade-in-0 zoom-in-95"
-                >
+                <div className="absolute z-50 w-full mt-2 bg-background border border-border rounded-lg shadow-lg max-h-64 overflow-y-auto animate-in fade-in-0 zoom-in-95">
                   <div className="py-1">
-                    {proxies.map((option) => {
-                      const isDisabled =
-                        option.status === "" ||
-                        option.status === "unavailable" ||
-                        (advRequest ? false : option.adv);
-                      const config = getProxyStatusConfig(option.status);
-                      const isSelected = selectedProxyId === option.id;
+                    {proxies.length === 0 ? (
+                      <div className="px-4 py-8 text-center">
+                        <div className="flex flex-col items-center gap-2">
+                          <Server className="h-8 w-8 text-muted-foreground/50" />
+                          <p className="text-sm text-muted-foreground">
+                            {dict?.management?.noProxyAvailable ||
+                              "No proxy servers available"}
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      proxies.map((option) => {
+                        const isDisabled =
+                          option.status === "" ||
+                          option.status === "unavailable" ||
+                          (advRequest ? false : option.adv);
+                        const config = getProxyStatusConfig(option.status);
+                        const isSelected = selectedProxyId === option.id;
 
-                      return (
-                        <button
-                          key={option.id}
-                          type="button"
-                          onClick={() => {
-                            if (!isDisabled) {
-                              handleProxyChange({
-                                target: { value: option.id },
-                              } as React.ChangeEvent<HTMLSelectElement>);
-                              setIsProxyDropdownOpen(false);
-                            }
-                          }}
-                          disabled={isDisabled}
-                          className={`w-full px-4 py-3 text-left flex items-center gap-3 transition-colors
-                            ${
-                              isDisabled
-                                ? "opacity-50 cursor-not-allowed"
-                                : "hover:bg-muted cursor-pointer"
-                            }
-                            ${isSelected ? "bg-muted/50" : ""}
-                          `}
-                        >
-                          <span className={`flex-shrink-0 ${config.color}`}>
-                            {config.icon}
-                          </span>
-                          <span
-                            className={`font-medium flex-1 min-w-0 truncate ${
-                              isDisabled
-                                ? "text-muted-foreground"
-                                : "text-foreground"
-                            }`}
+                        return (
+                          <button
+                            key={option.id}
+                            type="button"
+                            onClick={() => {
+                              if (!isDisabled) {
+                                handleProxyChange({
+                                  target: { value: option.id },
+                                } as React.ChangeEvent<HTMLSelectElement>);
+                                setIsProxyDropdownOpen(false);
+                              }
+                            }}
+                            disabled={isDisabled}
+                            className={`w-full px-4 py-3 text-left flex items-center gap-3 transition-colors
+                              ${
+                                isDisabled
+                                  ? "opacity-50 cursor-not-allowed"
+                                  : "hover:bg-muted cursor-pointer"
+                              }
+                              ${isSelected ? "bg-muted/50" : ""}
+                            `}
                           >
-                            {option.id}
-                          </span>
-                          <div className="flex items-center gap-1.5 flex-shrink-0">
-                            <span
-                              className={`px-2 py-0.5 rounded text-xs font-medium ${config.color} ${config.bg} ${config.border} border`}
-                            >
-                              {option.status === "spare" &&
-                                (dict?.management?.spare || "Spare")}
-                              {option.status === "busy" &&
-                                (dict?.management?.busy || "Busy")}
-                              {option.status === "full" &&
-                                (dict?.management?.full || "Full")}
-                              {(option.status === "" ||
-                                option.status === "unavailable") &&
-                                (dict?.management?.unavailable ||
-                                  "Unavailable")}
+                            <span className={`flex-shrink-0 ${config.color}`}>
+                              {config.icon}
                             </span>
                             <span
-                              className={`px-2 py-0.5 rounded text-xs font-medium ${
-                                option.adv
-                                  ? "text-amber-600 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800"
-                                  : "text-blue-600 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800"
+                              className={`font-medium flex-1 min-w-0 truncate ${
+                                isDisabled
+                                  ? "text-muted-foreground"
+                                  : "text-foreground"
                               }`}
                             >
-                              {option.adv
-                                ? dict?.management?.pro || "Pro"
-                                : dict?.management?.free || "Free"}
+                              {option.id}
                             </span>
-                          </div>
-                        </button>
-                      );
-                    })}
+                            <div className="flex items-center gap-1.5 flex-shrink-0">
+                              <span
+                                className={`px-2 py-0.5 rounded text-xs font-medium ${config.color} ${config.bg} ${config.border} border`}
+                              >
+                                {option.status === "spare" &&
+                                  (dict?.management?.spare || "Spare")}
+                                {option.status === "busy" &&
+                                  (dict?.management?.busy || "Busy")}
+                                {option.status === "full" &&
+                                  (dict?.management?.full || "Full")}
+                                {(option.status === "" ||
+                                  option.status === "unavailable") &&
+                                  (dict?.management?.unavailable ||
+                                    "Unavailable")}
+                              </span>
+                              <span
+                                className={`px-2 py-0.5 rounded text-xs font-medium ${
+                                  option.adv
+                                    ? "text-amber-600 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800"
+                                    : "text-blue-600 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800"
+                                }`}
+                              >
+                                {option.adv
+                                  ? dict?.management?.pro || "Pro"
+                                  : dict?.management?.free || "Free"}
+                              </span>
+                            </div>
+                          </button>
+                        );
+                      })
+                    )}
                   </div>
                 </div>
               )}

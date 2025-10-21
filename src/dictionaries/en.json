@@ -95,6 +95,7 @@
     "litellmParams": "LiteLLM Params",
     "litellmParamsTip": "Optional litellm params used for making a litellm.completion() call.",
     "litellmParamsPlaceHolder": "{ \"rpm\": 100, \"timeout\": 0, \"stream_timeout\": 0 }",
+    "noProxyAvailable": "No proxy servers available",
     "actions": "Actions",
     "delete": "Delete",
     "keyTitle": "Modify Token Pass",
