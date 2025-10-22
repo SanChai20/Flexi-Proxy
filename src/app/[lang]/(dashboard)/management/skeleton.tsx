@@ -25,44 +25,48 @@ export default function ManagementSkeleton({ dict }: { dict: any }) {
       </Card>
 
       <div className="mt-6">
-        <div className="border border-border bg-card overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
+        <div className="border border-border bg-card rounded-xl overflow-hidden shadow-md">
+          <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-transparent        
+scrollbar-thumb-muted-foreground/30">
             <table className="w-full min-w-[200px] md:min-w-full">
-              <thead className="bg-muted/50 text-muted-foreground">
+              <thead className="bg-muted/50 text-muted-foreground uppercase text-xs tracking-wider">
                 <tr>
-                  <th className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm">
+                  <th className="w-[12%] px-3 py-3 text-left sm:px-5 sm:py-4">
                     {dict?.management?.proxy || "Proxy Gateway"}
                   </th>
-                  <th className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm">
+                  <th className="w-[32%] px-3 py-3 text-left sm:px-5 sm:py-4">
                     {dict?.management?.baseUrl || "Base URL"}
                   </th>
-                  <th className="w-1/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm">
-                    {dict?.management?.tokenPass || "Token Pass"}
+                  <th className="w-[8%] px-3 py-3 text-left sm:px-5 sm:py-4">
+                    {dict?.management?.tokenPass || "Token Pass (API Key)"}
                   </th>
-                  <th className="w-2/6 px-2 py-3 text-xs text-left sm:px-5 sm:py-3.5 sm:text-sm">
+                  <th className="w-[34%] px-3 py-3 text-left sm:px-5 sm:py-4">
                     {dict?.management?.note || "Note"}
                   </th>
-                  <th className="w-1/6 px-2 py-3 text-xs text-right sm:px-5 sm:py-3.5 sm:text-sm">
+                  <th className="w-[14%] px-3 py-3 text-right sm:px-5 sm:py-4">
                     {dict?.management?.actions || "Actions"}
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {[...Array(3)].map((_, i) => (
-                  <tr key={i}>
-                    <td className="px-2 py-3 sm:px-5 sm:py-3.5">
+                  <tr
+                    key={i}
+                    className="hover:bg-muted/20 transition-colors duration-200"
+                  >
+                    <td className="w-[12%] px-3 py-3 sm:px-5 sm:py-3.5 text-sm text-left">
                       <Skeleton className="h-4 w-20" />
                     </td>
-                    <td className="px-2 py-3 sm:px-5 sm:py-3.5">
+                    <td className="w-[32%] px-3 py-3 sm:px-5 sm:py-3.5 text-sm">
                       <Skeleton className="h-4 w-32" />
                     </td>
-                    <td className="px-2 py-3 sm:px-5 sm:py-3.5">
+                    <td className="w-[8%] px-3 py-3 sm:px-5 sm:py-3.5 text-sm">
                       <Skeleton className="h-4 w-24" />
                     </td>
-                    <td className="px-2 py-3 sm:px-5 sm:py-3.5">
+                    <td className="w-[34%] px-3 py-3 sm:px-5 sm:py-3.5 text-sm">
                       <Skeleton className="h-4 w-28" />
                     </td>
-                    <td className="px-2 py-3 sm:px-5 sm:py-3.5 text-right">
+                    <td className="w-[14%] px-3 py-3 text-sm text-right sm:px-5 sm:py-3.5">
                       <Skeleton className="h-5 w-5 ml-auto" />
                     </td>
                   </tr>

@@ -73,19 +73,19 @@ export default function ManagementClient({
             <table className="w-full min-w-[200px] md:min-w-full">
               <thead className="bg-muted/50 text-muted-foreground uppercase text-xs tracking-wider">
                 <tr>
-                  <th className="w-1/6 px-3 py-3 text-left sm:px-5 sm:py-4">
+                  <th className="w-[12%] px-3 py-3 text-left sm:px-5 sm:py-4">
                     {dict?.management?.proxy || "Proxy Gateway"}
                   </th>
-                  <th className="w-1/6 px-3 py-3 text-left sm:px-5 sm:py-4">
+                  <th className="w-[32%] px-3 py-3 text-left sm:px-5 sm:py-4">
                     {dict?.management?.baseUrl || "Base URL"}
                   </th>
-                  <th className="w-1/6 px-3 py-3 text-left sm:px-5 sm:py-4">
+                  <th className="w-[8%] px-3 py-3 text-left sm:px-5 sm:py-4">
                     {dict?.management?.tokenPass || "Token Pass (API Key)"}
                   </th>
-                  <th className="w-2/6 px-3 py-3 text-left sm:px-5 sm:py-4">
+                  <th className="w-[34%] px-3 py-3 text-left sm:px-5 sm:py-4">
                     {dict?.management?.note || "Note"}
                   </th>
-                  <th className="w-1/6 px-3 py-3 text-right sm:px-5 sm:py-4">
+                  <th className="w-[14%] px-3 py-3 text-right sm:px-5 sm:py-4">
                     {dict?.management?.actions || "Actions"}
                   </th>
                 </tr>
@@ -99,7 +99,7 @@ export default function ManagementClient({
                       key={adapter.aid}
                       className="hover:bg-muted/20 transition-colors duration-200"
                     >
-                      <td className="w-1/6 px-3 py-3 sm:px-5 sm:py-3.5 text-sm text-left">
+                      <td className="w-[12%] px-3 py-3 sm:px-5 sm:py-3.5 text-sm text-left">
                         <span className="whitespace-nowrap text-[11px] xs:text-xs md:text-sm">
                           {adapter.pid}
                           {adapter.ava
@@ -107,10 +107,10 @@ export default function ManagementClient({
                             : " (" + dict?.management?.unavailable + ")"}
                         </span>
                       </td>
-                      <td className="w-1/6 px-3 py-3 sm:px-5 sm:py-3.5 text-sm">
+                      <td className="w-[32%] px-3 py-3 sm:px-5 sm:py-3.5 text-sm">
                         <div className="flex items-center gap-1 xs:gap-2">
                           <span
-                            className="font-mono text-[11px] xs:text-xs md:text-sm text-muted-foreground truncate max-w-[180px] lg:max-w-[240px]"
+                            className="font-mono text-[11px] xs:text-xs md:text-sm text-muted-foreground truncate max-w-[220px] lg:max-w-[320px]"
                             title={adapter.pul}
                           >
                             {adapter.pul}
@@ -118,10 +118,10 @@ export default function ManagementClient({
                           <ClipboardButton text={adapter.pul} />
                         </div>
                       </td>
-                      <td className="w-1/6 px-3 py-3 sm:px-5 sm:py-3.5 text-sm">
+                      <td className="w-[8%] px-3 py-3 sm:px-5 sm:py-3.5 text-sm">
                         <div className="flex items-center gap-1 xs:gap-2">
                           <span
-                            className="font-mono text-[11px] xs:text-xs md:text-sm text-muted-foreground truncate max-w-[140px] lg:max-w-[180px]"
+                            className="font-mono text-[11px] xs:text-xs md:text-sm text-muted-foreground truncate max-w-[100px] lg:max-w-[120px]"
                             title={adapter.tk}
                           >
                             {adapter.tk}
@@ -129,12 +129,12 @@ export default function ManagementClient({
                           <ClipboardButton text={adapter.tk} />
                         </div>
                       </td>
-                      <td className="w-2/6 px-3 py-3 sm:px-5 sm:py-3.5 text-sm">
-                        <span className="font-mono text-[11px] xs:text-xs md:text-sm text-muted-foreground truncate max-w-[240px]">
+                      <td className="w-[34%] px-3 py-3 sm:px-5 sm:py-3.5 text-sm">
+                        <span className="font-mono text-[11px] xs:text-xs md:text-sm text-muted-foreground truncate max-w-[280px] lg:max-w-[360px]">
                           {adapter.not}
                         </span>
                       </td>
-                      <td className="w-1/6 px-3 py-3 text-sm text-right sm:px-5 sm:py-3.5">
+                      <td className="w-[14%] px-3 py-3 text-sm text-right sm:px-5 sm:py-3.5">
                         <DropdownMenu>
                           <DropdownMenuTrigger
                             className="inline-flex items-center justify-center p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200"
