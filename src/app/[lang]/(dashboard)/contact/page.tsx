@@ -20,7 +20,7 @@ export default async function ContactPage(props: PageProps<"/[lang]/contact">) {
   const { lang } = await props.params;
   const dict = await getTrans(lang as Locale);
   return (
-    <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0 select-none">
+    <section className="w-full max-w-4xl mx-auto overflow-x-auto px-0 select-none">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">

@@ -18,7 +18,7 @@ export default async function ContactFeedbackPage(
   const message = searchParams.message || "";
 
   return (
-    <section className="w-full max-w-3xl mx-auto overflow-x-auto px-0 select-none">
+    <section className="w-full max-w-4xl mx-auto overflow-x-auto px-0 select-none">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">
