@@ -20,7 +20,7 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
   const dict = await getTrans(lang as Locale);
 
   return (
-    <section className="w-full max-w-4xl mx-auto overflow-x-auto px-4 py-8">
+    <section className="w-full max-w-4xl mx-auto overflow-x-auto px-4 py-8 select-none">
       <div className="flex flex-col items-center justify-center mb-10">
         <div className="relative">
           {userAvatar ? (
