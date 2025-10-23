@@ -827,7 +827,7 @@ export function DeleteAdapterDropdownForm({
       const formData = new FormData(e.currentTarget);
       const canRefresh = await deleteAdapterAction(formData);
       if (canRefresh) {
-        router.push("/management");
+        router.refresh();
       }
     } catch (error) {
       console.error("Delete adapter error:", error);
