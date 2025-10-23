@@ -100,12 +100,20 @@ export default function ManagementClient({
                       className="hover:bg-muted/20 transition-colors duration-200"
                     >
                       <td className="w-[12%] px-3 py-3 sm:px-5 sm:py-3.5 text-sm text-left">
-                        <span className="whitespace-nowrap text-[11px] xs:text-xs md:text-sm">
-                          {adapter.pid}
-                          {adapter.ava
-                            ? ""
-                            : " (" + dict?.management?.unavailable + ")"}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1.5">
+                            <div
+                              className={`w-2 h-2 rounded-full ${
+                                adapter.ava
+                                  ? "bg-green-500"
+                                  : "bg-red-500 animate-pulse"
+                              }`}
+                            />
+                            <span className="whitespace-nowrap text-[11px] xs:text-xs md:text-sm">
+                              {adapter.pid}
+                            </span>
+                          </div>
+                        </div>
                       </td>
                       <td className="w-[32%] px-3 py-3 sm:px-5 sm:py-3.5 text-sm">
                         <div className="flex items-center gap-1 xs:gap-2">
