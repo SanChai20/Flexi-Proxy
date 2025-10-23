@@ -2,7 +2,7 @@ import Link from "next/link";
 import {
   BookText,
   Home,
-  SquareCode,
+  Key,
   Mails,
   MessageCircleQuestionMark,
   PanelLeft,
@@ -75,7 +75,7 @@ function DesktopNav({ dict }: { dict: any }) {
         </NavItem>
 
         <NavItem href="/management" label={dict["navigation"]["management"]}>
-          <SquareCode className="h-5 w-5" />
+          <Key className="h-5 w-5" />
         </NavItem>
 
         <NavItem
@@ -137,7 +137,7 @@ function MobileNav({ dict }: { dict: any }) {
             href="/management"
             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
           >
-            <SquareCode className="h-5 w-5" />
+            <Key className="h-5 w-5" />
             {dict["navigation"]["management"]}
           </Link>
           <Link
