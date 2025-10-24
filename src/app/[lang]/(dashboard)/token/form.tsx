@@ -217,7 +217,7 @@ export function AdapterForm({
         }
       }
     },
-    [router, version, defaultValues]
+    [router, version, defaultValues, initProxyId]
   );
 
   return (
