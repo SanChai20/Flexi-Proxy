@@ -148,5 +148,28 @@
     "feature3Subtitle": "Simple setup with various providers",
     "checkout": "Need help? Check out our",
     "documentation": "Documentation"
+  },
+  "region": {
+    "us": "US",
+    "eu": "EU",
+    "ca": "Canada",
+    "ap": "Asia Pacific",
+    "cn": "China",
+    "jp": "Japan",
+    "kr": "Korea",
+    "sg": "Singapore",
+    "au": "Australia",
+    "hk": "HongKong"
+  },
+  "directions": {
+    "east": "East",
+    "west": "West",
+    "north": "North",
+    "northeast": "Northeast",
+    "northwest": "Northwest",
+    "south": "South",
+    "southeast": "Southeast",
+    "southwest": "Southwest",
+    "central": "Central"
   }
 }

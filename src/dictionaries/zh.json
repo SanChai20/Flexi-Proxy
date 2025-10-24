@@ -148,5 +148,28 @@
     "feature3Subtitle": "兼容不同供应商，简单易用",
     "checkout": "需要帮助？ 请查看",
     "documentation": "说明文档"
+  },
+  "region": {
+    "us": "美国",
+    "eu": "欧洲",
+    "ca": "加拿大",
+    "ap": "亚太地区",
+    "cn": "中国",
+    "jp": "日本",
+    "kr": "韩国",
+    "sg": "新加坡",
+    "au": "澳大利亚",
+    "hk": "香港"
+  },
+  "directions": {
+    "east": "东部",
+    "west": "西部",
+    "north": "北部",
+    "northeast": "东北部",
+    "northwest": "西北部",
+    "south": "南部",
+    "southeast": "东南部",
+    "southwest": "西南部",
+    "central": "中部"
   }
 }
