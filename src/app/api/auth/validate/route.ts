@@ -7,28 +7,28 @@ export const preferredRegion = ["iad1", "cle1"];
 
 const ENV = {
   ADAPTER_PREFIX: process.env.ADAPTER_PREFIX!,
-  ADAPTER_KEY_PREFIX: process.env.ADAPTER_KEY_PREFIX!,
   ENCRYPTION_KEY: process.env.ENCRYPTION_KEY!,
 };
 
 // POST
 // API: '/api/auth/validate'
 // Headers: 'X-API-Key': <Token start from 'fp-'>
+//          'X-Proxy-Id': From Proxy Server
 //          'Authorization': Bearer <Token>
 // Body: {
 //  public_key: <Public secret key issued from verified server>
 //}
 async function protectedPOST(req: AuthRequest) {
-  if (
-    ENV.ADAPTER_PREFIX === undefined ||
-    ENV.ADAPTER_KEY_PREFIX === undefined ||
-    ENV.ENCRYPTION_KEY === undefined
-  ) {
+  if (ENV.ADAPTER_PREFIX === undefined || ENV.ENCRYPTION_KEY === undefined) {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
   try {
     const tk: string | null = req.headers.get("X-API-Key");
     if (tk === null) {
+      return NextResponse.json({ error: "Missing Field" }, { status: 400 });
+    }
+    const pid: string | null = req.headers.get("X-Proxy-Id");
+    if (pid === null) {
       return NextResponse.json({ error: "Missing Field" }, { status: 400 });
     }
     const { public_key } = await req.json();
@@ -57,7 +57,7 @@ async function protectedPOST(req: AuthRequest) {
       kiv: string;
       ken: string;
       kau: string;
-    }>([ENV.ADAPTER_PREFIX, ENV.ADAPTER_KEY_PREFIX, tk].join(":"));
+    }>([ENV.ADAPTER_PREFIX, pid, tk].join(":"));
     if (tokenKeyData != null) {
       const apiKey = symmetricDecrypt(
         {

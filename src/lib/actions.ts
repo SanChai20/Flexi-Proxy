@@ -197,7 +197,6 @@ export async function deleteAdapterAction(
   const adapterId = formData.get("adapterId") as string;
   if (
     process.env.ADAPTER_PREFIX === undefined ||
-    process.env.ADAPTER_KEY_PREFIX === undefined ||
     process.env.USER_MODIFY_VERSION_PREFIX === undefined
   ) {
     console.error("deleteAdapterAction - ADAPTER_PREFIX env not set");
@@ -223,11 +222,7 @@ export async function deleteAdapterAction(
     if (adapterRaw !== null) {
       let transaction = redis.multi();
       transaction.del(
-        [
-          process.env.ADAPTER_PREFIX,
-          process.env.ADAPTER_KEY_PREFIX,
-          adapterRaw.tk,
-        ].join(":")
+        [process.env.ADAPTER_PREFIX, adapterRaw.pid, adapterRaw.tk].join(":")
       );
       transaction.del([process.env.ADAPTER_PREFIX, adapterRaw.tk].join(":"));
       transaction.del(
@@ -255,7 +250,6 @@ export async function updateAdapterAction(
   if (
     process.env.ENCRYPTION_KEY === undefined ||
     process.env.ADAPTER_PREFIX === undefined ||
-    process.env.ADAPTER_KEY_PREFIX === undefined ||
     process.env.PROXY_PREFIX === undefined ||
     process.env.USER_MODIFY_VERSION_PREFIX === undefined
   ) {
@@ -313,11 +307,7 @@ export async function updateAdapterAction(
     if (adapterRaw !== null) {
       // Remove old make new
       transaction.del(
-        [
-          process.env.ADAPTER_PREFIX,
-          process.env.ADAPTER_KEY_PREFIX,
-          adapterRaw.tk,
-        ].join(":")
+        [process.env.ADAPTER_PREFIX, adapterRaw.pid, adapterRaw.tk].join(":")
       );
       transaction.del([process.env.ADAPTER_PREFIX, adapterRaw.tk].join(":"));
       transaction.set<{
@@ -346,14 +336,11 @@ export async function updateAdapterAction(
         kiv: string;
         ken: string;
         kau: string;
-      }>(
-        [
-          process.env.ADAPTER_PREFIX,
-          process.env.ADAPTER_KEY_PREFIX,
-          tokenKey,
-        ].join(":"),
-        { kiv, ken, kau }
-      );
+      }>([process.env.ADAPTER_PREFIX, pid, tokenKey].join(":"), {
+        kiv,
+        ken,
+        kau,
+      });
     } else {
       transaction.set<{
         tk: string;
@@ -381,14 +368,11 @@ export async function updateAdapterAction(
         kiv: string;
         ken: string;
         kau: string;
-      }>(
-        [
-          process.env.ADAPTER_PREFIX,
-          process.env.ADAPTER_KEY_PREFIX,
-          tokenKey,
-        ].join(":"),
-        { kiv, ken, kau }
-      );
+      }>([process.env.ADAPTER_PREFIX, pid, tokenKey].join(":"), {
+        kiv,
+        ken,
+        kau,
+      });
     }
     await transaction.exec();
     revalidateTag(`user-adapters:${session.user.id}`);
@@ -407,7 +391,6 @@ export async function createAdapterAction(
   if (
     process.env.ENCRYPTION_KEY === undefined ||
     process.env.ADAPTER_PREFIX === undefined ||
-    process.env.ADAPTER_KEY_PREFIX === undefined ||
     process.env.PROXY_PREFIX === undefined ||
     process.env.USER_MODIFY_VERSION_PREFIX === undefined
   ) {
@@ -477,18 +460,11 @@ export async function createAdapterAction(
       kiv: string;
       ken: string;
       kau: string;
-    }>(
-      [
-        process.env.ADAPTER_PREFIX,
-        process.env.ADAPTER_KEY_PREFIX,
-        tokenKey,
-      ].join(":"),
-      {
-        kiv,
-        ken,
-        kau,
-      }
-    );
+    }>([process.env.ADAPTER_PREFIX, pid, tokenKey].join(":"), {
+      kiv,
+      ken,
+      kau,
+    });
     await transaction.exec();
     revalidateTag(`user-adapters:${session.user.id}`);
     revalidateTag(`user-adapter-version:${session.user.id}`);
