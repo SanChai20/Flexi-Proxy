@@ -119,143 +119,156 @@ export default function GatewayClient({
   };
 
   return (
-    <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {proxyServers.map((server) => {
-          const available = isServerAvailable(server);
-          const { region, direction } = parseGatewayLocation(server.id);
-          const locationText = formatLocation(region, direction);
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl">
+            {dict?.gateway?.title || "Proxy Gateways"}
+          </CardTitle>
+          <CardDescription className="text-base mt-2">
+            {dict?.gateway?.subtitle ||
+              "List all available proxy gateways and their features"}
+          </CardDescription>
+        </CardHeader>
+      </Card>
+      <div className="mt-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {proxyServers.map((server) => {
+            const available = isServerAvailable(server);
+            const { region, direction } = parseGatewayLocation(server.id);
+            const locationText = formatLocation(region, direction);
 
-          return (
-            <Card
-              key={server.id}
-              className={`transition-all duration-200 hover:shadow-lg ${
-                !available ? "opacity-60" : ""
-              }`}
-            >
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2 min-w-0 flex-1">
-                    <Hash className="w-5 h-5 text-muted-foreground flex-shrink-0" />
-                    <CardTitle
-                      className="text-lg font-semibold truncate direction-rtl"
-                      dir="rtl"
-                    >
-                      <span dir="ltr">{server.id}</span>
-                    </CardTitle>
-                  </div>
-                  <div
-                    className={`flex-shrink-0 w-3 h-3 rounded-full mt-1 ${
-                      server.isHealthy
-                        ? "bg-green-500 animate-pulse"
-                        : "bg-gray-400"
-                    }`}
-                    title={
-                      server.isHealthy
-                        ? dict?.gateway?.healthy || "Healthy"
-                        : dict?.gateway?.unhealthy || "Unhealthy"
-                    }
-                  />
-                </div>
-
-                {/* Location Info */}
-                {region && direction && (
-                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-1">
-                    <MapPin className="w-4 h-4" />
-                    <span className="font-medium">{locationText}</span>
-                  </div>
-                )}
-
-                {/* URL as secondary info */}
-                <div className="text-xs text-muted-foreground break-all mt-1">
-                  {server.url}
-                </div>
-
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {/* Status Badge */}
-                  <span
-                    className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors ${getStatusStyle(
-                      server.status
-                    )}`}
-                  >
-                    {getStatusText(server.status)}
-                  </span>
-
-                  {/* Premium/Free Badge */}
-                  {server.adv ? (
-                    <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-700">
-                      <Zap className="w-3 h-3 mr-1" />
-                      {dict?.gateway?.premium || "Premium"}
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-700">
-                      <Gift className="w-3 h-3 mr-1" />
-                      {dict?.gateway?.free || "Free"}
-                    </span>
-                  )}
-                </div>
-              </CardHeader>
-
-              <CardContent className="space-y-4">
-                {/* Health Check & Response Time */}
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Activity className="w-4 h-4" />
-                    <span>
-                      {server.isHealthy
-                        ? dict?.gateway?.healthy || "Healthy"
-                        : dict?.gateway?.unhealthy || "Unhealthy"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Clock className="w-4 h-4 text-muted-foreground" />
-                    <span
-                      className={`font-medium ${
-                        server.responseTime < 100
-                          ? "text-green-600 dark:text-green-400"
-                          : server.responseTime < 300
-                          ? "text-yellow-600 dark:text-yellow-400"
-                          : "text-red-600 dark:text-red-400"
+            return (
+              <Card
+                key={server.id}
+                className={`transition-all duration-200 hover:shadow-lg ${
+                  !available ? "opacity-60" : ""
+                }`}
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <Hash className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+                      <CardTitle
+                        className="text-lg font-semibold truncate direction-rtl"
+                        dir="rtl"
+                      >
+                        <span dir="ltr">{server.id}</span>
+                      </CardTitle>
+                    </div>
+                    <div
+                      className={`flex-shrink-0 w-3 h-3 rounded-full mt-1 ${
+                        server.isHealthy
+                          ? "bg-green-500 animate-pulse"
+                          : "bg-gray-400"
                       }`}
+                      title={
+                        server.isHealthy
+                          ? dict?.gateway?.healthy || "Healthy"
+                          : dict?.gateway?.unhealthy || "Unhealthy"
+                      }
+                    />
+                  </div>
+
+                  {/* Location Info */}
+                  {region && direction && (
+                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-1">
+                      <MapPin className="w-4 h-4" />
+                      <span className="font-medium">{locationText}</span>
+                    </div>
+                  )}
+
+                  {/* URL as secondary info */}
+                  <div className="text-xs text-muted-foreground break-all mt-1">
+                    {server.url}
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {/* Status Badge */}
+                    <span
+                      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors ${getStatusStyle(
+                        server.status
+                      )}`}
                     >
-                      {server.responseTime}ms
+                      {getStatusText(server.status)}
                     </span>
-                  </div>
-                </div>
 
-                {/* Error Info */}
-                {server.error && (
-                  <div className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-2 rounded border border-red-200 dark:border-red-800">
-                    {server.error}
+                    {/* Premium/Free Badge */}
+                    {server.adv ? (
+                      <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-700">
+                        <Zap className="w-3 h-3 mr-1" />
+                        {dict?.gateway?.premium || "Premium"}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-700">
+                        <Gift className="w-3 h-3 mr-1" />
+                        {dict?.gateway?.free || "Free"}
+                      </span>
+                    )}
                   </div>
-                )}
+                </CardHeader>
 
-                {/* Get Token Pass */}
-                <Button
-                  className="w-full"
-                  variant={available ? "default" : "secondary"}
-                  disabled={!available}
-                  onClick={() => handleGetToken(server.id)}
-                >
-                  {dict?.gateway?.getToken || "Get Token Pass"}
-                </Button>
-              </CardContent>
-            </Card>
-          );
-        })}
+                <CardContent className="space-y-4">
+                  {/* Health Check & Response Time */}
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Activity className="w-4 h-4" />
+                      <span>
+                        {server.isHealthy
+                          ? dict?.gateway?.healthy || "Healthy"
+                          : dict?.gateway?.unhealthy || "Unhealthy"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Clock className="w-4 h-4 text-muted-foreground" />
+                      <span
+                        className={`font-medium ${
+                          server.responseTime < 100
+                            ? "text-green-600 dark:text-green-400"
+                            : server.responseTime < 300
+                            ? "text-yellow-600 dark:text-yellow-400"
+                            : "text-red-600 dark:text-red-400"
+                        }`}
+                      >
+                        {server.responseTime}ms
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Error Info */}
+                  {server.error && (
+                    <div className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-2 rounded border border-red-200 dark:border-red-800">
+                      {server.error}
+                    </div>
+                  )}
+
+                  {/* Get Token Pass */}
+                  <Button
+                    className="w-full"
+                    variant={available ? "default" : "secondary"}
+                    disabled={!available}
+                    onClick={() => handleGetToken(server.id)}
+                  >
+                    {dict?.gateway?.getToken || "Get Token Pass"}
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {/* Empty State */}
+        {proxyServers.length === 0 && (
+          <Card className="p-12">
+            <div className="text-center text-muted-foreground">
+              <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
+              <p className="text-lg">
+                {dict?.gateway?.noServers || "No proxy servers available"}
+              </p>
+            </div>
+          </Card>
+        )}
       </div>
-
-      {/* Empty State */}
-      {proxyServers.length === 0 && (
-        <Card className="p-12">
-          <div className="text-center text-muted-foreground">
-            <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
-            <p className="text-lg">
-              {dict?.gateway?.noServers || "No proxy servers available"}
-            </p>
-          </div>
-        </Card>
-      )}
-    </section>
+    </>
   );
 }
