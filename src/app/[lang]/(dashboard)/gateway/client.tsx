@@ -8,9 +8,18 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Activity, Clock, Zap, Gift, Hash, MapPin } from "lucide-react";
+import {
+  Activity,
+  Clock,
+  Zap,
+  Gift,
+  Hash,
+  MapPin,
+  Loader2,
+} from "lucide-react";
 import { createShortTimeToken } from "@/lib/actions";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 interface GatewayClientProps {
   dict: any;
@@ -34,6 +43,8 @@ export default function GatewayClient({
   proxyServers,
 }: GatewayClientProps) {
   const router = useRouter();
+  const [loadingProxyId, setLoadingProxyId] = useState<string | null>(null);
+
   const parseGatewayLocation = (id: string) => {
     // Format: gateway-xx-yy-zz
     const parts = id.split("-");
@@ -107,6 +118,7 @@ export default function GatewayClient({
 
   const handleGetToken = async (proxyId: string) => {
     try {
+      setLoadingProxyId(proxyId);
       const token = await createShortTimeToken(3600);
       router.push(
         `/token/create?token=${encodeURIComponent(
@@ -115,6 +127,7 @@ export default function GatewayClient({
       );
     } catch (error) {
       console.error("Failed to create token:", error);
+      setLoadingProxyId(null);
     }
   };
 
@@ -135,6 +148,7 @@ export default function GatewayClient({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {proxyServers.map((server) => {
             const available = isServerAvailable(server);
+            const isLoading = loadingProxyId === server.id;
             const { region, direction } = parseGatewayLocation(server.id);
             const locationText = formatLocation(region, direction);
 
@@ -246,10 +260,17 @@ export default function GatewayClient({
                   <Button
                     className="w-full"
                     variant={available ? "default" : "secondary"}
-                    disabled={!available}
+                    disabled={!available || loadingProxyId !== null}
                     onClick={() => handleGetToken(server.id)}
                   >
-                    {dict?.gateway?.getToken || "Get Token Pass"}
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        {dict?.gateway?.loading || "Loading..."}
+                      </>
+                    ) : (
+                      dict?.gateway?.getToken || "Get Token Pass"
+                    )}
                   </Button>
                 </CardContent>
               </Card>

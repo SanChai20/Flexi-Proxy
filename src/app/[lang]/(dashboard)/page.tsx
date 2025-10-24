@@ -146,6 +146,9 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
           {dict?.home?.checkout || "Need help? Check out our"}{" "}
           <a href="/documentation" className="text-primary hover:underline">
             {dict?.home?.documentation || "Documentation"}
+          </a>{" "}
+          <a href="/faq" className="text-primary hover:underline">
+            {dict?.home?.faq || "FAQ"}
           </a>
         </p>
       </div>

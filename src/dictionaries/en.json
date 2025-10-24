@@ -147,7 +147,8 @@
     "feature3Title": "Easy Setup",
     "feature3Subtitle": "Simple setup with various providers",
     "checkout": "Need help? Check out our",
-    "documentation": "Documentation"
+    "documentation": "Documentation",
+    "faq": "FAQ"
   },
   "regions": {
     "us": "US",
