@@ -88,6 +88,7 @@ export function AdapterForm({
   advRequest,
   version,
   defaultValues,
+  initProxyId,
 }: {
   dict: any;
   proxies: { id: string; url: string; status: string; adv: boolean }[];
@@ -97,11 +98,11 @@ export function AdapterForm({
   defaultValues?: {
     adapterId: string;
     modelId: string;
-    proxyId: string;
     providerId: string;
     commentNote: string;
     litellmParams: string;
   };
+  initProxyId?: string;
 }) {
   const router = useRouter();
   const [showApiKey, setShowApiKey] = useState(false);
@@ -111,9 +112,7 @@ export function AdapterForm({
       : ""
   );
   const [selectedProxyId, setSelectedProxyId] = useState(
-    proxies.some((p) => p.id === defaultValues?.proxyId)
-      ? defaultValues?.proxyId
-      : ""
+    proxies.some((p) => p.id === initProxyId) ? initProxyId : ""
   );
   const [modelId, setModelId] = useState(defaultValues?.modelId || "");
   const [supportedProviders, setSupportedProviders] =
@@ -196,10 +195,10 @@ export function AdapterForm({
   };
 
   useEffect(() => {
-    if (defaultValues?.proxyId) {
-      initializeProxy(defaultValues.proxyId);
+    if (initProxyId) {
+      initializeProxy(initProxyId);
     }
-  }, [defaultValues?.proxyId, initializeProxy]);
+  }, [initProxyId, initializeProxy]);
 
   const onSubmit = useCallback(
     async (formData: FormData) => {

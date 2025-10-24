@@ -546,31 +546,23 @@ export async function getUserAdapterModifyVersion(): Promise<
   if (!(session && session.user && session.user.id)) {
     return undefined;
   }
-  const userId = session.user.id;
-  const getCachedVersion = unstable_cache(
-    async (uid: string) => {
-      if (process.env.USER_MODIFY_VERSION_PREFIX === undefined) {
-        console.error("getUserAdapterModifyVersion - env not set");
-        return undefined;
-      }
-      try {
-        const versionNumber = await redis.get<number>(
-          [process.env.USER_MODIFY_VERSION_PREFIX, uid].join(":")
-        );
-        if (versionNumber !== null) {
-          return versionNumber;
-        } else {
-          return 0;
-        }
-      } catch (error) {
-        console.error("Error incrementing version:", error);
-        return undefined;
-      }
-    },
-    ["user-adapter-version"],
-    { revalidate: 300, tags: [`user-adapter-version:${userId}`] }
-  );
-  return getCachedVersion(userId);
+  if (process.env.USER_MODIFY_VERSION_PREFIX === undefined) {
+    console.error("getUserAdapterModifyVersion - env not set");
+    return undefined;
+  }
+  try {
+    const versionNumber = await redis.get<number>(
+      [process.env.USER_MODIFY_VERSION_PREFIX, session.user.id].join(":")
+    );
+    if (versionNumber !== null) {
+      return versionNumber;
+    } else {
+      return 0;
+    }
+  } catch (error) {
+    console.error("Error incrementing version:", error);
+    return undefined;
+  }
 }
 
 interface UserSettings {

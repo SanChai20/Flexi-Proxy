@@ -17,7 +17,6 @@ const providerData: Record<string, { id: string; website: string }> = data;
 async function CreateAccessTokenContent({
   lang,
   dict,
-  proxyId,
 }: {
   lang: string;
   dict: any;
@@ -45,7 +44,6 @@ async function CreateAccessTokenContent({
       providers={providers}
       advRequest={permissions.adv}
       version={userVersion}
-      defaultProxyId={proxyId}
     />
   );
 }
@@ -54,7 +52,7 @@ export default async function AccessTokenCreatePage(
   props: PageProps<"/[lang]/token/create">
 ) {
   const { lang } = await props.params;
-  const { token, proxyId } = await props.searchParams;
+  const { token } = await props.searchParams;
 
   if (typeof token !== "string" || !(await verifyShortTimeToken(token))) {
     redirect(`/${lang}/token`);
@@ -65,7 +63,7 @@ export default async function AccessTokenCreatePage(
   return (
     <section className="w-full max-w-4xl mx-auto overflow-x-auto px-0 select-none">
       <Suspense fallback={<CreateAccessTokenSkeleton dict={dict} />}>
-        <CreateAccessTokenContent lang={lang} dict={dict} proxyId={proxyId} />
+        <CreateAccessTokenContent lang={lang} dict={dict} />
       </Suspense>
     </section>
   );

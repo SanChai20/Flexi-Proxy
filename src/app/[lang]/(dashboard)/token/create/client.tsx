@@ -7,6 +7,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { AdapterForm } from "../form";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface CreateAccessTokenClientProps {
   dict: any;
@@ -27,8 +29,17 @@ export default function CreateAccessTokenClient({
   providers,
   advRequest,
   version,
-  defaultProxyId,
 }: CreateAccessTokenClientProps) {
+  const searchParams = useSearchParams();
+  const [defaultProxyId, setDefaultProxyId] = useState<string | undefined>(
+    undefined
+  );
+  useEffect(() => {
+    const urlProxyId = searchParams.get("proxyId");
+    if (urlProxyId) {
+      setDefaultProxyId(urlProxyId);
+    }
+  }, [searchParams]);
   return (
     <>
       <Card>
@@ -49,14 +60,7 @@ export default function CreateAccessTokenClient({
           providers={providers}
           advRequest={advRequest}
           version={version}
-          defaultValues={{
-            adapterId: "",
-            modelId: "",
-            proxyId: defaultProxyId,
-            providerId: "",
-            commentNote: "",
-            litellmParams: "",
-          }}
+          initProxyId={defaultProxyId}
         />
       ) : (
         <AdapterForm

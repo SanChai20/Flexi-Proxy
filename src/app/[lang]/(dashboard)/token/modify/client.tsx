@@ -56,6 +56,7 @@ export default function ModifyAccessTokenClient({
         advRequest={advRequest}
         version={version}
         defaultValues={defaultValues}
+        initProxyId={defaultValues.proxyId}
       />
     </>
   );
