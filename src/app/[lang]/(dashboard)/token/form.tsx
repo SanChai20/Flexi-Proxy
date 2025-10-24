@@ -205,7 +205,7 @@ export function AdapterForm({
     async (formData: FormData) => {
       const currentVersion = await getUserAdapterModifyVersion();
       if (currentVersion !== version) {
-        router.push("/management");
+        router.push("/token");
       } else {
         let canJump: boolean = false;
         if (defaultValues !== undefined) {
@@ -214,7 +214,7 @@ export function AdapterForm({
           canJump = await createAdapterAction(formData);
         }
         if (canJump) {
-          router.push("/management");
+          router.push("/token");
         }
       }
     },
@@ -231,10 +231,10 @@ export function AdapterForm({
         <div className="p-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-md shadow-sm">
-              {dict?.management?.proxyServer || "PROXY SERVER"}
+              {dict?.token?.proxyServer || "PROXY SERVER"}
             </div>
             <h3 className="text-lg font-semibold text-foreground">
-              {dict?.management?.targetTitle || "Select Proxy Service"}
+              {dict?.token?.targetTitle || "Select Proxy Service"}
             </h3>
           </div>
 
@@ -245,7 +245,7 @@ export function AdapterForm({
                 className="text-sm font-medium text-foreground flex items-center gap-1.5"
               >
                 <span className="text-destructive">*</span>
-                {dict?.management?.proxy || "Proxy Gateway"}
+                {dict?.token?.proxy || "Proxy Gateway"}
               </label>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -253,7 +253,7 @@ export function AdapterForm({
                 </TooltipTrigger>
                 <TooltipContent side="top" className="max-w-xs">
                   <p>
-                    {dict?.management?.proxyTip ||
+                    {dict?.token?.proxyTip ||
                       "You can choose a LiteLLM proxy service based on your location and server load."}
                   </p>
                 </TooltipContent>
@@ -271,7 +271,7 @@ export function AdapterForm({
                 style={{ pointerEvents: "none" }}
               >
                 <option value="">
-                  {dict.management?.selectProxy || "Select a proxy server"}
+                  {dict.token?.selectProxy || "Select a proxy server"}
                 </option>
                 {proxies.map((option) => (
                   <option key={option.id} value={option.id}>
@@ -310,15 +310,14 @@ export function AdapterForm({
                                 className={`px-2 py-0.5 rounded text-xs font-medium ${config.color} ${config.bg} ${config.border} border`}
                               >
                                 {proxy.status === "spare" &&
-                                  (dict?.management?.spare || "Spare")}
+                                  (dict?.token?.spare || "Spare")}
                                 {proxy.status === "busy" &&
-                                  (dict?.management?.busy || "Busy")}
+                                  (dict?.token?.busy || "Busy")}
                                 {proxy.status === "full" &&
-                                  (dict?.management?.full || "Full")}
+                                  (dict?.token?.full || "Full")}
                                 {(proxy.status === "" ||
                                   proxy.status === "unavailable") &&
-                                  (dict?.management?.unavailable ||
-                                    "Unavailable")}
+                                  (dict?.token?.unavailable || "Unavailable")}
                               </span>
                               <span
                                 className={`px-2 py-0.5 rounded text-xs font-medium ${
@@ -328,8 +327,8 @@ export function AdapterForm({
                                 }`}
                               >
                                 {proxy.adv
-                                  ? dict?.management?.pro || "Pro"
-                                  : dict?.management?.free || "Free"}
+                                  ? dict?.token?.pro || "Pro"
+                                  : dict?.token?.free || "Free"}
                               </span>
                             </div>
                           </>
@@ -338,7 +337,7 @@ export function AdapterForm({
                     </div>
                   ) : (
                     <span className="text-muted-foreground">
-                      {dict.management?.selectProxy || "Select a proxy server"}
+                      {dict.token?.selectProxy || "Select a proxy server"}
                     </span>
                   )}
                 </div>
@@ -357,7 +356,7 @@ export function AdapterForm({
                         <div className="flex flex-col items-center gap-2">
                           <Server className="h-8 w-8 text-muted-foreground/50" />
                           <p className="text-sm text-muted-foreground">
-                            {dict?.management?.noProxyAvailable ||
+                            {dict?.token?.noProxyAvailable ||
                               "No proxy servers available"}
                           </p>
                         </div>
@@ -410,15 +409,14 @@ export function AdapterForm({
                                 className={`px-2 py-0.5 rounded text-xs font-medium ${config.color} ${config.bg} ${config.border} border`}
                               >
                                 {option.status === "spare" &&
-                                  (dict?.management?.spare || "Spare")}
+                                  (dict?.token?.spare || "Spare")}
                                 {option.status === "busy" &&
-                                  (dict?.management?.busy || "Busy")}
+                                  (dict?.token?.busy || "Busy")}
                                 {option.status === "full" &&
-                                  (dict?.management?.full || "Full")}
+                                  (dict?.token?.full || "Full")}
                                 {(option.status === "" ||
                                   option.status === "unavailable") &&
-                                  (dict?.management?.unavailable ||
-                                    "Unavailable")}
+                                  (dict?.token?.unavailable || "Unavailable")}
                               </span>
                               <span
                                 className={`px-2 py-0.5 rounded text-xs font-medium ${
@@ -428,8 +426,8 @@ export function AdapterForm({
                                 }`}
                               >
                                 {option.adv
-                                  ? dict?.management?.pro || "Pro"
-                                  : dict?.management?.free || "Free"}
+                                  ? dict?.token?.pro || "Pro"
+                                  : dict?.token?.free || "Free"}
                               </span>
                             </div>
                           </button>
@@ -466,10 +464,10 @@ export function AdapterForm({
           <fieldset disabled={!selectedProxyId}>
             <div className="flex items-center gap-3 mb-6">
               <div className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-md shadow-sm">
-                {dict?.management?.tokenPassSource || "SOURCE"}
+                {dict?.token?.tokenPassSource || "SOURCE"}
               </div>
               <h3 className="text-lg font-semibold text-foreground">
-                {dict?.management?.sourceTitle || "Configure Model"}
+                {dict?.token?.sourceTitle || "Configure Model"}
               </h3>
             </div>
 
@@ -485,7 +483,7 @@ export function AdapterForm({
                         className="text-sm font-medium text-foreground flex items-center gap-1.5"
                       >
                         <span className="text-destructive">*</span>
-                        {dict?.management?.providerOptions || "Provider"}
+                        {dict?.token?.providerOptions || "Provider"}
                       </label>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -493,7 +491,7 @@ export function AdapterForm({
                         </TooltipTrigger>
                         <TooltipContent side="top" className="max-w-xs">
                           <p>
-                            {dict?.management?.providerOptionsTip ||
+                            {dict?.token?.providerOptionsTip ||
                               "E.g. Anthropic, Deepseek, OpenRouter etc."}
                           </p>
                         </TooltipContent>
@@ -527,7 +525,7 @@ export function AdapterForm({
                     required
                   >
                     <option value="">
-                      {dict.management?.selectProvider || "Select a provider"}
+                      {dict.token?.selectProvider || "Select a provider"}
                     </option>
                     {supportedProviders.map((option) => (
                       <option key={option.id} value={option.id}>
@@ -545,7 +543,7 @@ export function AdapterForm({
                       className="text-sm font-medium text-foreground flex items-center gap-1.5"
                     >
                       <span className="text-destructive">*</span>
-                      {dict?.management?.modelId || "Model ID"}
+                      {dict?.token?.modelId || "Model ID"}
                     </label>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -553,7 +551,7 @@ export function AdapterForm({
                       </TooltipTrigger>
                       <TooltipContent side="top" className="max-w-xs">
                         <p>
-                          {dict?.management?.modelIdOptionsTip ||
+                          {dict?.token?.modelIdOptionsTip ||
                             "Use any model ID from your provider (e.g., `gpt-4`, `deepseek-chat`). Follow the format shown - you're not limited to listed options. See provider docs for available models."}
                         </p>
                       </TooltipContent>
@@ -570,8 +568,7 @@ export function AdapterForm({
              focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring 
              transition-all duration-200 hover:border-ring/50 shadow-sm"
                     placeholder={
-                      dict?.management?.modelIdPlaceHolder ||
-                      "Select Model ID..."
+                      dict?.token?.modelIdPlaceHolder || "Select Model ID..."
                     }
                     list="modelList"
                     required
@@ -595,7 +592,7 @@ export function AdapterForm({
                     className="text-sm font-medium text-foreground flex items-center gap-1.5"
                   >
                     <span className="text-destructive">*</span>
-                    {dict?.management?.apiKey || "API Key"}
+                    {dict?.token?.apiKey || "API Key"}
                   </label>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -603,7 +600,7 @@ export function AdapterForm({
                     </TooltipTrigger>
                     <TooltipContent side="top" className="max-w-xs">
                       <p>
-                        {dict?.management?.apiKeyTip ||
+                        {dict?.token?.apiKeyTip ||
                           "It will be used for requests only and will be securely managed."}
                       </p>
                     </TooltipContent>
@@ -618,9 +615,7 @@ export function AdapterForm({
                     className="w-full px-4 py-3 pr-12 text-foreground bg-background border border-input rounded-lg 
                              focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring 
                              transition-all duration-200 hover:border-ring/50 shadow-sm"
-                    placeholder={
-                      dict?.management?.apiKeyPlaceHolder || "Type..."
-                    }
+                    placeholder={dict?.token?.apiKeyPlaceHolder || "Type..."}
                     required
                   />
                   <button
@@ -647,7 +642,7 @@ export function AdapterForm({
                     htmlFor="litellmParams"
                     className="text-sm font-medium text-foreground"
                   >
-                    {dict?.management?.litellmParams || "LiteLLM Params"}
+                    {dict?.token?.litellmParams || "LiteLLM Params"}
                   </label>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -655,7 +650,7 @@ export function AdapterForm({
                     </TooltipTrigger>
                     <TooltipContent side="top" className="max-w-xs">
                       <p>
-                        {dict?.management?.litellmParamsTip ||
+                        {dict?.token?.litellmParamsTip ||
                           "Optional litellm params used for making a litellm.completion() call."}
                       </p>
                     </TooltipContent>
@@ -671,7 +666,7 @@ export function AdapterForm({
                            focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring 
                            transition-all duration-200 hover:border-ring/50 shadow-sm font-mono text-sm"
                   placeholder={
-                    dict?.management?.litellmParamsPlaceHolder ||
+                    dict?.token?.litellmParamsPlaceHolder ||
                     '{ "rpm": 100, "timeout": 0, "stream_timeout": 0 }'
                   }
                 />
@@ -696,10 +691,10 @@ export function AdapterForm({
         <div className="p-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-md shadow-sm">
-              {dict?.management?.noteTag || "NOTE"}
+              {dict?.token?.noteTag || "NOTE"}
             </div>
             <h3 className="text-lg font-semibold text-foreground">
-              {dict?.management?.noteTitle || "Add note information"}
+              {dict?.token?.noteTitle || "Add note information"}
             </h3>
           </div>
 
@@ -713,13 +708,13 @@ export function AdapterForm({
                        focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring 
                        transition-all duration-200 hover:border-ring/50 resize-none shadow-sm"
               placeholder={
-                dict?.management?.notePlaceHolder ||
+                dict?.token?.notePlaceHolder ||
                 "Create note for this pass...(20 words max)"
               }
               maxLength={20}
             ></textarea>
             <p className="text-xs text-muted-foreground">
-              {dict?.management?.noteHint || "Maximum 20 characters"}
+              {dict?.token?.noteHint || "Maximum 20 characters"}
             </p>
           </div>
         </div>
@@ -737,7 +732,7 @@ export function AdapterForm({
                      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring
                      active:scale-[0.98]"
           >
-            {dict?.management?.confirm || "Confirm"}
+            {dict?.token?.confirm || "Confirm"}
           </OnceButton>
         </div>
       </div>
@@ -773,7 +768,7 @@ export function EditAdapterDropdownForm({
       const formData = new FormData(e.currentTarget);
       const token = await createShortTimeToken(3600);
       router.push(
-        `/management/modify?aid=${encodeURIComponent(
+        `/token/modify?aid=${encodeURIComponent(
           formData.get("adapterId") as string
         )}&token=${encodeURIComponent(token)}`
       );
@@ -792,7 +787,7 @@ export function EditAdapterDropdownForm({
         asChild
       >
         <button type="submit" className="w-full" disabled={isSubmitting}>
-          {dict?.management?.edit || "Edit"}
+          {dict?.token?.edit || "Edit"}
         </button>
       </DropdownMenuItem>
     </form>
@@ -844,7 +839,7 @@ export function DeleteAdapterDropdownForm({
         asChild
       >
         <button type="submit" className="w-full" disabled={isSubmitting}>
-          {dict?.management?.delete || "Delete"}
+          {dict?.token?.delete || "Delete"}
         </button>
       </DropdownMenuItem>
     </form>
@@ -879,7 +874,7 @@ export function CreateAdapterForm({
 
     try {
       const token = await createShortTimeToken(3600);
-      router.push(`/management/create?token=${encodeURIComponent(token)}`);
+      router.push(`/token/create?token=${encodeURIComponent(token)}`);
     } catch (error) {
       console.error("Failed to create token:", error);
       setIsSubmitting(false);
@@ -908,14 +903,14 @@ export function CreateAdapterForm({
                 <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5" />
               )}
               <span className="sr-only">
-                {dict?.management?.tokenCreate || "Create Token Pass"}
+                {dict?.token?.tokenCreate || "Create Token Pass"}
               </span>
             </Button>
           </form>
         </TooltipTrigger>
         <TooltipContent>
           <p className="tracking-wider text-muted-foreground">
-            {dict?.management?.tokenCreate || "Create Token Pass"}{" "}
+            {dict?.token?.tokenCreate || "Create Token Pass"}{" "}
             <span className="font-medium">
               ({currentAdapterCount}/{maxAdapterCountAllowed})
             </span>

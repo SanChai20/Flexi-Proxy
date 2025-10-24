@@ -7,16 +7,16 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function CreateManagementSkeleton({ dict }: { dict: any }) {
+export default function CreateAccessTokenSkeleton({ dict }: { dict: any }) {
   return (
     <>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">
-            {dict?.management?.tokenPassTitle || "Create Token Pass"}
+            {dict?.token?.tokenPassTitle || "Create Token Pass"}
           </CardTitle>
           <CardDescription className="text-base">
-            {dict?.management?.tokenPassSubtitle ||
+            {dict?.token?.tokenPassSubtitle ||
               "Obtain an Access Token for the Proxy Gateway Service"}
           </CardDescription>
         </CardHeader>

@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { AdapterForm } from "../form";
 
-interface ModifyManagementClientProps {
+interface ModifyAccessTokenClientProps {
   dict: any;
   proxies: any[];
   providers: Array<{
@@ -28,23 +28,23 @@ interface ModifyManagementClientProps {
   };
 }
 
-export default function ModifyManagementClient({
+export default function ModifyAccessTokenClient({
   dict,
   proxies,
   providers,
   advRequest,
   version,
   defaultValues,
-}: ModifyManagementClientProps) {
+}: ModifyAccessTokenClientProps) {
   return (
     <>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">
-            {dict?.management?.keyTitle || "Modify Token Pass"}
+            {dict?.token?.keyTitle || "Modify Token Pass"}
           </CardTitle>
           <CardDescription className="text-base">
-            {dict?.management?.keySubtitle ||
+            {dict?.token?.keySubtitle ||
               "Refresh the Access Token for the Proxy Gateway Service"}
           </CardDescription>
         </CardHeader>

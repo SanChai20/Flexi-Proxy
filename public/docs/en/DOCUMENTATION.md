@@ -42,11 +42,11 @@ FlexiProxy is a lightweight LLM proxy service built on top of the LiteLLM librar
    - [xAI](https://x.ai/)
 
 
-2. Select and click the **Management Panel** icon in the left sidebar. If this is your first time creating one, you will be automatically redirected to the **Create Token Pass** page. In the **PROXY SERVER** field, choose a proxy service. The supported vendors and models for the selected proxy service will then be loaded automatically. Configure the **SOURCE** and model information accordingly (**Note: the API Key you provide will only be used for service requests**). Once configuration is complete, click Confirm. Here, we take the OpenRouter vendor as an example:
+2. Select and click the **Access Token** icon in the left sidebar. If this is your first time creating one, you will be automatically redirected to the **Create Token Pass** page. In the **PROXY SERVER** field, choose a proxy service. The supported vendors and models for the selected proxy service will then be loaded automatically. Configure the **SOURCE** and model information accordingly (**Note: the API Key you provide will only be used for service requests**). Once configuration is complete, click Confirm. Here, we take the OpenRouter vendor as an example:
 
     ![](https://flexiproxy.com/screenshots/en/create.PNG)
 
-3. Upon successful creation, a new **Token Pass (API Key)** for the proxy gateway will be generated. You will be redirected to the **Token Management** page, which also displays the **Base URL**. From here, you may add additional token passes.
+3. Upon successful creation, a new **Token Pass (API Key)** for the proxy gateway will be generated. You will be redirected to the **Token Pass Management** page, which also displays the **Base URL**. From here, you may add additional token passes.
    
     ![](https://flexiproxy.com/screenshots/en/manage.PNG)
 

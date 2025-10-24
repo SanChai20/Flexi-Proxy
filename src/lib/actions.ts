@@ -142,6 +142,55 @@ export async function getAllUserAdapters(): Promise<
   return getCachedAdapters(userId);
 }
 
+// Get the count of adapters for the authenticated user
+export async function getUserAdaptersCount(): Promise<number> {
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    console.error("getUserAdaptersCount - Unauthorized");
+    return 0;
+  }
+  const userId = session.user.id;
+
+  const getCachedCount = unstable_cache(
+    async (uid: string) => {
+      if (process.env.ADAPTER_PREFIX === undefined) {
+        console.error("getUserAdaptersCount - env not set");
+        return 0;
+      }
+      try {
+        const searchPatternPrefix = `${process.env.ADAPTER_PREFIX}:${uid}:`;
+
+        let count = 0;
+        let cursor = 0;
+        let iterations = 0;
+        const MAX_ITERATIONS = 100;
+
+        do {
+          if (iterations++ > MAX_ITERATIONS) {
+            console.error("SCAN exceeded max iterations");
+            break;
+          }
+          const [newCursor, keys] = await redis.scan(cursor, {
+            match: `${searchPatternPrefix}*`,
+            count: 100,
+          });
+          count += keys.length;
+          cursor = Number(newCursor);
+        } while (cursor !== 0);
+
+        return count;
+      } catch (error) {
+        console.error("Error counting adapters:", error);
+        return 0;
+      }
+    },
+    ["user-adapters-count"],
+    { revalidate: 300, tags: [`user-adapters:${userId}`] }
+  );
+
+  return getCachedCount(userId);
+}
+
 export async function deleteAdapterAction(
   formData: FormData
 ): Promise<boolean> {
@@ -716,4 +765,42 @@ export async function getProxyServerModels(
     { revalidate: 600, tags: [`server-models:${proxyId}`] }
   );
   return getCachedProxyServerModels(proxyId);
+}
+
+export async function checkProxyServerHealth(proxy: {
+  url: string;
+  status: string;
+  id: string;
+  adv: boolean;
+}): Promise<{
+  url: string;
+  status: string;
+  id: string;
+  adv: boolean;
+  isHealthy: boolean;
+  responseTime: number;
+  error?: string;
+}> {
+  const healthUrl = `${proxy.url}/health/liveness`;
+  const startTime = Date.now();
+  try {
+    const response = await fetch(healthUrl, {
+      method: "GET",
+      signal: AbortSignal.timeout(5000), // 5秒超时
+      cache: "no-store",
+    });
+    const responseTime = Date.now() - startTime;
+    return {
+      ...proxy,
+      isHealthy: response.ok,
+      responseTime,
+    };
+  } catch (error) {
+    return {
+      ...proxy,
+      isHealthy: false,
+      responseTime: Date.now() - startTime,
+      error: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
 }

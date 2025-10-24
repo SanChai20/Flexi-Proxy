@@ -8,39 +8,20 @@ import {
 } from "@/lib/actions";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import CreateManagementClient from "./client";
-import CreateManagementSkeleton from "./skeleton";
+import CreateAccessTokenClient from "./client";
+import CreateAccessTokenSkeleton from "./skeleton";
 
 import data from "public/config/providers.json";
 const providerData: Record<string, { id: string; website: string }> = data;
 
-export default async function ManagementCreatePage(
-  props: PageProps<"/[lang]/management/create">
-) {
-  const { lang } = await props.params;
-  const { token } = await props.searchParams;
-
-  if (typeof token !== "string" || !(await verifyShortTimeToken(token))) {
-    redirect(`/${lang}/management`);
-  }
-
-  const dict = await getTrans(lang as Locale);
-
-  return (
-    <section className="w-full max-w-4xl mx-auto overflow-x-auto px-0 select-none">
-      <Suspense fallback={<CreateManagementSkeleton dict={dict} />}>
-        <CreateManagementContent lang={lang} dict={dict} />
-      </Suspense>
-    </section>
-  );
-}
-
-async function CreateManagementContent({
+async function CreateAccessTokenContent({
   lang,
   dict,
+  proxyId,
 }: {
   lang: string;
   dict: any;
+  proxyId?: any;
 }) {
   const [permissions, proxies, userVersion] = await Promise.all([
     getCachedUserPermissions(),
@@ -49,7 +30,7 @@ async function CreateManagementContent({
   ]);
 
   if (userVersion === undefined) {
-    redirect(`/${lang}/management`);
+    redirect(`/${lang}/token`);
   }
 
   const providers = Object.entries(providerData).map(([name, info]) => ({
@@ -58,12 +39,34 @@ async function CreateManagementContent({
   }));
 
   return (
-    <CreateManagementClient
+    <CreateAccessTokenClient
       dict={dict}
       proxies={proxies}
       providers={providers}
       advRequest={permissions.adv}
       version={userVersion}
+      defaultProxyId={proxyId}
     />
+  );
+}
+
+export default async function AccessTokenCreatePage(
+  props: PageProps<"/[lang]/token/create">
+) {
+  const { lang } = await props.params;
+  const { token, proxyId } = await props.searchParams;
+
+  if (typeof token !== "string" || !(await verifyShortTimeToken(token))) {
+    redirect(`/${lang}/token`);
+  }
+
+  const dict = await getTrans(lang as Locale);
+
+  return (
+    <section className="w-full max-w-4xl mx-auto overflow-x-auto px-0 select-none">
+      <Suspense fallback={<CreateAccessTokenSkeleton dict={dict} />}>
+        <CreateAccessTokenContent lang={lang} dict={dict} proxyId={proxyId} />
+      </Suspense>
+    </section>
   );
 }

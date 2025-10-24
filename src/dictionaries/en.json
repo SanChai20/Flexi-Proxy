@@ -45,7 +45,7 @@
     "signout": "Sign Out"
   },
   "navigation": {
-    "management": "Management",
+    "token": "Access Token",
     "create": "Create Token Pass",
     "modify": "Modify Token Pass",
     "key": "API Key",
@@ -54,7 +54,8 @@
     "feedback": "Feedback",
     "settings": "Settings",
     "faq": "FAQ",
-    "home": "Home"
+    "home": "Home",
+    "gateway": "Gateway"
   },
   "documentation": {
     "title": "About FlexiProxy",
@@ -66,7 +67,17 @@
     "subtitle": "We've compiled answers to common questions about our service",
     "faqPage": "docs/en/FAQ.md"
   },
-  "management": {
+  "gateway": {
+    "title": "Proxy Gateways",
+    "subtitle": "List all available proxy gateways and their features",
+    "healthy": "Healthy",
+    "unhealthy": "Unhealthy",
+    "premium": "Premium",
+    "free": "Free",
+    "getToken": "Get Token Pass",
+    "noServers": "No proxy servers available"
+  },
+  "token": {
     "providerPage": "config/providers.json",
     "title": "Token Pass Management",
     "subtitle": "Managing Token Pass of LLM Proxy Services",

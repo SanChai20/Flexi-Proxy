@@ -20,17 +20,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 
-interface ManagementClientProps {
+interface AccessTokenClientProps {
   dict: any;
   permissions: any;
   initialAdapters: any[];
 }
 
-export default function ManagementClient({
+export default function AccessTokenClient({
   dict,
   permissions,
   initialAdapters,
-}: ManagementClientProps) {
+}: AccessTokenClientProps) {
   const [submittingAdapters, setSubmittingAdapters] = useState<Set<string>>(
     new Set()
   );
@@ -52,7 +52,7 @@ export default function ManagementClient({
         <CardHeader>
           <div className="flex flex-row items-center justify-between">
             <CardTitle className="text-2xl">
-              {dict?.management?.title || "Token Pass Management"}
+              {dict?.token?.title || "Token Pass Management"}
             </CardTitle>
             <CreateAdapterForm
               dict={dict}
@@ -61,7 +61,7 @@ export default function ManagementClient({
             />
           </div>
           <CardDescription className="text-base mt-2">
-            {dict?.management?.subtitle ||
+            {dict?.token?.subtitle ||
               "Managing Token Pass of LLM Proxy Services"}
           </CardDescription>
         </CardHeader>
@@ -74,19 +74,19 @@ export default function ManagementClient({
               <thead className="bg-muted/50 text-muted-foreground uppercase text-xs tracking-wider">
                 <tr>
                   <th className="w-[12%] px-3 py-3 text-left sm:px-5 sm:py-4">
-                    {dict?.management?.proxy || "Proxy Gateway"}
+                    {dict?.token?.proxy || "Proxy Gateway"}
                   </th>
                   <th className="w-[32%] px-3 py-3 text-left sm:px-5 sm:py-4">
-                    {dict?.management?.baseUrl || "Base URL"}
+                    {dict?.token?.baseUrl || "Base URL"}
                   </th>
                   <th className="w-[8%] px-3 py-3 text-left sm:px-5 sm:py-4">
-                    {dict?.management?.tokenPass || "Token Pass (API Key)"}
+                    {dict?.token?.tokenPass || "Token Pass (API Key)"}
                   </th>
                   <th className="w-[34%] px-3 py-3 text-left sm:px-5 sm:py-4">
-                    {dict?.management?.note || "Note"}
+                    {dict?.token?.note || "Note"}
                   </th>
                   <th className="w-[14%] px-3 py-3 text-right sm:px-5 sm:py-4">
-                    {dict?.management?.actions || "Actions"}
+                    {dict?.token?.actions || "Actions"}
                   </th>
                 </tr>
               </thead>

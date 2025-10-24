@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {
   BookText,
+  DoorOpen,
   Home,
   Key,
   Mails,
@@ -74,7 +75,11 @@ function DesktopNav({ dict }: { dict: any }) {
           <Home className="h-5 w-5" />
         </NavItem>
 
-        <NavItem href="/management" label={dict["navigation"]["management"]}>
+        <NavItem href="/gateway" label={dict["navigation"]["gateway"]}>
+          <DoorOpen className="h-5 w-5" />
+        </NavItem>
+
+        <NavItem href="/token" label={dict["navigation"]["token"]}>
           <Key className="h-5 w-5" />
         </NavItem>
 
@@ -134,11 +139,18 @@ function MobileNav({ dict }: { dict: any }) {
             {dict["navigation"]["home"]}
           </Link>
           <Link
-            href="/management"
+            href="/gateway"
+            className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+          >
+            <DoorOpen className="h-5 w-5" />
+            {dict["navigation"]["gateway"]}
+          </Link>
+          <Link
+            href="/token"
             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
           >
             <Key className="h-5 w-5" />
-            {dict["navigation"]["management"]}
+            {dict["navigation"]["token"]}
           </Link>
           <Link
             href="/documentation"

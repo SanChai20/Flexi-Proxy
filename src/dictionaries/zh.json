@@ -45,7 +45,7 @@
     "signout": "登出"
   },
   "navigation": {
-    "management": "管理面板",
+    "token": "通行令牌",
     "create": "创建通行令牌",
     "modify": "修改通行令牌",
     "key": "API Key",
@@ -54,7 +54,8 @@
     "feedback": "反馈",
     "settings": "设置",
     "faq": "常见问题",
-    "home": "主页"
+    "home": "主页",
+    "gateway": "代理网关"
   },
   "documentation": {
     "title": "关于 FlexiProxy",
@@ -66,7 +67,17 @@
     "subtitle": "我们对使用前后的诸多问题进行了整理",
     "faqPage": "docs/zh/FAQ.md"
   },
-  "management": {
+  "gateway": {
+    "title": "代理网关",
+    "subtitle": "列举所有代理网关及其特性",
+    "healthy": "健康",
+    "unhealthy": "异常",
+    "premium": "付费版",
+    "free": "免费版",
+    "getToken": "获取通行令牌",
+    "noServers": "未发现代理网关"
+  },
+  "token": {
     "providerPage": "config/providers.json",
     "title": "令牌管理",
     "subtitle": "管理 LLM 服务代理网关通行令牌",

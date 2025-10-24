@@ -9,39 +9,13 @@ import {
   verifyShortTimeToken,
 } from "@/lib/actions";
 import { Suspense } from "react";
-import ModifyManagementClient from "./client";
-import ModifyManagementSkeleton from "./skeleton";
+import ModifyAccessTokenClient from "./client";
+import ModifyAccessTokenSkeleton from "./skeleton";
 
 import data from "public/config/providers.json";
 const providerData: Record<string, { id: string; website: string }> = data;
 
-export default async function ManagementModifyPage(
-  props: PageProps<"/[lang]/management/modify">
-) {
-  const { lang } = await props.params;
-  const { aid, token } = await props.searchParams;
-
-  if (typeof aid !== "string" || typeof token !== "string") {
-    redirect(`/${lang}/management`);
-  }
-
-  const isValid = await verifyShortTimeToken(token);
-  if (!isValid) {
-    redirect(`/${lang}/management`);
-  }
-
-  const dict = await getTrans(lang as Locale);
-
-  return (
-    <section className="w-full max-w-4xl mx-auto overflow-x-auto px-0 select-none">
-      <Suspense fallback={<ModifyManagementSkeleton dict={dict} />}>
-        <ModifyManagementContent lang={lang} dict={dict} aid={aid} />
-      </Suspense>
-    </section>
-  );
-}
-
-async function ModifyManagementContent({
+async function ModifyAccessTokenContent({
   lang,
   dict,
   aid,
@@ -58,7 +32,7 @@ async function ModifyManagementContent({
   ]);
 
   if (!adapter || userVersion === undefined) {
-    redirect(`/${lang}/management`);
+    redirect(`/${lang}/token`);
   }
 
   const providers = Object.entries(providerData).map(([name, info]) => ({
@@ -67,7 +41,7 @@ async function ModifyManagementContent({
   }));
 
   return (
-    <ModifyManagementClient
+    <ModifyAccessTokenClient
       dict={dict}
       proxies={proxies}
       providers={providers}
@@ -82,5 +56,31 @@ async function ModifyManagementContent({
         litellmParams: adapter.llm,
       }}
     />
+  );
+}
+
+export default async function AccessTokenModifyPage(
+  props: PageProps<"/[lang]/token/modify">
+) {
+  const { lang } = await props.params;
+  const { aid, token } = await props.searchParams;
+
+  if (typeof aid !== "string" || typeof token !== "string") {
+    redirect(`/${lang}/token`);
+  }
+
+  const isValid = await verifyShortTimeToken(token);
+  if (!isValid) {
+    redirect(`/${lang}/token`);
+  }
+
+  const dict = await getTrans(lang as Locale);
+
+  return (
+    <section className="w-full max-w-4xl mx-auto overflow-x-auto px-0 select-none">
+      <Suspense fallback={<ModifyAccessTokenSkeleton dict={dict} />}>
+        <ModifyAccessTokenContent lang={lang} dict={dict} aid={aid} />
+      </Suspense>
+    </section>
   );
 }

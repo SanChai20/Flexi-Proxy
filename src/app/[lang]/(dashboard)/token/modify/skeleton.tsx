@@ -7,16 +7,16 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function ModifyManagementSkeleton({ dict }: { dict: any }) {
+export default function ModifyAccessTokenSkeleton({ dict }: { dict: any }) {
   return (
     <>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">
-            {dict?.management?.keyTitle || "Modify Token Pass"}
+            {dict?.token?.keyTitle || "Modify Token Pass"}
           </CardTitle>
           <CardDescription className="text-base">
-            {dict?.management?.keySubtitle ||
+            {dict?.token?.keySubtitle ||
               "Refresh the Access Token for the Proxy Gateway Service"}
           </CardDescription>
         </CardHeader>
