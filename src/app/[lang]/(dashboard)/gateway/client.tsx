@@ -78,7 +78,7 @@ export default function GatewayClient({
 
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <Card className="mb-6">
+      {/* <Card className="mb-6">
         <CardHeader>
           <CardTitle className="text-2xl sm:text-3xl">
             {dict?.gateway?.title || "Proxy Gateways"}
@@ -88,7 +88,7 @@ export default function GatewayClient({
               "List all available proxy gateways and their features"}
           </CardDescription>
         </CardHeader>
-      </Card>
+      </Card> */}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {proxyServers.map((server) => {
