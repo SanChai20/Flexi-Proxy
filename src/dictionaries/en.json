@@ -149,7 +149,7 @@
     "checkout": "Need help? Check out our",
     "documentation": "Documentation"
   },
-  "region": {
+  "regions": {
     "us": "US",
     "eu": "EU",
     "ca": "Canada",

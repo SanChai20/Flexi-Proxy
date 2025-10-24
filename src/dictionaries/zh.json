@@ -149,7 +149,7 @@
     "checkout": "需要帮助？ 请查看",
     "documentation": "说明文档"
   },
-  "region": {
+  "regions": {
     "us": "美国",
     "eu": "欧洲",
     "ca": "加拿大",
