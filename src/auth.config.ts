@@ -271,7 +271,7 @@ export default {
   providers: providers,
   adapter: UpstashRedisAdapter(redis),
   session: {
-    maxAge: 86400 * 3, // 设置session的最大有效期（秒为单位）3 day - 24 * 60 * 60 * 3
+    maxAge: 86400,
   },
   callbacks: {
     session({ session, user }) {
