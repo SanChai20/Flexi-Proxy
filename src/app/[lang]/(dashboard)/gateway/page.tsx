@@ -7,7 +7,7 @@ import GatewaySkeleton from "./skeleton";
 import GatewayClient from "./client";
 import {
   checkProxyServerHealth,
-  getAllProxyServers,
+  getAllPublicProxyServers,
   getCachedUserPermissions,
   getUserAdaptersCount,
 } from "@/lib/actions";
@@ -19,7 +19,7 @@ async function GatewayContent({ dict }: { dict: any }) {
   const [permissions, allProxyServers, userAccessTokenCount] =
     await Promise.all([
       getCachedUserPermissions(),
-      getAllProxyServers(),
+      getAllPublicProxyServers(),
       getUserAdaptersCount(),
     ]);
   const fullChecks = await Promise.all(

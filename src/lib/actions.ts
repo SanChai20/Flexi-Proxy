@@ -6,7 +6,7 @@ import { auth } from "@/auth";
 import { revalidateTag, unstable_cache } from "next/cache";
 
 // Get all proxy servers
-export const getAllProxyServers = unstable_cache(
+export const getAllPublicProxyServers = unstable_cache(
   async () => {
     if (process.env.PROXY_PREFIX === undefined) {
       console.error("getAllProxyServers - PROXY_PREFIX env not set");
@@ -46,8 +46,8 @@ export const getAllProxyServers = unstable_cache(
     }
     return [];
   },
-  ["proxy-servers"],
-  { revalidate: 600, tags: ["proxy-servers"] }
+  ["public-proxy-servers"],
+  { revalidate: 600, tags: ["public-proxy-servers"] }
 );
 
 // Get all adapters for the authenticated user
