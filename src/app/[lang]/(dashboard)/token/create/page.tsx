@@ -1,8 +1,7 @@
 import { getTrans } from "@/lib/dictionary";
 import { Locale } from "i18n-config";
 import {
-  getCachedUserPermissions,
-  getAllProxyServers,
+  getAllPublicProxyServers,
   getUserAdapterModifyVersion,
   verifyShortTimeToken,
 } from "@/lib/actions";
@@ -23,7 +22,7 @@ async function CreateAccessTokenContent({
   proxyId?: any;
 }) {
   const [proxies, userVersion] = await Promise.all([
-    getAllProxyServers(),
+    getAllPublicProxyServers(),
     getUserAdapterModifyVersion(),
   ]);
 

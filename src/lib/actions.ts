@@ -9,7 +9,7 @@ import { revalidateTag, unstable_cache } from "next/cache";
 export const getAllPublicProxyServers = unstable_cache(
   async () => {
     if (process.env.PROXY_PREFIX === undefined) {
-      console.error("getAllProxyServers - PROXY_PREFIX env not set");
+      console.error("getAllPublicProxyServers - PROXY_PREFIX env not set");
       return [];
     }
     try {
@@ -49,6 +49,8 @@ export const getAllPublicProxyServers = unstable_cache(
   ["public-proxy-servers"],
   { revalidate: 600, tags: ["public-proxy-servers"] }
 );
+
+// export async function getAllPrivateProxyServers =
 
 // Get all adapters for the authenticated user
 export async function getAllUserAdapters(): Promise<

@@ -3,8 +3,7 @@ import { Locale } from "i18n-config";
 import { redirect } from "next/navigation";
 import {
   getAdapterAction,
-  getCachedUserPermissions,
-  getAllProxyServers,
+  getAllPublicProxyServers,
   getUserAdapterModifyVersion,
   verifyShortTimeToken,
 } from "@/lib/actions";
@@ -25,7 +24,7 @@ async function ModifyAccessTokenContent({
   aid: string;
 }) {
   const [proxies, adapter, userVersion] = await Promise.all([
-    getAllProxyServers(),
+    getAllPublicProxyServers(),
     getAdapterAction(aid),
     getUserAdapterModifyVersion(),
   ]);
