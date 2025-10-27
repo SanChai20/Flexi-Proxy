@@ -30,7 +30,7 @@ interface GatewayClientProps {
     status: string;
     id: string;
     isHealthy: boolean;
-    responseTime: number;
+    responseTime: number | undefined;
     error?: string | undefined;
   }[];
 }
@@ -219,20 +219,22 @@ export default function GatewayClient({
                           : dict?.gateway?.unhealthy || "Unhealthy"}
                       </span>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <Clock className="w-4 h-4 text-muted-foreground" />
-                      <span
-                        className={`font-medium ${
-                          server.responseTime < 100
-                            ? "text-green-600 dark:text-green-400"
-                            : server.responseTime < 300
-                            ? "text-yellow-600 dark:text-yellow-400"
-                            : "text-red-600 dark:text-red-400"
-                        }`}
-                      >
-                        {server.responseTime}ms
-                      </span>
-                    </div>
+                    {typeof server.responseTime === "number" && (
+                      <div className="flex items-center gap-1.5">
+                        <Clock className="w-4 h-4 text-muted-foreground" />
+                        <span
+                          className={`font-medium ${
+                            server.responseTime < 100
+                              ? "text-green-600 dark:text-green-400"
+                              : server.responseTime < 300
+                              ? "text-yellow-600 dark:text-yellow-400"
+                              : "text-red-600 dark:text-red-400"
+                          }`}
+                        >
+                          {server.responseTime}ms
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Error Info */}

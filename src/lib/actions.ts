@@ -743,7 +743,7 @@ export async function checkProxyServerHealth(proxy: {
   status: string;
   id: string;
   isHealthy: boolean;
-  responseTime: number;
+  responseTime: number | undefined;
   error?: string;
 }> {
   const healthUrl = `${proxy.url}/health/liveness`;
@@ -758,13 +758,13 @@ export async function checkProxyServerHealth(proxy: {
     return {
       ...proxy,
       isHealthy: response.ok,
-      responseTime,
+      responseTime: response.ok ? responseTime : undefined,
     };
   } catch (error) {
     return {
       ...proxy,
       isHealthy: false,
-      responseTime: Date.now() - startTime,
+      responseTime: undefined,
       error: error instanceof Error ? error.message : "Unknown error",
     };
   }
