@@ -17,7 +17,6 @@ const ENV = {
 // Body: {
 //  [string] url -> provider proxy url
 //  [string] status -> provider proxy status ["unavailable", "spare", "busy", "full"]
-//  [boolean] adv -> if advanced or not
 //  [string] id -> provider id
 //}
 async function protectedPOST(req: AuthRequest) {
@@ -25,11 +24,10 @@ async function protectedPOST(req: AuthRequest) {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
   try {
-    const { url, status, adv, id } = await req.json();
+    const { url, status, id } = await req.json();
     if (
       typeof url !== "string" ||
       typeof status !== "string" ||
-      typeof adv !== "boolean" ||
       typeof id !== "string"
     ) {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
@@ -45,9 +43,9 @@ async function protectedPOST(req: AuthRequest) {
       ex: 14400,
     });
     transaction.del([ENV.AUTHTOKEN_PREFIX, req.token].join(":"));
-    transaction.set<{ url: string; status: string; adv: boolean }>(
+    transaction.set<{ url: string; status: string }>(
       [ENV.PROXY_PREFIX, id].join(":"),
-      { url, status, adv },
+      { url, status },
       { ex: 14400 }
     );
     await transaction.exec();

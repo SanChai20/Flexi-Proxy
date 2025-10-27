@@ -24,8 +24,7 @@ async function ModifyAccessTokenContent({
   dict: any;
   aid: string;
 }) {
-  const [permissions, proxies, adapter, userVersion] = await Promise.all([
-    getCachedUserPermissions(),
+  const [proxies, adapter, userVersion] = await Promise.all([
     getAllProxyServers(),
     getAdapterAction(aid),
     getUserAdapterModifyVersion(),
@@ -45,7 +44,6 @@ async function ModifyAccessTokenContent({
       dict={dict}
       proxies={proxies}
       providers={providers}
-      advRequest={permissions.adv}
       version={userVersion}
       defaultValues={{
         modelId: adapter.mid,

@@ -16,7 +16,6 @@ interface ModifyAccessTokenClientProps {
     id: string;
     website: string;
   }>;
-  advRequest: boolean;
   version: number;
   defaultValues: {
     adapterId: string;
@@ -32,7 +31,6 @@ export default function ModifyAccessTokenClient({
   dict,
   proxies,
   providers,
-  advRequest,
   version,
   defaultValues,
 }: ModifyAccessTokenClientProps) {
@@ -53,7 +51,6 @@ export default function ModifyAccessTokenClient({
         dict={dict}
         proxies={proxies}
         providers={providers}
-        advRequest={advRequest}
         version={version}
         defaultValues={defaultValues}
         initProxyId={defaultValues.proxyId}

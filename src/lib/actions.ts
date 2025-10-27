@@ -33,9 +33,9 @@ export const getAllProxyServers = unstable_cache(
       } while (cursor !== 0);
       if (allKeys.length > 0) {
         const ids = allKeys.map((key) => key.replace(searchPatternPrefix, ""));
-        const values = await redis.mget<
-          { url: string; status: string; adv: boolean }[]
-        >(...allKeys);
+        const values = await redis.mget<{ url: string; status: string }[]>(
+          ...allKeys
+        );
         return ids.map((id, index) => ({
           id,
           ...(values[index] || {}),
@@ -118,10 +118,9 @@ export async function getAllUserAdapters(): Promise<
           const providers: (null | {
             url: string;
             status: string;
-            adv: boolean;
-          })[] = await redis.mget<
-            { url: string; status: string; adv: boolean }[]
-          >(...providerIds);
+          })[] = await redis.mget<{ url: string; status: string }[]>(
+            ...providerIds
+          );
           return adapterIds.map((adapterId, index) => ({
             aid: adapterId,
             ava:
@@ -264,10 +263,10 @@ export async function updateAdapterAction(
 
   try {
     const pid = formData.get("proxy") as string;
-    const proxy: { url: string; status: string; adv: boolean } | null =
-      await redis.get<{ url: string; status: string; adv: boolean }>(
-        [process.env.PROXY_PREFIX, pid].join(":")
-      );
+    const proxy: { url: string; status: string } | null = await redis.get<{
+      url: string;
+      status: string;
+    }>([process.env.PROXY_PREFIX, pid].join(":"));
     if (proxy === null) {
       console.error("updateAdapterAction - Missing proxy");
       return false;
@@ -415,10 +414,10 @@ export async function createAdapterAction(
     const kiv = encodedKey.iv;
     const ken = encodedKey.encryptedData;
     const kau = encodedKey.authTag;
-    const proxy: { url: string; status: string; adv: boolean } | null =
-      await redis.get<{ url: string; status: string; adv: boolean }>(
-        [process.env.PROXY_PREFIX, pid].join(":")
-      );
+    const proxy: { url: string; status: string } | null = await redis.get<{
+      url: string;
+      status: string;
+    }>([process.env.PROXY_PREFIX, pid].join(":"));
     if (proxy === null) {
       console.error("createAdapterAction - Missing proxy");
       return false;
@@ -630,7 +629,7 @@ export async function updateSettingsAction(
 
 interface UserPermissions {
   maa: number; // max adapters allowed
-  adv: boolean; // advanced provider request
+  adv: boolean; // pro
 }
 
 const DefaultUserPermissions: UserPermissions = {
@@ -739,12 +738,10 @@ export async function checkProxyServerHealth(proxy: {
   url: string;
   status: string;
   id: string;
-  adv: boolean;
 }): Promise<{
   url: string;
   status: string;
   id: string;
-  adv: boolean;
   isHealthy: boolean;
   responseTime: number;
   error?: string;

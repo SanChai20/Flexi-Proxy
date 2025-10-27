@@ -85,15 +85,14 @@ export function AdapterForm({
   dict,
   proxies,
   providers,
-  advRequest,
+
   version,
   defaultValues,
   initProxyId,
 }: {
   dict: any;
-  proxies: { id: string; url: string; status: string; adv: boolean }[];
+  proxies: { id: string; url: string; status: string }[];
   providers: { name: string; id: string; website: string }[];
-  advRequest: boolean;
   version: number;
   defaultValues?: {
     adapterId: string;
@@ -318,17 +317,6 @@ export function AdapterForm({
                                   proxy.status === "unavailable") &&
                                   (dict?.token?.unavailable || "Unavailable")}
                               </span>
-                              <span
-                                className={`px-2 py-0.5 rounded text-xs font-medium ${
-                                  proxy.adv
-                                    ? "text-amber-600 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800"
-                                    : "text-blue-600 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800"
-                                }`}
-                              >
-                                {proxy.adv
-                                  ? dict?.token?.pro || "Pro"
-                                  : dict?.token?.free || "Free"}
-                              </span>
                             </div>
                           </>
                         );
@@ -364,8 +352,7 @@ export function AdapterForm({
                       proxies.map((option) => {
                         const isDisabled =
                           option.status === "" ||
-                          option.status === "unavailable" ||
-                          (advRequest ? false : option.adv);
+                          option.status === "unavailable";
                         const config = getProxyStatusConfig(option.status);
                         const isSelected = selectedProxyId === option.id;
 
@@ -416,17 +403,6 @@ export function AdapterForm({
                                 {(option.status === "" ||
                                   option.status === "unavailable") &&
                                   (dict?.token?.unavailable || "Unavailable")}
-                              </span>
-                              <span
-                                className={`px-2 py-0.5 rounded text-xs font-medium ${
-                                  option.adv
-                                    ? "text-amber-600 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800"
-                                    : "text-blue-600 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800"
-                                }`}
-                              >
-                                {option.adv
-                                  ? dict?.token?.pro || "Pro"
-                                  : dict?.token?.free || "Free"}
                               </span>
                             </div>
                           </button>

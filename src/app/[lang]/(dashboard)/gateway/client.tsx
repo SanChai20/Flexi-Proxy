@@ -29,7 +29,6 @@ interface GatewayClientProps {
     url: string;
     status: string;
     id: string;
-    adv: boolean;
     isHealthy: boolean;
     responseTime: number;
     error?: string | undefined;
@@ -110,7 +109,7 @@ export default function GatewayClient({
   };
 
   const isServerAvailable = (server: (typeof proxyServers)[0]) => {
-    if ((!permissions.adv && server.adv) || userTokenCount >= permissions.maa) {
+    if (userTokenCount >= permissions.maa) {
       return false;
     }
     return server.isHealthy && server.status.toLowerCase() !== "unavailable";
@@ -206,19 +205,6 @@ export default function GatewayClient({
                     >
                       {getStatusText(server.status)}
                     </span>
-
-                    {/* Premium/Free Badge */}
-                    {server.adv ? (
-                      <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-700">
-                        <Zap className="w-3 h-3 mr-1" />
-                        {dict?.gateway?.premium || "Premium"}
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-700">
-                        <Gift className="w-3 h-3 mr-1" />
-                        {dict?.gateway?.free || "Free"}
-                      </span>
-                    )}
                   </div>
                 </CardHeader>
 

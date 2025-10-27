@@ -22,8 +22,7 @@ async function CreateAccessTokenContent({
   dict: any;
   proxyId?: any;
 }) {
-  const [permissions, proxies, userVersion] = await Promise.all([
-    getCachedUserPermissions(),
+  const [proxies, userVersion] = await Promise.all([
     getAllProxyServers(),
     getUserAdapterModifyVersion(),
   ]);
@@ -42,7 +41,6 @@ async function CreateAccessTokenContent({
       dict={dict}
       proxies={proxies}
       providers={providers}
-      advRequest={permissions.adv}
       version={userVersion}
     />
   );

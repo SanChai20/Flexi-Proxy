@@ -18,7 +18,6 @@ interface CreateAccessTokenClientProps {
     id: string;
     website: string;
   }>;
-  advRequest: boolean;
   version: number;
   defaultProxyId?: any;
 }
@@ -27,7 +26,6 @@ export default function CreateAccessTokenClient({
   dict,
   proxies,
   providers,
-  advRequest,
   version,
 }: CreateAccessTokenClientProps) {
   const searchParams = useSearchParams();
@@ -58,7 +56,6 @@ export default function CreateAccessTokenClient({
           dict={dict}
           proxies={proxies}
           providers={providers}
-          advRequest={advRequest}
           version={version}
           initProxyId={defaultProxyId}
         />
@@ -67,7 +64,6 @@ export default function CreateAccessTokenClient({
           dict={dict}
           proxies={proxies}
           providers={providers}
-          advRequest={advRequest}
           version={version}
         />
       )}
