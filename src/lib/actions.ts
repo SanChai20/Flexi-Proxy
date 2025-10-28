@@ -1,9 +1,13 @@
 "use server";
 
+import { _InstanceType, RunInstancesCommand } from "@aws-sdk/client-ec2";
+import { cloudflare } from "./cloudflare";
 import { symmetricEncrypt } from "./encryption";
+import { jwtSign } from "./jwt";
 import { redis } from "./redis";
 import { auth } from "@/auth";
 import { revalidateTag, unstable_cache } from "next/cache";
+import { ec2 } from "./ec2";
 
 // Get all proxy servers
 export const getAllPublicProxyServers = unstable_cache(
@@ -830,3 +834,198 @@ export async function checkProxyServerHealth(proxy: {
     };
   }
 }
+
+export async function generateUniqueDomainWithBackoff(
+  maxRetries = 10,
+  baseDelay = 3000,
+  batchSize = 5
+): Promise<string | undefined> {
+  if (!process.env.SUBDOMAIN_LOCK_PREFIX) {
+    return undefined;
+  }
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  const acquireLock = async (domain: string): Promise<boolean> => {
+    const lockKey = [process.env.SUBDOMAIN_LOCK_PREFIX, domain].join(":");
+    const lockValue = Date.now().toString();
+    const result = await redis.set(lockKey, lockValue, {
+      ex: 180,
+      nx: true,
+    });
+    return result !== null;
+  };
+
+  const generateRandomDomain = () => {
+    const timestamp = Date.now();
+    let timePart = "";
+    for (let i = 0; i < 4; i++) {
+      const index = (timestamp >> (i * 5)) % chars.length;
+      timePart += chars[index];
+    }
+    const randomArray = new Uint32Array(4);
+    crypto.getRandomValues(randomArray);
+    let randomPart = "";
+    for (let i = 0; i < 4; i++) {
+      randomPart += chars[randomArray[i] % chars.length];
+    }
+
+    return `gtw-${process.env.AWS_REGION}-${timePart + randomPart}.${
+      process.env.DOMAIN_NAME
+    }`;
+  };
+
+  let existingDomains: Set<string> | null = null;
+  const checkDomainsBatch = async (domains: string[]): Promise<string[]> => {
+    if (!existingDomains) {
+      const existingRecords = await cloudflare.dns.records.list({
+        zone_id: process.env.CLOUDFLARE_ZONE_ID as string,
+        type: "A",
+        per_page: 100,
+      });
+      existingDomains = new Set(
+        existingRecords.result.map((record) => record.name)
+      );
+    }
+    return domains.filter((domain) => !existingDomains!.has(domain));
+  };
+
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    const candidateDomains = Array.from(
+      { length: batchSize },
+      generateRandomDomain
+    );
+
+    const availableDomains = await checkDomainsBatch(candidateDomains);
+    for (const domain of availableDomains) {
+      const locked = await acquireLock(domain);
+      if (locked) {
+        return domain;
+      }
+    }
+    if (attempt < maxRetries - 1) {
+      const exponentialDelay = baseDelay * Math.pow(2, attempt);
+      const jitter = Math.random() * 1000;
+      const delay = Math.min(exponentialDelay + jitter, 30000);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+
+  return undefined;
+}
+
+export async function createPrivateProxyServer(): Promise<string | undefined> {
+  if (
+    process.env.AWS_IMAGE_ID === undefined ||
+    process.env.AWS_IAM_NAME === undefined ||
+    process.env.AWS_KEY_NAME === undefined ||
+    process.env.AWS_SECURITY_GROUP_ID === undefined ||
+    process.env.AWS_INSTANCE_TYPE === undefined ||
+    process.env.CLOUDFLARE_TOKEN === undefined ||
+    process.env.CLOUDFLARE_ZONE_ID === undefined ||
+    process.env.AUTHTOKEN_PREFIX === undefined ||
+    process.env.DOMAIN_NAME === undefined ||
+    process.env.GITHUB_GATEWAY_REPOSITORY_URL === undefined ||
+    process.env.GITHUB_GATEWAY_REPOSITORY_BRANCH === undefined ||
+    process.env.GITHUB_GATEWAY_REPOSITORY_NAME === undefined
+  ) {
+    return "Internal Error";
+  }
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    console.error("createPrivateProxyServer - Unauthorized");
+    return "Unauthorized";
+  }
+
+  const { token: jwtToken, error } = await jwtSign();
+  if (jwtToken === undefined) {
+    return "Sign failed";
+  }
+  const token = crypto.randomUUID();
+  const pipeline = redis.multi();
+
+  await redis.set<string>(
+    [process.env.AUTHTOKEN_PREFIX, token].join(":"),
+    jwtToken,
+    { ex: 3600 }
+  );
+
+  const randomGatewaySubDomain = await generateUniqueDomainWithBackoff();
+  if (randomGatewaySubDomain === undefined) {
+    return "Subdomain apply failed";
+  }
+  const userDataScript = `#!/bin/bash
+set -e
+
+cd /home/ubuntu
+git clone -b ${process.env.GITHUB_GATEWAY_REPOSITORY_BRANCH} ${
+    process.env.GITHUB_GATEWAY_REPOSITORY_URL
+  }
+cd ${process.env.GITHUB_GATEWAY_REPOSITORY_NAME}
+
+if [ "$EUID" -ne 0 ]; then     
+    # Export all variables and re-run this script as root
+    exec sudo -E bash "$0" "$@"
+fi
+
+export ADMIN_EMAIL="${session.user?.email || process.env.ADMIN_EMAIL}"
+export APP_DOMAIN="${process.env.DOMAIN_NAME}"
+export APP_SUBDOMAIN_NAME="${randomGatewaySubDomain}"
+export CF_Token="${process.env.CLOUDFLARE_TOKEN}"
+export CF_Zone_ID="${process.env.CLOUDFLARE_ZONE_ID}"
+export FP_PROXY_SERVER_KEYPAIR_PWD="$(openssl rand -base64 8 | cut -c1-8)"
+export FP_APP_TOKEN_PASS="${token}"
+export FP_OWNER_USER_ID="${session.user.id}"
+
+chmod +x admin/auto.sh
+admin/auto.sh
+
+echo "===============Deployment Success=============="
+
+`;
+
+  const userDataBase64 = Buffer.from(userDataScript).toString("base64");
+  const command = new RunInstancesCommand({
+    ImageId: process.env.AWS_IMAGE_ID,
+    MinCount: 1,
+    MaxCount: 1,
+    InstanceType: process.env
+      .AWS_INSTANCE_TYPE as (typeof _InstanceType)[keyof typeof _InstanceType],
+    KeyName: process.env.AWS_KEY_NAME,
+    SecurityGroupIds: [process.env.AWS_SECURITY_GROUP_ID],
+    TagSpecifications: [
+      {
+        ResourceType: "instance",
+        Tags: [
+          {
+            Key: "Name",
+            Value: randomGatewaySubDomain,
+          },
+          {
+            Key: "CreatedBy",
+            Value: process.env.AWS_IAM_NAME,
+          },
+        ],
+      },
+    ],
+    UserData: userDataBase64,
+  });
+  const response = await ec2.send(command);
+  if (
+    response.Instances !== undefined &&
+    response.Instances.length > 0 &&
+    response.Instances[0].InstanceId !== undefined
+  ) {
+    await redis.set<{ sdm: string; pip: string }>(
+      [
+        process.env.INSTANCE_PREFIX,
+        session.user.id,
+        response.Instances[0].InstanceId,
+      ].join(":"),
+      {
+        sdm: randomGatewaySubDomain,
+        pip: response.Instances[0].PrivateIpAddress || "Unknown",
+      }
+    );
+  }
+}
+
+export async function deletePrivateProxyServer() {}
