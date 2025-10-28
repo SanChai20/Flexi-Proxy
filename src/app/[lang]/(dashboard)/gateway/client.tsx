@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Activity,
   Clock,
@@ -16,6 +17,8 @@ import {
   Hash,
   MapPin,
   Loader2,
+  Lock,
+  Globe,
 } from "lucide-react";
 import { createShortTimeToken } from "@/lib/actions";
 import { useRouter } from "next/navigation";
@@ -31,6 +34,7 @@ interface GatewayClientProps {
     id: string;
     isHealthy: boolean;
     responseTime: number | undefined;
+    type: string;
     error?: string | undefined;
   }[];
 }
@@ -43,6 +47,10 @@ export default function GatewayClient({
 }: GatewayClientProps) {
   const router = useRouter();
   const [loadingProxyId, setLoadingProxyId] = useState<string | null>(null);
+  const [gatewayType, setGatewayType] = useState<string>("public");
+  const filteredServers = proxyServers.filter(
+    (server) => (server.type || "public") === gatewayType
+  );
 
   const parseGatewayLocation = (id: string) => {
     // Format: gateway-xx-yy-zz
@@ -134,18 +142,49 @@ export default function GatewayClient({
     <>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">
-            {dict?.gateway?.title || "Proxy Gateways"}
-          </CardTitle>
-          <CardDescription className="text-base mt-2">
-            {dict?.gateway?.subtitle ||
-              "List all available proxy gateways and their features"}
-          </CardDescription>
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <CardTitle className="text-2xl">
+                {dict?.gateway?.title || "Proxy Gateways"}
+              </CardTitle>
+              <CardDescription className="text-base mt-2">
+                {dict?.gateway?.subtitle ||
+                  "List all available proxy gateways and their features"}
+              </CardDescription>
+            </div>
+
+            <Tabs
+              value={gatewayType}
+              onValueChange={(value) =>
+                setGatewayType(value as "public" | "private")
+              }
+              className="flex-shrink-0"
+            >
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="public" className="gap-2">
+                  <Globe className="w-4 h-4" />
+                  {dict?.gateway?.public || "Public"}
+                </TabsTrigger>
+                <TabsTrigger
+                  value="private"
+                  disabled={!permissions.adv}
+                  className="gap-2"
+                >
+                  <Lock className="w-4 h-4" />
+                  {dict?.gateway?.private || "Private"}
+                  {!permissions.adv && (
+                    <Lock className="w-3 h-3 ml-1 opacity-50" />
+                  )}
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
         </CardHeader>
       </Card>
+
       <div className="mt-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {proxyServers.map((server) => {
+          {filteredServers.map((server) => {
             const available = isServerAvailable(server);
             const isLoading = loadingProxyId === server.id;
             const { region, direction } = parseGatewayLocation(server.id);
@@ -267,12 +306,15 @@ export default function GatewayClient({
         </div>
 
         {/* Empty State */}
-        {proxyServers.length === 0 && (
+        {filteredServers.length === 0 && (
           <Card className="p-12">
             <div className="text-center text-muted-foreground">
               <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p className="text-lg">
-                {dict?.gateway?.noServers || "No proxy servers available"}
+                {gatewayType === "private"
+                  ? dict?.gateway?.noPrivateServers ||
+                    "No private proxy servers available"
+                  : dict?.gateway?.noServers || "No proxy servers available"}
               </p>
             </div>
           </Card>

@@ -7,6 +7,7 @@ import GatewaySkeleton from "./skeleton";
 import GatewayClient from "./client";
 import {
   checkProxyServerHealth,
+  getAllPrivateProxyServers,
   getAllPublicProxyServers,
   getCachedUserPermissions,
   getUserAdaptersCount,
@@ -16,20 +17,23 @@ export const metadata: Metadata = {
 };
 
 async function GatewayContent({ dict }: { dict: any }) {
-  const [permissions, allProxyServers, userAccessTokenCount] =
+  const [permissions, publicChecks, privateChecks, userAccessTokenCount] =
     await Promise.all([
       getCachedUserPermissions(),
-      getAllPublicProxyServers(),
+      getAllPublicProxyServers().then((proxies) =>
+        Promise.all(proxies.map(checkProxyServerHealth))
+      ),
+      getAllPrivateProxyServers().then((proxies) =>
+        Promise.all(proxies.map(checkProxyServerHealth))
+      ),
       getUserAdaptersCount(),
     ]);
-  const fullChecks = await Promise.all(
-    allProxyServers.map((proxy) => checkProxyServerHealth(proxy))
-  );
+
   return (
     <GatewayClient
       permissions={permissions}
       dict={dict}
-      proxyServers={fullChecks}
+      proxyServers={{ ...publicChecks, ...privateChecks }}
       userTokenCount={userAccessTokenCount}
     />
   );

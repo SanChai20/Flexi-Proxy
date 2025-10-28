@@ -14,7 +14,14 @@ import { revalidateTag, unstable_cache } from "next/cache";
 import { ec2 } from "./ec2";
 
 // Get all proxy servers
-export const getAllPublicProxyServers = unstable_cache(
+export const getAllPublicProxyServers: () => Promise<
+  {
+    id: string;
+    url: string;
+    status: string;
+    type: string;
+  }[]
+> = unstable_cache(
   async () => {
     if (process.env.PROXY_PREFIX === undefined) {
       console.error("getAllPublicProxyServers - PROXY_PREFIX env not set");
@@ -46,6 +53,7 @@ export const getAllPublicProxyServers = unstable_cache(
         );
         return ids.map((id, index) => ({
           id,
+          type: "public",
           ...(values[index] || {}),
         }));
       }
@@ -63,6 +71,7 @@ export async function getAllPrivateProxyServers(): Promise<
     url: string;
     status: string;
     id: string;
+    type: string;
   }[]
 > {
   const session = await auth();
@@ -105,6 +114,7 @@ export async function getAllPrivateProxyServers(): Promise<
           );
           return ids.map((id, index) => ({
             id,
+            type: "private",
             ...(values[index] || {}),
           }));
         }
@@ -807,12 +817,14 @@ export async function checkProxyServerHealth(proxy: {
   url: string;
   status: string;
   id: string;
+  type: string;
 }): Promise<{
   url: string;
   status: string;
   id: string;
   isHealthy: boolean;
   responseTime: number | undefined;
+  type: string;
   error?: string;
 }> {
   const healthUrl = `${proxy.url}/health/liveness`;
