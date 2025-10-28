@@ -103,6 +103,9 @@ export default function GatewayClient({
       unavailable:
         "bg-red-100 text-red-800 border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700",
     };
+    if (status === undefined || status.length <= 0) {
+      return styles.unavailable;
+    }
     return styles[status.toLowerCase()] || styles.unavailable;
   };
 
@@ -113,6 +116,9 @@ export default function GatewayClient({
       full: dict?.token?.full || "Full",
       unavailable: dict?.token?.unavailable || "Unavailable",
     };
+    if (status === undefined || status.length <= 0) {
+      return texts["unavailable"];
+    }
     return texts[status.toLowerCase()] || status;
   };
 

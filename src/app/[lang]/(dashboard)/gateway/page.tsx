@@ -33,7 +33,7 @@ async function GatewayContent({ dict }: { dict: any }) {
     <GatewayClient
       permissions={permissions}
       dict={dict}
-      proxyServers={{ ...publicChecks, ...privateChecks }}
+      proxyServers={[...publicChecks, ...privateChecks]}
       userTokenCount={userAccessTokenCount}
     />
   );

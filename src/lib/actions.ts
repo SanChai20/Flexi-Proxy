@@ -844,6 +844,7 @@ export async function checkProxyServerHealth(proxy: {
   } catch (error) {
     return {
       ...proxy,
+      status: "unavailable",
       isHealthy: false,
       responseTime: undefined,
       error: error instanceof Error ? error.message : "Unknown error",
