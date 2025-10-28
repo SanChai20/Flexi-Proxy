@@ -835,15 +835,51 @@ export async function checkProxyServerHealth(proxy: {
   }
 }
 
-export async function generateUniqueDomainWithBackoff(
-  maxRetries = 10,
-  baseDelay = 3000,
-  batchSize = 5
-): Promise<string | undefined> {
-  if (!process.env.SUBDOMAIN_LOCK_PREFIX) {
-    return undefined;
+export async function createPrivateProxyServer(): Promise<string | undefined> {
+  if (
+    process.env.AWS_IMAGE_ID === undefined ||
+    process.env.AWS_IAM_NAME === undefined ||
+    process.env.AWS_KEY_NAME === undefined ||
+    process.env.AWS_SECURITY_GROUP_ID === undefined ||
+    process.env.AWS_INSTANCE_TYPE === undefined ||
+    process.env.CLOUDFLARE_TOKEN === undefined ||
+    process.env.CLOUDFLARE_ZONE_ID === undefined ||
+    process.env.AUTHTOKEN_PREFIX === undefined ||
+    process.env.DOMAIN_NAME === undefined ||
+    process.env.GITHUB_GATEWAY_REPOSITORY_URL === undefined ||
+    process.env.GITHUB_GATEWAY_REPOSITORY_BRANCH === undefined ||
+    process.env.GITHUB_GATEWAY_REPOSITORY_NAME === undefined ||
+    process.env.SUBDOMAIN_LOCK_PREFIX === undefined ||
+    process.env.SUBDOMAIN_INSTANCE_PREFIX === undefined
+  ) {
+    return "Internal Error";
   }
+
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    console.error("createPrivateProxyServer - Unauthorized");
+    return "Unauthorized";
+  }
+
+  const { token: jwtToken, error } = await jwtSign();
+  if (jwtToken === undefined) {
+    return error;
+  }
+
+  const token = crypto.randomUUID();
+  await redis.set<string>(
+    [process.env.AUTHTOKEN_PREFIX, token].join(":"),
+    jwtToken,
+    { ex: 3600 }
+  );
+
+  let randomGatewaySubDomain: string | undefined;
+
+  const maxRetries = 10;
+  const baseDelay = 3000;
+  const batchSize = 5;
   const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+
   const acquireLock = async (domain: string): Promise<boolean> => {
     const lockKey = [process.env.SUBDOMAIN_LOCK_PREFIX, domain].join(":");
     const lockValue = Date.now().toString();
@@ -898,9 +934,15 @@ export async function generateUniqueDomainWithBackoff(
     for (const domain of availableDomains) {
       const locked = await acquireLock(domain);
       if (locked) {
-        return domain;
+        randomGatewaySubDomain = domain;
+        break;
       }
     }
+
+    if (randomGatewaySubDomain) {
+      break;
+    }
+
     if (attempt < maxRetries - 1) {
       const exponentialDelay = baseDelay * Math.pow(2, attempt);
       const jitter = Math.random() * 1000;
@@ -909,49 +951,10 @@ export async function generateUniqueDomainWithBackoff(
     }
   }
 
-  return undefined;
-}
-
-export async function createPrivateProxyServer(): Promise<string | undefined> {
-  if (
-    process.env.AWS_IMAGE_ID === undefined ||
-    process.env.AWS_IAM_NAME === undefined ||
-    process.env.AWS_KEY_NAME === undefined ||
-    process.env.AWS_SECURITY_GROUP_ID === undefined ||
-    process.env.AWS_INSTANCE_TYPE === undefined ||
-    process.env.CLOUDFLARE_TOKEN === undefined ||
-    process.env.CLOUDFLARE_ZONE_ID === undefined ||
-    process.env.AUTHTOKEN_PREFIX === undefined ||
-    process.env.DOMAIN_NAME === undefined ||
-    process.env.GITHUB_GATEWAY_REPOSITORY_URL === undefined ||
-    process.env.GITHUB_GATEWAY_REPOSITORY_BRANCH === undefined ||
-    process.env.GITHUB_GATEWAY_REPOSITORY_NAME === undefined
-  ) {
-    return "Internal Error";
-  }
-  const session = await auth();
-  if (!(session && session.user && session.user.id)) {
-    console.error("createPrivateProxyServer - Unauthorized");
-    return "Unauthorized";
-  }
-
-  const { token: jwtToken, error } = await jwtSign();
-  if (jwtToken === undefined) {
-    return "Sign failed";
-  }
-  const token = crypto.randomUUID();
-  const pipeline = redis.multi();
-
-  await redis.set<string>(
-    [process.env.AUTHTOKEN_PREFIX, token].join(":"),
-    jwtToken,
-    { ex: 3600 }
-  );
-
-  const randomGatewaySubDomain = await generateUniqueDomainWithBackoff();
   if (randomGatewaySubDomain === undefined) {
     return "Subdomain apply failed";
   }
+
   const userDataScript = `#!/bin/bash
 set -e
 
@@ -1008,24 +1011,24 @@ echo "===============Deployment Success=============="
     ],
     UserData: userDataBase64,
   });
+
   const response = await ec2.send(command);
   if (
     response.Instances !== undefined &&
     response.Instances.length > 0 &&
     response.Instances[0].InstanceId !== undefined
   ) {
-    await redis.set<{ sdm: string; pip: string }>(
+    await redis.set<string>(
       [
-        process.env.INSTANCE_PREFIX,
+        process.env.SUBDOMAIN_INSTANCE_PREFIX,
         session.user.id,
-        response.Instances[0].InstanceId,
+        randomGatewaySubDomain,
       ].join(":"),
-      {
-        sdm: randomGatewaySubDomain,
-        pip: response.Instances[0].PrivateIpAddress || "Unknown",
-      }
+      response.Instances[0].InstanceId
     );
+    return undefined;
   }
+  return "EC2 Instance start failed";
 }
 
 export async function deletePrivateProxyServer() {}
