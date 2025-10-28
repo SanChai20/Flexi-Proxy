@@ -50,7 +50,66 @@ export const getAllPublicProxyServers = unstable_cache(
   { revalidate: 600, tags: ["public-proxy-servers"] }
 );
 
-// export async function getAllPrivateProxyServers =
+export async function getAllPrivateProxyServers(): Promise<
+  {
+    url: string;
+    status: string;
+    id: string;
+  }[]
+> {
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    console.error("getAllPrivateProxyServers - Unauthorized");
+    return [];
+  }
+  const userId = session.user.id;
+  const getCachedPrivateProxyServers = unstable_cache(
+    async (uid: string) => {
+      if (process.env.PROXY_PREFIX === undefined) {
+        console.error("getAllPrivateProxyServers - env not set");
+        return [];
+      }
+      try {
+        const searchPatternPrefix = `${process.env.PROXY_PREFIX}:${uid}:`;
+        // Scan all keys with the prefix
+        let allKeys: string[] = [];
+        let cursor = 0;
+        let iterations = 0;
+        const MAX_ITERATIONS = 100; // Prevent infinite loops
+        do {
+          if (iterations++ > MAX_ITERATIONS) {
+            console.error("SCAN exceeded max iterations");
+            break;
+          }
+          const [newCursor, keys] = await redis.scan(cursor, {
+            match: `${searchPatternPrefix}*`,
+            count: 100,
+          });
+          allKeys.push(...keys);
+          cursor = Number(newCursor);
+        } while (cursor !== 0);
+        if (allKeys.length > 0) {
+          const ids = allKeys.map((key) =>
+            key.replace(searchPatternPrefix, "")
+          );
+          const values = await redis.mget<{ url: string; status: string }[]>(
+            ...allKeys
+          );
+          return ids.map((id, index) => ({
+            id,
+            ...(values[index] || {}),
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching providers:", error);
+      }
+      return [];
+    },
+    ["private-proxy-servers"],
+    { revalidate: 600, tags: [`private-proxy-servers:${userId}`] }
+  );
+  return getCachedPrivateProxyServers(userId);
+}
 
 // Get all adapters for the authenticated user
 export async function getAllUserAdapters(): Promise<
