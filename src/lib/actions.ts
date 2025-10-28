@@ -1,6 +1,10 @@
 "use server";
 
-import { _InstanceType, RunInstancesCommand } from "@aws-sdk/client-ec2";
+import {
+  _InstanceType,
+  RunInstancesCommand,
+  TerminateInstancesCommand,
+} from "@aws-sdk/client-ec2";
 import { cloudflare } from "./cloudflare";
 import { symmetricEncrypt } from "./encryption";
 import { jwtSign } from "./jwt";
@@ -835,7 +839,9 @@ export async function checkProxyServerHealth(proxy: {
   }
 }
 
-export async function createPrivateProxyServer(): Promise<string | undefined> {
+export async function createPrivateProxyInstance(): Promise<
+  string | undefined
+> {
   if (
     process.env.AWS_IMAGE_ID === undefined ||
     process.env.AWS_IAM_NAME === undefined ||
@@ -857,7 +863,6 @@ export async function createPrivateProxyServer(): Promise<string | undefined> {
 
   const session = await auth();
   if (!(session && session.user && session.user.id)) {
-    console.error("createPrivateProxyServer - Unauthorized");
     return "Unauthorized";
   }
 
@@ -1011,24 +1016,133 @@ echo "===============Deployment Success=============="
     ],
     UserData: userDataBase64,
   });
-
-  const response = await ec2.send(command);
-  if (
-    response.Instances !== undefined &&
-    response.Instances.length > 0 &&
-    response.Instances[0].InstanceId !== undefined
-  ) {
-    await redis.set<string>(
-      [
-        process.env.SUBDOMAIN_INSTANCE_PREFIX,
-        session.user.id,
-        randomGatewaySubDomain,
-      ].join(":"),
-      response.Instances[0].InstanceId
-    );
-    return undefined;
+  try {
+    const response = await ec2.send(command);
+    if (
+      response.Instances !== undefined &&
+      response.Instances.length > 0 &&
+      response.Instances[0].InstanceId !== undefined
+    ) {
+      await redis.set<string>(
+        [
+          process.env.SUBDOMAIN_INSTANCE_PREFIX,
+          session.user.id,
+          randomGatewaySubDomain,
+        ].join(":"),
+        response.Instances[0].InstanceId
+      );
+      return undefined;
+    }
+  } catch (error) {
+    console.error(error);
   }
-  return "EC2 Instance start failed";
+  return "Failed to launch EC2 instance";
 }
 
-export async function deletePrivateProxyServer() {}
+export async function deletePrivateProxyInstance(
+  subdomain: string
+): Promise<boolean> {
+  if (!subdomain || typeof subdomain !== "string") {
+    console.error("Invalid subdomain provided");
+    return false;
+  }
+  const { CLOUDFLARE_ZONE_ID, SUBDOMAIN_INSTANCE_PREFIX } = process.env;
+  if (!CLOUDFLARE_ZONE_ID || !SUBDOMAIN_INSTANCE_PREFIX) {
+    console.error("Required environment variables not set:", {
+      CLOUDFLARE_ZONE_ID: !!CLOUDFLARE_ZONE_ID,
+      SUBDOMAIN_INSTANCE_PREFIX: !!SUBDOMAIN_INSTANCE_PREFIX,
+    });
+    return false;
+  }
+
+  const session = await auth();
+  if (!session?.user?.id) {
+    console.error("User not authenticated");
+    return false;
+  }
+
+  const userId = session.user.id;
+  const redisKey = [SUBDOMAIN_INSTANCE_PREFIX, userId, subdomain].join(":");
+
+  try {
+    const instanceId = await redis.get<string>(redisKey);
+    if (!instanceId) {
+      console.error(`No instance found for subdomain: ${subdomain}`);
+      return false;
+    }
+
+    const terminateCommand = new TerminateInstancesCommand({
+      InstanceIds: [instanceId],
+    });
+
+    let terminationSuccess = false;
+    try {
+      const response = await ec2.send(terminateCommand);
+      terminationSuccess =
+        response.TerminatingInstances?.some(
+          (instance) => instance.InstanceId === instanceId
+        ) ?? false;
+
+      if (!terminationSuccess) {
+        console.error(`Failed to terminate instance: ${instanceId}`);
+        return false;
+      }
+
+      // console.info(
+      //   `Successfully initiated termination for instance: ${instanceId}`
+      // );
+    } catch (ec2Error) {
+      console.error("EC2 termination error:", {
+        instanceId,
+        error: ec2Error instanceof Error ? ec2Error.message : ec2Error,
+      });
+      return false;
+    }
+
+    try {
+      const records = await cloudflare.dns.records.list({
+        zone_id: CLOUDFLARE_ZONE_ID,
+        type: "A",
+        name: {
+          exact: subdomain,
+        },
+      });
+
+      const cleanupPromises: Promise<unknown>[] = [redis.del(redisKey)];
+      if (records.result.length > 0) {
+        const dnsDeletePromises = records.result.map((record) =>
+          cloudflare.dns.records
+            .delete(record.id, {
+              zone_id: CLOUDFLARE_ZONE_ID,
+            })
+            .catch((error) => {
+              console.error(`Failed to delete DNS record ${record.id}:`, error);
+            })
+        );
+        cleanupPromises.push(...dnsDeletePromises);
+      } else {
+        console.warn(`No DNS records found for subdomain: ${subdomain}`);
+      }
+
+      await Promise.allSettled(cleanupPromises);
+
+      // console.info(`Cleanup completed for subdomain: ${subdomain}`);
+      return true;
+    } catch (cleanupError) {
+      console.error("Cleanup error (DNS/Redis):", {
+        subdomain,
+        error:
+          cleanupError instanceof Error ? cleanupError.message : cleanupError,
+      });
+      return true;
+    }
+  } catch (error) {
+    console.error("Unexpected error in deletePrivateProxyInstance:", {
+      subdomain,
+      userId,
+      error: error instanceof Error ? error.message : error,
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    return false;
+  }
+}
