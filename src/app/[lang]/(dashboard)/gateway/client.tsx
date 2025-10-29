@@ -287,13 +287,6 @@ export default function GatewayClient({
                     )}
                   </div>
 
-                  {/* Error Info */}
-                  {/* {server.error && (
-                    <div className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-2 rounded border border-red-200 dark:border-red-800">
-                      {server.error}
-                    </div>
-                  )} */}
-
                   {/* Get Token Pass */}
                   <Button
                     className="w-full"

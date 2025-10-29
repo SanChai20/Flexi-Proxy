@@ -29,7 +29,6 @@ async function GatewayContent({ dict }: { dict: any }) {
       getUserAdaptersCount(),
     ]);
 
-  permissions.adv = true;
   return (
     <GatewayClient
       permissions={permissions}
