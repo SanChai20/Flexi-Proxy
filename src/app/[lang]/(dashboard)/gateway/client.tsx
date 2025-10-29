@@ -126,6 +126,9 @@ export default function GatewayClient({
     if (userTokenCount >= permissions.maa) {
       return false;
     }
+    if (server === undefined || server.status === undefined) {
+      return false;
+    }
     return server.isHealthy && server.status.toLowerCase() !== "unavailable";
   };
 
