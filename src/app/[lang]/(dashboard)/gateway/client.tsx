@@ -19,6 +19,7 @@ import {
   Loader2,
   Lock,
   Globe,
+  Unlock,
 } from "lucide-react";
 import { createShortTimeToken } from "@/lib/actions";
 import { useRouter } from "next/navigation";
@@ -179,11 +180,12 @@ export default function GatewayClient({
                   disabled={!permissions.adv}
                   className="gap-2"
                 >
-                  <Lock className="w-4 h-4" />
-                  {dict?.gateway?.private || "Private"}
-                  {!permissions.adv && (
-                    <Lock className="w-3 h-3 ml-1 opacity-50" />
+                  {permissions.adv ? (
+                    <Unlock className="w-4 h-4"></Unlock>
+                  ) : (
+                    <Lock className="w-4 h-4" />
                   )}
+                  {dict?.gateway?.private || "Private"}
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -286,11 +288,11 @@ export default function GatewayClient({
                   </div>
 
                   {/* Error Info */}
-                  {server.error && (
+                  {/* {server.error && (
                     <div className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-2 rounded border border-red-200 dark:border-red-800">
                       {server.error}
                     </div>
-                  )}
+                  )} */}
 
                   {/* Get Token Pass */}
                   <Button

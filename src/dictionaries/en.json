@@ -75,7 +75,10 @@
     "premium": "Premium",
     "free": "Free",
     "getToken": "Get Token Pass",
-    "noServers": "No proxy servers available"
+    "noServers": "No proxy servers available",
+    "noPrivateServers": "No private proxy servers available",
+    "public": "Public",
+    "private": "Private"
   },
   "token": {
     "providerPage": "config/providers.json",

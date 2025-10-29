@@ -75,7 +75,10 @@
     "premium": "付费版",
     "free": "免费版",
     "getToken": "获取通行令牌",
-    "noServers": "未发现代理网关"
+    "noServers": "未发现代理网关",
+    "noPrivateServers": "未发现私有代理网关",
+    "public": "公开",
+    "private": "私有"
   },
   "token": {
     "providerPage": "config/providers.json",
