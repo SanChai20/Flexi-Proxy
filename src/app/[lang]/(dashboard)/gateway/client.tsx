@@ -20,6 +20,7 @@ import {
   Lock,
   Globe,
   Unlock,
+  Plus,
 } from "lucide-react";
 import { createShortTimeToken } from "@/lib/actions";
 import { useRouter } from "next/navigation";
@@ -148,6 +149,10 @@ export default function GatewayClient({
     }
   };
 
+  const handleCreatePrivateGateway = () => {
+    router.push("/gateway-private");
+  };
+
   return (
     <>
       <Card>
@@ -171,21 +176,17 @@ export default function GatewayClient({
               className="flex-shrink-0"
             >
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="public" className="gap-2">
-                  <Globe className="w-4 h-4" />
-                  {dict?.gateway?.public || "Public"}
+                <TabsTrigger value="public" className="gap-1">
+                  <Globe className="w-3 h-3" />
+                  <span className="text-xs">
+                    {dict?.gateway?.public || "Public"}
+                  </span>
                 </TabsTrigger>
-                <TabsTrigger
-                  value="private"
-                  disabled={!permissions.adv}
-                  className="gap-2"
-                >
-                  {permissions.adv ? (
-                    <Unlock className="w-4 h-4"></Unlock>
-                  ) : (
-                    <Lock className="w-4 h-4" />
-                  )}
-                  {dict?.gateway?.private || "Private"}
+                <TabsTrigger value="private" className="gap-1">
+                  <Lock className="w-3 h-3" />
+                  <span className="text-xs">
+                    {dict?.gateway?.private || "Private"}
+                  </span>
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -314,12 +315,22 @@ export default function GatewayClient({
           <Card className="p-12">
             <div className="text-center text-muted-foreground">
               <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p className="text-lg">
+              <p className="text-lg mb-4">
                 {gatewayType === "private"
                   ? dict?.gateway?.noPrivateServers ||
                     "No private proxy servers available"
                   : dict?.gateway?.noServers || "No proxy servers available"}
               </p>
+              {gatewayType === "private" && (
+                <Button
+                  onClick={handleCreatePrivateGateway}
+                  variant="outline"
+                  className="min-w-[200px] px-8"
+                >
+                  {/* <Plus className="w-4 h-4 mr-2" /> */}
+                  {dict?.gateway?.createPrivate || "Create Private Gateway"}
+                </Button>
+              )}
             </div>
           </Card>
         )}

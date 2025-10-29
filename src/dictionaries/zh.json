@@ -78,7 +78,8 @@
     "noServers": "未发现代理网关",
     "noPrivateServers": "未发现私有代理网关",
     "public": "公开",
-    "private": "私有"
+    "private": "私有",
+    "createPrivate": "创建"
   },
   "token": {
     "providerPage": "config/providers.json",

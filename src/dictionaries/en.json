@@ -78,7 +78,8 @@
     "noServers": "No proxy servers available",
     "noPrivateServers": "No private proxy servers available",
     "public": "Public",
-    "private": "Private"
+    "private": "Private",
+    "createPrivate": "Create"
   },
   "token": {
     "providerPage": "config/providers.json",
