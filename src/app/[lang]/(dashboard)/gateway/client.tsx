@@ -117,7 +117,7 @@ export default function GatewayClient({
       unavailable: dict?.token?.unavailable || "Unavailable",
     };
     if (status === undefined || status.length <= 0) {
-      return texts["unavailable"];
+      return texts.unavailable;
     }
     return texts[status.toLowerCase()] || status;
   };

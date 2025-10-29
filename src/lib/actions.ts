@@ -54,7 +54,7 @@ export const getAllPublicProxyServers: () => Promise<
         return ids.map((id, index) => ({
           id,
           type: "public",
-          ...(values[index] || {}),
+          ...(values[index] || { status: "unavailable", url: "" }),
         }));
       }
     } catch (error) {
@@ -115,7 +115,7 @@ export async function getAllPrivateProxyServers(): Promise<
           return ids.map((id, index) => ({
             id,
             type: "private",
-            ...(values[index] || {}),
+            ...(values[index] || { status: "unavailable", url: "" }),
           }));
         }
       } catch (error) {
