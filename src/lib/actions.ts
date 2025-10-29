@@ -827,7 +827,10 @@ export async function checkProxyServerHealth(proxy: {
   type: string;
   error?: string;
 }> {
-  const healthUrl = `${proxy.url}/health/liveness`;
+  let healthUrl = `${proxy.url}/health/liveness`;
+  if (!healthUrl.startsWith("https")) {
+    healthUrl = `https://${healthUrl}`;
+  }
   const startTime = Date.now();
   try {
     const response = await fetch(healthUrl, {
@@ -871,17 +874,20 @@ export async function createPrivateProxyInstance(): Promise<
     process.env.SUBDOMAIN_LOCK_PREFIX === undefined ||
     process.env.SUBDOMAIN_INSTANCE_PREFIX === undefined
   ) {
-    return "Internal Error";
+    console.error("env not set");
+    return undefined;
   }
 
   const session = await auth();
   if (!(session && session.user && session.user.id)) {
-    return "Unauthorized";
+    console.error("Unauthorized");
+    return undefined;
   }
 
   const { token: jwtToken, error } = await jwtSign();
   if (jwtToken === undefined) {
-    return error;
+    console.error(error);
+    return undefined;
   }
 
   const token = crypto.randomUUID();
@@ -970,7 +976,8 @@ export async function createPrivateProxyInstance(): Promise<
   }
 
   if (randomGatewaySubDomain === undefined) {
-    return "Subdomain apply failed";
+    console.error("Subdomain apply failed");
+    return undefined;
   }
 
   const userDataScript = `#!/bin/bash
@@ -1044,15 +1051,16 @@ echo "===============Deployment Success=============="
         ].join(":"),
         response.Instances[0].InstanceId
       );
-      return undefined;
+      return randomGatewaySubDomain;
     }
   } catch (error) {
     console.error(error);
   }
-  return "Failed to launch EC2 instance";
+  return undefined;
 }
 
 export async function deletePrivateProxyInstance(
+  proxyId: string,
   subdomain: string
 ): Promise<boolean> {
   if (!subdomain || typeof subdomain !== "string") {
@@ -1075,10 +1083,15 @@ export async function deletePrivateProxyInstance(
   }
 
   const userId = session.user.id;
-  const redisKey = [SUBDOMAIN_INSTANCE_PREFIX, userId, subdomain].join(":");
+  const subdomainInstanceRedisKey = [
+    SUBDOMAIN_INSTANCE_PREFIX,
+    userId,
+    subdomain,
+  ].join(":");
+  const proxyRedisKey = [process.env.PROXY_PREFIX, userId, proxyId].join(":");
 
   try {
-    const instanceId = await redis.get<string>(redisKey);
+    const instanceId = await redis.get<string>(subdomainInstanceRedisKey);
     if (!instanceId) {
       console.error(`No instance found for subdomain: ${subdomain}`);
       return false;
@@ -1121,7 +1134,10 @@ export async function deletePrivateProxyInstance(
         },
       });
 
-      const cleanupPromises: Promise<unknown>[] = [redis.del(redisKey)];
+      const cleanupPromises: Promise<unknown>[] = [
+        redis.del(subdomainInstanceRedisKey),
+        redis.del(proxyRedisKey),
+      ];
       if (records.result.length > 0) {
         const dnsDeletePromises = records.result.map((record) =>
           cloudflare.dns.records

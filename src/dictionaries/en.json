@@ -55,7 +55,8 @@
     "settings": "Settings",
     "faq": "FAQ",
     "home": "Home",
-    "gateway": "Gateway"
+    "gateway": "Gateway",
+    "private": "Private"
   },
   "documentation": {
     "title": "About FlexiProxy",

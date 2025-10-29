@@ -30,7 +30,12 @@ async function AccessTokenContent({ lang, dict }: { lang: string; dict: any }) {
     <AccessTokenClient
       dict={dict}
       permissions={permissions}
-      initialAdapters={adapters}
+      initialAdapters={adapters.map((adapter) => ({
+        ...adapter,
+        pul: adapter.pul.startsWith("https://")
+          ? adapter.pul
+          : `https://${adapter.pul}`,
+      }))}
     />
   );
 }

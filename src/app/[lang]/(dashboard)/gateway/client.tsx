@@ -21,10 +21,23 @@ import {
   Globe,
   Unlock,
   Plus,
+  Settings,
+  FileText,
+  Trash2,
 } from "lucide-react";
-import { createShortTimeToken } from "@/lib/actions";
+import {
+  createPrivateProxyInstance,
+  createShortTimeToken,
+  deletePrivateProxyInstance,
+} from "@/lib/actions";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface GatewayClientProps {
   dict: any;
@@ -149,8 +162,61 @@ export default function GatewayClient({
     }
   };
 
-  const handleCreatePrivateGateway = () => {
-    router.push("/gateway-private");
+  const handleDeletePrivateGateway = async (
+    proxyId: string,
+    subdomainName: string
+  ) => {
+    if (subdomainName === undefined) {
+      return;
+    }
+    if (subdomainName.startsWith("https://")) {
+      subdomainName = subdomainName.substring(8);
+    }
+
+    try {
+      await deletePrivateProxyInstance(proxyId, subdomainName);
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleViewPrivateGateway = async (subdomainName: string) => {
+    if (subdomainName === undefined) {
+      return;
+    }
+    if (subdomainName.startsWith("https://")) {
+      subdomainName = subdomainName.substring(8);
+    }
+    try {
+      const token = await createShortTimeToken(3600);
+      router.push(
+        `/gateway/private?sub=${encodeURIComponent(
+          subdomainName
+        )}&token=${encodeURIComponent(token)}`
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleCreatePrivateGateway = async () => {
+    try {
+      const [subdomainName, token] = await Promise.all([
+        createPrivateProxyInstance(),
+        createShortTimeToken(3600),
+      ]);
+      if (subdomainName === undefined) {
+        return;
+      }
+      router.push(
+        `/gateway/private?sub=${encodeURIComponent(
+          subdomainName
+        )}&token=${encodeURIComponent(token)}`
+      );
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -220,18 +286,59 @@ export default function GatewayClient({
                         <span dir="ltr">{server.id}</span>
                       </CardTitle>
                     </div>
-                    <div
-                      className={`flex-shrink-0 w-3 h-3 rounded-full mt-1 ${
-                        server.isHealthy
-                          ? "bg-green-500 animate-pulse"
-                          : "bg-gray-400"
-                      }`}
-                      title={
-                        server.isHealthy
-                          ? dict?.gateway?.healthy || "Healthy"
-                          : dict?.gateway?.unhealthy || "Unhealthy"
-                      }
-                    />
+
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {/* 健康状态指示器 */}
+                      <div
+                        className={`w-3 h-3 rounded-full ${
+                          server.isHealthy
+                            ? "bg-green-500 animate-pulse"
+                            : "bg-gray-400"
+                        }`}
+                        title={
+                          server.isHealthy
+                            ? dict?.gateway?.healthy || "Healthy"
+                            : dict?.gateway?.unhealthy || "Unhealthy"
+                        }
+                      />
+
+                      {/* 设置菜单 - 仅 private 网关显示 */}
+                      {gatewayType === "private" && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger>
+                            <button
+                              className="p-1 hover:bg-accent rounded-md transition-colors"
+                              aria-label="Settings"
+                            >
+                              <Settings className="w-4 h-4 text-muted-foreground" />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() =>
+                                handleViewPrivateGateway(server.url)
+                              }
+                              className="cursor-pointer"
+                            >
+                              <FileText className="w-4 h-4 mr-2" />
+                              {dict?.gateway?.viewLogs || "查看日志"}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() =>
+                                handleDeletePrivateGateway(
+                                  server.id,
+                                  server.url
+                                )
+                              }
+                              className="cursor-pointer text-destructive focus:text-destructive"
+                            >
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              {dict?.gateway?.deleteProxy || "删除代理"}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
+                    </div>
                   </div>
 
                   {/* Location Info */}
@@ -244,7 +351,9 @@ export default function GatewayClient({
 
                   {/* URL as secondary info */}
                   <div className="text-xs text-muted-foreground break-all mt-1">
-                    {server.url}
+                    {server.url.startsWith("https://")
+                      ? server.url
+                      : `https://${server.url}`}
                   </div>
 
                   <div className="flex flex-wrap gap-2 mt-2">
@@ -321,16 +430,15 @@ export default function GatewayClient({
                     "No private proxy servers available"
                   : dict?.gateway?.noServers || "No proxy servers available"}
               </p>
-              {gatewayType === "private" && (
+              {/* {gatewayType === "private" && (
                 <Button
-                  onClick={handleCreatePrivateGateway}
+                  onClick={() => handleCreatePrivateGateway()}
                   variant="outline"
                   className="min-w-[200px] px-8"
                 >
-                  {/* <Plus className="w-4 h-4 mr-2" /> */}
                   {dict?.gateway?.createPrivate || "Create Private Gateway"}
                 </Button>
-              )}
+              )} */}
             </div>
           </Card>
         )}
