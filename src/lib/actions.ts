@@ -2,6 +2,7 @@
 
 import {
   _InstanceType,
+  GetConsoleOutputCommand,
   RunInstancesCommand,
   TerminateInstancesCommand,
 } from "@aws-sdk/client-ec2";
@@ -11,6 +12,7 @@ import {
   DescribeLogStreamsCommand,
   LogStream,
   FilteredLogEvent,
+  OrderBy,
 } from "@aws-sdk/client-cloudwatch-logs";
 import { cloudflare } from "./cloudflare";
 import { symmetricEncrypt } from "./encryption";
@@ -1184,58 +1186,99 @@ export async function deletePrivateProxyInstance(
   }
 }
 
-export async function cloudWatchLogs(
+export async function getConsoleLogs(
   subdomain: string
-): Promise<undefined | LogStream[]> {
+): Promise<undefined | string> {
   const session = await auth();
   if (!session?.user?.id) {
     console.error("User not authenticated");
     return undefined;
   }
   const userId = session.user.id;
-  try {
-    const instanceId: null | string = await redis.get<string>(
-      [process.env.SUBDOMAIN_INSTANCE_PREFIX, userId, subdomain].join(":")
-    );
-    if (instanceId === null) {
-      return undefined;
-    }
-
-    const command = new DescribeLogStreamsCommand({
-      logGroupName: process.env.AWS_CLOUDWATCH_LOG_GROUP_NAME,
-      logStreamNamePrefix: instanceId,
-      orderBy: "LastEventTime",
-      descending: true,
-      limit: 10,
-    });
-    const response = await cloudwatch.send(command);
-    return response.logStreams;
-  } catch (error) {
-    console.error("Error getting log streams:", error);
-    throw error;
+  const instanceId: null | string = await redis.get<string>(
+    [process.env.SUBDOMAIN_INSTANCE_PREFIX, userId, subdomain].join(":")
+  );
+  if (instanceId === null) {
+    return undefined;
   }
+  const command = new GetConsoleOutputCommand({
+    InstanceId: instanceId,
+    Latest: true,
+  });
+
+  const response = await ec2.send(command);
+  let logs = "";
+  if (response.Output) {
+    logs = Buffer.from(response.Output, "base64").toString("utf-8");
+  }
+  return logs;
 }
 
-export async function getLogEvents(
-  instanceId: string,
-  logStreamName?: string,
-  startTime?: number,
-  limit: number = 100
-): Promise<FilteredLogEvent[]> {
-  try {
-    const command = new FilterLogEventsCommand({
-      logGroupName: process.env.AWS_CLOUDWATCH_LOG_GROUP_NAME,
-      logStreamNames: logStreamName ? [logStreamName] : undefined,
-      logStreamNamePrefix: !logStreamName ? instanceId : undefined,
-      startTime: startTime || Date.now() - 3600000, // 默认最近1小时
-      endTime: Date.now(),
-      limit: limit,
-    });
+// export async function cloudWatchLogs(
+//   subdomain: string
+// ): Promise<undefined | LogStream[]> {
+//   const session = await auth();
+//   if (!session?.user?.id) {
+//     console.error("User not authenticated");
+//     return undefined;
+//   }
+//   const userId = session.user.id;
+//   try {
+//     const instanceId: null | string = await redis.get<string>(
+//       [process.env.SUBDOMAIN_INSTANCE_PREFIX, userId, subdomain].join(":")
+//     );
+//     if (instanceId === null) {
+//       return undefined;
+//     }
 
-    const response = await cloudwatch.send(command);
-    return response.events || [];
-  } catch (error) {
-    console.error("Error getting CloudWatch logs:", error);
-    return [];
-  }
-}
+//     const command = new DescribeLogStreamsCommand({
+//       logGroupIdentifier: process.env.AWS_CLOUDWATCH_LOG_GROUP_NAME,
+//       logStreamNamePrefix: instanceId,
+//       // orderBy: OrderBy.LastEventTime,
+//       // descending: true,
+//       // limit: 10,
+//     });
+//     const response = await cloudwatch.send(command);
+//     return response.logStreams;
+//   } catch (error) {
+//     console.error("Error getting log streams:", error);
+//     throw error;
+//   }
+// }
+
+// export async function getLogEvents(
+//   subdomain: string,
+//   logStreamName?: string,
+//   startTime?: number,
+//   limit: number = 100
+// ): Promise<FilteredLogEvent[]> {
+//   const session = await auth();
+//   if (!session?.user?.id) {
+//     console.error("User not authenticated");
+//     return [];
+//   }
+//   const userId = session.user.id;
+//   try {
+//     const instanceId: null | string = await redis.get<string>(
+//       [process.env.SUBDOMAIN_INSTANCE_PREFIX, userId, subdomain].join(":")
+//     );
+//     if (instanceId === null) {
+//       return [];
+//     }
+
+//     const command = new FilterLogEventsCommand({
+//       logGroupName: process.env.AWS_CLOUDWATCH_LOG_GROUP_NAME,
+//       logStreamNames: logStreamName ? [logStreamName] : undefined,
+//       logStreamNamePrefix: !logStreamName ? instanceId : undefined,
+//       startTime: startTime || Date.now() - 3600000, // 默认最近1小时
+//       endTime: Date.now(),
+//       limit: limit,
+//     });
+
+//     const response = await cloudwatch.send(command);
+//     return response.events || [];
+//   } catch (error) {
+//     console.error("Error getting CloudWatch logs:", error);
+//     return [];
+//   }
+// }
