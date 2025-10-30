@@ -430,7 +430,7 @@ export default function GatewayClient({
                     "No private proxy servers available"
                   : dict?.gateway?.noServers || "No proxy servers available"}
               </p>
-              {/* {gatewayType === "private" && (
+              {gatewayType === "private" && (
                 <Button
                   onClick={() => handleCreatePrivateGateway()}
                   variant="outline"
@@ -438,7 +438,7 @@ export default function GatewayClient({
                 >
                   {dict?.gateway?.createPrivate || "Create Private Gateway"}
                 </Button>
-              )} */}
+              )}
             </div>
           </Card>
         )}

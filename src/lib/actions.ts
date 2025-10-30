@@ -5,13 +5,21 @@ import {
   RunInstancesCommand,
   TerminateInstancesCommand,
 } from "@aws-sdk/client-ec2";
+import {
+  CloudWatchLogsClient,
+  FilterLogEventsCommand,
+  DescribeLogStreamsCommand,
+  LogStream,
+  FilteredLogEvent,
+} from "@aws-sdk/client-cloudwatch-logs";
 import { cloudflare } from "./cloudflare";
 import { symmetricEncrypt } from "./encryption";
 import { jwtSign } from "./jwt";
 import { redis } from "./redis";
 import { auth } from "@/auth";
 import { revalidateTag, unstable_cache } from "next/cache";
-import { ec2 } from "./ec2";
+
+import { cloudwatch, ec2 } from "./aws";
 
 // Get all proxy servers
 export const getAllPublicProxyServers: () => Promise<
@@ -1173,5 +1181,61 @@ export async function deletePrivateProxyInstance(
       stack: error instanceof Error ? error.stack : undefined,
     });
     return false;
+  }
+}
+
+export async function cloudWatchLogs(
+  subdomain: string
+): Promise<undefined | LogStream[]> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    console.error("User not authenticated");
+    return undefined;
+  }
+  const userId = session.user.id;
+  try {
+    const instanceId: null | string = await redis.get<string>(
+      [process.env.SUBDOMAIN_INSTANCE_PREFIX, userId, subdomain].join(":")
+    );
+    if (instanceId === null) {
+      return undefined;
+    }
+
+    const command = new DescribeLogStreamsCommand({
+      logGroupName: process.env.AWS_CLOUDWATCH_LOG_GROUP_NAME,
+      logStreamNamePrefix: instanceId,
+      orderBy: "LastEventTime",
+      descending: true,
+      limit: 10,
+    });
+    const response = await cloudwatch.send(command);
+    return response.logStreams;
+  } catch (error) {
+    console.error("Error getting log streams:", error);
+    throw error;
+  }
+}
+
+export async function getLogEvents(
+  instanceId: string,
+  logStreamName?: string,
+  startTime?: number,
+  limit: number = 100
+): Promise<FilteredLogEvent[]> {
+  try {
+    const command = new FilterLogEventsCommand({
+      logGroupName: process.env.AWS_CLOUDWATCH_LOG_GROUP_NAME,
+      logStreamNames: logStreamName ? [logStreamName] : undefined,
+      logStreamNamePrefix: !logStreamName ? instanceId : undefined,
+      startTime: startTime || Date.now() - 3600000, // 默认最近1小时
+      endTime: Date.now(),
+      limit: limit,
+    });
+
+    const response = await cloudwatch.send(command);
+    return response.events || [];
+  } catch (error) {
+    console.error("Error getting CloudWatch logs:", error);
+    return [];
   }
 }
