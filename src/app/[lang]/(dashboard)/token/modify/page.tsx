@@ -3,6 +3,7 @@ import { Locale } from "i18n-config";
 import { redirect } from "next/navigation";
 import {
   getAdapterAction,
+  getAllPrivateProxyServers,
   getAllPublicProxyServers,
   getUserAdapterModifyVersion,
   verifyShortTimeToken,
@@ -23,11 +24,13 @@ async function ModifyAccessTokenContent({
   dict: any;
   aid: string;
 }) {
-  const [proxies, adapter, userVersion] = await Promise.all([
-    getAllPublicProxyServers(),
-    getAdapterAction(aid),
-    getUserAdapterModifyVersion(),
-  ]);
+  const [publicProxies, privateProxies, adapter, userVersion] =
+    await Promise.all([
+      getAllPublicProxyServers(),
+      getAllPrivateProxyServers(),
+      getAdapterAction(aid),
+      getUserAdapterModifyVersion(),
+    ]);
 
   if (!adapter || userVersion === undefined) {
     redirect(`/${lang}/token`);
@@ -41,7 +44,7 @@ async function ModifyAccessTokenContent({
   return (
     <ModifyAccessTokenClient
       dict={dict}
-      proxies={proxies}
+      proxies={[...publicProxies, ...privateProxies]}
       providers={providers}
       version={userVersion}
       defaultValues={{
