@@ -51,7 +51,7 @@ async function protectedPOST(req: AuthRequest) {
       status: string;
     }>([ENV.PROXY_PUBLIC_PREFIX, id].join(":"), { url, status }, { ex: 14400 });
     await transaction.exec();
-    revalidateTag("public-proxy-servers");
+    //revalidateTag("public-proxy-servers");
     return NextResponse.json({ token, expiresIn: 14400 }, { status: 200 });
   } catch (error) {
     console.error("Failed to exchange token: ", error);
