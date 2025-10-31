@@ -11,25 +11,11 @@ import { Button } from "@/components/ui/button";
 
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Activity,
-  Clock,
-  RefreshCw,
-  FileText,
-  ChevronDown,
-  Download,
-  Pause,
-  Play,
-} from "lucide-react";
+import { Activity, Clock, RefreshCw, FileText } from "lucide-react";
 import { fetchConsoleLogs } from "@/lib/actions";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
@@ -44,6 +30,8 @@ function simpleHash(str: string): string {
   return hash.toString(36);
 }
 
+const initialFetchDoneMap: Record<string, number> = {};
+
 interface GatewayClientProps {
   dict: any;
   sub: string;
@@ -52,7 +40,6 @@ interface GatewayClientProps {
 interface LogEntry {
   id: string;
   content: string;
-  fetchTimestamp: Date;
 }
 
 export default function GatewayPrivateClient({
@@ -79,7 +66,6 @@ export default function GatewayPrivateClient({
           await fetchConsoleLogs(sub);
 
         if (result && result.logs) {
-          const fetchTimestamp = result.timestamp || new Date();
           const rawLogs = result.logs.split("\n").filter(Boolean);
 
           // 处理新日志
@@ -102,7 +88,6 @@ export default function GatewayPrivateClient({
               newLogEntries.push({
                 id: crypto.randomUUID(),
                 content: normalized,
-                fetchTimestamp,
               });
             }
           });
@@ -119,8 +104,20 @@ export default function GatewayPrivateClient({
       }
     };
 
-    // 立即执行一次
-    fetchLogs();
+    // 立即执行一次（在开发模式下避免 StrictMode 二次挂载导致的重复拉取）
+    if (
+      typeof window !== "undefined" &&
+      initialFetchDoneMap[sub] &&
+      Date.now() - initialFetchDoneMap[sub] < 5000
+    ) {
+      // 最近刚拉取过，跳过本次立即拉取
+    } else {
+      fetchLogs().finally(() => {
+        if (typeof window !== "undefined") {
+          initialFetchDoneMap[sub] = Date.now();
+        }
+      });
+    }
 
     // 设置定时器
     const interval = setInterval(fetchLogs, refreshInterval * 1000);
@@ -152,8 +149,16 @@ export default function GatewayPrivateClient({
         // 从队列头部取出一条日志
         const [nextLog, ...remainingQueue] = prevQueue;
 
-        // 将其添加到已显示列表
-        setDisplayedLogs((prevDisplayed) => [...prevDisplayed, nextLog]);
+        // 将其添加到已显示列表（避免相邻重复项）
+        setDisplayedLogs((prevDisplayed) => {
+          if (
+            prevDisplayed.length > 0 &&
+            prevDisplayed[prevDisplayed.length - 1].content === nextLog.content
+          ) {
+            return prevDisplayed;
+          }
+          return [...prevDisplayed, nextLog];
+        });
 
         return remainingQueue;
       });
@@ -173,21 +178,6 @@ export default function GatewayPrivateClient({
       }
     }
   }, [displayedLogs]);
-
-  // 格式化时间
-  const formatTime = (timestamp: Date) => {
-    return timestamp.toLocaleString("zh-CN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    });
-  };
-
-  // 格式化完整日期时间
-  const formatDateTime = (timestamp: Date) => {
-    return timestamp.toLocaleString("zh-CN");
-  };
 
   // 日志级别检测和样式
   const getLogStyle = (message: string) => {
@@ -291,9 +281,6 @@ export default function GatewayPrivateClient({
                       key={log.id}
                       className="flex gap-3 py-1 px-2 hover:bg-muted/50 rounded group animate-fade-in"
                     >
-                      {/* <span className="text-muted-foreground text-xs whitespace-nowrap">
-                        [{formatTime(log.fetchTimestamp)}]
-                      </span> */}
                       {logLevel && (
                         <Badge
                           variant={
