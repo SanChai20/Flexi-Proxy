@@ -204,13 +204,10 @@ export default function GatewayClient({
   const handleCreatePrivateGateway = async () => {
     try {
       setPrivateCreating(true);
-      if (!permissions.adv) {
-        setPrivateCreating(false);
-        return;
-      }
       if (
+        !permissions.adv ||
         permissions.mppa >=
-        proxyServers.filter((proxy) => proxy.type === "private").length
+          proxyServers.filter((proxy) => proxy.type === "private").length
       ) {
         setPrivateCreating(false);
         return;
