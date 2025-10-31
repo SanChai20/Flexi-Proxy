@@ -313,12 +313,12 @@ export default function GatewayClient({
                       {gatewayType === "private" && (
                         <DropdownMenu>
                           <DropdownMenuTrigger>
-                            <button
-                              className="p-1 hover:bg-accent rounded-md transition-colors"
+                            {/* <Button
+                              className="p-1 rounded-md "
                               aria-label="Settings"
-                            >
-                              <Settings className="w-4 h-4 text-muted-foreground" />
-                            </button>
+                            > */}
+                            <Settings className="w-4 h-4 text-muted-foreground" />
+                            {/* </Button> */}
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem

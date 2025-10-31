@@ -3,6 +3,7 @@
 import {
   _InstanceType,
   GetConsoleOutputCommand,
+  GetConsoleOutputCommandOutput,
   RunInstancesCommand,
   TerminateInstancesCommand,
 } from "@aws-sdk/client-ec2";
@@ -85,53 +86,44 @@ export async function getAllPrivateProxyServers(): Promise<
     return [];
   }
   const userId = session.user.id;
-  const getCachedPrivateProxyServers = unstable_cache(
-    async (uid: string) => {
-      if (process.env.PROXY_PRIVATE_PREFIX === undefined) {
-        console.error("getAllPrivateProxyServers - env not set");
-        return [];
+  if (process.env.PROXY_PRIVATE_PREFIX === undefined) {
+    console.error("getAllPrivateProxyServers - env not set");
+    return [];
+  }
+  try {
+    const searchPatternPrefix = `${process.env.PROXY_PRIVATE_PREFIX}:${userId}:`;
+    // Scan all keys with the prefix
+    let allKeys: string[] = [];
+    let cursor = 0;
+    let iterations = 0;
+    const MAX_ITERATIONS = 100; // Prevent infinite loops
+    do {
+      if (iterations++ > MAX_ITERATIONS) {
+        console.error("SCAN exceeded max iterations");
+        break;
       }
-      try {
-        const searchPatternPrefix = `${process.env.PROXY_PRIVATE_PREFIX}:${uid}:`;
-        // Scan all keys with the prefix
-        let allKeys: string[] = [];
-        let cursor = 0;
-        let iterations = 0;
-        const MAX_ITERATIONS = 100; // Prevent infinite loops
-        do {
-          if (iterations++ > MAX_ITERATIONS) {
-            console.error("SCAN exceeded max iterations");
-            break;
-          }
-          const [newCursor, keys] = await redis.scan(cursor, {
-            match: `${searchPatternPrefix}*`,
-            count: 100,
-          });
-          allKeys.push(...keys);
-          cursor = Number(newCursor);
-        } while (cursor !== 0);
-        if (allKeys.length > 0) {
-          const ids = allKeys.map((key) =>
-            key.replace(searchPatternPrefix, "")
-          );
-          const values = await redis.mget<{ url: string; status: string }[]>(
-            ...allKeys
-          );
-          return ids.map((id, index) => ({
-            id,
-            type: "private",
-            ...(values[index] || { status: "unavailable", url: "" }),
-          }));
-        }
-      } catch (error) {
-        console.error("Error fetching providers:", error);
-      }
-      return [];
-    },
-    ["private-proxy-servers"],
-    { revalidate: 600, tags: [`private-proxy-servers:${userId}`] }
-  );
-  return getCachedPrivateProxyServers(userId);
+      const [newCursor, keys] = await redis.scan(cursor, {
+        match: `${searchPatternPrefix}*`,
+        count: 100,
+      });
+      allKeys.push(...keys);
+      cursor = Number(newCursor);
+    } while (cursor !== 0);
+    if (allKeys.length > 0) {
+      const ids = allKeys.map((key) => key.replace(searchPatternPrefix, ""));
+      const values = await redis.mget<{ url: string; status: string }[]>(
+        ...allKeys
+      );
+      return ids.map((id, index) => ({
+        id,
+        type: "private",
+        ...(values[index] || { status: "unavailable", url: "" }),
+      }));
+    }
+  } catch (error) {
+    console.error("Error fetching providers:", error);
+  }
+  return [];
 }
 
 // Get all adapters for the authenticated user
@@ -1140,6 +1132,10 @@ export async function deletePrivateProxyInstance(
       return false;
     }
 
+    const transaction = redis.multi();
+    transaction.del(subdomainInstanceRedisKey);
+    transaction.del(proxyRedisKey);
+    await transaction.exec();
     try {
       const records = await cloudflare.dns.records.list({
         zone_id: CLOUDFLARE_ZONE_ID,
@@ -1148,11 +1144,7 @@ export async function deletePrivateProxyInstance(
           exact: subdomain,
         },
       });
-
-      const cleanupPromises: Promise<unknown>[] = [
-        redis.del(subdomainInstanceRedisKey),
-        redis.del(proxyRedisKey),
-      ];
+      const cleanupPromises: Promise<unknown>[] = [];
       if (records.result.length > 0) {
         const dnsDeletePromises = records.result.map((record) =>
           cloudflare.dns.records
@@ -1167,8 +1159,7 @@ export async function deletePrivateProxyInstance(
       } else {
         console.warn(`No DNS records found for subdomain: ${subdomain}`);
       }
-
-      await Promise.allSettled(cleanupPromises);
+      await Promise.all(cleanupPromises);
       return true;
     } catch (cleanupError) {
       console.error("Cleanup error (DNS/Redis):", {
@@ -1176,7 +1167,7 @@ export async function deletePrivateProxyInstance(
         error:
           cleanupError instanceof Error ? cleanupError.message : cleanupError,
       });
-      return true;
+      return false;
     }
   } catch (error) {
     console.error("Unexpected error in deletePrivateProxyInstance:", {
@@ -1189,12 +1180,11 @@ export async function deletePrivateProxyInstance(
   }
 }
 
-export async function getConsoleLogs(
+export async function fetchConsoleLogs(
   subdomain: string
-): Promise<undefined | string> {
+): Promise<undefined | { logs: string; timestamp: Date | undefined }> {
   const session = await auth();
   if (!session?.user?.id) {
-    console.error("User not authenticated");
     return undefined;
   }
   const userId = session.user.id;
@@ -1204,84 +1194,20 @@ export async function getConsoleLogs(
   if (instanceId === null) {
     return undefined;
   }
-  const command = new GetConsoleOutputCommand({
-    InstanceId: instanceId,
-    Latest: true,
-  });
+  try {
+    const command = new GetConsoleOutputCommand({
+      InstanceId: instanceId,
+      Latest: true,
+    });
 
-  const response = await ec2.send(command);
-  let logs = "";
-  if (response.Output) {
-    logs = Buffer.from(response.Output, "base64").toString("utf-8");
+    const response = await ec2.send(command);
+    if (response.Output) {
+      return {
+        logs: Buffer.from(response.Output, "base64").toString("utf-8"),
+        timestamp: response.Timestamp,
+      };
+    }
+  } catch (error) {
+    console.error("Error fetching logs:", error);
   }
-  return logs;
 }
-
-// export async function cloudWatchLogs(
-//   subdomain: string
-// ): Promise<undefined | LogStream[]> {
-//   const session = await auth();
-//   if (!session?.user?.id) {
-//     console.error("User not authenticated");
-//     return undefined;
-//   }
-//   const userId = session.user.id;
-//   try {
-//     const instanceId: null | string = await redis.get<string>(
-//       [process.env.SUBDOMAIN_INSTANCE_PREFIX, userId, subdomain].join(":")
-//     );
-//     if (instanceId === null) {
-//       return undefined;
-//     }
-
-//     const command = new DescribeLogStreamsCommand({
-//       logGroupIdentifier: process.env.AWS_CLOUDWATCH_LOG_GROUP_NAME,
-//       logStreamNamePrefix: instanceId,
-//       // orderBy: OrderBy.LastEventTime,
-//       // descending: true,
-//       // limit: 10,
-//     });
-//     const response = await cloudwatch.send(command);
-//     return response.logStreams;
-//   } catch (error) {
-//     console.error("Error getting log streams:", error);
-//     throw error;
-//   }
-// }
-
-// export async function getLogEvents(
-//   subdomain: string,
-//   logStreamName?: string,
-//   startTime?: number,
-//   limit: number = 100
-// ): Promise<FilteredLogEvent[]> {
-//   const session = await auth();
-//   if (!session?.user?.id) {
-//     console.error("User not authenticated");
-//     return [];
-//   }
-//   const userId = session.user.id;
-//   try {
-//     const instanceId: null | string = await redis.get<string>(
-//       [process.env.SUBDOMAIN_INSTANCE_PREFIX, userId, subdomain].join(":")
-//     );
-//     if (instanceId === null) {
-//       return [];
-//     }
-
-//     const command = new FilterLogEventsCommand({
-//       logGroupName: process.env.AWS_CLOUDWATCH_LOG_GROUP_NAME,
-//       logStreamNames: logStreamName ? [logStreamName] : undefined,
-//       logStreamNamePrefix: !logStreamName ? instanceId : undefined,
-//       startTime: startTime || Date.now() - 3600000, // 默认最近1小时
-//       endTime: Date.now(),
-//       limit: limit,
-//     });
-
-//     const response = await cloudwatch.send(command);
-//     return response.events || [];
-//   } catch (error) {
-//     console.error("Error getting CloudWatch logs:", error);
-//     return [];
-//   }
-// }

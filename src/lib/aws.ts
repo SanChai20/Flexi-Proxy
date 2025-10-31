@@ -1,4 +1,3 @@
-import { CloudWatchLogsClient } from "@aws-sdk/client-cloudwatch-logs";
 import { _InstanceType, EC2Client } from "@aws-sdk/client-ec2";
 
 export const ec2 = new EC2Client({
@@ -7,8 +6,4 @@ export const ec2 = new EC2Client({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
   },
-});
-
-export const cloudwatch = new CloudWatchLogsClient({
-  region: process.env.AWS_REGION,
 });

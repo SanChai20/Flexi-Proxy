@@ -1,4 +1,3 @@
-// app/[lang]/gateway/private/client.tsx
 "use client";
 
 import {
@@ -22,48 +21,148 @@ import {
   Pause,
   Play,
 } from "lucide-react";
-import { getConsoleLogs } from "@/lib/actions";
+import { fetchConsoleLogs } from "@/lib/actions";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogStream, FilteredLogEvent } from "@aws-sdk/client-cloudwatch-logs";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+
 interface GatewayClientProps {
   dict: any;
   sub: string;
-  logs: string | undefined;
+}
+
+interface LogEntry {
+  id: string;
+  content: string;
+  fetchTimestamp: Date;
 }
 
 export default function GatewayPrivateClient({
   dict,
   sub,
-  logs,
 }: GatewayClientProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [autoRefresh, setAutoRefresh] = useState(false);
-  const [refreshInterval, setRefreshInterval] = useState(10); // 秒
+  const refreshInterval = 60; // 固定60秒刷新间隔
+  const [displayedLogs, setDisplayedLogs] = useState<LogEntry[]>([]); // 已显示的日志
+  const [logQueue, setLogQueue] = useState<LogEntry[]>([]); // 待显示的日志队列
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const logCounterRef = useRef<number>(0); // 用于生成唯一ID的计数器
+  const logSetRef = useRef<Set<string>>(new Set()); // 用于去重的Set（使用ref避免依赖问题）
 
+  // 定时获取日志
   useEffect(() => {
-    if (!autoRefresh) return;
+    const fetchLogs = async () => {
+      setIsLoading(true);
+      try {
+        const result:
+          | undefined
+          | { logs: string; timestamp: Date | undefined } =
+          await fetchConsoleLogs(sub);
 
-    const interval = setInterval(() => {
-      router.refresh();
-    }, refreshInterval * 1000);
+        if (result && result.logs) {
+          const fetchTimestamp = result.timestamp || new Date();
+          const rawLogs = result.logs.split("\n").filter(Boolean);
+
+          // 处理新日志
+          const newLogEntries: LogEntry[] = [];
+
+          rawLogs.forEach((logContent) => {
+            // 清除颜色码、空格、回车符
+            const normalized = logContent.replace(/\x1B\[[0-9;]*m/g, "").trim();
+
+            // 过滤掉空行
+            if (!normalized) return;
+
+            // 去重
+            if (!logSetRef.current.has(normalized)) {
+              logSetRef.current.add(normalized);
+
+              newLogEntries.push({
+                id: crypto.randomUUID(),
+                content: normalized,
+                fetchTimestamp,
+              });
+            }
+          });
+
+          // 如果有新日志，添加到队列
+          if (newLogEntries.length > 0) {
+            setLogQueue((prevQueue) => [...prevQueue, ...newLogEntries]);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch logs:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // 立即执行一次
+    fetchLogs();
+
+    // 设置定时器
+    const interval = setInterval(fetchLogs, refreshInterval * 1000);
 
     return () => clearInterval(interval);
-  }, [autoRefresh, refreshInterval]);
+  }, [sub, refreshInterval]);
+
+  // 逐条显示日志（从队列中dequeue）
+  useEffect(() => {
+    if (logQueue.length === 0) return;
+
+    // 动态计算显示间隔，确保在刷新间隔内显示完所有日志
+    // 预留5秒缓冲时间，用55秒来显示所有日志
+    const availableTime = (refreshInterval - 5) * 1000; // 转换为毫秒
+    const calculatedInterval = Math.max(
+      50, // 最小间隔50ms，避免显示太快
+      Math.min(
+        500, // 最大间隔500ms，避免显示太慢
+        availableTime / logQueue.length
+      )
+    );
+
+    const displayInterval = setInterval(() => {
+      setLogQueue((prevQueue) => {
+        if (prevQueue.length === 0) {
+          return prevQueue;
+        }
+
+        // 从队列头部取出一条日志
+        const [nextLog, ...remainingQueue] = prevQueue;
+
+        // 将其添加到已显示列表
+        setDisplayedLogs((prevDisplayed) => [...prevDisplayed, nextLog]);
+
+        return remainingQueue;
+      });
+    }, calculatedInterval);
+
+    return () => clearInterval(displayInterval);
+  }, [logQueue, refreshInterval]); // 依赖整个队列和刷新间隔
+
+  // 自动滚动到底部
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      const scrollElement = scrollAreaRef.current.querySelector(
+        "[data-radix-scroll-area-viewport]"
+      );
+      if (scrollElement) {
+        scrollElement.scrollTop = scrollElement.scrollHeight;
+      }
+    }
+  }, [displayedLogs]);
 
   // 格式化时间
-  const formatTime = (timestamp: number) => {
-    const date = new Date(timestamp);
-    return date.toLocaleString("zh-CN", {
+  const formatTime = (timestamp: Date) => {
+    return timestamp.toLocaleString("zh-CN", {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
@@ -72,9 +171,8 @@ export default function GatewayPrivateClient({
   };
 
   // 格式化完整日期时间
-  const formatDateTime = (timestamp: number) => {
-    const date = new Date(timestamp);
-    return date.toLocaleString("zh-CN");
+  const formatDateTime = (timestamp: Date) => {
+    return timestamp.toLocaleString("zh-CN");
   };
 
   // 日志级别检测和样式
@@ -94,6 +192,15 @@ export default function GatewayPrivateClient({
     return "text-foreground";
   };
 
+  // 获取日志级别badge
+  const getLogLevel = (message: string) => {
+    if (message.includes("ERROR") || message.includes("FATAL")) return "ERROR";
+    if (message.includes("WARN")) return "WARN";
+    if (message.includes("INFO")) return "INFO";
+    if (message.includes("DEBUG")) return "DEBUG";
+    return null;
+  };
+
   return (
     <div className="space-y-4">
       {/* 控制面板 */}
@@ -109,52 +216,37 @@ export default function GatewayPrivateClient({
                 Instance ID: {sub}
               </CardDescription>
             </div>
+            <div className="flex items-center gap-2">
+              {isLoading && (
+                <RefreshCw className="h-4 w-4 animate-spin text-muted-foreground" />
+              )}
+              <Badge variant="outline">
+                {displayedLogs.length} logs
+                {logQueue.length > 0 && ` (+${logQueue.length} pending)`}
+              </Badge>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap items-center gap-2">
-            {/* 刷新间隔选择 */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Clock className="h-4 w-4" />
-                  {refreshInterval}s
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {[5, 10, 30, 60].map((interval) => (
-                  <DropdownMenuItem
-                    key={interval}
-                    onClick={() => setRefreshInterval(interval)}
-                  >
-                    {interval} seconds
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {/* 刷新间隔显示（固定60秒） */}
+            <Badge variant="outline" className="gap-2">
+              <Clock className="h-4 w-4" />
+              Auto-refresh: {refreshInterval}s
+            </Badge>
 
-            {/* 自动刷新开关 */}
+            {/* 清空日志按钮 */}
             <Button
-              variant={autoRefresh ? "default" : "outline"}
+              variant="outline"
               size="sm"
-              onClick={() => setAutoRefresh(!autoRefresh)}
-              className="gap-2"
+              onClick={() => {
+                setDisplayedLogs([]);
+                setLogQueue([]);
+                logSetRef.current = new Set();
+              }}
             >
-              {autoRefresh ? (
-                <>
-                  <Pause className="h-4 w-4" />
-                  Auto Refresh ON
-                </>
-              ) : (
-                <>
-                  <Play className="h-4 w-4" />
-                  Auto Refresh OFF
-                </>
-              )}
+              Clear Logs
             </Button>
-
-            {/* <Badge variant="secondary">{logs.length} events</Badge> */}
           </div>
         </CardContent>
       </Card>
@@ -162,28 +254,74 @@ export default function GatewayPrivateClient({
       {/* 日志显示区域 */}
       <Card>
         <CardContent className="p-0">
-          <ScrollArea className="h-[600px] w-full">
+          <ScrollArea className="h-[600px] w-full" ref={scrollAreaRef}>
             <div className="p-4 space-y-1 font-mono text-sm">
-              {isLoading && logs === undefined ? (
+              {displayedLogs.length === 0 ? (
                 <div className="flex items-center justify-center h-40 text-muted-foreground">
-                  <RefreshCw className="h-5 w-5 animate-spin mr-2" />
-                  Loading logs...
-                </div>
-              ) : logs === undefined ? (
-                <div className="flex items-center justify-center h-40 text-muted-foreground">
-                  No logs available
+                  {isLoading ? (
+                    <>
+                      <RefreshCw className="h-5 w-5 animate-spin mr-2" />
+                      Loading logs...
+                    </>
+                  ) : (
+                    "No logs available"
+                  )}
                 </div>
               ) : (
-                <div className="flex gap-3 py-1 px-2 hover:bg-muted/50 rounded group">
-                  <span className={cn("break-all", getLogStyle(logs))}>
-                    {logs}
-                  </span>
-                </div>
+                displayedLogs.map((log, index) => {
+                  const logStyle = getLogStyle(log.content);
+                  const logLevel = getLogLevel(log.content);
+
+                  return (
+                    <div
+                      key={log.id}
+                      className="flex gap-3 py-1 px-2 hover:bg-muted/50 rounded group animate-fade-in"
+                    >
+                      <span className="text-muted-foreground text-xs whitespace-nowrap">
+                        [{formatTime(log.fetchTimestamp)}]
+                      </span>
+                      {logLevel && (
+                        <Badge
+                          variant={
+                            logLevel === "ERROR"
+                              ? "destructive"
+                              : logLevel === "WARN"
+                              ? "outline"
+                              : "secondary"
+                          }
+                          className="h-5 text-xs"
+                        >
+                          {logLevel}
+                        </Badge>
+                      )}
+                      <span className={cn("break-all flex-1", logStyle)}>
+                        {log.content}
+                      </span>
+                    </div>
+                  );
+                })
               )}
             </div>
           </ScrollArea>
         </CardContent>
       </Card>
+
+      <style jsx>{`
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(-5px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-fade-in {
+          animation: fade-in 0.3s ease-out;
+        }
+      `}</style>
     </div>
   );
 }

@@ -57,7 +57,6 @@ async function protectedPOST(req: AuthRequest) {
       { ex: 14400 }
     );
     await transaction.exec();
-    revalidateTag(`private-proxy-servers:${uid}`);
     return NextResponse.json({ token, expiresIn: 14400 }, { status: 200 });
   } catch (error) {
     console.error("Failed to exchange token: ", error);
