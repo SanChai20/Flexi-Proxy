@@ -55,7 +55,8 @@
     "settings": "设置",
     "faq": "常见问题",
     "home": "主页",
-    "gateway": "代理网关"
+    "gateway": "代理网关",
+    "private": "私有"
   },
   "documentation": {
     "title": "关于 FlexiProxy",

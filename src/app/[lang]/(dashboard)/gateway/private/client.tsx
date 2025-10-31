@@ -33,67 +33,32 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LogStream, FilteredLogEvent } from "@aws-sdk/client-cloudwatch-logs";
 import { cn } from "@/lib/utils";
-
+import { useRouter } from "next/navigation";
 interface GatewayClientProps {
   dict: any;
   sub: string;
+  logs: string | undefined;
 }
 
 export default function GatewayPrivateClient({
   dict,
   sub,
+  logs,
 }: GatewayClientProps) {
-  const [logs, setLogs] = useState<string | undefined>(undefined);
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [refreshInterval, setRefreshInterval] = useState(10); // 秒
 
-  // 获取日志的函数
-  const fetchLogs = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const logs: undefined | string = await getConsoleLogs(sub);
-      setLogs(logs);
-    } catch (error) {
-      console.error("Failed to fetch logs:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [sub]);
-
-  // 初始加载
-  useEffect(() => {
-    fetchLogs();
-  }, [fetchLogs]);
-
-  // 自动刷新
   useEffect(() => {
     if (!autoRefresh) return;
 
     const interval = setInterval(() => {
-      fetchLogs();
+      router.refresh();
     }, refreshInterval * 1000);
 
     return () => clearInterval(interval);
-  }, [autoRefresh, refreshInterval, fetchLogs]);
-
-  // 导出日志
-  //   const exportLogs = () => {
-  //     const text = logs
-  //       .map((log) => {
-  //         const timestamp = new Date(log.timestamp!).toISOString();
-  //         return `[${timestamp}] ${log.message}`;
-  //       })
-  //       .join("\n");
-
-  //     const blob = new Blob([text], { type: "text/plain" });
-  //     const url = URL.createObjectURL(blob);
-  //     const a = document.createElement("a");
-  //     a.href = url;
-  //     a.download = `logs-${sub}-${Date.now()}.txt`;
-  //     a.click();
-  //     URL.revokeObjectURL(url);
-  //   };
+  }, [autoRefresh, refreshInterval]);
 
   // 格式化时间
   const formatTime = (timestamp: number) => {
@@ -188,32 +153,6 @@ export default function GatewayPrivateClient({
                 </>
               )}
             </Button>
-
-            {/* 手动刷新 */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={fetchLogs}
-              disabled={isLoading}
-              className="gap-2"
-            >
-              <RefreshCw
-                className={cn("h-4 w-4", isLoading && "animate-spin")}
-              />
-              Refresh
-            </Button>
-
-            {/* 导出日志 */}
-            {/* <Button
-              variant="outline"
-              size="sm"
-              onClick={exportLogs}
-              disabled={logs.length === 0}
-              className="gap-2"
-            >
-              <Download className="h-4 w-4" />
-              Export
-            </Button> */}
 
             {/* <Badge variant="secondary">{logs.length} events</Badge> */}
           </div>
