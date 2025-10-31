@@ -711,11 +711,13 @@ export async function updateSettingsAction(
 
 interface UserPermissions {
   maa: number; // max adapters allowed
+  mppa: number; // max private proxies allowed
   adv: boolean; // pro
 }
 
 const DefaultUserPermissions: UserPermissions = {
   maa: 3,
+  mppa: 1,
   adv: false,
 };
 

@@ -208,6 +208,14 @@ export default function GatewayClient({
         setPrivateCreating(false);
         return;
       }
+      if (
+        permissions.mppa >=
+        proxyServers.filter((proxy) => proxy.type === "private").length
+      ) {
+        setPrivateCreating(false);
+        return;
+      }
+
       const [subdomainName, token] = await Promise.all([
         createPrivateProxyInstance(),
         createShortTimeToken(3600),
