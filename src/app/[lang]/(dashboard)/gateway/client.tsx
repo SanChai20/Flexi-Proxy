@@ -220,11 +220,12 @@ export default function GatewayClient({
       if (subdomainName === undefined) {
         return;
       }
-      router.push(
-        `/gateway/private?sub=${encodeURIComponent(
-          subdomainName
-        )}&token=${encodeURIComponent(token)}`
-      );
+      router.refresh();
+      // router.push(
+      //   `/gateway/private?sub=${encodeURIComponent(
+      //     subdomainName
+      //   )}&token=${encodeURIComponent(token)}`
+      // );
     } catch (error) {
       console.error(error);
       setPrivateCreating(false);

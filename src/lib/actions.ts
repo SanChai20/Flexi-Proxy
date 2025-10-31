@@ -877,7 +877,8 @@ export async function createPrivateProxyInstance(): Promise<
     process.env.GITHUB_GATEWAY_REPOSITORY_BRANCH === undefined ||
     process.env.GITHUB_GATEWAY_REPOSITORY_NAME === undefined ||
     process.env.SUBDOMAIN_LOCK_PREFIX === undefined ||
-    process.env.SUBDOMAIN_INSTANCE_PREFIX === undefined
+    process.env.SUBDOMAIN_INSTANCE_PREFIX === undefined ||
+    process.env.PROXY_PRIVATE_PREFIX === undefined
   ) {
     console.error("env not set");
     return undefined;
@@ -1048,7 +1049,21 @@ echo "===============Deployment Success=============="
       response.Instances.length > 0 &&
       response.Instances[0].InstanceId !== undefined
     ) {
-      await redis.set<string>(
+      const match = randomGatewaySubDomain.match(/^([^.]*)\..*/);
+      const transaction = redis.multi();
+      transaction.set<{
+        url: string;
+        status: string;
+      }>(
+        [
+          process.env.PROXY_PRIVATE_PREFIX,
+          session.user.id,
+          match ? match[1] : randomGatewaySubDomain,
+        ].join(":"),
+        { url: randomGatewaySubDomain, status: "unavailable" },
+        { ex: 600 }
+      );
+      transaction.set<string>(
         [
           process.env.SUBDOMAIN_INSTANCE_PREFIX,
           session.user.id,
@@ -1056,6 +1071,7 @@ echo "===============Deployment Success=============="
         ].join(":"),
         response.Instances[0].InstanceId
       );
+      await transaction.exec();
       return randomGatewaySubDomain;
     }
   } catch (error) {

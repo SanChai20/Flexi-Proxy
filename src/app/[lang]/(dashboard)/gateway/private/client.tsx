@@ -33,6 +33,17 @@ import {
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
+// 简单的哈希函数，用于生成日志内容的哈希值
+function simpleHash(str: string): string {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return hash.toString(36);
+}
+
 interface GatewayClientProps {
   dict: any;
   sub: string;
@@ -55,7 +66,7 @@ export default function GatewayPrivateClient({
   const [logQueue, setLogQueue] = useState<LogEntry[]>([]); // 待显示的日志队列
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const logCounterRef = useRef<number>(0); // 用于生成唯一ID的计数器
-  const logSetRef = useRef<Set<string>>(new Set()); // 用于去重的Set（使用ref避免依赖问题）
+  const logHashSetRef = useRef<Set<string>>(new Set()); // 用于存储日志哈希值的Set（使用ref避免依赖问题）
 
   // 定时获取日志
   useEffect(() => {
@@ -81,9 +92,12 @@ export default function GatewayPrivateClient({
             // 过滤掉空行
             if (!normalized) return;
 
-            // 去重
-            if (!logSetRef.current.has(normalized)) {
-              logSetRef.current.add(normalized);
+            // 为当前日志内容生成哈希值
+            const logHash = simpleHash(normalized);
+
+            // 使用哈希值进行去重判断
+            if (!logHashSetRef.current.has(logHash)) {
+              logHashSetRef.current.add(logHash);
 
               newLogEntries.push({
                 id: crypto.randomUUID(),
@@ -242,7 +256,7 @@ export default function GatewayPrivateClient({
               onClick={() => {
                 setDisplayedLogs([]);
                 setLogQueue([]);
-                logSetRef.current = new Set();
+                logHashSetRef.current = new Set();
               }}
             >
               Clear Logs
@@ -277,9 +291,9 @@ export default function GatewayPrivateClient({
                       key={log.id}
                       className="flex gap-3 py-1 px-2 hover:bg-muted/50 rounded group animate-fade-in"
                     >
-                      <span className="text-muted-foreground text-xs whitespace-nowrap">
+                      {/* <span className="text-muted-foreground text-xs whitespace-nowrap">
                         [{formatTime(log.fetchTimestamp)}]
-                      </span>
+                      </span> */}
                       {logLevel && (
                         <Badge
                           variant={
