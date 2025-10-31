@@ -8,7 +8,7 @@ export const preferredRegion = ["iad1", "cle1"];
 
 const ENV = {
   AUTHTOKEN_PREFIX: process.env.AUTHTOKEN_PREFIX!,
-  PROXY_PREFIX: process.env.PROXY_PREFIX!,
+  PROXY_PUBLIC_PREFIX: process.env.PROXY_PUBLIC_PREFIX!,
 } as const;
 
 // POST
@@ -20,7 +20,10 @@ const ENV = {
 //  [string] id -> provider id
 //}
 async function protectedPOST(req: AuthRequest) {
-  if (ENV.AUTHTOKEN_PREFIX === undefined || ENV.PROXY_PREFIX === undefined) {
+  if (
+    ENV.AUTHTOKEN_PREFIX === undefined ||
+    ENV.PROXY_PUBLIC_PREFIX === undefined
+  ) {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
   try {
@@ -43,11 +46,10 @@ async function protectedPOST(req: AuthRequest) {
       ex: 14400,
     });
     transaction.del([ENV.AUTHTOKEN_PREFIX, req.token].join(":"));
-    transaction.set<{ url: string; status: string }>(
-      [ENV.PROXY_PREFIX, id].join(":"),
-      { url, status },
-      { ex: 14400 }
-    );
+    transaction.set<{
+      url: string;
+      status: string;
+    }>([ENV.PROXY_PUBLIC_PREFIX, id].join(":"), { url, status }, { ex: 14400 });
     await transaction.exec();
     revalidateTag("public-proxy-servers");
     return NextResponse.json({ token, expiresIn: 14400 }, { status: 200 });

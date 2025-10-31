@@ -6,14 +6,7 @@ import {
   RunInstancesCommand,
   TerminateInstancesCommand,
 } from "@aws-sdk/client-ec2";
-import {
-  CloudWatchLogsClient,
-  FilterLogEventsCommand,
-  DescribeLogStreamsCommand,
-  LogStream,
-  FilteredLogEvent,
-  OrderBy,
-} from "@aws-sdk/client-cloudwatch-logs";
+
 import { cloudflare } from "./cloudflare";
 import { symmetricEncrypt } from "./encryption";
 import { jwtSign } from "./jwt";
@@ -21,7 +14,7 @@ import { redis } from "./redis";
 import { auth } from "@/auth";
 import { revalidateTag, unstable_cache } from "next/cache";
 
-import { cloudwatch, ec2 } from "./aws";
+import { ec2 } from "./aws";
 
 // Get all proxy servers
 export const getAllPublicProxyServers: () => Promise<
@@ -33,12 +26,14 @@ export const getAllPublicProxyServers: () => Promise<
   }[]
 > = unstable_cache(
   async () => {
-    if (process.env.PROXY_PREFIX === undefined) {
-      console.error("getAllPublicProxyServers - PROXY_PREFIX env not set");
+    if (process.env.PROXY_PUBLIC_PREFIX === undefined) {
+      console.error(
+        "getAllPublicProxyServers - PROXY_PUBLIC_PREFIX env not set"
+      );
       return [];
     }
     try {
-      const searchPatternPrefix = `${process.env.PROXY_PREFIX}:`;
+      const searchPatternPrefix = `${process.env.PROXY_PUBLIC_PREFIX}:`;
       // Scan all keys with the prefix
       let allKeys: string[] = [];
       let cursor = 0;
@@ -78,9 +73,9 @@ export const getAllPublicProxyServers: () => Promise<
 
 export async function getAllPrivateProxyServers(): Promise<
   {
+    id: string;
     url: string;
     status: string;
-    id: string;
     type: string;
   }[]
 > {
@@ -92,12 +87,12 @@ export async function getAllPrivateProxyServers(): Promise<
   const userId = session.user.id;
   const getCachedPrivateProxyServers = unstable_cache(
     async (uid: string) => {
-      if (process.env.PROXY_PREFIX === undefined) {
+      if (process.env.PROXY_PRIVATE_PREFIX === undefined) {
         console.error("getAllPrivateProxyServers - env not set");
         return [];
       }
       try {
-        const searchPatternPrefix = `${process.env.PROXY_PREFIX}:${uid}:`;
+        const searchPatternPrefix = `${process.env.PROXY_PRIVATE_PREFIX}:${uid}:`;
         // Scan all keys with the prefix
         let allKeys: string[] = [];
         let cursor = 0;
@@ -147,7 +142,6 @@ export async function getAllUserAdapters(): Promise<
     pid: string;
     pul: string;
     not: string;
-    ava: boolean;
   }[]
 > {
   const session = await auth();
@@ -158,10 +152,7 @@ export async function getAllUserAdapters(): Promise<
   const userId = session.user.id;
   const getCachedAdapters = unstable_cache(
     async (uid: string) => {
-      if (
-        process.env.ADAPTER_PREFIX === undefined ||
-        process.env.PROXY_PREFIX === undefined
-      ) {
+      if (process.env.ADAPTER_PREFIX === undefined) {
         console.error("getAllUserAdapters - env not set");
         return [];
       }
@@ -201,20 +192,8 @@ export async function getAllUserAdapters(): Promise<
               not: string;
             }[]
           >(...allKeys);
-          const providerIds: string[] = values.map((item) =>
-            [process.env.PROXY_PREFIX, item.pid].join(":")
-          );
-          const providers: (null | {
-            url: string;
-            status: string;
-          })[] = await redis.mget<{ url: string; status: string }[]>(
-            ...providerIds
-          );
           return adapterIds.map((adapterId, index) => ({
             aid: adapterId,
-            ava:
-              providers[index] !== null &&
-              providers[index].status !== "unavailable",
             ...(values[index] || {}),
           }));
         }
@@ -338,7 +317,8 @@ export async function updateAdapterAction(
   if (
     process.env.ENCRYPTION_KEY === undefined ||
     process.env.ADAPTER_PREFIX === undefined ||
-    process.env.PROXY_PREFIX === undefined ||
+    process.env.PROXY_PUBLIC_PREFIX === undefined ||
+    process.env.PROXY_PRIVATE_PREFIX === undefined ||
     process.env.USER_MODIFY_VERSION_PREFIX === undefined
   ) {
     console.error("updateAdapterAction - env not set");
@@ -352,10 +332,19 @@ export async function updateAdapterAction(
 
   try {
     const pid = formData.get("proxy") as string;
-    const proxy: { url: string; status: string } | null = await redis.get<{
+    type ProxyInfo = {
       url: string;
       status: string;
-    }>([process.env.PROXY_PREFIX, pid].join(":"));
+    };
+    const pipe = redis.pipeline();
+    pipe.get<ProxyInfo>([process.env.PROXY_PUBLIC_PREFIX, pid].join(":"));
+    pipe.get<ProxyInfo>(
+      [process.env.PROXY_PRIVATE_PREFIX, session.user.id, pid].join(":")
+    );
+    const [publicCheckResult, privateCheckResult] = await pipe.exec<
+      [ProxyInfo | null, ProxyInfo | null]
+    >();
+    const proxy: ProxyInfo | null = privateCheckResult ?? publicCheckResult;
     if (proxy === null) {
       console.error("updateAdapterAction - Missing proxy");
       return false;
@@ -479,7 +468,8 @@ export async function createAdapterAction(
   if (
     process.env.ENCRYPTION_KEY === undefined ||
     process.env.ADAPTER_PREFIX === undefined ||
-    process.env.PROXY_PREFIX === undefined ||
+    process.env.PROXY_PUBLIC_PREFIX === undefined ||
+    process.env.PROXY_PRIVATE_PREFIX === undefined ||
     process.env.USER_MODIFY_VERSION_PREFIX === undefined
   ) {
     console.error("createAdapterAction - env not set");
@@ -503,10 +493,21 @@ export async function createAdapterAction(
     const kiv = encodedKey.iv;
     const ken = encodedKey.encryptedData;
     const kau = encodedKey.authTag;
-    const proxy: { url: string; status: string } | null = await redis.get<{
+
+    type ProxyInfo = {
       url: string;
       status: string;
-    }>([process.env.PROXY_PREFIX, pid].join(":"));
+    };
+    const pipe = redis.pipeline();
+    pipe.get<ProxyInfo>([process.env.PROXY_PUBLIC_PREFIX, pid].join(":"));
+    pipe.get<ProxyInfo>(
+      [process.env.PROXY_PRIVATE_PREFIX, session.user.id, pid].join(":")
+    );
+    const [publicCheckResult, privateCheckResult] = await pipe.exec<
+      [ProxyInfo | null, ProxyInfo | null]
+    >();
+    const proxy: ProxyInfo | null = privateCheckResult ?? publicCheckResult;
+
     if (proxy === null) {
       console.error("createAdapterAction - Missing proxy");
       return false;
@@ -1098,7 +1099,11 @@ export async function deletePrivateProxyInstance(
     userId,
     subdomain,
   ].join(":");
-  const proxyRedisKey = [process.env.PROXY_PREFIX, userId, proxyId].join(":");
+  const proxyRedisKey = [
+    process.env.PROXY_PRIVATE_PREFIX,
+    userId,
+    proxyId,
+  ].join(":");
 
   try {
     const instanceId = await redis.get<string>(subdomainInstanceRedisKey);
@@ -1164,8 +1169,6 @@ export async function deletePrivateProxyInstance(
       }
 
       await Promise.allSettled(cleanupPromises);
-
-      // console.info(`Cleanup completed for subdomain: ${subdomain}`);
       return true;
     } catch (cleanupError) {
       console.error("Cleanup error (DNS/Redis):", {
