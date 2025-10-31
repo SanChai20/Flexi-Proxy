@@ -1114,7 +1114,7 @@ export async function deletePrivateProxyInstance(
     try {
       const response = await ec2.send(terminateCommand);
       terminationSuccess =
-        response.TerminatingInstances?.some(
+        response?.TerminatingInstances?.some(
           (instance) => instance.InstanceId === instanceId
         ) ?? false;
 
@@ -1122,10 +1122,6 @@ export async function deletePrivateProxyInstance(
         console.error(`Failed to terminate instance: ${instanceId}`);
         return false;
       }
-
-      // console.info(
-      //   `Successfully initiated termination for instance: ${instanceId}`
-      // );
     } catch (ec2Error) {
       console.error("EC2 termination error:", {
         instanceId,
@@ -1134,10 +1130,6 @@ export async function deletePrivateProxyInstance(
       return false;
     }
 
-    const transaction = redis.multi();
-    transaction.del(subdomainInstanceRedisKey);
-    transaction.del(proxyRedisKey);
-    await transaction.exec();
     try {
       const records = await cloudflare.dns.records.list({
         zone_id: CLOUDFLARE_ZONE_ID,
@@ -1146,7 +1138,11 @@ export async function deletePrivateProxyInstance(
           exact: subdomain,
         },
       });
-      const cleanupPromises: Promise<unknown>[] = [];
+
+      const cleanupPromises: Promise<unknown>[] = [
+        redis.del(subdomainInstanceRedisKey),
+        redis.del(proxyRedisKey),
+      ];
       if (records.result.length > 0) {
         const dnsDeletePromises = records.result.map((record) =>
           cloudflare.dns.records
