@@ -61,6 +61,7 @@ export default function GatewayClient({
   proxyServers,
 }: GatewayClientProps) {
   const router = useRouter();
+  const [privateCreating, setPrivateCreating] = useState<boolean>(false);
   const [loadingProxyId, setLoadingProxyId] = useState<string | null>(null);
   const [gatewayType, setGatewayType] = useState<string>("public");
   const filteredServers = proxyServers.filter(
@@ -202,6 +203,11 @@ export default function GatewayClient({
 
   const handleCreatePrivateGateway = async () => {
     try {
+      setPrivateCreating(true);
+      if (!permissions.adv) {
+        setPrivateCreating(false);
+        return;
+      }
       const [subdomainName, token] = await Promise.all([
         createPrivateProxyInstance(),
         createShortTimeToken(3600),
@@ -216,6 +222,7 @@ export default function GatewayClient({
       );
     } catch (error) {
       console.error(error);
+      setPrivateCreating(false);
     }
   };
 
@@ -435,7 +442,11 @@ export default function GatewayClient({
                   onClick={() => handleCreatePrivateGateway()}
                   variant="outline"
                   className="min-w-[200px] px-8"
+                  disabled={privateCreating}
                 >
+                  {privateCreating && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
                   {dict?.gateway?.createPrivate || "Create Private Gateway"}
                 </Button>
               )}
