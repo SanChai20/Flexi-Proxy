@@ -18,59 +18,53 @@ import { revalidateTag, unstable_cache } from "next/cache";
 import { ec2 } from "./aws";
 
 // Get all proxy servers
-export const getAllPublicProxyServers: () => Promise<
+export async function getAllPublicProxyServers(): Promise<
   {
     id: string;
     url: string;
     status: string;
     type: string;
   }[]
-> = unstable_cache(
-  async () => {
-    if (process.env.PROXY_PUBLIC_PREFIX === undefined) {
-      console.error(
-        "getAllPublicProxyServers - PROXY_PUBLIC_PREFIX env not set"
-      );
-      return [];
-    }
-    try {
-      const searchPatternPrefix = `${process.env.PROXY_PUBLIC_PREFIX}:`;
-      // Scan all keys with the prefix
-      let allKeys: string[] = [];
-      let cursor = 0;
-      let iterations = 0;
-      const MAX_ITERATIONS = 100; // Prevent infinite loops
-      do {
-        if (iterations++ > MAX_ITERATIONS) {
-          console.error("SCAN exceeded max iterations");
-          break;
-        }
-        const [newCursor, keys] = await redis.scan(cursor, {
-          match: `${searchPatternPrefix}*`,
-          count: 100,
-        });
-        allKeys.push(...keys);
-        cursor = Number(newCursor);
-      } while (cursor !== 0);
-      if (allKeys.length > 0) {
-        const ids = allKeys.map((key) => key.replace(searchPatternPrefix, ""));
-        const values = await redis.mget<{ url: string; status: string }[]>(
-          ...allKeys
-        );
-        return ids.map((id, index) => ({
-          id,
-          type: "public",
-          ...(values[index] || { status: "unavailable", url: "" }),
-        }));
-      }
-    } catch (error) {
-      console.error("Error fetching providers:", error);
-    }
+> {
+  if (process.env.PROXY_PUBLIC_PREFIX === undefined) {
+    console.error("getAllPublicProxyServers - PROXY_PUBLIC_PREFIX env not set");
     return [];
-  },
-  ["public-proxy-servers"],
-  { revalidate: 600, tags: ["public-proxy-servers"] }
-);
+  }
+  try {
+    const searchPatternPrefix = `${process.env.PROXY_PUBLIC_PREFIX}:`;
+    // Scan all keys with the prefix
+    let allKeys: string[] = [];
+    let cursor = 0;
+    let iterations = 0;
+    const MAX_ITERATIONS = 100; // Prevent infinite loops
+    do {
+      if (iterations++ > MAX_ITERATIONS) {
+        console.error("SCAN exceeded max iterations");
+        break;
+      }
+      const [newCursor, keys] = await redis.scan(cursor, {
+        match: `${searchPatternPrefix}*`,
+        count: 100,
+      });
+      allKeys.push(...keys);
+      cursor = Number(newCursor);
+    } while (cursor !== 0);
+    if (allKeys.length > 0) {
+      const ids = allKeys.map((key) => key.replace(searchPatternPrefix, ""));
+      const values = await redis.mget<{ url: string; status: string }[]>(
+        ...allKeys
+      );
+      return ids.map((id, index) => ({
+        id,
+        type: "public",
+        ...(values[index] || { status: "unavailable", url: "" }),
+      }));
+    }
+  } catch (error) {
+    console.error("Error fetching providers:", error);
+  }
+  return [];
+}
 
 export async function getAllPrivateProxyServers(): Promise<
   {

@@ -179,32 +179,6 @@ export default function GatewayPrivateClient({
     }
   }, [displayedLogs]);
 
-  // 日志级别检测和样式
-  const getLogStyle = (message: string) => {
-    if (message.includes("ERROR") || message.includes("FATAL")) {
-      return "text-red-500";
-    }
-    if (message.includes("WARN")) {
-      return "text-yellow-500";
-    }
-    if (message.includes("INFO")) {
-      return "text-blue-500";
-    }
-    if (message.includes("DEBUG")) {
-      return "text-gray-500";
-    }
-    return "text-foreground";
-  };
-
-  // 获取日志级别badge
-  const getLogLevel = (message: string) => {
-    if (message.includes("ERROR") || message.includes("FATAL")) return "ERROR";
-    if (message.includes("WARN")) return "WARN";
-    if (message.includes("INFO")) return "INFO";
-    if (message.includes("DEBUG")) return "DEBUG";
-    return null;
-  };
-
   return (
     <div className="space-y-4">
       {/* 控制面板 */}
@@ -273,31 +247,12 @@ export default function GatewayPrivateClient({
                 </div>
               ) : (
                 displayedLogs.map((log, index) => {
-                  const logStyle = getLogStyle(log.content);
-                  const logLevel = getLogLevel(log.content);
-
                   return (
                     <div
                       key={log.id}
                       className="flex gap-3 py-1 px-2 hover:bg-muted/50 rounded group animate-fade-in"
                     >
-                      {logLevel && (
-                        <Badge
-                          variant={
-                            logLevel === "ERROR"
-                              ? "destructive"
-                              : logLevel === "WARN"
-                              ? "outline"
-                              : "secondary"
-                          }
-                          className="h-5 text-xs"
-                        >
-                          {logLevel}
-                        </Badge>
-                      )}
-                      <span className={cn("break-all flex-1", logStyle)}>
-                        {log.content}
-                      </span>
+                      <span className="break-all flex-1">{log.content}</span>
                     </div>
                   );
                 })
