@@ -10,7 +10,8 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Clock, RefreshCw, FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Clock, RefreshCw, FileText, Download } from "lucide-react";
 import { fetchConsoleLogs } from "@/lib/actions";
 import { useState, useEffect, useRef } from "react";
 
@@ -104,6 +105,25 @@ export default function GatewayPrivateClient({
     }
   }, [logs]);
 
+  const handleExportLogs = () => {
+    if (logs.length === 0) {
+      return;
+    }
+
+    const logText = logs.map((log) => `${log.content}`).join("\n");
+    const blob = new Blob([logText], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `instance-logs-${sub}-${new Date()
+      .toISOString()
+      .replace(/[:.]/g, "-")}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <>
       <Card>
@@ -117,6 +137,15 @@ export default function GatewayPrivateClient({
               <CardDescription className="mt-1">{sub}</CardDescription>
             </div>
             <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExportLogs}
+                disabled={logs.length === 0}
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Export Logs
+              </Button>
               {isLoading && (
                 <RefreshCw className="h-4 w-4 animate-spin text-muted-foreground" />
               )}
