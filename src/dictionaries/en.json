@@ -84,7 +84,9 @@
     "startLogs": "Startup logs",
     "export": "Export",
     "loadingLogs": "Loading logs...",
-    "logsUnavailable": "No logs available"
+    "logsUnavailable": "No logs available",
+    "viewLogs": "View Startup Logs",
+    "deleteProxy": "Delete Proxy Server"
   },
   "token": {
     "providerPage": "config/providers.json",

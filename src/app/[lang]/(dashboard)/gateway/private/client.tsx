@@ -10,7 +10,7 @@ import {
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, FileText, Download } from "lucide-react";
+import { RefreshCw, Download } from "lucide-react";
 import { fetchConsoleLogs } from "@/lib/actions";
 import { useState, useEffect, useRef } from "react";
 

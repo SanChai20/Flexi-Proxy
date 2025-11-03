@@ -226,11 +226,6 @@ export default function GatewayClient({
         return;
       }
       router.refresh();
-      // router.push(
-      //   `/gateway/private?sub=${encodeURIComponent(
-      //     subdomainName
-      //   )}&token=${encodeURIComponent(token)}`
-      // );
     } catch (error) {
       console.error(error);
       setPrivateCreating(false);
@@ -241,7 +236,7 @@ export default function GatewayClient({
     <>
       <Card>
         <CardHeader>
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex items-end justify-between gap-4">
             <div className="flex-1">
               <CardTitle className="text-2xl">
                 {dict?.gateway?.title || "Proxy Gateways"}
@@ -292,7 +287,7 @@ export default function GatewayClient({
                 className={"transition-all duration-200 hover:shadow-lg"}
               >
                 <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       <Hash className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                       <CardTitle
@@ -304,7 +299,14 @@ export default function GatewayClient({
                     </div>
 
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      {/* 健康状态指示器 */}
+                      <span
+                        className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors ${getStatusStyle(
+                          server.status
+                        )}`}
+                      >
+                        {getStatusText(server.status)}
+                      </span>
+
                       <div
                         className={`w-3 h-3 rounded-full ${
                           server.isHealthy
@@ -318,7 +320,6 @@ export default function GatewayClient({
                         }
                       />
 
-                      {/* 设置菜单 - 仅 private 网关显示 */}
                       {gatewayType === "private" && (
                         <DropdownMenu>
                           <DropdownMenuTrigger>
@@ -337,7 +338,7 @@ export default function GatewayClient({
                               className="cursor-pointer"
                             >
                               <FileText className="w-4 h-4 mr-2" />
-                              {dict?.gateway?.viewLogs || "查看日志"}
+                              {dict?.gateway?.viewLogs || "View Startup Logs"}
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               disabled={privateOperating}
@@ -350,7 +351,8 @@ export default function GatewayClient({
                               className="cursor-pointer text-destructive focus:text-destructive"
                             >
                               <Trash2 className="w-4 h-4 mr-2" />
-                              {dict?.gateway?.deleteProxy || "删除代理"}
+                              {dict?.gateway?.deleteProxy ||
+                                "Delete Proxy Server"}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -371,17 +373,6 @@ export default function GatewayClient({
                     {server.url.startsWith("https://")
                       ? server.url
                       : `https://${server.url}`}
-                  </div>
-
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {/* Status Badge */}
-                    <span
-                      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors ${getStatusStyle(
-                        server.status
-                      )}`}
-                    >
-                      {getStatusText(server.status)}
-                    </span>
                   </div>
                 </CardHeader>
 
