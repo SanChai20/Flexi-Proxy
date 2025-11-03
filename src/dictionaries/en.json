@@ -80,7 +80,11 @@
     "noPrivateServers": "No private proxy servers available",
     "public": "Public",
     "private": "Private",
-    "createPrivate": "Create"
+    "createPrivate": "Create",
+    "startLogs": "Startup logs",
+    "export": "Export",
+    "loadingLogs": "Loading logs...",
+    "logsUnavailable": "No logs available"
   },
   "token": {
     "providerPage": "config/providers.json",

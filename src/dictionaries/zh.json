@@ -80,7 +80,11 @@
     "noPrivateServers": "未发现私有代理网关",
     "public": "公开",
     "private": "私有",
-    "createPrivate": "创建"
+    "createPrivate": "创建",
+    "startLogs": "启动日志",
+    "export": "导出",
+    "loadingLogs": "正在加载日志...",
+    "logsUnavailable": "无日志"
   },
   "token": {
     "providerPage": "config/providers.json",

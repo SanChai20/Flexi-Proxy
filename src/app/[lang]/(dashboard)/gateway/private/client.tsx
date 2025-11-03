@@ -30,7 +30,6 @@ export default function GatewayPrivateClient({
   sub,
 }: GatewayClientProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const refreshInterval = 30;
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const logsMapRef = useRef<Map<string, LogEntry>>(new Map());
@@ -88,10 +87,9 @@ export default function GatewayPrivateClient({
       fetchLogs();
     }
 
-    const interval = setInterval(fetchLogs, refreshInterval * 1000);
-
+    const interval = setInterval(fetchLogs, 30000);
     return () => clearInterval(interval);
-  }, [sub, refreshInterval]);
+  }, [sub]);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -130,8 +128,7 @@ export default function GatewayPrivateClient({
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                Instance Logs
+                {dict?.gateway?.startLogs || "Startup logs"}
               </CardTitle>
               <CardDescription className="mt-1">{sub}</CardDescription>
             </div>
@@ -143,7 +140,7 @@ export default function GatewayPrivateClient({
                 disabled={logs.length === 0}
               >
                 <Download className="h-4 w-4 mr-2" />
-                Export Logs
+                {dict?.gateway?.export || "Export"}
               </Button>
               {isLoading && (
                 <RefreshCw className="h-4 w-4 animate-spin text-muted-foreground" />
@@ -162,10 +159,13 @@ export default function GatewayPrivateClient({
                   {isLoading ? (
                     <>
                       <RefreshCw className="h-5 w-5 animate-spin mr-2" />
-                      Loading logs...
+                      {dict?.gateway?.loadingLogs || "Loading logs..."}
                     </>
                   ) : (
-                    "No logs available"
+                    <>
+                      {" "}
+                      {dict?.gateway?.logsUnavailable || "No logs available"}
+                    </>
                   )}
                 </div>
               ) : (
