@@ -15,8 +15,6 @@ import { fetchConsoleLogs } from "@/lib/actions";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
-const initialFetchDoneMap: Record<string, number> = {};
-
 interface GatewayClientProps {
   dict: any;
   sub: string;
@@ -35,10 +33,11 @@ export default function GatewayPrivateClient({
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
-  const refreshInterval = 30; // 固定60秒刷新间隔
+  const refreshInterval = 30; // 固定30秒刷新间隔
   const [logs, setLogs] = useState<LogEntry[]>([]); // 所有日志
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const logsMapRef = useRef<Map<string, LogEntry>>(new Map()); // 用于去重的Map
+  const hasInitialFetchRef = useRef(false); // 用于跟踪是否已进行首次获取
 
   // 解析单条日志
   const parseLog = (logContent: string): LogEntry | null => {
@@ -107,19 +106,10 @@ export default function GatewayPrivateClient({
       }
     };
 
-    // 立即执行一次（在开发模式下避免 StrictMode 二次挂载导致的重复拉取）
-    if (
-      typeof window !== "undefined" &&
-      initialFetchDoneMap[sub] &&
-      Date.now() - initialFetchDoneMap[sub] < 5000
-    ) {
-      // 最近刚拉取过，跳过本次立即拉取
-    } else {
-      fetchLogs().finally(() => {
-        if (typeof window !== "undefined") {
-          initialFetchDoneMap[sub] = Date.now();
-        }
-      });
+    // 组件挂载时立即获取一次日志
+    if (!hasInitialFetchRef.current) {
+      hasInitialFetchRef.current = true;
+      fetchLogs();
     }
 
     // 设置定时器
@@ -140,12 +130,6 @@ export default function GatewayPrivateClient({
     }
   }, [logs]);
 
-  // 清空日志
-  const handleClearLogs = () => {
-    setLogs([]);
-    logsMapRef.current.clear();
-  };
-
   return (
     <div className="space-y-4">
       {/* 控制面板 */}
@@ -157,15 +141,13 @@ export default function GatewayPrivateClient({
                 <FileText className="h-5 w-5" />
                 Instance Logs
               </CardTitle>
-              <CardDescription className="mt-1">
-                Instance ID: {sub}
-              </CardDescription>
+              <CardDescription className="mt-1">{sub}</CardDescription>
             </div>
             <div className="flex items-center gap-2">
               {isLoading && (
                 <RefreshCw className="h-4 w-4 animate-spin text-muted-foreground" />
               )}
-              <Badge variant="outline">{logs.length} logs</Badge>
+              {/* <Badge variant="outline">{logs.length} logs</Badge> */}
             </div>
           </div>
         </CardHeader>
@@ -176,11 +158,6 @@ export default function GatewayPrivateClient({
               <Clock className="h-4 w-4" />
               Auto-refresh: {refreshInterval}s
             </Badge>
-
-            {/* 清空日志按钮 */}
-            <Button variant="outline" size="sm" onClick={handleClearLogs}>
-              Clear Logs
-            </Button>
           </div>
         </CardContent>
       </Card>
@@ -207,9 +184,6 @@ export default function GatewayPrivateClient({
                     key={log.id}
                     className="flex gap-3 py-1 px-2 hover:bg-muted/50 rounded group"
                   >
-                    <span className="text-muted-foreground shrink-0 w-24">
-                      [{log.timestamp.toFixed(6)}]
-                    </span>
                     <span className="break-all flex-1">{log.content}</span>
                   </div>
                 ))
