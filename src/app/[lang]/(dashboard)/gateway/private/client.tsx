@@ -8,27 +8,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Activity, Clock, RefreshCw, FileText } from "lucide-react";
+import { Clock, RefreshCw, FileText } from "lucide-react";
 import { fetchConsoleLogs } from "@/lib/actions";
-
-import { useState, useEffect, useCallback, useRef } from "react";
-
-import { cn } from "@/lib/utils";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-
-// 简单的哈希函数，用于生成日志内容的哈希值
-function simpleHash(str: string): string {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32bit integer
-  }
-  return hash.toString(36);
-}
 
 const initialFetchDoneMap: Record<string, number> = {};
 
@@ -38,8 +23,9 @@ interface GatewayClientProps {
 }
 
 interface LogEntry {
-  id: string;
+  timestamp: number;
   content: string;
+  id: string; // timestamp + content 的组合ID，用于去重
 }
 
 export default function GatewayPrivateClient({
@@ -49,12 +35,44 @@ export default function GatewayPrivateClient({
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
-  const refreshInterval = 60; // 固定60秒刷新间隔
-  const [displayedLogs, setDisplayedLogs] = useState<LogEntry[]>([]); // 已显示的日志
-  const [logQueue, setLogQueue] = useState<LogEntry[]>([]); // 待显示的日志队列
+  const refreshInterval = 30; // 固定60秒刷新间隔
+  const [logs, setLogs] = useState<LogEntry[]>([]); // 所有日志
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const logCounterRef = useRef<number>(0); // 用于生成唯一ID的计数器
-  const logHashSetRef = useRef<Set<string>>(new Set()); // 用于存储日志哈希值的Set（使用ref避免依赖问题）
+  const logsMapRef = useRef<Map<string, LogEntry>>(new Map()); // 用于去重的Map
+
+  // 解析单条日志
+  const parseLog = (logContent: string): LogEntry | null => {
+    // 清除颜色码、空格、回车符
+    const normalized = logContent.replace(/\x1B\[[0-9;]*m/g, "").trim();
+
+    // 过滤掉空行
+    if (!normalized) return null;
+
+    // 匹配 AWS Cloud Init 日志格式: [时间戳] cloud-init[进程ID]: 日志内容
+    // 例如: [   81.653910] cloud-init[1054]: xxxx
+    const cloudInitMatch = normalized.match(
+      /\[\s*([\d.]+)\]\s+cloud-init\[\d+\]:\s*(.+)/
+    );
+
+    // 只保留符合格式的日志
+    if (!cloudInitMatch) return null;
+
+    // 提取时间戳和日志内容
+    const timestamp = parseFloat(cloudInitMatch[1]);
+    const content = cloudInitMatch[2].trim();
+
+    // 过滤掉空内容
+    if (!content) return null;
+
+    // 创建唯一ID：时间戳 + 内容哈希
+    const id = `${timestamp}-${content}`;
+
+    return {
+      timestamp,
+      content,
+      id,
+    };
+  };
 
   // 定时获取日志
   useEffect(() => {
@@ -66,34 +84,21 @@ export default function GatewayPrivateClient({
         if (consoleLogs) {
           const rawLogs = consoleLogs.split("\n").filter(Boolean);
 
-          // 处理新日志
-          const newLogEntries: LogEntry[] = [];
-
+          // 解析所有日志
           rawLogs.forEach((logContent) => {
-            // 清除颜色码、空格、回车符
-            const normalized = logContent.replace(/\x1B\[[0-9;]*m/g, "").trim();
-
-            // 过滤掉空行
-            if (!normalized) return;
-
-            // 为当前日志内容生成哈希值
-            const logHash = simpleHash(normalized);
-
-            // 使用哈希值进行去重判断
-            if (!logHashSetRef.current.has(logHash)) {
-              logHashSetRef.current.add(logHash);
-
-              newLogEntries.push({
-                id: crypto.randomUUID(),
-                content: normalized,
-              });
+            const parsedLog = parseLog(logContent);
+            if (parsedLog) {
+              // 使用Map去重，相同ID的日志只保留一份
+              logsMapRef.current.set(parsedLog.id, parsedLog);
             }
           });
 
-          // 如果有新日志，添加到队列
-          if (newLogEntries.length > 0) {
-            setLogQueue((prevQueue) => [...prevQueue, ...newLogEntries]);
-          }
+          // 将Map转换为数组并按时间戳排序
+          const sortedLogs = Array.from(logsMapRef.current.values()).sort(
+            (a, b) => a.timestamp - b.timestamp
+          );
+
+          setLogs(sortedLogs);
         }
       } catch (error) {
         console.error("Failed to fetch logs:", error);
@@ -123,48 +128,6 @@ export default function GatewayPrivateClient({
     return () => clearInterval(interval);
   }, [sub, refreshInterval]);
 
-  // 逐条显示日志（从队列中dequeue）
-  useEffect(() => {
-    if (logQueue.length === 0) return;
-
-    // 动态计算显示间隔，确保在刷新间隔内显示完所有日志
-    // 预留5秒缓冲时间，用55秒来显示所有日志
-    const availableTime = (refreshInterval - 5) * 1000; // 转换为毫秒
-    const calculatedInterval = Math.max(
-      50, // 最小间隔50ms，避免显示太快
-      Math.min(
-        500, // 最大间隔500ms，避免显示太慢
-        availableTime / logQueue.length
-      )
-    );
-
-    const displayInterval = setInterval(() => {
-      setLogQueue((prevQueue) => {
-        if (prevQueue.length === 0) {
-          return prevQueue;
-        }
-
-        // 从队列头部取出一条日志
-        const [nextLog, ...remainingQueue] = prevQueue;
-
-        // 将其添加到已显示列表（避免相邻重复项）
-        setDisplayedLogs((prevDisplayed) => {
-          if (
-            prevDisplayed.length > 0 &&
-            prevDisplayed[prevDisplayed.length - 1].content === nextLog.content
-          ) {
-            return prevDisplayed;
-          }
-          return [...prevDisplayed, nextLog];
-        });
-
-        return remainingQueue;
-      });
-    }, calculatedInterval);
-
-    return () => clearInterval(displayInterval);
-  }, [logQueue, refreshInterval]); // 依赖整个队列和刷新间隔
-
   // 自动滚动到底部
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -175,7 +138,13 @@ export default function GatewayPrivateClient({
         scrollElement.scrollTop = scrollElement.scrollHeight;
       }
     }
-  }, [displayedLogs]);
+  }, [logs]);
+
+  // 清空日志
+  const handleClearLogs = () => {
+    setLogs([]);
+    logsMapRef.current.clear();
+  };
 
   return (
     <div className="space-y-4">
@@ -196,10 +165,7 @@ export default function GatewayPrivateClient({
               {isLoading && (
                 <RefreshCw className="h-4 w-4 animate-spin text-muted-foreground" />
               )}
-              <Badge variant="outline">
-                {displayedLogs.length} logs
-                {logQueue.length > 0 && ` (+${logQueue.length} pending)`}
-              </Badge>
+              <Badge variant="outline">{logs.length} logs</Badge>
             </div>
           </div>
         </CardHeader>
@@ -212,15 +178,7 @@ export default function GatewayPrivateClient({
             </Badge>
 
             {/* 清空日志按钮 */}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                setDisplayedLogs([]);
-                setLogQueue([]);
-                logHashSetRef.current = new Set();
-              }}
-            >
+            <Button variant="outline" size="sm" onClick={handleClearLogs}>
               Clear Logs
             </Button>
           </div>
@@ -232,7 +190,7 @@ export default function GatewayPrivateClient({
         <CardContent className="p-0">
           <ScrollArea className="h-[600px] w-full" ref={scrollAreaRef}>
             <div className="p-4 space-y-1 font-mono text-sm">
-              {displayedLogs.length === 0 ? (
+              {logs.length === 0 ? (
                 <div className="flex items-center justify-center h-40 text-muted-foreground">
                   {isLoading ? (
                     <>
@@ -244,38 +202,22 @@ export default function GatewayPrivateClient({
                   )}
                 </div>
               ) : (
-                displayedLogs.map((log, index) => {
-                  return (
-                    <div
-                      key={log.id}
-                      className="flex gap-3 py-1 px-2 hover:bg-muted/50 rounded group animate-fade-in"
-                    >
-                      <span className="break-all flex-1">{log.content}</span>
-                    </div>
-                  );
-                })
+                logs.map((log) => (
+                  <div
+                    key={log.id}
+                    className="flex gap-3 py-1 px-2 hover:bg-muted/50 rounded group"
+                  >
+                    <span className="text-muted-foreground shrink-0 w-24">
+                      [{log.timestamp.toFixed(6)}]
+                    </span>
+                    <span className="break-all flex-1">{log.content}</span>
+                  </div>
+                ))
               )}
             </div>
           </ScrollArea>
         </CardContent>
       </Card>
-
-      <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(-5px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fade-in {
-          animation: fade-in 0.3s ease-out;
-        }
-      `}</style>
     </div>
   );
 }
