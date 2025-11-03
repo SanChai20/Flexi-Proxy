@@ -189,6 +189,7 @@ export default function GatewayClient({
       );
     } catch (error) {
       console.error("Failed to create token:", error);
+    } finally {
       setLoadingProxyId(null);
     }
   };
@@ -210,6 +211,7 @@ export default function GatewayClient({
       router.refresh();
     } catch (error) {
       console.error(error);
+    } finally {
       setPrivateOperating(false);
     }
   };
@@ -231,6 +233,7 @@ export default function GatewayClient({
       );
     } catch (error) {
       console.error(error);
+    } finally {
       setPrivateOperating(false);
     }
   };
@@ -251,6 +254,7 @@ export default function GatewayClient({
       });
     } catch (error) {
       console.error(error);
+    } finally {
       setPrivateOperating(false);
     }
   };
@@ -277,6 +281,7 @@ export default function GatewayClient({
       router.refresh();
     } catch (error) {
       console.error(error);
+    } finally {
       setPrivateCreating(false);
     }
   };
