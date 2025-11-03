@@ -105,7 +105,7 @@ export default function GatewayPrivateClient({
   }, [logs]);
 
   return (
-    <div className="space-y-4">
+    <>
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -123,19 +123,11 @@ export default function GatewayPrivateClient({
             </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="outline" className="gap-2">
-              <Clock className="h-4 w-4" />
-              Auto-refresh: {refreshInterval}s
-            </Badge>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
         <CardContent className="p-0">
-          <ScrollArea className="h-[600px] w-full" ref={scrollAreaRef}>
+          <ScrollArea
+            className="h-[calc(100vh-250px)] w-full"
+            ref={scrollAreaRef}
+          >
             <div className="p-4 space-y-1 font-mono text-sm">
               {logs.length === 0 ? (
                 <div className="flex items-center justify-center h-40 text-muted-foreground">
@@ -162,6 +154,6 @@ export default function GatewayPrivateClient({
           </ScrollArea>
         </CardContent>
       </Card>
-    </div>
+    </>
   );
 }
