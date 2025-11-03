@@ -8,10 +8,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { Clock, RefreshCw, FileText, Download } from "lucide-react";
+import { RefreshCw, FileText, Download } from "lucide-react";
 import { fetchConsoleLogs } from "@/lib/actions";
 import { useState, useEffect, useRef } from "react";
 
