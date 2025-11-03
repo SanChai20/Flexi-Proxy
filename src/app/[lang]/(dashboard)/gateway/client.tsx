@@ -206,7 +206,7 @@ export default function GatewayClient({
       setPrivateCreating(true);
       if (
         !permissions.adv ||
-        permissions.mppa >=
+        permissions.mppa <=
           proxyServers.filter((proxy) => proxy.type === "private").length
       ) {
         setPrivateCreating(false);

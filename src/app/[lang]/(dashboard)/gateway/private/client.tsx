@@ -60,13 +60,10 @@ export default function GatewayPrivateClient({
     const fetchLogs = async () => {
       setIsLoading(true);
       try {
-        const result:
-          | undefined
-          | { logs: string; timestamp: Date | undefined } =
-          await fetchConsoleLogs(sub);
+        const consoleLogs: undefined | string = await fetchConsoleLogs(sub);
 
-        if (result && result.logs) {
-          const rawLogs = result.logs.split("\n").filter(Boolean);
+        if (consoleLogs) {
+          const rawLogs = consoleLogs.split("\n").filter(Boolean);
 
           // 处理新日志
           const newLogEntries: LogEntry[] = [];

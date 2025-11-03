@@ -1190,7 +1190,7 @@ export async function deletePrivateProxyInstance(
 
 export async function fetchConsoleLogs(
   subdomain: string
-): Promise<undefined | { logs: string; timestamp: Date | undefined }> {
+): Promise<undefined | string> {
   const session = await auth();
   if (!session?.user?.id) {
     return undefined;
@@ -1210,10 +1210,7 @@ export async function fetchConsoleLogs(
 
     const response = await ec2.send(command);
     if (response.Output) {
-      return {
-        logs: Buffer.from(response.Output, "base64").toString("utf-8"),
-        timestamp: response.Timestamp,
-      };
+      return Buffer.from(response.Output, "base64").toString("utf-8");
     }
   } catch (error) {
     console.error("Error fetching logs:", error);
@@ -1222,4 +1219,8 @@ export async function fetchConsoleLogs(
 
 export async function setPrivateProxyConsoleLogs() {}
 
-export async function getPrivateProxyConsoleLogs() {}
+export async function getPrivateProxyConsoleLogs(): Promise<
+  undefined | string
+> {
+  return undefined;
+}
