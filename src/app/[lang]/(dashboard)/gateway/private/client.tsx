@@ -7,13 +7,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Clock, RefreshCw, FileText } from "lucide-react";
 import { fetchConsoleLogs } from "@/lib/actions";
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
 
 interface GatewayClientProps {
   dict: any;
@@ -23,80 +22,58 @@ interface GatewayClientProps {
 interface LogEntry {
   timestamp: number;
   content: string;
-  id: string; // timestamp + content 的组合ID，用于去重
+  id: string;
 }
 
 export default function GatewayPrivateClient({
   dict,
   sub,
 }: GatewayClientProps) {
-  const router = useRouter();
-
   const [isLoading, setIsLoading] = useState(false);
-  const refreshInterval = 30; // 固定30秒刷新间隔
-  const [logs, setLogs] = useState<LogEntry[]>([]); // 所有日志
+  const refreshInterval = 30;
+  const [logs, setLogs] = useState<LogEntry[]>([]);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const logsMapRef = useRef<Map<string, LogEntry>>(new Map()); // 用于去重的Map
-  const hasInitialFetchRef = useRef(false); // 用于跟踪是否已进行首次获取
+  const logsMapRef = useRef<Map<string, LogEntry>>(new Map());
+  const hasInitialFetchRef = useRef(false);
 
-  // 解析单条日志
   const parseLog = (logContent: string): LogEntry | null => {
-    // 清除颜色码、空格、回车符
     const normalized = logContent.replace(/\x1B\[[0-9;]*m/g, "").trim();
 
-    // 过滤掉空行
     if (!normalized) return null;
 
-    // 匹配 AWS Cloud Init 日志格式: [时间戳] cloud-init[进程ID]: 日志内容
-    // 例如: [   81.653910] cloud-init[1054]: xxxx
     const cloudInitMatch = normalized.match(
       /\[\s*([\d.]+)\]\s+cloud-init\[\d+\]:\s*(.+)/
     );
 
-    // 只保留符合格式的日志
     if (!cloudInitMatch) return null;
 
-    // 提取时间戳和日志内容
     const timestamp = parseFloat(cloudInitMatch[1]);
     const content = cloudInitMatch[2].trim();
-
-    // 过滤掉空内容
     if (!content) return null;
-
-    // 创建唯一ID：时间戳 + 内容哈希
-    const id = `${timestamp}-${content}`;
 
     return {
       timestamp,
       content,
-      id,
+      id: timestamp.toString(),
     };
   };
 
-  // 定时获取日志
   useEffect(() => {
     const fetchLogs = async () => {
       setIsLoading(true);
       try {
         const consoleLogs: undefined | string = await fetchConsoleLogs(sub);
-
         if (consoleLogs) {
           const rawLogs = consoleLogs.split("\n").filter(Boolean);
-
-          // 解析所有日志
           rawLogs.forEach((logContent) => {
             const parsedLog = parseLog(logContent);
             if (parsedLog) {
-              // 使用Map去重，相同ID的日志只保留一份
               logsMapRef.current.set(parsedLog.id, parsedLog);
             }
           });
-
-          // 将Map转换为数组并按时间戳排序
           const sortedLogs = Array.from(logsMapRef.current.values()).sort(
             (a, b) => a.timestamp - b.timestamp
           );
-
           setLogs(sortedLogs);
         }
       } catch (error) {
@@ -106,19 +83,16 @@ export default function GatewayPrivateClient({
       }
     };
 
-    // 组件挂载时立即获取一次日志
     if (!hasInitialFetchRef.current) {
       hasInitialFetchRef.current = true;
       fetchLogs();
     }
 
-    // 设置定时器
     const interval = setInterval(fetchLogs, refreshInterval * 1000);
 
     return () => clearInterval(interval);
   }, [sub, refreshInterval]);
 
-  // 自动滚动到底部
   useEffect(() => {
     if (scrollAreaRef.current) {
       const scrollElement = scrollAreaRef.current.querySelector(
@@ -132,7 +106,6 @@ export default function GatewayPrivateClient({
 
   return (
     <div className="space-y-4">
-      {/* 控制面板 */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -147,13 +120,11 @@ export default function GatewayPrivateClient({
               {isLoading && (
                 <RefreshCw className="h-4 w-4 animate-spin text-muted-foreground" />
               )}
-              {/* <Badge variant="outline">{logs.length} logs</Badge> */}
             </div>
           </div>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap items-center gap-2">
-            {/* 刷新间隔显示（固定60秒） */}
             <Badge variant="outline" className="gap-2">
               <Clock className="h-4 w-4" />
               Auto-refresh: {refreshInterval}s
@@ -162,7 +133,6 @@ export default function GatewayPrivateClient({
         </CardContent>
       </Card>
 
-      {/* 日志显示区域 */}
       <Card>
         <CardContent className="p-0">
           <ScrollArea className="h-[600px] w-full" ref={scrollAreaRef}>
