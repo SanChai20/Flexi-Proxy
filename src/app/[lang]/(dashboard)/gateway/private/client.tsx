@@ -127,7 +127,7 @@ export default function GatewayPrivateClient({
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center">
                 {dict?.gateway?.startLogs || "Startup logs"}
               </CardTitle>
               <CardDescription className="mt-1">{sub}</CardDescription>

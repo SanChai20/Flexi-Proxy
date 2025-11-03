@@ -1216,11 +1216,3 @@ export async function fetchConsoleLogs(
     console.error("Error fetching logs:", error);
   }
 }
-
-export async function setPrivateProxyConsoleLogs() {}
-
-export async function getPrivateProxyConsoleLogs(): Promise<
-  undefined | string
-> {
-  return undefined;
-}
