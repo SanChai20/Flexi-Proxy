@@ -26,12 +26,13 @@ import {
   Trash2,
 } from "lucide-react";
 import {
+  checkProxyServerHealth,
   createPrivateProxyInstance,
   createShortTimeToken,
   deletePrivateProxyInstance,
 } from "@/lib/actions";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -65,9 +66,37 @@ export default function GatewayClient({
   const [privateCreating, setPrivateCreating] = useState<boolean>(false);
   const [loadingProxyId, setLoadingProxyId] = useState<string | null>(null);
   const [gatewayType, setGatewayType] = useState<string>("public");
-  const filteredServers = proxyServers.filter(
-    (server) => (server.type || "public") === gatewayType
-  );
+  const [allProxyServers, setAllProxyServers] = useState<
+    {
+      url: string;
+      status: string;
+      id: string;
+      isHealthy: boolean;
+      responseTime: number | undefined;
+      type: string;
+      error?: string | undefined;
+    }[]
+  >(proxyServers);
+
+  const [filteredServers, setFilteredServers] = useState<
+    {
+      url: string;
+      status: string;
+      id: string;
+      isHealthy: boolean;
+      responseTime: number | undefined;
+      type: string;
+      error?: string | undefined;
+    }[]
+  >([]);
+
+  useEffect(() => {
+    setFilteredServers(
+      allProxyServers.filter(
+        (server) => (server.type || "public") === gatewayType
+      )
+    );
+  }, [allProxyServers, gatewayType]);
 
   const parseGatewayLocation = (id: string) => {
     // Format: gateway-xx-yy-zz
@@ -139,7 +168,7 @@ export default function GatewayClient({
     return texts[status.toLowerCase()] || status;
   };
 
-  const isServerAvailable = (server: (typeof proxyServers)[0]) => {
+  const isServerAvailable = (server: (typeof allProxyServers)[0]) => {
     if (userTokenCount >= permissions.maa) {
       return false;
     }
@@ -206,13 +235,33 @@ export default function GatewayClient({
     }
   };
 
+  const handleCheckPrivateGateway = async (proxy: {
+    url: string;
+    status: string;
+    id: string;
+    type: string;
+  }) => {
+    try {
+      setPrivateOperating(true);
+      const result = await checkProxyServerHealth(proxy);
+      setAllProxyServers((prev) => {
+        return prev.map((item) =>
+          item.id === result.id ? { ...item, ...result } : item
+        );
+      });
+    } catch (error) {
+      console.error(error);
+      setPrivateOperating(false);
+    }
+  };
+
   const handleCreatePrivateGateway = async () => {
     try {
       setPrivateCreating(true);
       if (
         !permissions.adv ||
         permissions.mppa <=
-          proxyServers.filter((proxy) => proxy.type === "private").length
+          allProxyServers.filter((proxy) => proxy.type === "private").length
       ) {
         setPrivateCreating(false);
         return;
@@ -339,6 +388,14 @@ export default function GatewayClient({
                             >
                               <FileText className="w-4 h-4 mr-2" />
                               {dict?.gateway?.viewLogs || "View Startup Logs"}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleCheckPrivateGateway(server)}
+                              disabled={privateOperating}
+                              className="cursor-pointer"
+                            >
+                              <Activity className="w-4 h-4 mr-2" />
+                              {dict?.gateway?.healthCheck || "Health Check"}
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               disabled={privateOperating}

@@ -86,7 +86,8 @@
     "loadingLogs": "Loading logs...",
     "logsUnavailable": "No logs available",
     "viewLogs": "View Startup Logs",
-    "deleteProxy": "Delete Proxy Server"
+    "deleteProxy": "Delete Proxy Server",
+    "healthCheck": "Health Check"
   },
   "token": {
     "providerPage": "config/providers.json",

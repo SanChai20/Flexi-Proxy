@@ -86,7 +86,8 @@
     "loadingLogs": "正在加载日志...",
     "logsUnavailable": "无日志",
     "viewLogs": "查看启动日志",
-    "deleteProxy": "删除代理"
+    "deleteProxy": "删除代理",
+    "healthCheck": "健康检查"
   },
   "token": {
     "providerPage": "config/providers.json",
