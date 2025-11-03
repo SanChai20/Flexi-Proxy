@@ -87,7 +87,7 @@ export default function GatewayPrivateClient({
       fetchLogs();
     }
 
-    const interval = setInterval(fetchLogs, 30000);
+    const interval = setInterval(fetchLogs, 15000);
     return () => clearInterval(interval);
   }, [sub]);
 
