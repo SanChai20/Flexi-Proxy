@@ -47,6 +47,7 @@ export default function GatewayPrivateClient({
   sub,
 }: GatewayClientProps) {
   const router = useRouter();
+
   const [isLoading, setIsLoading] = useState(false);
   const refreshInterval = 60; // 固定60秒刷新间隔
   const [displayedLogs, setDisplayedLogs] = useState<LogEntry[]>([]); // 已显示的日志

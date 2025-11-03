@@ -61,6 +61,7 @@ export default function GatewayClient({
   proxyServers,
 }: GatewayClientProps) {
   const router = useRouter();
+  const [privateOperating, setPrivateOperating] = useState<boolean>(false);
   const [privateCreating, setPrivateCreating] = useState<boolean>(false);
   const [loadingProxyId, setLoadingProxyId] = useState<string | null>(null);
   const [gatewayType, setGatewayType] = useState<string>("public");
@@ -175,10 +176,12 @@ export default function GatewayClient({
     }
 
     try {
+      setPrivateOperating(true);
       await deletePrivateProxyInstance(proxyId, subdomainName);
       router.refresh();
     } catch (error) {
       console.error(error);
+      setPrivateOperating(false);
     }
   };
 
@@ -190,6 +193,7 @@ export default function GatewayClient({
       subdomainName = subdomainName.substring(8);
     }
     try {
+      setPrivateOperating(true);
       const token = await createShortTimeToken(3600);
       router.push(
         `/gateway/private?sub=${encodeURIComponent(
@@ -198,6 +202,7 @@ export default function GatewayClient({
       );
     } catch (error) {
       console.error(error);
+      setPrivateOperating(false);
     }
   };
 
@@ -317,24 +322,25 @@ export default function GatewayClient({
                       {gatewayType === "private" && (
                         <DropdownMenu>
                           <DropdownMenuTrigger>
-                            {/* <Button
-                              className="p-1 rounded-md "
-                              aria-label="Settings"
-                            > */}
-                            <Settings className="w-4 h-4 text-muted-foreground" />
-                            {/* </Button> */}
+                            {privateOperating ? (
+                              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                            ) : (
+                              <Settings className="w-4 h-4 text-muted-foreground" />
+                            )}
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
                               onClick={() =>
                                 handleViewPrivateGateway(server.url)
                               }
+                              disabled={privateOperating}
                               className="cursor-pointer"
                             >
                               <FileText className="w-4 h-4 mr-2" />
                               {dict?.gateway?.viewLogs || "查看日志"}
                             </DropdownMenuItem>
                             <DropdownMenuItem
+                              disabled={privateOperating}
                               onClick={() =>
                                 handleDeletePrivateGateway(
                                   server.id,
