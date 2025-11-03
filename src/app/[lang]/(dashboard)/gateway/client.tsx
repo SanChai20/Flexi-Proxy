@@ -284,9 +284,7 @@ export default function GatewayClient({
             return (
               <Card
                 key={server.id}
-                className={`transition-all duration-200 hover:shadow-lg ${
-                  !available ? "opacity-60" : ""
-                }`}
+                className={"transition-all duration-200 hover:shadow-lg"}
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-2">
