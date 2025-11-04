@@ -340,7 +340,7 @@ export default function GatewayClient({
                   proxyServers.filter((proxy) => proxy.type === "private")
                     .length
                   ? "cursor-pointer hover:border-primary hover:bg-accent/50"
-                  : "opacity-60 cursor-not-allowed"
+                  : "cursor-pointer opacity-60"
               }`}
               onClick={() => {
                 if (
@@ -351,6 +351,8 @@ export default function GatewayClient({
                       .length
                 ) {
                   handleOpenConfigDialog();
+                } else {
+                  router.push("/subscription");
                 }
               }}
             >
