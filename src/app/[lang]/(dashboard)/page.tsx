@@ -48,9 +48,23 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
           <p className="text-muted-foreground mt-2 text-center">{userEmail}</p>
         )}
 
-        <div className="mt-6 px-4 py-2 bg-primary/10 rounded-full">
-          <p className="text-sm font-medium text-primary">
-            {dict?.home?.free || "Free Plan"}
+        <div
+          className={`mt-6 px-4 py-2 rounded-full ${
+            userPermissions.adv
+              ? "bg-gradient-to-r from-purple-500/10 to-pink-500/10"
+              : "bg-primary/10"
+          }`}
+        >
+          <p
+            className={`text-sm font-medium ${
+              userPermissions.adv
+                ? "bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
+                : "text-primary"
+            }`}
+          >
+            {userPermissions.adv
+              ? dict?.home?.pro || "Pro Plan"
+              : dict?.home?.free || "Free Plan"}
           </p>
         </div>
       </div>

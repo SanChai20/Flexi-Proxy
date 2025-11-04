@@ -203,6 +203,7 @@
     "title": "Welcome to FlexiProxy",
     "subtitle": "AI Service Proxy Gateway, Breaking Regional & Pricing Barriers",
     "free": "Free Plan",
+    "pro": "Pro Plan",
     "feature1Title": "Fast & Reliable",
     "feature1Subtitle": "High-performance proxy with low latency and 99.9% uptime",
     "feature2Title": "Secure",
