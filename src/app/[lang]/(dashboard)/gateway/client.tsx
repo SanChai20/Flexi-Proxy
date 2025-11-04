@@ -208,9 +208,10 @@ export default function GatewayClient({
     try {
       setOperatingProxyId(proxyId);
       await deletePrivateProxyInstance(proxyId, subdomainName);
-      router.replace("/gateway?dft=private");
+      router.refresh();
     } catch (error) {
       console.error(error);
+    } finally {
       setOperatingProxyId(null);
     }
   };
@@ -271,7 +272,6 @@ export default function GatewayClient({
         setPrivateCreating(false);
         return;
       }
-
       const [subdomainName, token] = await Promise.all([
         createPrivateProxyInstance(),
         createShortTimeToken(3600),
@@ -280,7 +280,11 @@ export default function GatewayClient({
         setPrivateCreating(false);
         return;
       }
-      router.replace("/gateway?dft=private");
+      router.replace(
+        `/gateway/private?sub=${encodeURIComponent(
+          subdomainName
+        )}&token=${encodeURIComponent(token)}`
+      );
     } catch (error) {
       console.error(error);
       setPrivateCreating(false);
