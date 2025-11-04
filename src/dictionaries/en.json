@@ -95,7 +95,7 @@
     "notAvailable": "Not Available",
     "creating": "Creating gateway...",
     "clickToCreate": "Click to create",
-    "deployment": "Deployment takes about 5 minutes",
+    "deployment": "Deployment takes about 5-15 minutes",
     "configureGateway": "Configure New Gateway",
     "configureDescription": "Select region and country to deploy your private proxy gateway",
     "selectRegion": "Select Region",

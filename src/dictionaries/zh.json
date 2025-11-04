@@ -95,7 +95,7 @@
     "notAvailable": "暂不可用",
     "creating": "创建中...",
     "clickToCreate": "点击创建",
-    "deployment": "部署约耗时5分钟左右",
+    "deployment": "部署耗时约5-15分钟左右",
     "configureGateway": "配置新网关",
     "configureDescription": "选择地域和国家来部署您的私有代理网关",
     "selectRegion": "选择地域",
