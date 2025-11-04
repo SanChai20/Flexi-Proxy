@@ -29,15 +29,14 @@ export default function SubscriptionClient({
     setIsLoading(true);
     try {
       // 订阅 Pro 计划
-      const success = await updateUserPermissions({
-        adv: true,
-        maa: 999999, // 无限令牌
-        mppa: 999999, // 无限私有代理
-      });
-
-      if (success) {
-        router.refresh();
-      }
+      // const success = await updateUserPermissions({
+      //   adv: true,
+      //   maa: 999999, // 无限令牌
+      //   mppa: 999999, // 无限私有代理
+      // });
+      // if (success) {
+      //   router.refresh();
+      // }
     } catch (error) {
       console.error("Subscription error:", error);
     } finally {
@@ -49,15 +48,14 @@ export default function SubscriptionClient({
     setIsLoading(true);
     try {
       // 取消订阅，恢复为 Free 计划
-      const success = await updateUserPermissions({
-        adv: false,
-        maa: 3, // 恢复免费版限制
-        mppa: 1, // 恢复免费版限制
-      });
-
-      if (success) {
-        router.refresh();
-      }
+      // const success = await updateUserPermissions({
+      //   adv: false,
+      //   maa: 3, // 恢复免费版限制
+      //   mppa: 1, // 恢复免费版限制
+      // });
+      // if (success) {
+      //   router.refresh();
+      // }
     } catch (error) {
       console.error("Cancel subscription error:", error);
     } finally {

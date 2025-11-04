@@ -17,12 +17,12 @@ async function SubscriptionContent({ dict }: { dict: any }) {
   return <SubscriptionClient permissions={permissions} dict={dict} />;
 }
 
-export default async function GatewayPage(
+export default async function SubscriptionPage(
   props: PageProps<"/[lang]/subscription">
 ) {
   const { lang } = await props.params;
   const dict = await getTrans(lang as Locale);
-  const { dft } = await props.searchParams;
+
   return (
     <section className="w-full max-w-4xl mx-auto overflow-x-auto px-0 select-none">
       <Suspense fallback={<SubscriptionSkeleton dict={dict} />}>
