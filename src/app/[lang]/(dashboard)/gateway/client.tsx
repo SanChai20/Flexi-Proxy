@@ -207,6 +207,7 @@ export default function GatewayClient({
     try {
       setPrivateOperating(true);
       await deletePrivateProxyInstance(proxyId, subdomainName);
+
       router.refresh();
     } catch (error) {
       console.error(error);

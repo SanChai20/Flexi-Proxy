@@ -172,7 +172,7 @@ export default function GatewayPrivateClient({
                 logs.map((log) => (
                   <div
                     key={log.id}
-                    className="flex gap-3 py-1 px-2 hover:bg-muted/50 rounded group"
+                    className="flex gap-3 py-1 px-2 rounded group"
                   >
                     <span className="break-all flex-1">{log.content}</span>
                   </div>
