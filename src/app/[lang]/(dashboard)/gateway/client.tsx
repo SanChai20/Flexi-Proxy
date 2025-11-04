@@ -247,25 +247,6 @@ export default function GatewayClient({
     }
   };
 
-  // const handleCheckPrivateGateway = async (proxy: {
-  //   url: string;
-  //   status: string;
-  //   id: string;
-  //   type: string;
-  // }) => {
-  //   try {
-  //     setOperatingProxyId(proxy.id);
-  //     const result = await checkProxyServerHealth(proxy);
-  //     proxyServers = proxyServers.map((item) =>
-  //       item.id === proxy.id ? { ...item, ...result } : item
-  //     );
-  //   } catch (error) {
-  //     console.error(error);
-  //   } finally {
-  //     setOperatingProxyId(null);
-  //   }
-  // };
-
   const handleOpenConfigDialog = () => {
     setShowConfigDialog(true);
   };
