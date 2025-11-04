@@ -390,7 +390,7 @@ export default function GatewayClient({
                 <div className="flex flex-col items-center justify-center py-4 gap-3">
                   {privateCreating ? (
                     <>
-                      <Loader2 className="w-12 h-12 text-primary animate-spin" />
+                      <Loader2 className="w-4 h-4 text-primary animate-spin" />
                       <p className="text-sm text-muted-foreground">
                         {dict?.gateway?.creating || "Creating gateway..."}
                       </p>

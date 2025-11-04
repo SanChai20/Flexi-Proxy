@@ -35,7 +35,7 @@ async function GatewayContent({ dict, type }: { dict: any; type: string }) {
       dict={dict}
       proxyServers={[...publicChecks, ...privateChecks]}
       userTokenCount={userAccessTokenCount}
-      gatewayType={type}
+      defaultGatewayType={type}
     />
   );
 }
