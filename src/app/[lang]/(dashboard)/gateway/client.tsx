@@ -332,7 +332,15 @@ export default function GatewayClient({
           {/* Add Card for Private Gateway - Always visible when in private mode */}
           {gatewayType === "private" && (
             <Card
-              className="transition-all duration-200 hover:shadow-lg border-dashed border-2 cursor-pointer hover:border-primary hover:bg-accent/50"
+              className={`transition-all duration-200 hover:shadow-lg border-dashed border-2 ${
+                !privateCreating &&
+                permissions.adv &&
+                permissions.mppa >
+                  allProxyServers.filter((proxy) => proxy.type === "private")
+                    .length
+                  ? "cursor-pointer hover:border-primary hover:bg-accent/50"
+                  : "opacity-60 cursor-not-allowed"
+              }`}
               onClick={() => {
                 if (
                   !privateCreating &&
@@ -346,18 +354,19 @@ export default function GatewayClient({
               }}
             >
               <CardHeader className="pb-3">
-                {/* <div className="flex items-center justify-center gap-2 min-w-0 flex-1">
-
-                </div> */}
-              </CardHeader>
-
-              <CardContent className="space-y-4">
-                <div className="text-center text-sm text-muted-foreground py-8">
-                  <p>
-                    {dict?.gateway?.clickToCreate ||
-                      "Click to create a new private proxy gateway"}
-                  </p>
-                  <p className="mt-2 text-xs">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <CardTitle className="text-lg font-semibold">
+                      {dict?.gateway?.createNew || "Create New Gateway"}
+                    </CardTitle>
+                  </div>
+                  <span
+                    className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors ${
+                      permissions.adv
+                        ? "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-700"
+                        : "bg-gray-100 text-gray-800 border-gray-300 dark:bg-gray-900/30 dark:text-gray-400 dark:border-gray-700"
+                    }`}
+                  >
                     {permissions.adv
                       ? `${
                           allProxyServers.filter(
@@ -365,7 +374,50 @@ export default function GatewayClient({
                           ).length
                         } / ${permissions.mppa}`
                       : dict?.gateway?.notAvailable || "Not Available"}
-                  </p>
+                  </span>
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {permissions.adv
+                    ? dict?.gateway?.createDescription ||
+                      "Click to create a new private proxy gateway"
+                    : dict?.gateway?.upgradeRequired ||
+                      "Upgrade required to create private gateways"}
+                </div>
+              </CardHeader>
+
+              <CardContent className="space-y-4">
+                <div className="flex flex-col items-center justify-center py-4 gap-3">
+                  {privateCreating ? (
+                    <>
+                      <Loader2 className="w-12 h-12 text-primary animate-spin" />
+                      <p className="text-sm text-muted-foreground">
+                        {dict?.gateway?.creating || "Creating gateway..."}
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-blue-500/20 blur-xl rounded-full" />
+                        <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-primary to-blue-500 flex items-center justify-center">
+                          <Plus className="w-8 h-8 text-white" />
+                        </div>
+                      </div>
+                      <div className="text-center space-y-1">
+                        <p className="text-sm font-medium">
+                          {permissions.adv
+                            ? dict?.gateway?.clickToCreate || "Click to create"
+                            : dict?.gateway?.notAvailable || "Not Available"}
+                        </p>
+                        <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                          <Zap className="w-3 h-3" />
+                          <span>
+                            {dict?.gateway?.instantDeploy ||
+                              "Instant deployment"}
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -380,7 +432,7 @@ export default function GatewayClient({
             return (
               <Card
                 key={server.id}
-                className={"transition-all duration-200 hover:shadow-lg"}
+                className="transition-all duration-200 hover:shadow-lg flex flex-col"
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between gap-2">
@@ -480,7 +532,7 @@ export default function GatewayClient({
                   </div>
                 </CardHeader>
 
-                <CardContent className="space-y-4">
+                <CardContent className="flex-1 flex flex-col justify-end space-y-4">
                   {/* Health Check & Response Time */}
                   <div className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-2 text-muted-foreground">
