@@ -13,7 +13,7 @@ import { symmetricEncrypt } from "./encryption";
 import { jwtSign } from "./jwt";
 import { redis } from "./redis";
 import { auth } from "@/auth";
-import { revalidateTag, unstable_cache } from "next/cache";
+import { revalidateTag, revalidatePath, unstable_cache } from "next/cache";
 
 import { ec2 } from "./aws";
 
@@ -1067,8 +1067,6 @@ echo "===============Deployment Success=============="
       );
       await transaction.exec();
 
-      revalidateTag(`private-proxies:${session.user.id}`);
-
       return randomGatewaySubDomain;
     }
   } catch (error) {
@@ -1125,9 +1123,15 @@ export async function deletePrivateProxyInstance(
 
     let terminationSuccess = false;
     try {
-      const response = await ec2.send(terminateCommand);
+      const [subDomainDeleteResult, proxyDeleteResult, TerminateResponse] =
+        await Promise.all([
+          redis.del(subdomainInstanceRedisKey),
+          redis.del(proxyRedisKey),
+          ec2.send(terminateCommand),
+        ]);
+
       terminationSuccess =
-        response?.TerminatingInstances?.some(
+        TerminateResponse?.TerminatingInstances?.some(
           (instance) => instance.InstanceId === instanceId
         ) ?? false;
 
@@ -1152,10 +1156,7 @@ export async function deletePrivateProxyInstance(
         },
       });
 
-      const cleanupPromises: Promise<unknown>[] = [
-        redis.del(subdomainInstanceRedisKey),
-        redis.del(proxyRedisKey),
-      ];
+      const cleanupPromises: Promise<unknown>[] = [];
       if (records.result.length > 0) {
         const dnsDeletePromises = records.result.map((record) =>
           cloudflare.dns.records
@@ -1171,9 +1172,6 @@ export async function deletePrivateProxyInstance(
         console.warn(`No DNS records found for subdomain: ${subdomain}`);
       }
       await Promise.all(cleanupPromises);
-
-      revalidateTag(`private-proxies:${session.user.id}`);
-
       return true;
     } catch (cleanupError) {
       console.error("Cleanup error (DNS/Redis):", {
