@@ -31,7 +31,7 @@ import {
   createShortTimeToken,
   deletePrivateProxyInstance,
 } from "@/lib/actions";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   DropdownMenu,
@@ -208,7 +208,7 @@ export default function GatewayClient({
     try {
       setOperatingProxyId(proxyId);
       await deletePrivateProxyInstance(proxyId, subdomainName);
-      router.push("/gateway?gtwType=private");
+      router.replace("/gateway?dft=private");
     } catch (error) {
       console.error(error);
       setOperatingProxyId(null);
@@ -280,7 +280,7 @@ export default function GatewayClient({
         setPrivateCreating(false);
         return;
       }
-      router.push("/gateway?gtwType=private");
+      router.replace("/gateway?dft=private");
     } catch (error) {
       console.error(error);
       setPrivateCreating(false);

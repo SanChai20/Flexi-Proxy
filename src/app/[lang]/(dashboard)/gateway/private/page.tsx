@@ -18,12 +18,12 @@ export default async function GatewayPrivatePage(
   const { sub, token } = await props.searchParams;
 
   if (typeof sub !== "string" || typeof token !== "string") {
-    redirect(`/${lang}/gateway?gtwType=public`);
+    redirect(`/${lang}/gateway?dft=public`);
   }
 
   const isValid = await verifyShortTimeToken(token);
   if (!isValid) {
-    redirect(`/${lang}/gateway?gtwType=public`);
+    redirect(`/${lang}/gateway?dft=public`);
   }
 
   const dict = await getTrans(lang as Locale);

@@ -44,7 +44,7 @@ export default function Unauthorized({
         {/* 按钮 */}
         <div className="flex justify-center mt-8">
           <button
-            onClick={() => router.push("/login")}
+            onClick={async () => router.push("/login")}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-md font-medium transition-colors bg-primary text-primary-foreground hover:opacity-90"
           >
             {dict.unauthorized.retry || "Retry"}

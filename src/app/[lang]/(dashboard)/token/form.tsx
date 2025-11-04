@@ -22,7 +22,7 @@ import {
   ChevronDown,
   Server,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
@@ -85,7 +85,6 @@ export function AdapterForm({
   dict,
   proxies,
   providers,
-
   version,
   defaultValues,
   initProxyId,
@@ -216,7 +215,7 @@ export function AdapterForm({
         }
       }
     },
-    [router, version, defaultValues, initProxyId]
+    [version, defaultValues, initProxyId]
   );
 
   return (
@@ -797,7 +796,7 @@ export function DeleteAdapterDropdownForm({
       const formData = new FormData(e.currentTarget);
       const canRefresh = await deleteAdapterAction(formData);
       if (canRefresh) {
-        router.refresh();
+        router.push("/token");
       }
     } catch (error) {
       console.error("Delete adapter error:", error);
