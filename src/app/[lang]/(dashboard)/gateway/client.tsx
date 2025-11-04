@@ -396,10 +396,7 @@ export default function GatewayClient({
                   ) : (
                     <>
                       <div className="relative">
-                        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-blue-500/20 blur-xl rounded-full" />
-                        <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-primary to-blue-500 flex items-center justify-center">
-                          <Plus className="w-8 h-8 text-white" />
-                        </div>
+                        <Plus className="w-4 h-4" />
                       </div>
                       <div className="text-center space-y-1">
                         <p className="text-sm font-medium">

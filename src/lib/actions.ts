@@ -1066,6 +1066,9 @@ echo "===============Deployment Success=============="
         response.Instances[0].InstanceId
       );
       await transaction.exec();
+
+      revalidateTag(`private-proxies:${session.user.id}`);
+
       return randomGatewaySubDomain;
     }
   } catch (error) {
@@ -1168,6 +1171,9 @@ export async function deletePrivateProxyInstance(
         console.warn(`No DNS records found for subdomain: ${subdomain}`);
       }
       await Promise.all(cleanupPromises);
+
+      revalidateTag(`private-proxies:${session.user.id}`);
+
       return true;
     } catch (cleanupError) {
       console.error("Cleanup error (DNS/Redis):", {
