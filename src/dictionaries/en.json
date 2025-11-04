@@ -156,7 +156,7 @@
     "apiKeyTip": "It will be used for requests only and will be securely managed.",
     "tokenPass": "Token Pass",
     "modelId": "Model ID",
-    "modelIdOptionsTip": "Use any model ID from your provider (e.g., `gpt-4`, `deepseek-chat`). Follow the format shown - you're not limited to listed options. See provider docs for available models.",
+    "modelIdOptionsTip": "Use any model ID from your provider. Follow the format shown - you're not limited to listed options. See provider docs for available models.",
     "providerOptions": "Provider",
     "providerOptionsTip": "E.g. Anthropic, Deepseek, OpenRouter etc.",
     "proxy": "Proxy Gateway",
