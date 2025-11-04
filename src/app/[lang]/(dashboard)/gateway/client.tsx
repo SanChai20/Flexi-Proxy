@@ -382,10 +382,21 @@ export default function GatewayClient({
                 <div className="flex flex-col items-center justify-center py-4 gap-3">
                   {privateCreating ? (
                     <>
-                      <Loader2 className="w-4 h-4 text-primary animate-spin" />
-                      <p className="text-sm text-muted-foreground">
-                        {dict?.gateway?.creating || "Creating gateway..."}
-                      </p>
+                      <div className="relative">
+                        <Loader2 className="w-4 h-4 text-primary animate-spin" />
+                      </div>
+                      <div className="text-center space-y-1">
+                        <p className="text-sm font-medium">
+                          {dict?.gateway?.creating || "Creating gateway..."}
+                        </p>
+                        <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                          <Zap className="w-3 h-3" />
+                          <span>
+                            {dict?.gateway?.instantDeploy ||
+                              "Instant deployment"}
+                          </span>
+                        </div>
+                      </div>
                     </>
                   ) : (
                     <>
