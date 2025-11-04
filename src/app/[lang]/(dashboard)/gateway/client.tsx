@@ -90,7 +90,11 @@ export default function GatewayClient({
       type: string;
       error?: string | undefined;
     }[]
-  >([]);
+  >(
+    proxyServers.filter(
+      (server) => (server.type || "public") === defaultGatewayType
+    )
+  );
 
   useEffect(() => {
     setFilteredServers(
@@ -588,18 +592,6 @@ export default function GatewayClient({
             );
           })}
         </div>
-
-        {/* Empty State - Only for public gateways */}
-        {filteredServers.length === 0 && gatewayType === "public" && (
-          <Card className="p-12">
-            <div className="text-center text-muted-foreground">
-              <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p className="text-lg mb-4">
-                {dict?.gateway?.noServers || "No proxy servers available"}
-              </p>
-            </div>
-          </Card>
-        )}
       </div>
     </>
   );
