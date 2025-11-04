@@ -28,7 +28,7 @@ export default function GatewaySkeleton({ dict }: { dict: any }) {
 
       {/* Gateway Cards Grid Skeleton */}
       <div className="mt-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           {/* Generate 6 skeleton cards */}
           {Array.from({ length: 6 }).map((_, index) => (
             <Card key={index} className="transition-all duration-200">

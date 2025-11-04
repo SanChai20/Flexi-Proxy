@@ -398,7 +398,7 @@ export default function GatewayClient({
                   ) : (
                     <>
                       <div className="relative">
-                        <Plus className="w-4 h-4" />
+                        <Plus className="w-4 h-4 text-muted-foreground/50" />
                       </div>
                       <div className="text-center space-y-1">
                         <p className="text-sm font-medium">
