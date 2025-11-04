@@ -56,7 +56,8 @@
     "faq": "常见问题",
     "home": "主页",
     "gateway": "代理网关",
-    "private": "私服"
+    "private": "私服",
+    "subscription": "订阅计划"
   },
   "documentation": {
     "title": "关于 FlexiProxy",
@@ -104,6 +105,40 @@
     "countryPlaceholder": "请选择国家",
     "confirmCreate": "确认创建",
     "cancel": "取消"
+  },
+  "subscription": {
+    "title": "订阅计划",
+    "subtitle": "选择适合您的计划",
+    "free": {
+      "name": "免费版",
+      "price": "¥0",
+      "period": "/月",
+      "description": "适合个人用户和小型项目",
+      "features": [
+        "最多 3 个通行令牌",
+        "最多 1 个私有代理",
+        "基础支持",
+        "社区访问"
+      ],
+      "button": "当前计划"
+    },
+    "pro": {
+      "name": "专业版",
+      "price": "¥99",
+      "period": "/月",
+      "description": "适合专业开发者和团队",
+      "features": [
+        "无限通行令牌",
+        "无限私有代理",
+        "优先支持",
+        "高级功能访问",
+        "定制化配置"
+      ],
+      "button": "订阅专业版",
+      "buttonCancel": "取消订阅"
+    },
+    "currentPlan": "当前计划",
+    "popular": "推荐"
   },
   "token": {
     "providerPage": "config/providers.json",

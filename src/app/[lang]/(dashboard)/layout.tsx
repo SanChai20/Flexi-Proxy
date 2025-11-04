@@ -8,6 +8,7 @@ import {
   MessageCircleQuestionMark,
   PanelLeft,
   Settings,
+  ShoppingBag,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -90,6 +91,13 @@ function DesktopNav({ dict }: { dict: any }) {
           <BookText className="h-5 w-5" />
         </NavItem>
 
+        <NavItem
+          href="/subscription"
+          label={dict["navigation"]["subscription"]}
+        >
+          <ShoppingBag className="h-5 w-5" />
+        </NavItem>
+
         <NavItem href="/faq" label={dict["navigation"]["faq"]}>
           <MessageCircleQuestionMark className="h-5 w-5" />
         </NavItem>
@@ -158,6 +166,13 @@ function MobileNav({ dict }: { dict: any }) {
           >
             <BookText className="h-5 w-5" />
             {dict["navigation"]["documentation"]}
+          </Link>
+          <Link
+            href="/subscription"
+            className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+          >
+            <ShoppingBag className="h-5 w-5" />
+            {dict["navigation"]["subscription"]}
           </Link>
           <Link
             href="/faq"

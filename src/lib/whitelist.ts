@@ -15,6 +15,7 @@ export const i18nRouteWhitelist = [
   "faq",
   "gateway",
   "gateway/private",
+  "subscription",
 ];
 // page route that needs verification check first
 export const protectedRouteList = [
@@ -24,6 +25,7 @@ export const protectedRouteList = [
   "settings",
   "faq",
   "gateway",
+  "subscription",
 ];
 // page route that belongs dashboard
 export const dashboardRouteWhitelist = [
@@ -34,4 +36,5 @@ export const dashboardRouteWhitelist = [
   "token",
   "faq",
   "gateway",
+  "subscription",
 ];

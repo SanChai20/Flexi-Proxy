@@ -56,7 +56,8 @@
     "faq": "FAQ",
     "home": "Home",
     "gateway": "Gateway",
-    "private": "Private Scope"
+    "private": "Private Scope",
+    "subscription": "Subscription Plans"
   },
   "documentation": {
     "title": "About FlexiProxy",
@@ -67,6 +68,40 @@
     "title": "Frequently Asked Questions",
     "subtitle": "We've compiled answers to common questions about our service",
     "faqPage": "docs/en/FAQ.md"
+  },
+  "subscription": {
+    "title": "Subscription Plans",
+    "subtitle": "Choose the plan that's right for you",
+    "free": {
+      "name": "Free Plan",
+      "price": "$0",
+      "period": "/month",
+      "description": "Perfect for individuals and small projects",
+      "features": [
+        "Up to 3 access tokens",
+        "Up to 1 private proxy",
+        "Basic support",
+        "Community access"
+      ],
+      "button": "Current Plan"
+    },
+    "pro": {
+      "name": "Pro Plan",
+      "price": "$15",
+      "period": "/month",
+      "description": "For professional developers and teams",
+      "features": [
+        "Unlimited access tokens",
+        "Unlimited private proxies",
+        "Priority support",
+        "Advanced features",
+        "Custom configurations"
+      ],
+      "button": "Subscribe to Pro",
+      "buttonCancel": "Cancel Subscription"
+    },
+    "currentPlan": "Current Plan",
+    "popular": "Popular"
   },
   "gateway": {
     "title": "Proxy Gateways",

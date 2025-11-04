@@ -8,7 +8,7 @@ import { Metadata } from "next";
 import GatewayPrivateClient from "./client";
 
 export const metadata: Metadata = {
-  title: "FlexiProxy - Gateways",
+  title: "FlexiProxy - Private Gateways",
 };
 
 export default async function GatewayPrivatePage(
