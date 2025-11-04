@@ -9,15 +9,20 @@ import {
 } from "@/components/ui/card";
 import { getTrans } from "@/lib/dictionary";
 import { UserIcon } from "@/components/ui/icons";
+import { getCachedUserPermissions } from "@/lib/actions";
 
 export default async function HomePage(props: PageProps<"/[lang]">) {
-  const session = await auth();
+  const { lang } = await props.params;
+  const [session, dict, userPermissions] = await Promise.all([
+    auth(),
+    getTrans(lang as Locale),
+    getCachedUserPermissions(),
+  ]);
+
   let userName =
     session?.user?.name || session?.user?.email?.split("@")[0] || "User";
   let userAvatar = session?.user?.image;
   let userEmail = session?.user?.email;
-  const { lang } = await props.params;
-  const dict = await getTrans(lang as Locale);
 
   return (
     <section className="w-full max-w-4xl mx-auto overflow-x-auto px-4 py-8 select-none">
