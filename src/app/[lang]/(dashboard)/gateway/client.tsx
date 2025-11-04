@@ -39,6 +39,21 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface GatewayClientProps {
   dict: any;
@@ -68,6 +83,8 @@ export default function GatewayClient({
   const [privateCreating, setPrivateCreating] = useState<boolean>(false);
   const [loadingProxyId, setLoadingProxyId] = useState<string | null>(null);
   const [gatewayType, setGatewayType] = useState<string>(defaultGatewayType);
+  const [showConfigDialog, setShowConfigDialog] = useState<boolean>(false);
+  const [selectedRegion, setSelectedRegion] = useState<string>("");
 
   const [filteredServers, setFilteredServers] = useState<
     {
@@ -249,7 +266,12 @@ export default function GatewayClient({
     }
   };
 
-  const handleCreatePrivateGateway = async () => {
+  const handleOpenConfigDialog = () => {
+    setShowConfigDialog(true);
+  };
+
+  const handleConfirmCreate = async () => {
+    setShowConfigDialog(false);
     try {
       setPrivateCreating(true);
       if (
@@ -278,6 +300,11 @@ export default function GatewayClient({
       setPrivateCreating(false);
     }
   };
+
+  // Currently only supports us-east-2
+  const regionOptions = [
+    { value: "us-east-2", label: formatLocation("us", "east") + " 2" },
+  ];
 
   return (
     <>
@@ -342,7 +369,7 @@ export default function GatewayClient({
                     proxyServers.filter((proxy) => proxy.type === "private")
                       .length
                 ) {
-                  handleCreatePrivateGateway();
+                  handleOpenConfigDialog();
                 }
               }}
             >
@@ -392,8 +419,8 @@ export default function GatewayClient({
                         <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
                           <Zap className="w-3 h-3" />
                           <span>
-                            {dict?.gateway?.instantDeploy ||
-                              "Instant deployment"}
+                            {dict?.gateway?.deployment ||
+                              "Deployment takes about 5 minutes"}
                           </span>
                         </div>
                       </div>
@@ -412,8 +439,8 @@ export default function GatewayClient({
                         <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
                           <Zap className="w-3 h-3" />
                           <span>
-                            {dict?.gateway?.instantDeploy ||
-                              "Instant deployment"}
+                            {dict?.gateway?.deployment ||
+                              "Deployment takes about 5 minutes"}
                           </span>
                         </div>
                       </div>
@@ -588,6 +615,87 @@ export default function GatewayClient({
           })}
         </div>
       </div>
+
+      {/* Configuration Dialog */}
+      <Dialog open={showConfigDialog} onOpenChange={setShowConfigDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold flex items-center gap-2">
+              <Globe className="w-5 h-5 text-primary" />
+              {dict?.gateway?.configureGateway || "Configure New Gateway"}
+            </DialogTitle>
+            <DialogDescription className="text-base">
+              {dict?.gateway?.configureDescription ||
+                "Select region and country to deploy your private proxy gateway"}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6 py-4">
+            {/* Region Selection */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                {dict?.gateway?.selectRegion || "Select Region"}
+              </label>
+              <Select value={selectedRegion} onValueChange={setSelectedRegion}>
+                <SelectTrigger className="w-full">
+                  <SelectValue
+                    placeholder={
+                      dict?.gateway?.regionPlaceholder || "Choose a region"
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {regionOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      <div className="flex items-center gap-2">
+                        <Globe className="w-4 h-4 text-muted-foreground" />
+                        <span>{option.label}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Preview */}
+            {selectedRegion && (
+              <div className="rounded-lg border bg-muted/50 p-4">
+                <div className="flex items-center gap-2 text-sm">
+                  <Zap className="w-4 h-4 text-primary" />
+                  <span className="font-medium">
+                    {dict?.gateway?.deployment ||
+                      "Deployment takes about 5 minutes"}
+                  </span>
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">
+                  {regionOptions.find((r) => r.value === selectedRegion)?.label}
+                </p>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowConfigDialog(false);
+                setSelectedRegion("");
+              }}
+            >
+              {dict?.gateway?.cancel || "Cancel"}
+            </Button>
+            <Button
+              onClick={handleConfirmCreate}
+              disabled={!selectedRegion}
+              className="gap-2"
+            >
+              <Zap className="w-4 h-4" />
+              {dict?.gateway?.confirmCreate || "Confirm & Create"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
