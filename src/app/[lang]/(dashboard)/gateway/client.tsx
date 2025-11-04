@@ -68,17 +68,6 @@ export default function GatewayClient({
   const [privateCreating, setPrivateCreating] = useState<boolean>(false);
   const [loadingProxyId, setLoadingProxyId] = useState<string | null>(null);
   const [gatewayType, setGatewayType] = useState<string>(defaultGatewayType);
-  const [allProxyServers, setAllProxyServers] = useState<
-    {
-      url: string;
-      status: string;
-      id: string;
-      isHealthy: boolean;
-      responseTime: number | undefined;
-      type: string;
-      error?: string | undefined;
-    }[]
-  >(proxyServers);
 
   const [filteredServers, setFilteredServers] = useState<
     {
@@ -98,11 +87,9 @@ export default function GatewayClient({
 
   useEffect(() => {
     setFilteredServers(
-      allProxyServers.filter(
-        (server) => (server.type || "public") === gatewayType
-      )
+      proxyServers.filter((server) => (server.type || "public") === gatewayType)
     );
-  }, [allProxyServers, gatewayType]);
+  }, [proxyServers, gatewayType]);
 
   const parseGatewayLocation = (id: string) => {
     // Format: gateway-xx-yy-zz
@@ -174,7 +161,7 @@ export default function GatewayClient({
     return texts[status.toLowerCase()] || status;
   };
 
-  const isServerAvailable = (server: (typeof allProxyServers)[0]) => {
+  const isServerAvailable = (server: (typeof proxyServers)[0]) => {
     if (userTokenCount >= permissions.maa) {
       return false;
     }
@@ -253,11 +240,9 @@ export default function GatewayClient({
     try {
       setOperatingProxyId(proxy.id);
       const result = await checkProxyServerHealth(proxy);
-      setAllProxyServers((prev) => {
-        return prev.map((item) =>
-          item.id === result.id ? { ...item, ...result } : item
-        );
-      });
+      proxyServers = proxyServers.map((item) =>
+        item.id === proxy.id ? { ...item, ...result } : item
+      );
     } catch (error) {
       console.error(error);
     } finally {
@@ -271,7 +256,7 @@ export default function GatewayClient({
       if (
         !permissions.adv ||
         permissions.mppa <=
-          allProxyServers.filter((proxy) => proxy.type === "private").length
+          proxyServers.filter((proxy) => proxy.type === "private").length
       ) {
         setPrivateCreating(false);
         return;
@@ -345,7 +330,7 @@ export default function GatewayClient({
                 !privateCreating &&
                 permissions.adv &&
                 permissions.mppa >
-                  allProxyServers.filter((proxy) => proxy.type === "private")
+                  proxyServers.filter((proxy) => proxy.type === "private")
                     .length
                   ? "cursor-pointer hover:border-primary hover:bg-accent/50"
                   : "opacity-60 cursor-not-allowed"
@@ -355,7 +340,7 @@ export default function GatewayClient({
                   !privateCreating &&
                   permissions.adv &&
                   permissions.mppa >
-                    allProxyServers.filter((proxy) => proxy.type === "private")
+                    proxyServers.filter((proxy) => proxy.type === "private")
                       .length
                 ) {
                   handleCreatePrivateGateway();
@@ -378,7 +363,7 @@ export default function GatewayClient({
                   >
                     {permissions.adv
                       ? `${
-                          allProxyServers.filter(
+                          proxyServers.filter(
                             (proxy) => proxy.type === "private"
                           ).length
                         } / ${permissions.mppa}`
