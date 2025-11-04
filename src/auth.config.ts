@@ -222,7 +222,7 @@ const providers: Provider[] = [
           from,
           to,
           subject: `Sign in to ${host}`,
-          html: html({ url: encodeURI(url), host, theme }),
+          html: html({ url: url, host, theme }),
           text: text({ url, host }),
         }),
       });
