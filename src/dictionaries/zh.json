@@ -87,7 +87,14 @@
     "logsUnavailable": "无日志",
     "viewLogs": "查看启动日志",
     "deleteProxy": "删除代理",
-    "healthCheck": "健康检查"
+    "healthCheck": "健康检查",
+    "createNew": "创建新网关",
+    "createDescription": "点击创建新的私有代理网关",
+    "upgradeRequired": "需要先进行付费订阅才可创建私有代理",
+    "notAvailable": "不可用",
+    "creating": "创建中...",
+    "clickToCreate": "点击创建",
+    "instantDeploy": "即时部署"
   },
   "token": {
     "providerPage": "config/providers.json",

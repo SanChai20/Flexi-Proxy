@@ -87,7 +87,14 @@
     "logsUnavailable": "No logs available",
     "viewLogs": "View Startup Logs",
     "deleteProxy": "Delete Proxy Server",
-    "healthCheck": "Health Check"
+    "healthCheck": "Health Check",
+    "createNew": "Create New Gateway",
+    "createDescription": "Click to create a new private proxy gateway",
+    "upgradeRequired": "Upgrade required to create private gateways",
+    "notAvailable": "Not Available",
+    "creating": "Creating gateway...",
+    "clickToCreate": "Click to create",
+    "instantDeploy": "Instant deployment"
   },
   "token": {
     "providerPage": "config/providers.json",

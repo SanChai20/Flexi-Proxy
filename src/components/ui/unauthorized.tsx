@@ -19,14 +19,12 @@ export default function Unauthorized({
   return (
     <div className="flex items-center justify-center min-h-screen p-4 bg-background">
       <div className="w-full max-w-md p-10 rounded-lg border bg-card text-card-foreground shadow-md text-center">
-        {/* 图标 */}
         <div className="flex justify-center mb-8">
           <div className="w-16 h-16 flex items-center justify-center rounded-full bg-muted text-muted-foreground">
             <LockIcon />
           </div>
         </div>
 
-        {/* 文本 */}
         <div className="mb-8">
           <h1 className="text-2xl font-semibold mb-3">
             {dict.unauthorized.title || "Unauthorized Access"}
@@ -41,7 +39,6 @@ export default function Unauthorized({
           </p>
         </div>
 
-        {/* 按钮 */}
         <div className="flex justify-center mt-8">
           <button
             onClick={async () => router.push("/login")}
