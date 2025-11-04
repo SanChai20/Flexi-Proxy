@@ -10,6 +10,7 @@ import {
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { RefreshCw, Download } from "lucide-react";
 import { fetchConsoleLogs } from "@/lib/actions";
 import { useState, useEffect, useRef } from "react";
@@ -87,7 +88,7 @@ export default function GatewayPrivateClient({
       fetchLogs();
     }
 
-    const interval = setInterval(fetchLogs, 15000);
+    const interval = setInterval(fetchLogs, 30000);
     return () => clearInterval(interval);
   }, [sub]);
 
@@ -127,8 +128,11 @@ export default function GatewayPrivateClient({
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="flex items-center">
+              <CardTitle className="flex items-center gap-2">
                 {dict?.gateway?.startLogs || "Startup logs"}
+                <Badge variant="secondary" className="text-xs font-normal">
+                  {dict?.gateway?.autoRefresh || "Auto-refresh: 30s"}
+                </Badge>
               </CardTitle>
               <CardDescription className="mt-1">{sub}</CardDescription>
             </div>
