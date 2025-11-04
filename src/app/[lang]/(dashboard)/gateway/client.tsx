@@ -203,11 +203,9 @@ export default function GatewayClient({
     if (subdomainName.startsWith("https://")) {
       subdomainName = subdomainName.substring(8);
     }
-
     try {
       setOperatingProxyId(proxyId);
       await deletePrivateProxyInstance(proxyId, subdomainName);
-
       router.refresh();
     } catch (error) {
       console.error(error);
@@ -277,6 +275,7 @@ export default function GatewayClient({
         createShortTimeToken(3600),
       ]);
       if (subdomainName === undefined) {
+        setPrivateCreating(false);
         return;
       }
       router.refresh();
