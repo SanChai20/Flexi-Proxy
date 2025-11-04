@@ -62,7 +62,7 @@ export default function GatewayClient({
   proxyServers,
 }: GatewayClientProps) {
   const router = useRouter();
-  const [privateOperating, setPrivateOperating] = useState<boolean>(false);
+  const [operatingProxyId, setOperatingProxyId] = useState<string | null>(null);
   const [privateCreating, setPrivateCreating] = useState<boolean>(false);
   const [loadingProxyId, setLoadingProxyId] = useState<string | null>(null);
   const [gatewayType, setGatewayType] = useState<string>("public");
@@ -205,17 +205,20 @@ export default function GatewayClient({
     }
 
     try {
-      setPrivateOperating(true);
+      setOperatingProxyId(proxyId);
       await deletePrivateProxyInstance(proxyId, subdomainName);
 
       router.refresh();
     } catch (error) {
       console.error(error);
-      setPrivateOperating(false);
+      setOperatingProxyId(null);
     }
   };
 
-  const handleViewPrivateGateway = async (subdomainName: string) => {
+  const handleViewPrivateGateway = async (
+    proxyId: string,
+    subdomainName: string
+  ) => {
     if (subdomainName === undefined) {
       return;
     }
@@ -223,7 +226,7 @@ export default function GatewayClient({
       subdomainName = subdomainName.substring(8);
     }
     try {
-      setPrivateOperating(true);
+      setOperatingProxyId(proxyId);
       const token = await createShortTimeToken(3600);
       router.push(
         `/gateway/private?sub=${encodeURIComponent(
@@ -232,7 +235,7 @@ export default function GatewayClient({
       );
     } catch (error) {
       console.error(error);
-      setPrivateOperating(false);
+      setOperatingProxyId(null);
     }
   };
 
@@ -243,7 +246,7 @@ export default function GatewayClient({
     type: string;
   }) => {
     try {
-      setPrivateOperating(true);
+      setOperatingProxyId(proxy.id);
       const result = await checkProxyServerHealth(proxy);
       setAllProxyServers((prev) => {
         return prev.map((item) =>
@@ -253,7 +256,7 @@ export default function GatewayClient({
     } catch (error) {
       console.error(error);
     } finally {
-      setPrivateOperating(false);
+      setOperatingProxyId(null);
     }
   };
 
@@ -326,6 +329,48 @@ export default function GatewayClient({
 
       <div className="mt-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          {/* Add Card for Private Gateway - Always visible when in private mode */}
+          {gatewayType === "private" && (
+            <Card
+              className="transition-all duration-200 hover:shadow-lg border-dashed border-2 cursor-pointer hover:border-primary hover:bg-accent/50"
+              onClick={() => {
+                if (
+                  !privateCreating &&
+                  permissions.adv &&
+                  permissions.mppa >
+                    allProxyServers.filter((proxy) => proxy.type === "private")
+                      .length
+                ) {
+                  handleCreatePrivateGateway();
+                }
+              }}
+            >
+              <CardHeader className="pb-3">
+                {/* <div className="flex items-center justify-center gap-2 min-w-0 flex-1">
+
+                </div> */}
+              </CardHeader>
+
+              <CardContent className="space-y-4">
+                <div className="text-center text-sm text-muted-foreground py-8">
+                  <p>
+                    {dict?.gateway?.clickToCreate ||
+                      "Click to create a new private proxy gateway"}
+                  </p>
+                  <p className="mt-2 text-xs">
+                    {permissions.adv
+                      ? `${
+                          allProxyServers.filter(
+                            (proxy) => proxy.type === "private"
+                          ).length
+                        } / ${permissions.mppa}`
+                      : dict?.gateway?.notAvailable || "Not Available"}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {filteredServers.map((server) => {
             const available = isServerAvailable(server);
             const isLoading = loadingProxyId === server.id;
@@ -374,7 +419,7 @@ export default function GatewayClient({
                       {gatewayType === "private" && (
                         <DropdownMenu>
                           <DropdownMenuTrigger>
-                            {privateOperating ? (
+                            {operatingProxyId === server.id ? (
                               <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                             ) : (
                               <Settings className="w-4 h-4 text-muted-foreground" />
@@ -383,9 +428,9 @@ export default function GatewayClient({
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
                               onClick={() =>
-                                handleViewPrivateGateway(server.url)
+                                handleViewPrivateGateway(server.id, server.url)
                               }
-                              disabled={privateOperating}
+                              disabled={operatingProxyId === server.id}
                               className="cursor-pointer"
                             >
                               <FileText className="w-4 h-4 mr-2" />
@@ -393,14 +438,14 @@ export default function GatewayClient({
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => handleCheckPrivateGateway(server)}
-                              disabled={privateOperating}
+                              disabled={operatingProxyId === server.id}
                               className="cursor-pointer"
                             >
                               <Activity className="w-4 h-4 mr-2" />
                               {dict?.gateway?.healthCheck || "Health Check"}
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              disabled={privateOperating}
+                              disabled={operatingProxyId === server.id}
                               onClick={() =>
                                 handleDeletePrivateGateway(
                                   server.id,
@@ -468,7 +513,11 @@ export default function GatewayClient({
                   <Button
                     className="w-full"
                     variant={available ? "default" : "secondary"}
-                    disabled={!available || loadingProxyId !== null}
+                    disabled={
+                      !available ||
+                      loadingProxyId !== null ||
+                      operatingProxyId === server.id
+                    }
                     onClick={() => handleGetToken(server.id)}
                   >
                     {isLoading ? (
@@ -486,30 +535,14 @@ export default function GatewayClient({
           })}
         </div>
 
-        {/* Empty State */}
-        {filteredServers.length === 0 && (
+        {/* Empty State - Only for public gateways */}
+        {filteredServers.length === 0 && gatewayType === "public" && (
           <Card className="p-12">
             <div className="text-center text-muted-foreground">
               <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p className="text-lg mb-4">
-                {gatewayType === "private"
-                  ? dict?.gateway?.noPrivateServers ||
-                    "No private proxy servers available"
-                  : dict?.gateway?.noServers || "No proxy servers available"}
+                {dict?.gateway?.noServers || "No proxy servers available"}
               </p>
-              {gatewayType === "private" && (
-                <Button
-                  onClick={() => handleCreatePrivateGateway()}
-                  variant="outline"
-                  className="min-w-[200px] px-8"
-                  disabled={privateCreating}
-                >
-                  {privateCreating && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  {dict?.gateway?.createPrivate || "Create Private Gateway"}
-                </Button>
-              )}
             </div>
           </Card>
         )}
