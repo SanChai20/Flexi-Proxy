@@ -247,24 +247,24 @@ export default function GatewayClient({
     }
   };
 
-  const handleCheckPrivateGateway = async (proxy: {
-    url: string;
-    status: string;
-    id: string;
-    type: string;
-  }) => {
-    try {
-      setOperatingProxyId(proxy.id);
-      const result = await checkProxyServerHealth(proxy);
-      proxyServers = proxyServers.map((item) =>
-        item.id === proxy.id ? { ...item, ...result } : item
-      );
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setOperatingProxyId(null);
-    }
-  };
+  // const handleCheckPrivateGateway = async (proxy: {
+  //   url: string;
+  //   status: string;
+  //   id: string;
+  //   type: string;
+  // }) => {
+  //   try {
+  //     setOperatingProxyId(proxy.id);
+  //     const result = await checkProxyServerHealth(proxy);
+  //     proxyServers = proxyServers.map((item) =>
+  //       item.id === proxy.id ? { ...item, ...result } : item
+  //     );
+  //   } catch (error) {
+  //     console.error(error);
+  //   } finally {
+  //     setOperatingProxyId(null);
+  //   }
+  // };
 
   const handleOpenConfigDialog = () => {
     setShowConfigDialog(true);
@@ -516,14 +516,14 @@ export default function GatewayClient({
                               <FileText className="w-4 h-4 mr-2" />
                               {dict?.gateway?.viewLogs || "View Startup Logs"}
                             </DropdownMenuItem>
-                            <DropdownMenuItem
+                            {/* <DropdownMenuItem
                               onClick={() => handleCheckPrivateGateway(server)}
                               disabled={operatingProxyId === server.id}
                               className="cursor-pointer"
                             >
                               <Activity className="w-4 h-4 mr-2" />
                               {dict?.gateway?.healthCheck || "Health Check"}
-                            </DropdownMenuItem>
+                            </DropdownMenuItem> */}
                             <DropdownMenuItem
                               disabled={operatingProxyId === server.id}
                               onClick={() =>
