@@ -202,7 +202,6 @@ export default function GatewayClient({
       router.refresh();
     } catch (error) {
       console.error(error);
-    } finally {
       setOperatingProxyId(null);
     }
   };
