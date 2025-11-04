@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: "FlexiProxy - Gateways",
 };
 
-async function GatewayContent({ dict }: { dict: any }) {
+async function GatewayContent({ dict, type }: { dict: any; type: string }) {
   const [permissions, publicChecks, privateChecks, userAccessTokenCount] =
     await Promise.all([
       getCachedUserPermissions(),
@@ -35,6 +35,7 @@ async function GatewayContent({ dict }: { dict: any }) {
       dict={dict}
       proxyServers={[...publicChecks, ...privateChecks]}
       userTokenCount={userAccessTokenCount}
+      gatewayType={type}
     />
   );
 }
@@ -42,10 +43,14 @@ async function GatewayContent({ dict }: { dict: any }) {
 export default async function GatewayPage(props: PageProps<"/[lang]/gateway">) {
   const { lang } = await props.params;
   const dict = await getTrans(lang as Locale);
+  const { gtwType } = await props.searchParams;
   return (
     <section className="w-full max-w-4xl mx-auto overflow-x-auto px-0 select-none">
       <Suspense fallback={<GatewaySkeleton dict={dict} />}>
-        <GatewayContent dict={dict} />
+        <GatewayContent
+          dict={dict}
+          type={typeof gtwType === "string" ? gtwType : "public"}
+        />
       </Suspense>
     </section>
   );

@@ -53,6 +53,7 @@ interface GatewayClientProps {
     type: string;
     error?: string | undefined;
   }[];
+  defaultGatewayType: string;
 }
 
 export default function GatewayClient({
@@ -60,12 +61,13 @@ export default function GatewayClient({
   permissions,
   userTokenCount,
   proxyServers,
+  defaultGatewayType,
 }: GatewayClientProps) {
   const router = useRouter();
   const [operatingProxyId, setOperatingProxyId] = useState<string | null>(null);
   const [privateCreating, setPrivateCreating] = useState<boolean>(false);
   const [loadingProxyId, setLoadingProxyId] = useState<string | null>(null);
-  const [gatewayType, setGatewayType] = useState<string>("public");
+  const [gatewayType, setGatewayType] = useState<string>(defaultGatewayType);
   const [allProxyServers, setAllProxyServers] = useState<
     {
       url: string;
@@ -206,7 +208,7 @@ export default function GatewayClient({
     try {
       setOperatingProxyId(proxyId);
       await deletePrivateProxyInstance(proxyId, subdomainName);
-      router.refresh();
+      router.push("/gateway?gtwType=private");
     } catch (error) {
       console.error(error);
       setOperatingProxyId(null);
@@ -278,7 +280,7 @@ export default function GatewayClient({
         setPrivateCreating(false);
         return;
       }
-      router.refresh();
+      router.push("/gateway?gtwType=private");
     } catch (error) {
       console.error(error);
       setPrivateCreating(false);
