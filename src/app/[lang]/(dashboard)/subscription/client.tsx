@@ -48,14 +48,14 @@ export default function SubscriptionClient({
     setIsLoading(true);
     try {
       // 取消订阅，恢复为 Free 计划
-      // const success = await updateUserPermissions({
-      //   adv: false,
-      //   maa: 3, // 恢复免费版限制
-      //   mppa: 1, // 恢复免费版限制
-      // });
-      // if (success) {
-      //   router.refresh();
-      // }
+      const success = await updateUserPermissions({
+        adv: false,
+        maa: 3, // 恢复免费版限制
+        mppa: 1, // 恢复免费版限制
+      });
+      if (success) {
+        router.refresh();
+      }
     } catch (error) {
       console.error("Cancel subscription error:", error);
     } finally {
@@ -125,15 +125,15 @@ export default function SubscriptionClient({
             key={plan.id}
             className={`relative p-8 transition-all duration-300 ${
               plan.isPopular
-                ? "border-2 border-blue-500 shadow-xl hover:shadow-2xl scale-105"
+                ? "border-2 border-blue-500 shadow-xl hover:shadow-2xl "
                 : "border border-gray-200 shadow-md hover:shadow-lg"
             }`}
           >
-            {plan.isPopular && (
+            {/* {plan.isPopular && (
               <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500">
                 {dict?.subscription?.popular || "Popular"}
               </Badge>
-            )}
+            )} */}
 
             {plan.isCurrent && (
               <Badge className="absolute -top-3 right-8 bg-green-500">
