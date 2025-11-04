@@ -526,7 +526,7 @@ export function AdapterForm({
                       <TooltipContent side="top" className="max-w-xs">
                         <p>
                           {dict?.token?.modelIdOptionsTip ||
-                            "Use any model ID from your provider (e.g., `gpt-4`, `deepseek-chat`). Follow the format shown - you're not limited to listed options. See provider docs for available models."}
+                            "Use any model ID from your provider. Follow the format shown - you're not limited to listed options. See provider docs for available models."}
                         </p>
                       </TooltipContent>
                     </Tooltip>
