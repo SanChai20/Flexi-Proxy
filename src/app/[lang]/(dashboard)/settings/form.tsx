@@ -15,7 +15,7 @@ export function SettingsForm({
   async function onSubmit(formData: FormData) {
     const updateSuccess = await updateSettingsAction(formData);
     if (updateSuccess) {
-      router.push("/");
+      router.replace("/");
     }
   }
   return (

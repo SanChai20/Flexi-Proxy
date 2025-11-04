@@ -202,7 +202,7 @@ export function AdapterForm({
     async (formData: FormData) => {
       const currentVersion = await getUserAdapterModifyVersion();
       if (currentVersion !== version) {
-        router.push("/token");
+        router.replace("/token");
       } else {
         let canJump: boolean = false;
         if (defaultValues !== undefined) {
@@ -211,7 +211,7 @@ export function AdapterForm({
           canJump = await createAdapterAction(formData);
         }
         if (canJump) {
-          router.push("/token");
+          router.replace("/token");
         }
       }
     },
@@ -796,7 +796,7 @@ export function DeleteAdapterDropdownForm({
       const formData = new FormData(e.currentTarget);
       const canRefresh = await deleteAdapterAction(formData);
       if (canRefresh) {
-        router.push("/token");
+        router.replace("/token");
       }
     } catch (error) {
       console.error("Delete adapter error:", error);
