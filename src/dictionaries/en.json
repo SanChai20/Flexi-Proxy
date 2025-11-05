@@ -79,7 +79,7 @@
       "description": "Perfect for individuals and small projects",
       "features": [
         "Up to 3 access tokens",
-        "Up to 1 private proxy",
+        "Cannot create private gateways",
         "Basic support",
         "Community access"
       ],
@@ -91,10 +91,9 @@
       "period": "/month",
       "description": "For professional developers and teams",
       "features": [
-        "Unlimited access tokens",
-        "Unlimited private proxies",
+        "Up to 10 access tokens",
+        "Private gateways (based on subscribed instances)",
         "Priority support",
-        "Advanced features",
         "Custom configurations"
       ],
       "button": "Subscribe to Pro",

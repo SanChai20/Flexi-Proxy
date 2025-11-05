@@ -73,7 +73,7 @@ export default function SubscriptionClient({
         "Perfect for individuals and small projects",
       features: dict?.subscription?.free?.features || [
         "Up to 3 access tokens",
-        "Up to 1 private proxy",
+        "Cannot create private gateways",
         "Basic support",
         "Community access",
       ],
@@ -88,10 +88,9 @@ export default function SubscriptionClient({
         dict?.subscription?.pro?.description ||
         "For professional developers and teams",
       features: dict?.subscription?.pro?.features || [
-        "Unlimited access tokens",
-        "Unlimited private proxies",
+        "Up to 10 access tokens",
+        "Private gateways (based on subscribed instances)",
         "Priority support",
-        "Advanced features",
         "Custom configurations",
       ],
       buttonText: isPro
@@ -155,7 +154,7 @@ export default function SubscriptionClient({
             </ul>
 
             {/* CTA Button */}
-            {plan.id === "pro" ? (
+            {plan.id === "pro" && (
               <Button
                 className="w-full"
                 variant={plan.isCurrent ? "outline" : "default"}
@@ -170,10 +169,6 @@ export default function SubscriptionClient({
                 ) : (
                   plan.buttonText
                 )}
-              </Button>
-            ) : (
-              <Button className="w-full" variant="outline" disabled>
-                {dict?.subscription?.yourPlan || "Current Plan"}
               </Button>
             )}
           </Card>
