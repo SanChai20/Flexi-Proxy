@@ -46,7 +46,7 @@ export default async function LoginPage(props: PageProps<"/[lang]/login">) {
   if (!isVerified) return <Unauthorized dict={dict} />;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4 select-none">
       <div className="w-full max-w-md space-y-8 rounded-2xl bg-card p-8 shadow-lg border border-border">
         {/* Logo and Title */}
         <div className="text-center">
