@@ -1109,6 +1109,7 @@ export async function deletePrivateProxyInstance(
     userId,
     proxyId,
   ].join(":");
+  const proxyModelsKey = [process.env.PROXY_MODELS_PREFIX, proxyId].join(":");
 
   try {
     const instanceId = await redis.get<string>(subdomainInstanceRedisKey);
@@ -1129,7 +1130,7 @@ export async function deletePrivateProxyInstance(
         proxyDeleteResult,
         TerminateResponse,
       ] = await Promise.all([
-        redis.del([process.env.PROXY_MODELS_PREFIX, proxyId].join(":")),
+        redis.del(proxyModelsKey),
         redis.del(subdomainInstanceRedisKey),
         redis.del(proxyRedisKey),
         ec2.send(terminateCommand),
