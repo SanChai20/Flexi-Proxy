@@ -1,85 +1,85 @@
-Last Updated: September 27, 2025
+Last Updated: Nov. 6, 2025
 
 ## 1. Introduction
 
-FlexiProxy (referred to as "we" or "our") respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your information when you use our proxy services.
+FlexiProxy ("we," "our," or "FlexiProxy") is committed to protecting your privacy. This Privacy Policy describes how we collect, use, store, and protect information you provide when using our website, applications, and services (collectively, the "Services"). Please read this policy carefully to understand how your personal data will be handled.
 
-## 2. Information We Collect
+## 2. Information Collection
 
-### Information You Provide
-- Account registration information (if applicable)
-- API configuration details
-- Authentication tokens or keys voluntarily provided by you
+We may collect the following types of information:
 
-### Technical Information
-- Browser type and version
-- Pages accessed and actions performed
-- Log data related to your use of the Service
+**2.1 Personal Account Information**: Including your name, email address, username, and password.
 
-## 3. How We Use Your Information
+**2.2 Payment Information**: Including credit card details, billing address, and other information necessary for payment processing. All payment information is processed through secure third-party payment processing services.
 
-We use the information we collect to:
+**2.3 Usage Data**: Information about how you use our Services, including access times, browser type, language preferences, and pages viewed.
 
-- Provide and maintain our proxy service
-- Forward API requests between you and third-party providers
-- Communicate with you about service updates
-- Monitor and analyze service usage
+**2.4 API Configuration Data**: Base URLs, authentication tokens, and routing configurations you provide for our proxy service.
+
+**2.5 Device Information**: Information about the device you use to access the Services, including hardware model, operating system, unique device identifiers, and network information.
+
+## 3. Information Use
+
+We use the collected information to:
+
+- Provide, maintain, and improve our Services
+- Process transactions and send related information
+- Send service notifications and support messages
+- Respond to your comments, questions, and requests
+- Monitor usage, trends, and performance of our Services
 - Detect, prevent, and address technical issues
-- Comply with legal obligations
+- Forward API requests between you and third-party providers
+- Personalize your experience based on your preferences
 
-We will not use your information for any unlawful purposes. As a forwarding service provider, we do not store, analyze, or otherwise use the content of API requests, except to transmit them to their intended destination.
+## 4. Information Storage and Security
 
-## 4. Information Sharing and Disclosure
+**4.1 Data Storage**: We implement reasonable security measures to protect your information from loss, misuse, and unauthorized access, disclosure, alteration, and destruction.
 
-### No Unauthorized Use
-We do not sell, trade, or rent your personal information to third parties. Your information will only be used as described in this Policy.
+**4.2 Data Retention**: We will retain your personal information for as long as necessary to fulfill the purposes outlined in this Privacy Policy, unless a longer retention period is required or permitted by law.
 
-### Service Operation
-As a proxy service, we temporarily process API requests solely to forward them to their intended destination. We do not store, analyze, or use the content of these requests beyond forwarding.
+**4.3 No Content Processing**: As a forwarding service provider, we do not store, analyze, or otherwise use the content of API requests, except to transmit them to their intended destination.
 
-### Legal Requirements
-We may disclose your information if required by law or in response to valid requests from public authorities.
+## 5. Information Sharing
 
-### Business Transfers
-In the event of a merger, acquisition, or sale of all or part of our assets, your information may be transferred as part of that transaction.
+We do not sell your personal information. We may share your information in the following circumstances:
 
-## 5. Data Security
+**5.1 Service Providers**: With third-party service providers who help us provide the Services (such as hosting, payment processing, customer support).
 
-We implement appropriate technical and organizational measures to protect your information, including:
+**5.2 Compliance and Legal Proceedings**: When required by law or to protect our rights and safety.
 
-- Secure data transmission
-- Regular security assessments
-- Encryption of data in transit
+**5.3 Business Transfers**: In the event of a merger, acquisition, or sale of assets.
 
-However, no method of transmission over the Internet or electronic storage is 100% secure.
+**5.4 With Consent**: In any other case with your consent.
 
-## 6. Data Retention
+## 6. Your Choices and Rights
 
-We retain information only as long as necessary to provide the Service and comply with legal obligations. API credentials and configuration data are retained only for the duration required to provide the Service. Log data is retained for up to seven (7) days, unless a longer retention period is required for legal or security purposes.
+Depending on your location, you may have the following rights under applicable laws:
 
-## 7. Third-Party Services
+- Access your personal information
+- Correct inaccurate or incomplete data
+- Delete your personal information
+- Restrict or object to the processing of your data
+- Data portability
+- Withdraw consent
 
-Our Service may contain links to third-party websites or services not operated by us. We have no control over, and assume no responsibility for, the content, privacy policies, or practices of any third-party websites or services.
+To exercise these rights, please contact us using the contact information provided below.
+
+## 7. Cookies and Similar Technologies
+
+We use cookies and similar technologies to collect and store information about your use of our Services. You can control cookies through your browser settings. However, disabling cookies may limit your ability to use certain features of our Services.
 
 ## 8. International Data Transfers
 
-If you access our Service from a jurisdiction outside the location where our organization is registered, please be aware that your information may be transferred to, stored, and processed in that jurisdiction.
+As our Services are directed to a global audience of developers and organizations, your information may be transferred to and stored on servers located outside your country/region. We will ensure such transfers comply with applicable data protection laws.
 
-## 9. Your Rights
+## 9. Third-Party Links
 
-Depending on your location, you may have certain rights regarding your personal information, including:
+Our Services may contain links to third-party websites or services that are not owned or controlled by us. We are not responsible for the privacy policies or practices of these third parties.
 
-- The right to access your personal information
-- The right to correct inaccurate information
-- The right to request deletion of your information
-- The right to object to processing
-- The right to data portability
-- The right to withdraw consent for processing based on consent
+## 10. Policy Updates
 
-## 10. Changes to This Privacy Policy
-
-We may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated "Last Updated" date. We encourage you to review this Privacy Policy periodically to stay informed of any changes.
+We may update this Privacy Policy from time to time. If we make material changes, we will notify you by posting the new Privacy Policy on our Services and/or via email.
 
 ## 11. Contact Us
 
-If you have any questions regarding this Privacy Policy, please contact us.
+If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us through our contact page.
