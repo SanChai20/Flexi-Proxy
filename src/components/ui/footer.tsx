@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { GitHubIcon } from "./icons";
 
 export function Footer({ dict }: { dict: any }) {
   return (
@@ -22,6 +23,18 @@ export function Footer({ dict }: { dict: any }) {
             >
               {dict.footer.policy}
             </Link>
+            {process.env.GITHUB_FLEXIPROXY_REPOSITORY_URL && (
+              <a
+                href={process.env.GITHUB_FLEXIPROXY_REPOSITORY_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+                aria-label="GitHub Repository"
+              >
+                <GitHubIcon className="w-4 h-4" />
+                GitHub
+              </a>
+            )}
           </div>
         </div>
       </div>
