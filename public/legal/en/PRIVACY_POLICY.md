@@ -14,9 +14,8 @@ We may collect the following types of information:
 
 **2.3 Usage Data**: Information about how you use our Services, including access times, browser type, language preferences, and pages viewed.
 
-**2.4 API Configuration Data**: Base URLs, authentication tokens, and routing configurations you provide for our proxy service.
+**2.4 API Configuration Data**: Authentication tokens, and routing configurations you provide for our proxy service.
 
-**2.5 Device Information**: Information about the device you use to access the Services, including hardware model, operating system, unique device identifiers, and network information.
 
 ## 3. Information Use
 
