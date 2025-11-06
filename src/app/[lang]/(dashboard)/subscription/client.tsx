@@ -28,7 +28,6 @@ export default function SubscriptionClient({
   const handleSubscribe = async () => {
     setIsLoading(true);
     try {
-      // 订阅 Pro 计划
       // const success = await updateUserPermissions({
       //   adv: true,
       //   maa: 3,
@@ -47,14 +46,14 @@ export default function SubscriptionClient({
   const handleCancelSubscription = async () => {
     setIsLoading(true);
     try {
-      const success = await updateUserPermissions({
-        adv: false,
-        maa: 3,
-        mppa: 1,
-      });
-      if (success) {
-        router.refresh();
-      }
+      // const success = await updateUserPermissions({
+      //   adv: false,
+      //   maa: 3,
+      //   mppa: 1,
+      // });
+      // if (success) {
+      //   router.refresh();
+      // }
     } catch (error) {
       console.error("Cancel subscription error:", error);
     } finally {
