@@ -88,7 +88,7 @@ export default function SubscriptionClient({
         "For professional developers and teams",
       features: dict?.subscription?.pro?.features || [
         "Up to 10 access tokens",
-        "Private gateways (based on subscribed instances)",
+        "Private gateways (based on subscribed counts)",
         "Priority support",
         "Custom configurations",
       ],
