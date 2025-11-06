@@ -175,10 +175,10 @@ export default function SubscriptionClient({
       </div>
 
       {/* Footer */}
-      <p className="text-sm text-muted-foreground text-center mt-8">
+      {/* <p className="text-sm text-muted-foreground text-center mt-8">
         {dict?.subscription?.footer ||
           "All plans include a 14-day money-back guarantee"}
-      </p>
+      </p> */}
     </div>
   );
 }
