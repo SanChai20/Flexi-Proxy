@@ -142,15 +142,17 @@ export default function SubscriptionClient({
             </div>
 
             {/* Pricing */}
-            <div className="mb-6">
-              <div className="flex items-baseline">
-                <span className="text-sm font-semibold text-muted-foreground mr-1">
-                  {product.currency}
-                </span>
-                <span className="text-6xl font-extrabold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                  {plan.price}
-                </span>
-                <span className="text-lg text-muted-foreground ml-2 font-medium">
+            <div className="mb-8">
+              <div className="flex items-end gap-1">
+                <div className="flex items-start">
+                  <span className="text-xl font-semibold mt-1.5">
+                    {product.currency}
+                  </span>
+                  <span className="text-6xl font-bold leading-none ml-1">
+                    {plan.price}
+                  </span>
+                </div>
+                <span className="text-muted-foreground pb-1.5 ml-1">
                   {plan.period}
                 </span>
               </div>
