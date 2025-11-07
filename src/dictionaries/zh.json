@@ -132,8 +132,11 @@
         "定制化配置"
       ],
       "button": "订阅专业版",
-      "buttonCancel": "取消订阅"
+      "buttonCancel": "取消订阅",
+      "buttonUpdate": "更新订阅"
     },
+    "instances": "实例",
+    "instanceCount": "实例数量",
     "currentPlan": "当前计划",
     "popular": "推荐"
   },

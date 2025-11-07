@@ -1232,14 +1232,22 @@ export async function fetchConsoleLogs(
 export async function getProductDetails(
   productId?: string
 ): Promise<{ price: number; currency: string }> {
-  const product = await creem.retrieveProduct({
-    productId: productId || process.env.CREEM_PRODUCT_ID || "",
-    xApiKey: process.env.CREEM_API_KEY || "",
-  });
-  return {
-    price: product.price,
-    currency: product.currency,
-  };
+  try {
+    const product = await creem.retrieveProduct({
+      productId: productId || process.env.CREEM_PRODUCT_ID || "",
+      xApiKey: process.env.CREEM_API_KEY || "",
+    });
+    return {
+      price: product.price,
+      currency: product.currency,
+    };
+  } catch (error) {
+    console.error("Error fetching product details:", error);
+    return {
+      price: 0,
+      currency: "USD",
+    };
+  }
 }
 
 export async function createCheckoutSession(

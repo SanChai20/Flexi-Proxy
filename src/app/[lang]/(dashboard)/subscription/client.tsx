@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, Loader2 } from "lucide-react";
+import { Check, Loader2, Minus, Plus } from "lucide-react";
 import { useState } from "react";
 import { updateUserPermissions } from "@/lib/actions";
 import { useRouter } from "next/navigation";
@@ -28,6 +28,10 @@ export default function SubscriptionClient({
 }: SubscriptionClientProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  // 如果已订阅，使用当前的 mppa 值作为初始值，否则使用 1
+  const [instanceCount, setInstanceCount] = useState(
+    permissions.adv ? permissions.mppa : 1
+  );
   const isPro = permissions.adv;
 
   const handleSubscribe = async () => {
@@ -36,13 +40,33 @@ export default function SubscriptionClient({
       // const success = await updateUserPermissions({
       //   adv: true,
       //   maa: 3,
-      //   mppa: 1,
+      //   mppa: instanceCount, // 使用选择的实例数量
       // });
       // if (success) {
       //   router.refresh();
       // }
+      console.log("Subscribing with", instanceCount, "instances");
     } catch (error) {
       console.error("Subscription error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpdateSubscription = async () => {
+    setIsLoading(true);
+    try {
+      // const success = await updateUserPermissions({
+      //   adv: true,
+      //   maa: 3,
+      //   mppa: instanceCount, // 更新实例数量
+      // });
+      // if (success) {
+      //   router.refresh();
+      // }
+      console.log("Updating subscription to", instanceCount, "instances");
+    } catch (error) {
+      console.error("Update subscription error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -59,12 +83,24 @@ export default function SubscriptionClient({
       // if (success) {
       //   router.refresh();
       // }
+      console.log("Canceling subscription");
     } catch (error) {
       console.error("Cancel subscription error:", error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  const handleIncrement = () => {
+    setInstanceCount((prev) => prev + 1);
+  };
+
+  const handleDecrement = () => {
+    setInstanceCount((prev) => Math.max(1, prev - 1));
+  };
+
+  const totalPrice = product.price * instanceCount * 0.01;
+  const hasQuantityChanged = isPro && instanceCount !== permissions.mppa;
 
   const plans = [
     {
@@ -97,11 +133,7 @@ export default function SubscriptionClient({
         "Priority support",
         "Custom configurations",
       ],
-      buttonText: isPro
-        ? dict?.subscription?.pro?.buttonCancel || "Cancel Subscription"
-        : dict?.subscription?.pro?.button || "Subscribe to Pro",
       isCurrent: isPro,
-      action: isPro ? handleCancelSubscription : handleSubscribe,
     },
   ];
 
@@ -149,14 +181,56 @@ export default function SubscriptionClient({
                     {product.currency}
                   </span>
                   <span className="text-6xl font-bold leading-none ml-1">
-                    {plan.price}
+                    {plan.id === "pro" ? totalPrice.toFixed(2) : plan.price}
                   </span>
                 </div>
                 <span className="text-muted-foreground pb-1.5 ml-1">
                   {plan.period}
                 </span>
               </div>
+              {plan.id === "pro" && instanceCount > 1 && (
+                <p className="text-sm text-muted-foreground mt-2">
+                  × {instanceCount}{" "}
+                  {dict?.subscription?.instances || "instances"}
+                </p>
+              )}
             </div>
+
+            {/* Instance Counter - Always show for Pro plan */}
+            {plan.id === "pro" && (
+              <div className="mb-6">
+                <label className="text-sm font-medium mb-2 block">
+                  {dict?.subscription?.instanceCount || "Number of Instances"}
+                </label>
+                <div className="flex items-center gap-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={handleDecrement}
+                    disabled={instanceCount <= 1 || isLoading}
+                    className="h-10 w-10"
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <div className="flex-1 text-center">
+                    <span className="text-2xl font-semibold">
+                      {instanceCount}
+                    </span>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={handleIncrement}
+                    disabled={isLoading}
+                    className="h-10 w-10"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
 
             {/* Features */}
             <ul className="space-y-3 mb-6">
@@ -168,33 +242,70 @@ export default function SubscriptionClient({
               ))}
             </ul>
 
-            {/* CTA Button */}
+            {/* CTA Buttons */}
             {plan.id === "pro" && (
-              <Button
-                className="w-full"
-                variant={plan.isCurrent ? "outline" : "default"}
-                disabled={isLoading}
-                onClick={plan.action}
-              >
-                {isLoading ? (
+              <div className="space-y-2">
+                {isPro ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Processing...
+                    {/* Update button - only show when quantity changed */}
+                    {hasQuantityChanged && (
+                      <Button
+                        className="w-full"
+                        variant="default"
+                        disabled={isLoading}
+                        onClick={handleUpdateSubscription}
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            {dict?.subscription?.processing || "Processing..."}
+                          </>
+                        ) : (
+                          dict?.subscription?.pro?.buttonUpdate ||
+                          "Update Subscription"
+                        )}
+                      </Button>
+                    )}
+                    {/* Cancel button */}
+                    <Button
+                      className="w-full"
+                      variant="outline"
+                      disabled={isLoading}
+                      onClick={handleCancelSubscription}
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          {dict?.subscription?.processing || "Processing..."}
+                        </>
+                      ) : (
+                        dict?.subscription?.pro?.buttonCancel ||
+                        "Cancel Subscription"
+                      )}
+                    </Button>
                   </>
                 ) : (
-                  plan.buttonText
+                  <Button
+                    className="w-full"
+                    variant="default"
+                    disabled={isLoading}
+                    onClick={handleSubscribe}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        {dict?.subscription?.processing || "Processing..."}
+                      </>
+                    ) : (
+                      dict?.subscription?.pro?.button || "Subscribe to Pro"
+                    )}
+                  </Button>
                 )}
-              </Button>
+              </div>
             )}
           </Card>
         ))}
       </div>
-
-      {/* Footer */}
-      {/* <p className="text-sm text-muted-foreground text-center mt-8">
-        {dict?.subscription?.footer ||
-          "All plans include a 14-day money-back guarantee"}
-      </p> */}
     </div>
   );
 }

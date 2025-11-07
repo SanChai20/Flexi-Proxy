@@ -95,8 +95,11 @@
         "Custom configurations"
       ],
       "button": "Subscribe to Pro",
-      "buttonCancel": "Cancel Subscription"
+      "buttonCancel": "Cancel Subscription",
+      "buttonUpdate": "Update Subscription"
     },
+    "instances": "instances",
+    "instanceCount": "Number of Instances",
     "currentPlan": "Current Plan",
     "popular": "Popular"
   },
