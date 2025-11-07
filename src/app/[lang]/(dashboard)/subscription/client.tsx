@@ -28,24 +28,24 @@ export default function SubscriptionClient({
 }: SubscriptionClientProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  // 如果已订阅，使用当前的 mppa 值作为初始值，否则使用 1
   const [instanceCount, setInstanceCount] = useState(
     permissions.adv ? permissions.mppa : 1
   );
   const isPro = permissions.adv;
 
   const handleSubscribe = async () => {
+    console.log("handleSubscribe called"); // 添加调试日志
     setIsLoading(true);
     try {
+      // console.log("Subscribing with", instanceCount, "instances");
       // const success = await updateUserPermissions({
       //   adv: true,
       //   maa: 3,
-      //   mppa: instanceCount, // 使用选择的实例数量
+      //   mppa: instanceCount,
       // });
       // if (success) {
       //   router.refresh();
       // }
-      console.log("Subscribing with", instanceCount, "instances");
     } catch (error) {
       console.error("Subscription error:", error);
     } finally {
@@ -54,17 +54,18 @@ export default function SubscriptionClient({
   };
 
   const handleUpdateSubscription = async () => {
+    console.log("handleUpdateSubscription called"); // 添加调试日志
     setIsLoading(true);
     try {
+      // console.log("Updating subscription to", instanceCount, "instances");
       // const success = await updateUserPermissions({
       //   adv: true,
       //   maa: 3,
-      //   mppa: instanceCount, // 更新实例数量
+      //   mppa: instanceCount,
       // });
       // if (success) {
       //   router.refresh();
       // }
-      console.log("Updating subscription to", instanceCount, "instances");
     } catch (error) {
       console.error("Update subscription error:", error);
     } finally {
@@ -73,8 +74,10 @@ export default function SubscriptionClient({
   };
 
   const handleCancelSubscription = async () => {
+    console.log("handleCancelSubscription called"); // 添加调试日志
     setIsLoading(true);
     try {
+      // console.log("Canceling subscription");
       // const success = await updateUserPermissions({
       //   adv: false,
       //   maa: 3,
@@ -83,7 +86,6 @@ export default function SubscriptionClient({
       // if (success) {
       //   router.refresh();
       // }
-      console.log("Canceling subscription");
     } catch (error) {
       console.error("Cancel subscription error:", error);
     } finally {
@@ -101,6 +103,15 @@ export default function SubscriptionClient({
 
   const totalPrice = product.price * instanceCount * 0.01;
   const hasQuantityChanged = isPro && instanceCount !== permissions.mppa;
+
+  // 添加调试信息
+  // console.log("Component state:", {
+  //   isPro,
+  //   instanceCount,
+  //   permissionsMppa: permissions.mppa,
+  //   hasQuantityChanged,
+  //   isLoading,
+  // });
 
   const plans = [
     {
@@ -196,7 +207,7 @@ export default function SubscriptionClient({
               )}
             </div>
 
-            {/* Instance Counter - Always show for Pro plan */}
+            {/* Instance Counter */}
             {plan.id === "pro" && (
               <div className="mb-6">
                 <label className="text-sm font-medium mb-2 block">
@@ -247,13 +258,18 @@ export default function SubscriptionClient({
               <div className="space-y-2">
                 {isPro ? (
                   <>
-                    {/* Update button - only show when quantity changed */}
+                    {/* Update button */}
                     {hasQuantityChanged && (
                       <Button
+                        type="button"
                         className="w-full"
                         variant="default"
                         disabled={isLoading}
-                        onClick={handleUpdateSubscription}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleUpdateSubscription();
+                        }}
                       >
                         {isLoading ? (
                           <>
@@ -268,10 +284,15 @@ export default function SubscriptionClient({
                     )}
                     {/* Cancel button */}
                     <Button
+                      type="button"
                       className="w-full"
                       variant="outline"
                       disabled={isLoading}
-                      onClick={handleCancelSubscription}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleCancelSubscription();
+                      }}
                     >
                       {isLoading ? (
                         <>
@@ -286,10 +307,15 @@ export default function SubscriptionClient({
                   </>
                 ) : (
                   <Button
+                    type="button"
                     className="w-full"
                     variant="default"
                     disabled={isLoading}
-                    onClick={handleSubscribe}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleSubscribe();
+                    }}
                   >
                     {isLoading ? (
                       <>
