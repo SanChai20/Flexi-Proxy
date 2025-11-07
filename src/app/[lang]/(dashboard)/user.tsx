@@ -70,8 +70,6 @@ export async function User({ dict, lang }: { dict: any; lang: Locale }) {
           </>
         ) : (
           <>
-            <DropdownMenuLabel>User</DropdownMenuLabel>
-            <DropdownMenuSeparator />
             <Link href={`/${lang}/verification`}>
               <DropdownMenuItem>
                 {dict["login"]["signIn"] || "Sign In"}

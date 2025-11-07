@@ -137,7 +137,7 @@
       "buttonUpdate": "更新订阅"
     },
     "instances": "实例",
-    "instanceCount": "私有代理实例数量",
+    "instanceCount": "私有网关实例数量",
     "currentPlan": "当前计划",
     "popular": "推荐"
   },
