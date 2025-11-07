@@ -99,7 +99,7 @@
       "buttonUpdate": "Update Subscription"
     },
     "instances": "instances",
-    "instanceCount": "Number of Instances",
+    "instanceCount": "Number of Private Gateway Instances",
     "currentPlan": "Current Plan",
     "popular": "Popular"
   },
