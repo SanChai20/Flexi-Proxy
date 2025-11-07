@@ -111,7 +111,7 @@
     "subtitle": "选择适合您的计划",
     "free": {
       "name": "免费版",
-      "price": "¥0",
+      "price": "$0",
       "period": "/月",
       "description": "适合个人用户和小型项目",
       "features": [
@@ -124,7 +124,7 @@
     },
     "pro": {
       "name": "专业版",
-      "price": "¥99",
+      "price": "$19",
       "period": "/月",
       "description": "适合专业开发者和团队",
       "features": [

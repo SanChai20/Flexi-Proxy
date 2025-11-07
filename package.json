@@ -30,6 +30,7 @@
     "class-variance-authority": "^0.7.1",
     "cloudflare": "^5.2.0",
     "clsx": "^2.1.1",
+    "creem": "^0.4.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.542.0",
     "negotiator": "1.0.0",

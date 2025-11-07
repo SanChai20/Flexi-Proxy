@@ -81,7 +81,7 @@ export default function SubscriptionClient({
     {
       id: "pro",
       name: dict?.subscription?.pro?.name || "Pro",
-      price: dict?.subscription?.pro?.price || "$15",
+      price: dict?.subscription?.pro?.price || "$19",
       period: dict?.subscription?.pro?.period || "/month",
       description:
         dict?.subscription?.pro?.description ||

@@ -16,6 +16,8 @@ import { auth } from "@/auth";
 import { revalidateTag, revalidatePath, unstable_cache } from "next/cache";
 
 import { ec2 } from "./aws";
+import { ProductEntity } from "creem/models/components";
+import { creem } from "./creem";
 
 // Get all proxy servers
 export async function getAllPublicProxyServers(): Promise<
@@ -1225,4 +1227,17 @@ export async function fetchConsoleLogs(
   } catch (error) {
     console.error("Error fetching logs:", error);
   }
+}
+
+export async function getProductDetails(
+  productId?: string
+): Promise<{ price: number; currency: string }> {
+  const product = await creem.retrieveProduct({
+    productId: productId || process.env.CREEM_PRODUCT_ID || "",
+    xApiKey: process.env.CREEM_API_KEY || "",
+  });
+  return {
+    price: product.price,
+    currency: product.currency,
+  };
 }
