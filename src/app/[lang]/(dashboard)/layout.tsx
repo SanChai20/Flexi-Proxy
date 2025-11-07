@@ -50,10 +50,10 @@ export default async function DashboardLayout(props: LayoutProps<"/[lang]">) {
   return (
     <Providers>
       <main className="flex min-h-screen w-full flex-col bg-muted/40">
-        <DesktopNav dict={dict} />
+        <DesktopNav dict={dict} lang={lang as Locale} />
         <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14 flex-1">
           <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 select-none">
-            <MobileNav dict={dict} />
+            <MobileNav dict={dict} lang={lang as Locale} />
             <DashboardBreadcrumb dict={dict} />
           </header>
           <main className="grid flex-1 items-start gap-2 p-4 sm:px-6 sm:py-0 md:gap-4">
@@ -66,11 +66,11 @@ export default async function DashboardLayout(props: LayoutProps<"/[lang]">) {
   );
 }
 
-function DesktopNav({ dict }: { dict: any }) {
+function DesktopNav({ dict, lang }: { dict: any; lang: Locale }) {
   return (
     <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex select-none">
       <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
-        <User dict={dict} />
+        <User dict={dict} lang={lang} />
 
         <NavItem href="/" label={dict["navigation"]["home"]}>
           <Home className="h-5 w-5" />
@@ -126,7 +126,7 @@ function DesktopNav({ dict }: { dict: any }) {
   );
 }
 
-function MobileNav({ dict }: { dict: any }) {
+function MobileNav({ dict, lang }: { dict: any; lang: Locale }) {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -138,7 +138,7 @@ function MobileNav({ dict }: { dict: any }) {
       <SheetContent side="left" className="w-64 sm:max-w-xs">
         <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
         <nav className="grid gap-6 text-lg font-medium pt-6">
-          <User dict={dict} />
+          <User dict={dict} lang={lang} />
           <Link
             href="/"
             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"

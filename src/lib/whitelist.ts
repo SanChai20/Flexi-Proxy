@@ -18,15 +18,7 @@ export const i18nRouteWhitelist = [
   "subscription",
 ];
 // page route that needs verification check first
-export const protectedRouteList = [
-  "contact",
-  "documentation",
-  "token",
-  "settings",
-  "faq",
-  "gateway",
-  "subscription",
-];
+export const protectedRouteList = ["contact", "token", "settings", "gateway"];
 // page route that belongs dashboard
 export const dashboardRouteWhitelist = [
   "",

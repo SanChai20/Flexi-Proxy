@@ -65,10 +65,8 @@ function navigateRoutes(
     const locale = parts[0];
     let redirectPath: string | null = null;
     if (parts.length === 1) {
-      // Home Page
-      if (!isLoggedIn) {
-        redirectPath = `/${locale}/verification`;
-      }
+      // Home Page - Allow access without login
+      // No redirect needed
     } else {
       const section = parts[1];
       if (protectedRouteList.includes(section) && !isLoggedIn) {

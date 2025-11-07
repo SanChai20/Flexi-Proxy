@@ -5,8 +5,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Loader2, Minus, Plus } from "lucide-react";
 import { useState } from "react";
-import { updateUserPermissions } from "@/lib/actions";
-import { useRouter } from "next/navigation";
+import { updateUserPermissions, checkUserLoggedIn } from "@/lib/actions";
+import { useRouter, usePathname } from "next/navigation";
 
 interface SubscriptionClientProps {
   dict: any;
@@ -34,9 +34,15 @@ export default function SubscriptionClient({
   const isPro = permissions.adv;
 
   const handleSubscribe = async () => {
-    console.log("handleSubscribe called"); // 添加调试日志
+    console.log("handleSubscribe called");
     setIsLoading(true);
     try {
+      // Check if user is logged in
+      const isLoggedIn = await checkUserLoggedIn();
+      if (!isLoggedIn) {
+        router.push("/verification");
+        return;
+      }
       // console.log("Subscribing with", instanceCount, "instances");
       // const success = await updateUserPermissions({
       //   adv: true,
@@ -54,9 +60,15 @@ export default function SubscriptionClient({
   };
 
   const handleUpdateSubscription = async () => {
-    console.log("handleUpdateSubscription called"); // 添加调试日志
+    console.log("handleUpdateSubscription called");
     setIsLoading(true);
     try {
+      // Check if user is logged in
+      const isLoggedIn = await checkUserLoggedIn();
+      if (!isLoggedIn) {
+        router.push("/verification");
+        return;
+      }
       // console.log("Updating subscription to", instanceCount, "instances");
       // const success = await updateUserPermissions({
       //   adv: true,
@@ -74,9 +86,15 @@ export default function SubscriptionClient({
   };
 
   const handleCancelSubscription = async () => {
-    console.log("handleCancelSubscription called"); // 添加调试日志
+    console.log("handleCancelSubscription called");
     setIsLoading(true);
     try {
+      // Check if user is logged in
+      const isLoggedIn = await checkUserLoggedIn();
+      if (!isLoggedIn) {
+        router.push("/verification");
+        return;
+      }
       // console.log("Canceling subscription");
       // const success = await updateUserPermissions({
       //   adv: false,

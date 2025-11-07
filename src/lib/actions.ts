@@ -745,6 +745,11 @@ export async function getCachedUserPermissions(): Promise<UserPermissions> {
   return getCached(userId);
 }
 
+export async function checkUserLoggedIn(): Promise<boolean> {
+  const session = await auth();
+  return !!(session && session.user && session.user.id);
+}
+
 export async function updateUserPermissions(
   updates: Partial<UserPermissions>
 ): Promise<boolean> {
