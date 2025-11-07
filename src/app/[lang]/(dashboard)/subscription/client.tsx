@@ -188,7 +188,7 @@ export default function SubscriptionClient({
                   {plan.period}
                 </span>
               </div>
-              {plan.id === "pro" && instanceCount > 1 && (
+              {plan.id === "pro" && (
                 <p className="text-sm text-muted-foreground mt-2">
                   × {instanceCount}{" "}
                   {dict?.subscription?.instances || "instances"}
