@@ -15,11 +15,16 @@ interface SubscriptionClientProps {
     mppa: number;
     adv: boolean;
   };
+  product: {
+    price: number;
+    currency: string;
+  };
 }
 
 export default function SubscriptionClient({
   dict,
   permissions,
+  product,
 }: SubscriptionClientProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -65,7 +70,7 @@ export default function SubscriptionClient({
     {
       id: "free",
       name: dict?.subscription?.free?.name || "Free",
-      price: dict?.subscription?.free?.price || "$0",
+      price: 0,
       period: dict?.subscription?.free?.period || "/month",
       description:
         dict?.subscription?.free?.description ||
@@ -81,7 +86,7 @@ export default function SubscriptionClient({
     {
       id: "pro",
       name: dict?.subscription?.pro?.name || "Pro",
-      price: dict?.subscription?.pro?.price || "$19",
+      price: product.price !== undefined ? product.price * 0.01 : 19,
       period: dict?.subscription?.pro?.period || "/month",
       description:
         dict?.subscription?.pro?.description ||
@@ -138,8 +143,17 @@ export default function SubscriptionClient({
 
             {/* Pricing */}
             <div className="mb-6">
-              <span className="text-4xl font-semibold">{plan.price}</span>
-              <span className="text-muted-foreground ml-1">{plan.period}</span>
+              <div className="flex items-baseline">
+                <span className="text-sm font-semibold text-muted-foreground mr-1">
+                  {product.currency}
+                </span>
+                <span className="text-6xl font-extrabold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                  {plan.price}
+                </span>
+                <span className="text-lg text-muted-foreground ml-2 font-medium">
+                  {plan.period}
+                </span>
+              </div>
             </div>
 
             {/* Features */}

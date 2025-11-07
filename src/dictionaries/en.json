@@ -74,7 +74,6 @@
     "subtitle": "Choose the plan that's right for you",
     "free": {
       "name": "Free Plan",
-      "price": "$0",
       "period": "/month",
       "description": "Perfect for individuals and small projects",
       "features": [
@@ -87,7 +86,6 @@
     },
     "pro": {
       "name": "Pro Plan",
-      "price": "$15",
       "period": "/month",
       "description": "For professional developers and teams",
       "features": [

@@ -17,7 +17,13 @@ async function SubscriptionContent({ dict }: { dict: any }) {
     getProductDetails(),
   ]);
 
-  return <SubscriptionClient permissions={permissions} dict={dict} />;
+  return (
+    <SubscriptionClient
+      permissions={permissions}
+      dict={dict}
+      product={product}
+    />
+  );
 }
 
 export default async function SubscriptionPage(
