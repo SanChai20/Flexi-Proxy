@@ -1241,3 +1241,26 @@ export async function getProductDetails(
     currency: product.currency,
   };
 }
+
+export async function createCheckoutSession(
+  productId?: string,
+  units: number = 1
+): Promise<string | undefined> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return undefined;
+  }
+  const userId = session.user.id;
+  const checkOutResult = await creem.createCheckout({
+    xApiKey: process.env.CREEM_API_KEY || "",
+    createCheckoutRequest: {
+      productId: productId || process.env.CREEM_PRODUCT_ID || "",
+      units: units,
+      customer: {
+        id: userId,
+        email: session.user.email || undefined,
+      },
+    },
+  });
+  return checkOutResult?.checkoutUrl;
+}
