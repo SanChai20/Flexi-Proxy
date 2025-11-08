@@ -1245,7 +1245,7 @@ export async function getPriceDetails(
   } catch (error) {
     console.error("Error fetching product details:", error);
     return {
-      amount: "0",
+      amount: "1900",
       currency: "USD",
     };
   }
