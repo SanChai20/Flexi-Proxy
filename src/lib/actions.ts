@@ -18,6 +18,7 @@ import { revalidateTag, revalidatePath, unstable_cache } from "next/cache";
 import { ec2 } from "./aws";
 import { ProductEntity } from "creem/models/components";
 import { creem } from "./creem";
+import { paddle } from "./paddle";
 
 // Get all proxy servers
 export async function getAllPublicProxyServers(): Promise<
@@ -935,9 +936,8 @@ export async function createPrivateProxyInstance(): Promise<
       randomPart += chars[randomArray[i] % chars.length];
     }
 
-    return `gtw-${process.env.AWS_REGION}-${timePart + randomPart}.${
-      process.env.DOMAIN_NAME
-    }`;
+    return `gtw-${process.env.AWS_REGION}-${timePart + randomPart}.${process.env.DOMAIN_NAME
+      }`;
   };
 
   let existingDomains: Set<string> | null = null;
@@ -991,9 +991,8 @@ export async function createPrivateProxyInstance(): Promise<
 set -e
 
 cd /home/ubuntu
-git clone -b ${process.env.GITHUB_GATEWAY_REPOSITORY_BRANCH} ${
-    process.env.GITHUB_GATEWAY_REPOSITORY_URL
-  }
+git clone -b ${process.env.GITHUB_GATEWAY_REPOSITORY_BRANCH} ${process.env.GITHUB_GATEWAY_REPOSITORY_URL
+    }
 cd ${process.env.GITHUB_GATEWAY_REPOSITORY_NAME}
 
 if [ "$EUID" -ne 0 ]; then     
@@ -1234,22 +1233,19 @@ export async function fetchConsoleLogs(
   }
 }
 
-export async function getProductDetails(
-  productId?: string
-): Promise<{ price: number; currency: string }> {
+export async function getPriceDetails(
+  priceId?: string
+): Promise<{ amount: string; currency: string }> {
   try {
-    const product = await creem.retrieveProduct({
-      productId: productId || process.env.CREEM_PRODUCT_ID || "",
-      xApiKey: process.env.CREEM_API_KEY || "",
-    });
+    const price = await paddle.prices.get(priceId || process.env.PADDLE_PRICE_ID || "")
     return {
-      price: product.price,
-      currency: product.currency,
+      amount: price.unitPrice.amount,
+      currency: price.unitPrice.currencyCode,
     };
   } catch (error) {
     console.error("Error fetching product details:", error);
     return {
-      price: 0,
+      amount: "0",
       currency: "USD",
     };
   }
