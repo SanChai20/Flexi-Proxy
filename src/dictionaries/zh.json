@@ -58,7 +58,9 @@
     "home": "主页",
     "gateway": "代理网关",
     "private": "私服",
-    "subscription": "订阅计划"
+    "subscription": "订阅计划",
+    "checkout": "结算",
+    "success": "结算成功"
   },
   "documentation": {
     "title": "关于 FlexiProxy",
@@ -139,7 +141,8 @@
     "instances": "实例",
     "instanceCount": "私有网关实例数量",
     "currentPlan": "当前计划",
-    "popular": "推荐"
+    "popular": "推荐",
+    "processing": "处理中..."
   },
   "token": {
     "providerPage": "config/providers.json",

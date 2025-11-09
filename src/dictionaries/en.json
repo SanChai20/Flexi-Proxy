@@ -58,7 +58,9 @@
     "home": "Home",
     "gateway": "Gateway",
     "private": "Private Scope",
-    "subscription": "Subscription Plans"
+    "subscription": "Subscription Plans",
+    "checkout": "Checkout",
+    "success": "Checkout Success"
   },
   "documentation": {
     "title": "About FlexiProxy",
@@ -102,7 +104,8 @@
     "instances": "instances",
     "instanceCount": "Number of Private Gateway Instances",
     "currentPlan": "Current Plan",
-    "popular": "Popular"
+    "popular": "Popular",
+    "processing": "Processing..."
   },
   "gateway": {
     "title": "Proxy Gateways",

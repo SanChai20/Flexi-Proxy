@@ -936,8 +936,9 @@ export async function createPrivateProxyInstance(): Promise<
       randomPart += chars[randomArray[i] % chars.length];
     }
 
-    return `gtw-${process.env.AWS_REGION}-${timePart + randomPart}.${process.env.DOMAIN_NAME
-      }`;
+    return `gtw-${process.env.AWS_REGION}-${timePart + randomPart}.${
+      process.env.DOMAIN_NAME
+    }`;
   };
 
   let existingDomains: Set<string> | null = null;
@@ -991,8 +992,9 @@ export async function createPrivateProxyInstance(): Promise<
 set -e
 
 cd /home/ubuntu
-git clone -b ${process.env.GITHUB_GATEWAY_REPOSITORY_BRANCH} ${process.env.GITHUB_GATEWAY_REPOSITORY_URL
-    }
+git clone -b ${process.env.GITHUB_GATEWAY_REPOSITORY_BRANCH} ${
+    process.env.GITHUB_GATEWAY_REPOSITORY_URL
+  }
 cd ${process.env.GITHUB_GATEWAY_REPOSITORY_NAME}
 
 if [ "$EUID" -ne 0 ]; then     
@@ -1235,16 +1237,20 @@ export async function fetchConsoleLogs(
 
 export async function getPriceDetails(
   priceId?: string
-): Promise<{ amount: string; currency: string }> {
+): Promise<{ id: string; amount: string; currency: string }> {
   try {
-    const price = await paddle.prices.get(priceId || process.env.PADDLE_PRICE_ID || "")
+    const price = await paddle.prices.get(
+      priceId || process.env.PADDLE_PRICE_ID || ""
+    );
     return {
+      id: priceId || process.env.PADDLE_PRICE_ID || "",
       amount: price.unitPrice.amount,
       currency: price.unitPrice.currencyCode,
     };
   } catch (error) {
     console.error("Error fetching product details:", error);
     return {
+      id: priceId || process.env.PADDLE_PRICE_ID || "",
       amount: "1900",
       currency: "USD",
     };

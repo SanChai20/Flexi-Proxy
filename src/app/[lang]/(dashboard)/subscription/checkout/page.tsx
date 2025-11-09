@@ -1,0 +1,60 @@
+import { getTrans } from "@/lib/dictionary";
+import { Locale } from "i18n-config";
+import { Metadata } from "next";
+
+import { Suspense } from "react";
+import CheckoutSkeleton from "./skeleton";
+import CheckoutClient from "./client";
+import { auth } from "@/auth";
+
+export const metadata: Metadata = {
+  title: "FlexiProxy - Subscription Checkout",
+};
+
+async function CheckoutContent({
+  dict,
+  quantity,
+  id,
+  userId,
+}: {
+  dict: any;
+  quantity: number;
+  id: string;
+  userId: string;
+}) {
+  return (
+    <CheckoutClient
+      dict={dict}
+      priceId={id}
+      quantity={quantity}
+      userId={userId}
+    />
+  );
+}
+
+export default async function CheckoutPage(
+  props: PageProps<"/[lang]/subscription/checkout">
+) {
+  const { lang } = await props.params;
+  const { quantity, priceId } = await props.searchParams;
+  if (typeof quantity !== "string" || typeof priceId !== "string") {
+    return null;
+  }
+  const dict = await getTrans(lang as Locale);
+  const session = await auth();
+  if (!session?.user?.id) {
+    return null;
+  }
+  return (
+    <section className="w-full max-w-4xl mx-auto overflow-x-auto px-0 select-none">
+      <Suspense fallback={<CheckoutSkeleton dict={dict} />}>
+        <CheckoutContent
+          dict={dict}
+          quantity={parseInt(quantity)}
+          id={priceId}
+          userId={session.user.id}
+        />
+      </Suspense>
+    </section>
+  );
+}

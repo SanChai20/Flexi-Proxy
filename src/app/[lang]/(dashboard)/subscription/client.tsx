@@ -17,6 +17,7 @@ interface SubscriptionClientProps {
     adv: boolean;
   };
   price: {
+    id: string;
     amount: string;
     currency: string;
   };
@@ -33,7 +34,10 @@ export default function SubscriptionClient({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [instanceCount, setInstanceCount] = useState(
-    Math.min(MAX_INSTANCES, Math.max(MIN_INSTANCES, permissions.adv ? permissions.mppa : 1))
+    Math.min(
+      MAX_INSTANCES,
+      Math.max(MIN_INSTANCES, permissions.adv ? permissions.mppa : 1)
+    )
   );
   const isPro = permissions.adv;
 
@@ -46,9 +50,14 @@ export default function SubscriptionClient({
         router.push("/verification");
         return;
       }
+      // Redirect to checkout with selected quantity
+      router.push(
+        `/subscription/checkout?priceId=${encodeURIComponent(
+          price.id
+        )}&quantity=${encodeURIComponent(instanceCount.toString())}`
+      );
     } catch (error) {
       console.error("Subscription error:", error);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -97,7 +106,7 @@ export default function SubscriptionClient({
     const value = e.target.value;
 
     // Allow empty string for user to clear and retype
-    if (value === '') {
+    if (value === "") {
       return;
     }
 
@@ -105,7 +114,11 @@ export default function SubscriptionClient({
     const numValue = parseInt(value, 10);
 
     // Only update if it's a valid number and within range
-    if (!isNaN(numValue) && numValue >= MIN_INSTANCES && numValue <= MAX_INSTANCES) {
+    if (
+      !isNaN(numValue) &&
+      numValue >= MIN_INSTANCES &&
+      numValue <= MAX_INSTANCES
+    ) {
       setInstanceCount(numValue);
     } else if (!isNaN(numValue) && numValue > MAX_INSTANCES) {
       // If user tries to enter more than max, set to max
@@ -177,7 +190,9 @@ export default function SubscriptionClient({
         {plans.map((plan) => (
           <Card
             key={plan.id}
-            className={`p-6 ${plan.isCurrent ? "border-primary" : "border-border"}`}
+            className={`p-6 ${
+              plan.isCurrent ? "border-primary" : "border-border"
+            }`}
           >
             {/* Plan Header */}
             <div className="flex items-start justify-between mb-6">
