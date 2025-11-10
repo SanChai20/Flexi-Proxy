@@ -195,18 +195,18 @@ export default function SubscriptionClient({
             }`}
           >
             {/* Plan Header */}
-            <div className="flex items-start justify-between mb-6">
-              <div>
-                <h3 className="text-xl font-semibold mb-1">{plan.name}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {plan.description}
-                </p>
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-1">
+                <h3 className="text-xl font-semibold">{plan.name}</h3>
+                {plan.isCurrent && (
+                  <Badge variant="secondary" className="shrink-0">
+                    {dict?.subscription?.currentPlan || "Current"}
+                  </Badge>
+                )}
               </div>
-              {plan.isCurrent && (
-                <Badge variant="secondary" className="shrink-0">
-                  {dict?.subscription?.currentPlan || "Current"}
-                </Badge>
-              )}
+              <p className="text-sm text-muted-foreground">
+                {plan.description}
+              </p>
             </div>
 
             {/* Pricing */}
@@ -223,12 +223,6 @@ export default function SubscriptionClient({
                 <span className="text-muted-foreground pb-2">
                   {plan.period}
                 </span>
-                {/* {plan.id === "pro" && (
-                  <span className="text-sm text-muted-foreground pb-2 ml-2">
-                    × {instanceCount}{" "}
-                    {dict?.subscription?.instances || "instances"}
-                  </span>
-                )} */}
               </div>
             </div>
 
