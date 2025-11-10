@@ -142,7 +142,13 @@
     "instanceCount": "私有网关实例数量",
     "currentPlan": "当前计划",
     "popular": "推荐",
-    "processing": "处理中..."
+    "processing": "处理中...",
+    "orderSummary": "订单摘要",
+    "paymentDetails": "支付详情",
+    "totalPrice": "总价",
+    "subtotal": "小计",
+    "taxes": "税费",
+    "dueTotal": "应付总额"
   },
   "token": {
     "providerPage": "config/providers.json",

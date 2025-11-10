@@ -48,8 +48,10 @@ function SummaryContent({
 }
 
 function OrderSummary({
+  dict,
   checkoutData,
 }: {
+  dict: any;
   checkoutData?: CheckoutEventsData | null;
 }) {
   const [currencyCode, setCurrencyCode] = useState<CurrencyCode | undefined>(
@@ -78,7 +80,7 @@ function OrderSummary({
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Receipt className="h-4 w-4" />
-              <span>Total Price</span>
+              <span>{dict.subscription.totalPrice || "Total Price"}</span>
             </div>
             <div className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
               {format_money(total, currencyCode)}
@@ -105,13 +107,17 @@ function OrderSummary({
 
         {/* Subtotal */}
         <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">Subtotal</span>
+          <span className="text-sm text-muted-foreground">
+            {dict.subscription.subtotal || "Subtotal"}
+          </span>
           <SummaryContent value={subtotal} currencyCode={currencyCode} />
         </div>
 
         {/* Tax */}
         <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">Tax</span>
+          <span className="text-sm text-muted-foreground">
+            {dict.subscription.taxes || "Tax"}
+          </span>
           <SummaryContent value={tax} currencyCode={currencyCode} />
         </div>
 
@@ -121,7 +127,7 @@ function OrderSummary({
         {/* Due Today */}
         <div className="flex items-center justify-between pt-2">
           <span className="text-base font-semibold text-foreground">
-            Due Today
+            {dict.subscription.dueTotal || "Due Today"}
           </span>
           <SummaryContent value={total} currencyCode={currencyCode} />
         </div>
@@ -239,12 +245,12 @@ export default function CheckoutClient({
                   <Receipt className="h-5 w-5" />
                 </div>
                 <h2 className="text-2xl font-bold text-foreground">
-                  Order Summary
+                  {dict.subscription.orderSummary || "Order Summary"}
                 </h2>
               </div>
 
               {/* Summary Content */}
-              <OrderSummary checkoutData={checkoutData} />
+              <OrderSummary dict={dict} checkoutData={checkoutData} />
             </div>
 
             {/* Payment Section */}
@@ -255,7 +261,7 @@ export default function CheckoutClient({
                   <CreditCard className="h-5 w-5" />
                 </div>
                 <h2 className="text-2xl font-bold text-foreground">
-                  Payment Details
+                  {dict.subscription.paymentDetails || "Payment Details"}
                 </h2>
               </div>
 

@@ -105,7 +105,13 @@
     "instanceCount": "Number of Private Gateway Instances",
     "currentPlan": "Current Plan",
     "popular": "Popular",
-    "processing": "Processing..."
+    "processing": "Processing...",
+    "orderSummary": "Order Summary",
+    "paymentDetails": "Payment Details",
+    "totalPrice": "Total Price",
+    "subtotal": "Subtotal",
+    "taxes": "Tax",
+    "dueTotal": "Due Today"
   },
   "gateway": {
     "title": "Proxy Gateways",
