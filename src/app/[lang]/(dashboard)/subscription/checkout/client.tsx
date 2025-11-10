@@ -193,7 +193,7 @@ export default function CheckoutClient({
             frameInitialHeight: 450,
             frameTarget: "checkout-frame",
             frameStyle: "width: 100%; border: none",
-            successUrl: "/subscription/success",
+            successUrl: `/${lang}/subscription/success`,
           },
         },
       })
