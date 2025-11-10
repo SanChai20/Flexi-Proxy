@@ -148,7 +148,19 @@
     "totalPrice": "总价",
     "subtotal": "小计",
     "taxes": "税费",
-    "dueTotal": "应付总额"
+    "dueTotal": "应付总额",
+    "success": {
+      "title": "支付成功！",
+      "subtitle": "感谢您的订阅",
+      "description": "您的订阅已成功激活，现在可以享受专业版的所有功能。",
+      "orderNumber": "订单号",
+      "backToHome": "返回主页",
+      "viewSubscription": "查看订阅",
+      "nextSteps": "接下来您可以",
+      "step1": "创建私有代理网关",
+      "step2": "管理您的通行令牌",
+      "step3": "查看使用文档"
+    }
   },
   "token": {
     "providerPage": "config/providers.json",

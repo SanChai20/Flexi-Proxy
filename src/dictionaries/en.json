@@ -111,7 +111,19 @@
     "totalPrice": "Total Price",
     "subtotal": "Subtotal",
     "taxes": "Tax",
-    "dueTotal": "Due Today"
+    "dueTotal": "Due Today",
+    "success": {
+      "title": "Payment Successful!",
+      "subtitle": "Thank you for your subscription",
+      "description": "Your subscription has been successfully activated. You can now enjoy all the features of the Pro plan.",
+      "orderNumber": "Order Number",
+      "backToHome": "Back to Home",
+      "viewSubscription": "View Subscription",
+      "nextSteps": "What's Next",
+      "step1": "Create Private Gateway",
+      "step2": "Manage Access Tokens",
+      "step3": "View Documentation"
+    }
   },
   "gateway": {
     "title": "Proxy Gateways",
