@@ -2,45 +2,24 @@
 
 import {
   CheckoutEventsData,
-  CheckoutEventsTimePeriodInterval,
   Environments,
   initializePaddle,
   type Paddle,
 } from "@paddle/paddle-js";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import throttle from "lodash.throttle";
-import { BackIcon } from "@/components/ui/icons";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Receipt, CreditCard, Info } from "lucide-react";
 
 interface CheckoutClientProps {
   dict: any;
+  lang: string;
   quantity: number;
   priceId: string;
   userId: string;
 }
 
-interface CheckoutEventsTimePeriod {
-  frequency: number;
-  interval: CheckoutEventsTimePeriodInterval;
-}
-
 type CurrencyCode = string;
-
-const BillingCycleMap = {
-  day: "daily",
-  week: "weekly",
-  month: "monthly",
-  year: "yearly",
-};
-
-const CustomBillingCycleMap = {
-  day: "days",
-  week: "weeks",
-  month: "months",
-  year: "years",
-};
 
 function format_money(amount: number = 0, currency: string = "USD"): string {
   const language =
@@ -49,17 +28,6 @@ function format_money(amount: number = 0, currency: string = "USD"): string {
     style: "currency",
     currency: currency,
   }).format(amount);
-}
-
-function format_billing_cycle({
-  frequency,
-  interval,
-}: CheckoutEventsTimePeriod): string {
-  if (frequency === 1) {
-    return BillingCycleMap[interval];
-  } else {
-    return ["every", frequency, CustomBillingCycleMap[interval]].join(" ");
-  }
 }
 
 function SummaryContent({
@@ -84,12 +52,6 @@ function OrderSummary({
 }: {
   checkoutData?: CheckoutEventsData | null;
 }) {
-  const [billingCycle, setBillingCycle] = useState<
-    CheckoutEventsTimePeriod | undefined
-  >(undefined);
-  const [recurringTotal, setRecurringTotal] = useState<number | undefined>(
-    undefined
-  );
   const [currencyCode, setCurrencyCode] = useState<CurrencyCode | undefined>(
     undefined
   );
@@ -100,10 +62,6 @@ function OrderSummary({
 
   useEffect(() => {
     if (checkoutData) {
-      setBillingCycle(
-        checkoutData.items.find((item) => item.billing_cycle)?.billing_cycle
-      );
-      setRecurringTotal(checkoutData.recurring_totals?.total);
       setCurrencyCode(checkoutData.currency_code);
       setTotal(checkoutData.totals.total);
       setSubtotal(checkoutData.totals.subtotal);
@@ -133,20 +91,6 @@ function OrderSummary({
           </div>
         )}
       </div>
-
-      {/* Recurring Payment Info */}
-      {recurringTotal !== undefined && billingCycle !== undefined && (
-        <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/50 px-4 py-3 text-sm">
-          <Info className="h-4 w-4 text-primary flex-shrink-0" />
-          <span className="text-muted-foreground">
-            then{" "}
-            <span className="font-semibold text-foreground">
-              {format_money(recurringTotal, currencyCode)}
-            </span>{" "}
-            {format_billing_cycle(billingCycle)}
-          </span>
-        </div>
-      )}
 
       {/* Line Items */}
       <div className="space-y-4 rounded-xl border border-border bg-card p-6">
@@ -188,6 +132,7 @@ function OrderSummary({
 
 export default function CheckoutClient({
   dict,
+  lang,
   quantity,
   priceId,
   userId,
@@ -221,9 +166,9 @@ export default function CheckoutClient({
   };
 
   const updateItems = useCallback(
-    throttle((paddle: Paddle, priceId: string, quantity: number) => {
+    (paddle: Paddle, priceId: string, quantity: number) => {
       paddle?.Checkout.updateItems([{ priceId, quantity }]);
-    }, 800),
+    },
     []
   );
 
@@ -231,7 +176,8 @@ export default function CheckoutClient({
     if (!paddle?.Initialized && process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN) {
       initializePaddle({
         token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
-        environment: "sandbox",
+        environment: (process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT ??
+          "production") as Environments,
         eventCallback: async (event) => {
           if (event.data && event.name) {
             handleCheckoutEvents(event.data);
@@ -242,7 +188,7 @@ export default function CheckoutClient({
             variant: "one-page",
             displayMode: "inline",
             theme: theme,
-            locale: "en",
+            locale: lang,
             allowLogout: !userId,
             frameInitialHeight: 450,
             frameTarget: "checkout-frame",
