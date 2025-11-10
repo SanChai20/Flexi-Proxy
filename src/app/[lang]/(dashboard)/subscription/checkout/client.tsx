@@ -3,7 +3,7 @@
 import {
   CheckoutEventsData,
   CheckoutEventsTimePeriodInterval,
-  type Environments,
+  Environments,
   initializePaddle,
   type Paddle,
 } from "@paddle/paddle-js";
@@ -80,10 +80,8 @@ function SummaryContent({
 }
 
 function OrderSummary({
-  quantity,
   checkoutData,
 }: {
-  quantity: number;
   checkoutData?: CheckoutEventsData | null;
 }) {
   const [billingCycle, setBillingCycle] = useState<
@@ -198,7 +196,28 @@ export default function CheckoutClient({
   const [checkoutData, setCheckoutData] = useState<CheckoutEventsData | null>(
     null
   );
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
   const router = useRouter();
+
+  // 检测系统主题
+  useEffect(() => {
+    // 初始化时检测系统主题
+    const darkModeMediaQuery = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    );
+    setTheme(darkModeMediaQuery.matches ? "dark" : "light");
+
+    // 监听系统主题变化
+    const handleThemeChange = (e: MediaQueryListEvent) => {
+      setTheme(e.matches ? "dark" : "light");
+    };
+
+    darkModeMediaQuery.addEventListener("change", handleThemeChange);
+
+    return () => {
+      darkModeMediaQuery.removeEventListener("change", handleThemeChange);
+    };
+  }, []);
 
   const handleCheckoutEvents = (event: CheckoutEventsData) => {
     setCheckoutData(event);
@@ -212,14 +231,10 @@ export default function CheckoutClient({
   );
 
   useEffect(() => {
-    if (
-      !paddle?.Initialized &&
-      process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN &&
-      process.env.NEXT_PUBLIC_PADDLE_ENV
-    ) {
+    if (!paddle?.Initialized && process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN) {
       initializePaddle({
         token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
-        environment: process.env.NEXT_PUBLIC_PADDLE_ENV as Environments,
+        environment: "sandbox",
         eventCallback: async (event) => {
           if (event.data && event.name) {
             handleCheckoutEvents(event.data);
@@ -281,7 +296,7 @@ export default function CheckoutClient({
               </div>
 
               {/* Summary Content */}
-              <OrderSummary quantity={quantity} checkoutData={checkoutData} />
+              <OrderSummary checkoutData={checkoutData} />
             </div>
 
             {/* Payment Section - Right Side */}
