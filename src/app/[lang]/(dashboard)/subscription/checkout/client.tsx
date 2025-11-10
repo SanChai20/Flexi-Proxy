@@ -199,15 +199,12 @@ export default function CheckoutClient({
   const [theme, setTheme] = useState<"light" | "dark">("dark");
   const router = useRouter();
 
-  // 检测系统主题
   useEffect(() => {
-    // 初始化时检测系统主题
     const darkModeMediaQuery = window.matchMedia(
       "(prefers-color-scheme: dark)"
     );
     setTheme(darkModeMediaQuery.matches ? "dark" : "light");
 
-    // 监听系统主题变化
     const handleThemeChange = (e: MediaQueryListEvent) => {
       setTheme(e.matches ? "dark" : "light");
     };
@@ -244,13 +241,12 @@ export default function CheckoutClient({
           settings: {
             variant: "one-page",
             displayMode: "inline",
-            theme: "dark",
+            theme: theme,
             locale: "en",
             allowLogout: !userId,
             frameInitialHeight: 450,
             frameTarget: "checkout-frame",
-            frameStyle:
-              "width: 100%; background-color: transparent; border: none",
+            frameStyle: "width: 100%; border: none",
             successUrl: "/subscription/success",
           },
         },
@@ -268,7 +264,13 @@ export default function CheckoutClient({
           console.error(error);
         });
     }
-  }, [paddle?.Initialized, priceId, userId]);
+  }, [paddle?.Initialized, priceId, userId, theme]);
+
+  useEffect(() => {
+    if (paddle?.Initialized) {
+      paddle.Update({ checkout: { settings: { theme: theme } } });
+    }
+  }, [theme, paddle]);
 
   useEffect(() => {
     if (paddle && priceId && paddle.Initialized) {
@@ -283,7 +285,7 @@ export default function CheckoutClient({
         <div className="mx-auto max-w-7xl">
           {/* Grid Layout */}
           <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-            {/* Order Summary Section - Left Side */}
+            {/* Order Summary Section */}
             <div className="space-y-6">
               {/* Section Header */}
               <div className="flex items-center gap-3">
@@ -299,7 +301,7 @@ export default function CheckoutClient({
               <OrderSummary checkoutData={checkoutData} />
             </div>
 
-            {/* Payment Section - Right Side */}
+            {/* Payment Section */}
             <div className="space-y-6">
               {/* Section Header */}
               <div className="flex items-center gap-3">
@@ -313,7 +315,7 @@ export default function CheckoutClient({
 
               {/* Payment Frame Container */}
               <div className="overflow-hidden rounded-xl border border-border bg-gradient-to-br from-card to-card/50 shadow-lg backdrop-blur-sm">
-                <div className="checkout-frame min-h-[450px]" />
+                <div className="checkout-frame min-h-[450px] px-6 py-4" />
               </div>
             </div>
           </div>
