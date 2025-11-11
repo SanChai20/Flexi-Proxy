@@ -1,10 +1,6 @@
 import { Paddle, EventName, Environment } from "@paddle/paddle-node-sdk";
 import { NextRequest, NextResponse } from "next/server";
 
-const paddle = new Paddle((process.env.PADDLE_API_KEY as string) || "", {
-  environment: process.env.NEXT_PUBLIC_PADDLE_ENV as Environment,
-});
-
 export async function POST(req: NextRequest) {
   try {
     //     const signature = (req.headers.get("paddle-signature") as string) || null;

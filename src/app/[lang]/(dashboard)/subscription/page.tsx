@@ -5,16 +5,21 @@ import { Metadata } from "next";
 import { Suspense } from "react";
 import SubscriptionSkeleton from "./skeleton";
 import SubscriptionClient from "./client";
-import { getCachedUserPermissions, getPriceDetails } from "@/lib/actions";
+import {
+  getCachedUserPermissions,
+  getPriceDetails,
+  getSubscription,
+} from "@/lib/actions";
 
 export const metadata: Metadata = {
   title: "FlexiProxy - Subscription Plans",
 };
 
 async function SubscriptionContent({ dict }: { dict: any }) {
-  const [permissions, price] = await Promise.all([
+  const [permissions, price, subscription] = await Promise.all([
     getCachedUserPermissions(),
     getPriceDetails(),
+    getSubscription(),
   ]);
 
   return (

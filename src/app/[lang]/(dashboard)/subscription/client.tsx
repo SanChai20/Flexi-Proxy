@@ -6,7 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Check, Loader2, Minus, Plus } from "lucide-react";
 import { useState } from "react";
-import { updateUserPermissions, checkUserLoggedIn } from "@/lib/actions";
+import {
+  updateUserPermissions,
+  checkUserLoggedIn,
+  cancelSubscription,
+  updateSubscription,
+} from "@/lib/actions";
 import { useRouter, usePathname } from "next/navigation";
 
 interface SubscriptionClientProps {
@@ -21,6 +26,7 @@ interface SubscriptionClientProps {
     amount: string;
     currency: string;
   };
+  subscription: {} | null;
 }
 
 const MIN_INSTANCES = 1;
@@ -71,9 +77,10 @@ export default function SubscriptionClient({
         router.push("/verification");
         return;
       }
+      await updateSubscription(instanceCount);
+      router.refresh();
     } catch (error) {
       console.error("Update subscription error:", error);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -87,9 +94,25 @@ export default function SubscriptionClient({
         router.push("/verification");
         return;
       }
+      await cancelSubscription();
+      router.refresh();
     } catch (error) {
       console.error("Cancel subscription error:", error);
-    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleReactiveSubscription = async () => {
+    console.log("handleReactiveSubscription called");
+    setIsLoading(true);
+    try {
+      const isLoggedIn = await checkUserLoggedIn();
+      if (!isLoggedIn) {
+        router.push("/verification");
+        return;
+      }
+    } catch (error) {
+      console.error("Reactive subscription error:", error);
       setIsLoading(false);
     }
   };

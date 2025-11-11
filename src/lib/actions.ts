@@ -19,6 +19,7 @@ import { ec2 } from "./aws";
 import { ProductEntity } from "creem/models/components";
 import { creem } from "./creem";
 import { paddle } from "./paddle";
+import { Subscription } from "@paddle/paddle-node-sdk";
 
 // Get all proxy servers
 export async function getAllPublicProxyServers(): Promise<
@@ -1235,47 +1236,134 @@ export async function fetchConsoleLogs(
   }
 }
 
-export async function getPriceDetails(
-  priceId?: string
-): Promise<{ id: string; amount: string; currency: string }> {
+export async function getPriceDetails(): Promise<{
+  id: string;
+  amount: string;
+  currency: string;
+}> {
   try {
-    const price = await paddle.prices.get(
-      priceId || process.env.PADDLE_PRICE_ID || ""
-    );
+    const price = await paddle.prices.get(process.env.PADDLE_PRICE_ID || "");
     return {
-      id: priceId || process.env.PADDLE_PRICE_ID || "",
+      id: process.env.PADDLE_PRICE_ID || "",
       amount: price.unitPrice.amount,
       currency: price.unitPrice.currencyCode,
     };
   } catch (error) {
     console.error("Error fetching product details:", error);
     return {
-      id: priceId || process.env.PADDLE_PRICE_ID || "",
+      id: process.env.PADDLE_PRICE_ID || "",
       amount: "1900",
       currency: "USD",
     };
   }
 }
 
-export async function createCheckoutSession(
-  productId?: string,
-  units: number = 1
-): Promise<string | undefined> {
+export async function getSubscription(): Promise<{
+  isActive: boolean;
+  nextBilledAt: string | null;
+} | null> {
+  if (process.env.SUBSCRIPTION_KEY_PREFIX === undefined) {
+    console.error("getSubscriptionId - SUBSCRIPTION_KEY_PREFIX env not set");
+    return null;
+  }
   const session = await auth();
   if (!session?.user?.id) {
-    return undefined;
+    return null;
   }
   const userId = session.user.id;
-  const checkOutResult = await creem.createCheckout({
-    xApiKey: process.env.CREEM_API_KEY || "",
-    createCheckoutRequest: {
-      productId: productId || process.env.CREEM_PRODUCT_ID || "",
-      units: units,
-      customer: {
-        id: userId,
-        email: session.user.email || undefined,
-      },
-    },
-  });
-  return checkOutResult?.checkoutUrl;
+  try {
+    const subscriptionId = await redis.get<string>(
+      [process.env.SUBSCRIPTION_KEY_PREFIX, userId].join(":")
+    );
+    if (subscriptionId === null) {
+      return null;
+    }
+    // Pass the subscription id to get
+    const subscription: Subscription = await paddle.subscriptions.get(
+      subscriptionId
+    );
+    // Returns a subscription entity
+    return {
+      isActive: subscription.status === "active",
+      nextBilledAt: subscription.nextBilledAt,
+    };
+  } catch (e) {
+    console.error(`Error fetching subscription: `, e);
+    return null;
+  }
+}
+
+export async function cancelSubscription(): Promise<boolean> {
+  if (process.env.SUBSCRIPTION_KEY_PREFIX === undefined) {
+    console.error("getSubscriptionId - SUBSCRIPTION_KEY_PREFIX env not set");
+    return false;
+  }
+  const session = await auth();
+  if (!session?.user?.id) {
+    return false;
+  }
+  const userId = session.user.id;
+  try {
+    const subscriptionId = await redis.get<string>(
+      [process.env.SUBSCRIPTION_KEY_PREFIX, userId].join(":")
+    );
+    if (subscriptionId === null) {
+      return false;
+    }
+    await paddle.subscriptions.cancel(subscriptionId, {
+      effectiveFrom: "next_billing_period",
+    });
+    return true;
+  } catch (e) {
+    console.error(`Error canceling subscription: `, e);
+    return false;
+  }
+}
+
+export async function reactivateSubscription(): Promise<boolean> {
+  const session = await auth();
+  if (!session?.user?.id) return false;
+  const userId = session.user.id;
+  try {
+    const subscriptionId = await redis.get<string>(
+      [process.env.SUBSCRIPTION_KEY_PREFIX, userId].join(":")
+    );
+
+    if (!subscriptionId) return false;
+    await paddle.subscriptions.update(subscriptionId, {
+      scheduledChange: null,
+    });
+    return true;
+  } catch (error) {
+    console.error("Error reactivating subscription:", error);
+    return false;
+  }
+}
+
+export async function updateSubscription(
+  instanceCount: number
+): Promise<boolean> {
+  const session = await auth();
+  if (!session?.user?.id) return false;
+  const userId = session.user.id;
+  try {
+    const subscriptionId = await redis.get<string>(
+      [process.env.SUBSCRIPTION_KEY_PREFIX, userId].join(":")
+    );
+
+    if (!subscriptionId) return false;
+    await paddle.subscriptions.update(subscriptionId, {
+      items: [
+        {
+          priceId: process.env.PADDLE_PRICE_ID || "",
+          quantity: instanceCount,
+        },
+      ],
+      prorationBillingMode: "full_next_billing_period",
+    });
+    return true;
+  } catch (error) {
+    console.error("Error updating subscription:", error);
+    return false;
+  }
 }
