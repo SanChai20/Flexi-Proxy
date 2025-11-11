@@ -4,7 +4,7 @@
 
 ### 2. What is the maximum number of proxy token pass I can create at the same time?
 
-> Free users are currently allowed up to three token passes. If you need to create more, please contact us or stay tuned for future updates.
+> Free users are currently allowed up to ten token passes. If you need to create more, please contact us or stay tuned for future updates.
 
 ### 3. Why are there multiple options available for the proxy gateway service?
 

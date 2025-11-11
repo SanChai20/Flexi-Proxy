@@ -104,7 +104,6 @@ export default function SubscriptionClient({
       }
     } catch (error) {
       console.error("Update subscription error:", error);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -124,7 +123,6 @@ export default function SubscriptionClient({
       }
     } catch (error) {
       console.error("Cancel subscription error:", error);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -144,7 +142,6 @@ export default function SubscriptionClient({
       }
     } catch (error) {
       console.error("Reactivate subscription error:", error);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -208,7 +205,7 @@ export default function SubscriptionClient({
         dict?.subscription?.free?.description ||
         "Perfect for individuals and small projects",
       features: dict?.subscription?.free?.features || [
-        "Up to 3 access tokens",
+        "Up to 10 access tokens",
         "Cannot create private gateways",
         "Basic support",
         "Community access",

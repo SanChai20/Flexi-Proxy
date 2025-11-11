@@ -714,8 +714,8 @@ interface UserPermissions {
 }
 
 const DefaultUserPermissions: UserPermissions = {
-  maa: 3,
-  mppa: 1,
+  maa: 10,
+  mppa: 0,
   adv: false,
 };
 
@@ -753,15 +753,13 @@ export async function checkUserLoggedIn(): Promise<boolean> {
 }
 
 export async function updateUserPermissions(
+  userId: string,
   updates: Partial<UserPermissions>
 ): Promise<boolean> {
   if (!process.env.PERMISSIONS_PREFIX) {
     console.error("PERMISSIONS_PREFIX not set");
     return false;
   }
-  const session = await auth();
-  const userId = session?.user?.id;
-  if (!userId) return false;
   try {
     const key = `${process.env.PERMISSIONS_PREFIX}:${userId}`;
     const current = await redis.get<UserPermissions>(key);
@@ -1288,7 +1286,6 @@ export async function getSubscription(): Promise<{
       subscriptionId
     );
 
-    // 获取当前订阅的数量
     const currentQuantity = subscription.items[0]?.quantity || 1;
 
     // Returns a subscription entity with full details
