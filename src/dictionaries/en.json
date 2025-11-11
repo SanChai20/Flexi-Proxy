@@ -99,7 +99,18 @@
       ],
       "button": "Subscribe to Pro",
       "buttonCancel": "Cancel Subscription",
-      "buttonUpdate": "Update Subscription"
+      "buttonUpdate": "Update Subscription (Next Period)",
+      "buttonReactivate": "Reactivate Subscription"
+    },
+    "status": {
+      "active": "Subscription Active",
+      "pendingCancellation": "Pending Cancellation",
+      "willExpireOn": "Your subscription will expire on",
+      "expire": "",
+      "canStillUse": "You can still use all Pro features until then.",
+      "currentQuantity": "Current subscription:",
+      "instances": "instances",
+      "nextBillingDate": "Next billing date:"
     },
     "instances": "instances",
     "instanceCount": "Number of Private Gateway Instances",

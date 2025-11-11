@@ -4,15 +4,23 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Check, Loader2, Minus, Plus } from "lucide-react";
+import {
+  Check,
+  Loader2,
+  Minus,
+  Plus,
+  AlertCircle,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
 import { useState } from "react";
 import {
-  updateUserPermissions,
   checkUserLoggedIn,
   cancelSubscription,
   updateSubscription,
+  reactivateSubscription,
 } from "@/lib/actions";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface SubscriptionClientProps {
   dict: any;
@@ -26,7 +34,15 @@ interface SubscriptionClientProps {
     amount: string;
     currency: string;
   };
-  subscription: {} | null;
+  subscription: {
+    isActive: boolean;
+    isCanceled: boolean;
+    status: string;
+    nextBilledAt: string | null;
+    canceledAt: string | null;
+    currentQuantity: number;
+    scheduledChange: any;
+  } | null;
 }
 
 const MIN_INSTANCES = 1;
@@ -36,16 +52,22 @@ export default function SubscriptionClient({
   dict,
   permissions,
   price,
+  subscription,
 }: SubscriptionClientProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+
+  // 初始化实例数量
+  const initialQuantity =
+    subscription?.currentQuantity || permissions.mppa || 1;
   const [instanceCount, setInstanceCount] = useState(
-    Math.min(
-      MAX_INSTANCES,
-      Math.max(MIN_INSTANCES, permissions.adv ? permissions.mppa : 1)
-    )
+    Math.min(MAX_INSTANCES, Math.max(MIN_INSTANCES, initialQuantity))
   );
+
   const isPro = permissions.adv;
+  const hasSubscription = subscription !== null;
+  const isSubscriptionActive = subscription?.isActive || false;
+  const isSubscriptionCanceled = subscription?.isCanceled || false;
 
   const handleSubscribe = async () => {
     console.log("handleSubscribe called");
@@ -56,7 +78,6 @@ export default function SubscriptionClient({
         router.push("/verification");
         return;
       }
-      // Redirect to checkout with selected quantity
       router.push(
         `/subscription/checkout?priceId=${encodeURIComponent(
           price.id
@@ -77,10 +98,13 @@ export default function SubscriptionClient({
         router.push("/verification");
         return;
       }
-      await updateSubscription(instanceCount);
-      router.refresh();
+      const success = await updateSubscription(instanceCount);
+      if (success) {
+        router.refresh();
+      }
     } catch (error) {
       console.error("Update subscription error:", error);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -94,16 +118,19 @@ export default function SubscriptionClient({
         router.push("/verification");
         return;
       }
-      await cancelSubscription();
-      router.refresh();
+      const success = await cancelSubscription();
+      if (success) {
+        router.refresh();
+      }
     } catch (error) {
       console.error("Cancel subscription error:", error);
+    } finally {
       setIsLoading(false);
     }
   };
 
-  const handleReactiveSubscription = async () => {
-    console.log("handleReactiveSubscription called");
+  const handleReactivateSubscription = async () => {
+    console.log("handleReactivateSubscription called");
     setIsLoading(true);
     try {
       const isLoggedIn = await checkUserLoggedIn();
@@ -111,8 +138,13 @@ export default function SubscriptionClient({
         router.push("/verification");
         return;
       }
+      const success = await reactivateSubscription();
+      if (success) {
+        router.refresh();
+      }
     } catch (error) {
-      console.error("Reactive subscription error:", error);
+      console.error("Reactivate subscription error:", error);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -127,16 +159,9 @@ export default function SubscriptionClient({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    if (value === "") return;
 
-    // Allow empty string for user to clear and retype
-    if (value === "") {
-      return;
-    }
-
-    // Parse the value and ensure it's a valid number
     const numValue = parseInt(value, 10);
-
-    // Only update if it's a valid number and within range
     if (
       !isNaN(numValue) &&
       numValue >= MIN_INSTANCES &&
@@ -144,13 +169,11 @@ export default function SubscriptionClient({
     ) {
       setInstanceCount(numValue);
     } else if (!isNaN(numValue) && numValue > MAX_INSTANCES) {
-      // If user tries to enter more than max, set to max
       setInstanceCount(MAX_INSTANCES);
     }
   };
 
   const handleInputBlur = () => {
-    // Ensure we have a valid instance count when user leaves the input
     if (instanceCount < MIN_INSTANCES || isNaN(instanceCount)) {
       setInstanceCount(MIN_INSTANCES);
     } else if (instanceCount > MAX_INSTANCES) {
@@ -158,8 +181,22 @@ export default function SubscriptionClient({
     }
   };
 
+  // 计算价格
   const totalPrice = parseInt(price.amount) * instanceCount * 0.01;
-  const hasQuantityChanged = isPro && instanceCount !== permissions.mppa;
+
+  // 判断数量是否改变
+  const hasQuantityChanged = isPro && instanceCount !== initialQuantity;
+
+  // 格式化日期
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("zh-CN", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
 
   const plans = [
     {
@@ -207,6 +244,69 @@ export default function SubscriptionClient({
           {dict?.subscription?.subtitle || "Choose the plan that works for you"}
         </p>
       </div>
+
+      {/* Subscription Status Alert */}
+      {hasSubscription && isSubscriptionActive && (
+        <div className="mb-6">
+          <Card
+            className={`p-4 ${
+              isSubscriptionCanceled
+                ? "border-yellow-500 bg-yellow-50 dark:bg-yellow-950"
+                : "border-green-500 bg-green-50 dark:bg-green-950"
+            }`}
+          >
+            <div className="flex items-start gap-3">
+              {isSubscriptionCanceled ? (
+                <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5" />
+              ) : (
+                <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5" />
+              )}
+              <div className="flex-1">
+                <h3
+                  className={`font-semibold mb-1 ${
+                    isSubscriptionCanceled
+                      ? "text-yellow-900 dark:text-yellow-100"
+                      : "text-green-900 dark:text-green-100"
+                  }`}
+                >
+                  {isSubscriptionCanceled
+                    ? dict?.subscription?.status?.pendingCancellation ||
+                      "待取消"
+                    : dict?.subscription?.status?.active || "订阅有效"}
+                </h3>
+                <p
+                  className={`text-sm ${
+                    isSubscriptionCanceled
+                      ? "text-yellow-800 dark:text-yellow-200"
+                      : "text-green-800 dark:text-green-200"
+                  }`}
+                >
+                  {isSubscriptionCanceled ? (
+                    <>
+                      {dict?.subscription?.status?.willExpireOn ||
+                        "您的订阅将于"}{" "}
+                      <strong>{formatDate(subscription.nextBilledAt)}</strong>{" "}
+                      {dict?.subscription?.status?.expire || "到期"}。
+                      {dict?.subscription?.status?.canStillUse ||
+                        "在此之前您仍可使用所有Pro功能。"}
+                    </>
+                  ) : (
+                    <>
+                      {dict?.subscription?.status?.currentQuantity ||
+                        "当前订阅"}{" "}
+                      <strong>{subscription.currentQuantity}</strong>{" "}
+                      {dict?.subscription?.status?.instances || "个实例"}。
+                      {dict?.subscription?.status?.nextBillingDate ||
+                        "下次计费日期："}{" "}
+                      <strong>{formatDate(subscription.nextBilledAt)}</strong>
+                    </>
+                  )}
+                </p>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
 
       {/* Plans Grid */}
       <div className="grid md:grid-cols-2 gap-6">
@@ -259,7 +359,7 @@ export default function SubscriptionClient({
               ))}
             </ul>
 
-            {/* Instance Counter */}
+            {/* Instance Counter - Only show for Pro plan */}
             {plan.id === "pro" && (
               <div className="mb-6">
                 <label className="text-sm font-medium mb-2 block">
@@ -316,17 +416,14 @@ export default function SubscriptionClient({
               <div className="space-y-2">
                 {isPro ? (
                   <>
-                    {hasQuantityChanged && (
+                    {/* 如果订阅已取消，显示重新激活按钮 */}
+                    {isSubscriptionCanceled ? (
                       <Button
                         type="button"
                         className="w-full"
                         variant="default"
                         disabled={isLoading}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleUpdateSubscription();
-                        }}
+                        onClick={handleReactivateSubscription}
                       >
                         {isLoading ? (
                           <>
@@ -334,44 +431,62 @@ export default function SubscriptionClient({
                             {dict?.subscription?.processing || "Processing..."}
                           </>
                         ) : (
-                          dict?.subscription?.pro?.buttonUpdate ||
-                          "Update Subscription"
+                          dict?.subscription?.pro?.buttonReactivate ||
+                          "重新激活订阅"
                         )}
                       </Button>
+                    ) : (
+                      <>
+                        {/* 如果数量改变，显示更新按钮 */}
+                        {hasQuantityChanged && (
+                          <Button
+                            type="button"
+                            className="w-full"
+                            variant="default"
+                            disabled={isLoading}
+                            onClick={handleUpdateSubscription}
+                          >
+                            {isLoading ? (
+                              <>
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                {dict?.subscription?.processing ||
+                                  "Processing..."}
+                              </>
+                            ) : (
+                              dict?.subscription?.pro?.buttonUpdate ||
+                              "更新订阅（下周期生效）"
+                            )}
+                          </Button>
+                        )}
+                        {/* 取消订阅按钮 */}
+                        <Button
+                          type="button"
+                          className="w-full"
+                          variant="outline"
+                          disabled={isLoading}
+                          onClick={handleCancelSubscription}
+                        >
+                          {isLoading ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              {dict?.subscription?.processing ||
+                                "Processing..."}
+                            </>
+                          ) : (
+                            dict?.subscription?.pro?.buttonCancel || "取消订阅"
+                          )}
+                        </Button>
+                      </>
                     )}
-                    <Button
-                      type="button"
-                      className="w-full"
-                      variant="outline"
-                      disabled={isLoading}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleCancelSubscription();
-                      }}
-                    >
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          {dict?.subscription?.processing || "Processing..."}
-                        </>
-                      ) : (
-                        dict?.subscription?.pro?.buttonCancel ||
-                        "Cancel Subscription"
-                      )}
-                    </Button>
                   </>
                 ) : (
+                  /* 如果没有订阅或订阅已过期，显示订阅按钮 */
                   <Button
                     type="button"
                     className="w-full"
                     variant="default"
                     disabled={isLoading}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleSubscribe();
-                    }}
+                    onClick={handleSubscribe}
                   >
                     {isLoading ? (
                       <>

@@ -136,7 +136,18 @@
       ],
       "button": "订阅专业版",
       "buttonCancel": "取消订阅",
-      "buttonUpdate": "更新订阅"
+      "buttonUpdate": "更新订阅（下周期生效）",
+      "buttonReactivate": "重新激活订阅"
+    },
+    "status": {
+      "active": "订阅有效",
+      "pendingCancellation": "订阅待取消",
+      "willExpireOn": "您的订阅将于",
+      "expire": "到期",
+      "canStillUse": "在此之前您仍可使用所有Pro功能。",
+      "currentQuantity": "当前订阅",
+      "instances": "个实例",
+      "nextBillingDate": "下次计费日期："
     },
     "instances": "实例",
     "instanceCount": "私有网关实例数量",

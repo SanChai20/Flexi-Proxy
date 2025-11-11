@@ -23,7 +23,12 @@ async function SubscriptionContent({ dict }: { dict: any }) {
   ]);
 
   return (
-    <SubscriptionClient permissions={permissions} dict={dict} price={price} />
+    <SubscriptionClient
+      permissions={permissions}
+      dict={dict}
+      price={price}
+      subscription={subscription}
+    />
   );
 }
 

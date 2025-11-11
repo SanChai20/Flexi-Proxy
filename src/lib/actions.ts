@@ -1260,7 +1260,12 @@ export async function getPriceDetails(): Promise<{
 
 export async function getSubscription(): Promise<{
   isActive: boolean;
+  isCanceled: boolean;
+  status: string;
   nextBilledAt: string | null;
+  canceledAt: string | null;
+  currentQuantity: number;
+  scheduledChange: any;
 } | null> {
   if (process.env.SUBSCRIPTION_KEY_PREFIX === undefined) {
     console.error("getSubscriptionId - SUBSCRIPTION_KEY_PREFIX env not set");
@@ -1282,10 +1287,20 @@ export async function getSubscription(): Promise<{
     const subscription: Subscription = await paddle.subscriptions.get(
       subscriptionId
     );
-    // Returns a subscription entity
+
+    // 获取当前订阅的数量
+    const currentQuantity = subscription.items[0]?.quantity || 1;
+
+    // Returns a subscription entity with full details
     return {
       isActive: subscription.status === "active",
+      isCanceled:
+        subscription.canceledAt !== null && subscription.status === "active",
+      status: subscription.status,
       nextBilledAt: subscription.nextBilledAt,
+      canceledAt: subscription.canceledAt,
+      currentQuantity: currentQuantity,
+      scheduledChange: subscription.scheduledChange,
     };
   } catch (e) {
     console.error(`Error fetching subscription: `, e);
