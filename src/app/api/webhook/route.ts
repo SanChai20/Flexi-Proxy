@@ -6,29 +6,79 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     const signature = (req.headers.get("paddle-signature") as string) || null;
-    if (signature === null) {
+    if (!signature) {
+      console.error("[WEBHOOK] Missing paddle-signature header");
       return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
     }
-    const secretKey = process.env.PADDLE_WEBHOOK_SECRET || "";
+
+    const secretKey = process.env.PADDLE_WEBHOOK_SECRET;
+    if (!secretKey) {
+      console.error("[WEBHOOK] PADDLE_WEBHOOK_SECRET not configured");
+      return NextResponse.json(
+        { error: "Server configuration error" },
+        { status: 500 }
+      );
+    }
+
     const payload = await req.json();
-    const eventData = await paddle.webhooks.unmarshal(
-      JSON.stringify(payload),
-      secretKey,
-      signature
-    );
+
+    let eventData;
+    try {
+      eventData = await paddle.webhooks.unmarshal(
+        JSON.stringify(payload),
+        secretKey,
+        signature
+      );
+    } catch (error) {
+      console.error("[WEBHOOK] Signature verification failed:", error);
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+    }
+
+    const eventId = eventData.eventId || payload.event_id;
+    if (eventId) {
+      const alreadyProcessed = await redis.get(
+        [process.env.PROCESSING_EVENT_PREFIX, eventId].join(":")
+      );
+      if (alreadyProcessed !== null) {
+        console.log(`[WEBHOOK] Event ${eventId} already processed, skipping`);
+        return NextResponse.json(
+          { success: true, message: "Event already processed" },
+          { status: 200 }
+        );
+      }
+      await redis.set(
+        [process.env.PROCESSING_EVENT_PREFIX, eventId].join(":"),
+        Date.now(),
+        { ex: 86400 }
+      ); // 24 hours expiration
+    }
+    console.log(`[WEBHOOK] Processing event: ${eventData.eventType}`, {
+      eventId,
+      timestamp: new Date().toISOString(),
+    });
 
     switch (eventData.eventType) {
       // 下一个订单周期取消，下一个订单周期开始才会触发这个Canceled事件
       case EventName.SubscriptionCanceled:
         const subscriptionId = eventData.data.id;
+        if (!subscriptionId) {
+          console.error("[WEBHOOK] Missing subscription ID");
+          break;
+        }
         const userId = await redis.get(
           [process.env.SUBSCRIPTION_KEY_PREFIX, subscriptionId].join(":")
         );
+        if (!userId) {
+          console.error(
+            `[WEBHOOK] No user found for subscription ID: ${subscriptionId}`
+          );
+          break;
+        }
         let transaction = redis.multi();
         transaction.set([process.env.PERMISSIONS_PREFIX, userId].join(":"), {
-          maa: 3, // max adapters allowed
+          maa: 10, // max adapters allowed
           mppa: 0, // max private proxies allowed
-          adv: "free", // free
+          adv: false, // free
         });
         transaction.del(
           [process.env.SUBSCRIPTION_KEY_PREFIX, subscriptionId].join(":")
@@ -39,6 +89,9 @@ export async function POST(req: NextRequest) {
         // release instances
 
         await transaction.exec();
+        console.log(
+          `[WEBHOOK] Subscription ${subscriptionId} canceled for user ${userId}`
+        );
         break;
       case EventName.SubscriptionPastDue:
         // 主动修改User Subscription Plan，但是可以不同删除SubscriptionID
@@ -59,7 +112,7 @@ export async function POST(req: NextRequest) {
             {
               maa: 10, // max adapters allowed
               mppa: item.quantity, // max private proxies allowed
-              adv: "pro", // pro
+              adv: true, // pro
             }
           );
           transaction.set(
