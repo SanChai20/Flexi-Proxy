@@ -17,6 +17,7 @@ interface CheckoutClientProps {
   quantity: number;
   priceId: string;
   userId: string;
+  userEmail?: string;
 }
 
 type CurrencyCode = string;
@@ -142,6 +143,7 @@ export default function CheckoutClient({
   quantity,
   priceId,
   userId,
+  userEmail,
 }: CheckoutClientProps) {
   const [paddle, setPaddle] = useState<Paddle | null>(null);
   const [checkoutData, setCheckoutData] = useState<CheckoutEventsData | null>(
@@ -207,7 +209,7 @@ export default function CheckoutClient({
           if (paddle && priceId) {
             setPaddle(paddle);
             paddle.Checkout.open({
-              ...(userId && { customData: { userId } }),
+              ...(userId && { customData: { userId, userEmail } }),
               items: [{ priceId: priceId, quantity: quantity }],
             });
           }

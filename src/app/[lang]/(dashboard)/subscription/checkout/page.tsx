@@ -15,12 +15,14 @@ async function CheckoutContent({
   quantity,
   id,
   userId,
+  userEmail,
 }: {
   dict: any;
   lang: string;
   quantity: number;
   id: string;
   userId: string;
+  userEmail: string;
 }) {
   return (
     <CheckoutClient
@@ -29,6 +31,7 @@ async function CheckoutContent({
       priceId={id}
       quantity={quantity}
       userId={userId}
+      userEmail={userEmail}
     />
   );
 }
@@ -54,6 +57,7 @@ export default async function CheckoutPage(
         quantity={parseInt(quantity)}
         id={priceId}
         userId={session.user.id}
+        userEmail={session.user.email || ""}
       />
     </section>
   );
