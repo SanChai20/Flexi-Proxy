@@ -40,7 +40,9 @@
     "send": "发送消息",
     "sending": "发送中...",
     "success": "感谢您的消息！我们会尽快回复您",
-    "error": "发送消息失败"
+    "error": "发送消息失败",
+    "officialEmail": "官方邮箱",
+    "emailDescription": "您也可以直接发送邮件至我们的官方邮箱："
   },
   "user": {
     "signout": "登出"

@@ -60,6 +60,8 @@ export async function POST(req: NextRequest) {
     switch (eventData.eventType) {
       // 下一个订单周期取消，下一个订单周期开始才会触发这个Canceled事件
       case EventName.SubscriptionCanceled:
+      // 过期资源释放
+      case EventName.SubscriptionPastDue:
         const subscriptionId = eventData.data.id;
         if (!subscriptionId) {
           console.error("[WEBHOOK] Missing subscription ID");
@@ -92,12 +94,6 @@ export async function POST(req: NextRequest) {
         console.log(
           `[WEBHOOK] Subscription ${subscriptionId} canceled for user ${userId}`
         );
-        break;
-      case EventName.SubscriptionPastDue:
-        // 主动修改User Subscription Plan，但是可以不同删除SubscriptionID
-
-        //TODO...添加过期记录
-
         break;
       case EventName.TransactionCompleted:
         // Only support one item per transaction for now

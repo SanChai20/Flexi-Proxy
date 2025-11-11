@@ -10,7 +10,8 @@ import {
 import { OnceButton } from "@/components/ui/oncebutton";
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
-import { sendContactMessage } from "@/lib/contact";
+import { sendContactMessage, getAdminEmail } from "@/lib/contact";
+import { Mail } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "FlexiProxy - Contact Us",
@@ -19,6 +20,8 @@ export const metadata: Metadata = {
 export default async function ContactPage(props: PageProps<"/[lang]/contact">) {
   const { lang } = await props.params;
   const dict = await getTrans(lang as Locale);
+  const adminEmail = await getAdminEmail();
+
   return (
     <section className="w-full max-w-4xl mx-auto overflow-x-auto px-0 select-none">
       <Card>
@@ -90,6 +93,35 @@ export default async function ContactPage(props: PageProps<"/[lang]/contact">) {
               </OnceButton>
             </div>
           </form>
+
+          {adminEmail && (
+            <>
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-card px-2 text-muted-foreground">
+                    {dict?.contact?.officialEmail || "Official Email"}
+                  </span>
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-input bg-muted/50 p-4">
+                <p className="text-sm text-muted-foreground mb-3">
+                  {dict?.contact?.emailDescription ||
+                    "You can also send an email directly to our official email:"}
+                </p>
+                <a
+                  href={`mailto:${adminEmail}`}
+                  className="flex items-center gap-2 text-base font-medium text-primary hover:underline"
+                >
+                  <Mail className="h-5 w-5" />
+                  {adminEmail}
+                </a>
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
     </section>

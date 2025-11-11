@@ -40,7 +40,9 @@
     "send": "Send Message",
     "sending": "Sending...",
     "success": "Thank you for your message! We'll get back to you soon.",
-    "error": "Failed to send message. Please try again later."
+    "error": "Failed to send message. Please try again later.",
+    "officialEmail": "Official Email",
+    "emailDescription": "You can also send an email directly to our official email:"
   },
   "user": {
     "signout": "Sign Out"

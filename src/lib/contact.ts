@@ -105,6 +105,10 @@ const createEmailTemplate = (data: ContactFormData) => `
 </html>
 `;
 
+export async function getAdminEmail(): Promise<string> {
+  return process.env.ADMIN_EMAIL || "";
+}
+
 export async function sendContactMessage(
   subject: string,
   message: string
