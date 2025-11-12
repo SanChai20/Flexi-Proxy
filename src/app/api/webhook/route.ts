@@ -1,7 +1,7 @@
 import { paddle } from "@/lib/paddle";
 import { redis } from "@/lib/redis";
 import { deleteAllPrivateProxyInstances } from "@/lib/actions";
-import { Paddle, EventName, Environment } from "@paddle/paddle-node-sdk";
+import { EventName } from "@paddle/paddle-node-sdk";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 
