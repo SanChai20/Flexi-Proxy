@@ -1,4 +1,4 @@
-Last Updated: Nov. 6, 2025
+Last Updated: Nov. 12, 2025
 
 ## 1. Acceptance of Terms
 
