@@ -38,7 +38,7 @@ FlexiProxy provides a proxy service that allows users to interface with and call
 
 **5.3 Automatic Renewal**: Your subscription will automatically renew unless you cancel it before the end of the current subscription period.
 
-**5.4 Refund Policy**: All payments are non-refundable. Once you have paid for the service and the service has been activated, no refunds will be issued under any circumstances. By making a payment, you acknowledge and agree to this no-refund policy.
+**5.4 Refund Policy**: We offer a 14-day refund window for all paid subscriptions. If you are not satisfied with our Services for any reason, you may request a full refund within 14 days of your initial purchase or subscription renewal. To request a refund, please contact us through our contact page with your account information and order details. Refunds will be processed within 5-10 business days after approval. Please note that after the 14-day period has expired, all payments become non-refundable.
 
 ## 6. User Content
 
