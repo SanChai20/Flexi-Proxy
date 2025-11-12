@@ -1430,9 +1430,12 @@ export async function deleteAllPrivateProxyInstances(userId: string): Promise<{
     });
 
     const results = await Promise.all(deletePromises);
-    results.forEach((res) => {
+    const successfulKeys: string[] = [];
+
+    results.forEach((res, index) => {
       if (res.success) {
         result.success++;
+        successfulKeys.push(allKeys[index]);
       } else {
         result.failed++;
         if (res.error) {
@@ -1441,12 +1444,12 @@ export async function deleteAllPrivateProxyInstances(userId: string): Promise<{
       }
     });
 
-    if (allKeys.length > 0) {
+    if (successfulKeys.length > 0) {
       try {
         console.log(
-          `[BATCH DELETE] Final cleanup: deleting all ${allKeys.length} keys with prefix ${searchPatternPrefix}`
+          `[BATCH DELETE] Final cleanup: deleting ${successfulKeys.length} successful keys with prefix ${searchPatternPrefix}`
         );
-        await redis.del(...allKeys);
+        await redis.del(...successfulKeys);
       } catch (cleanupError) {
         console.error(
           "[BATCH DELETE] Error during final cleanup:",
