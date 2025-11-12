@@ -1,5 +1,6 @@
 import { paddle } from "@/lib/paddle";
 import { redis } from "@/lib/redis";
+import { deleteAllPrivateProxyInstances } from "@/lib/actions";
 import { Paddle, EventName, Environment } from "@paddle/paddle-node-sdk";
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
@@ -191,6 +192,21 @@ export async function POST(req: NextRequest) {
           }
         }
 
+        console.log(
+          `[WEBHOOK] Starting batch deletion of private proxies for user ${userInfo.uid}`
+        );
+        const deleteResult = await deleteAllPrivateProxyInstances(userInfo.uid);
+        console.log(
+          `[WEBHOOK] Batch deletion completed for user ${userInfo.uid}:`,
+          {
+            total: deleteResult.total,
+            success: deleteResult.success,
+            failed: deleteResult.failed,
+            errors:
+              deleteResult.errors.length > 0 ? deleteResult.errors : undefined,
+          }
+        );
+
         let transaction = redis.multi();
         transaction.set(
           [process.env.PERMISSIONS_PREFIX, userInfo.uid].join(":"),
@@ -206,7 +222,6 @@ export async function POST(req: NextRequest) {
         transaction.del(
           [process.env.SUBSCRIPTION_KEY_PREFIX, userInfo.uid].join(":")
         );
-        // release instances
 
         await transaction.exec();
         console.log(

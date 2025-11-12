@@ -1205,6 +1205,229 @@ export async function deletePrivateProxyInstance(
   }
 }
 
+export async function deleteAllPrivateProxyInstances(userId: string): Promise<{
+  total: number;
+  success: number;
+  failed: number;
+  errors: string[];
+}> {
+  const result = {
+    total: 0,
+    success: 0,
+    failed: 0,
+    errors: [] as string[],
+  };
+
+  if (!userId) {
+    console.error("deleteAllPrivateProxyInstances - Invalid userId");
+    result.errors.push("Invalid userId");
+    return result;
+  }
+
+  if (!process.env.PROXY_PRIVATE_PREFIX) {
+    console.error(
+      "deleteAllPrivateProxyInstances - PROXY_PRIVATE_PREFIX env not set"
+    );
+    result.errors.push("Environment not configured");
+    return result;
+  }
+
+  try {
+    const searchPatternPrefix = `${process.env.PROXY_PRIVATE_PREFIX}:${userId}:`;
+
+    let allKeys: string[] = [];
+    let cursor = 0;
+    let iterations = 0;
+    const MAX_ITERATIONS = 100;
+
+    do {
+      if (iterations++ > MAX_ITERATIONS) {
+        console.error("SCAN exceeded max iterations");
+        result.errors.push("SCAN exceeded max iterations");
+        break;
+      }
+      const [newCursor, keys] = await redis.scan(cursor, {
+        match: `${searchPatternPrefix}*`,
+        count: 100,
+      });
+      allKeys.push(...keys);
+      cursor = Number(newCursor);
+    } while (cursor !== 0);
+
+    result.total = allKeys.length;
+
+    if (allKeys.length === 0) {
+      console.log(`No private proxies found for user ${userId}`);
+      return result;
+    }
+
+    console.log(
+      `[BATCH DELETE] Found ${allKeys.length} private proxies for user ${userId}`
+    );
+
+    const proxyValues = await redis.mget<{ url: string; status: string }[]>(
+      ...allKeys
+    );
+
+    const deletePromises = allKeys.map(async (key, index) => {
+      const proxyId = key.replace(searchPatternPrefix, "");
+      const proxyInfo = proxyValues[index];
+
+      if (!proxyInfo || !proxyInfo.url) {
+        console.error(`Invalid proxy info for key: ${key}`);
+        return {
+          success: false,
+          proxyId,
+          error: "Invalid proxy info",
+        };
+      }
+
+      let subdomain = proxyInfo.url;
+      if (subdomain.startsWith("https://")) {
+        subdomain = subdomain.substring(8);
+      }
+      try {
+        const { CLOUDFLARE_ZONE_ID, SUBDOMAIN_INSTANCE_PREFIX } = process.env;
+
+        if (!CLOUDFLARE_ZONE_ID || !SUBDOMAIN_INSTANCE_PREFIX) {
+          return {
+            success: false,
+            proxyId,
+            error: "Environment not configured",
+          };
+        }
+
+        const subdomainInstanceRedisKey = [
+          SUBDOMAIN_INSTANCE_PREFIX,
+          userId,
+          subdomain,
+        ].join(":");
+        const proxyRedisKey = [
+          process.env.PROXY_PRIVATE_PREFIX,
+          userId,
+          proxyId,
+        ].join(":");
+        const proxyModelsKey = [process.env.PROXY_MODELS_PREFIX, proxyId].join(
+          ":"
+        );
+
+        const instanceId = await redis.get<string>(subdomainInstanceRedisKey);
+
+        if (!instanceId) {
+          console.warn(
+            `[BATCH DELETE] No instance found for subdomain: ${subdomain}, cleaning up Redis keys`
+          );
+
+          await Promise.all([
+            redis.del(proxyModelsKey),
+            redis.del(subdomainInstanceRedisKey),
+            redis.del(proxyRedisKey),
+          ]);
+          return {
+            success: true,
+            proxyId,
+            warning: "No instance found, Redis cleaned up",
+          };
+        }
+
+        const terminateCommand = new TerminateInstancesCommand({
+          InstanceIds: [instanceId],
+        });
+
+        const [
+          modelsDeleteResult,
+          subDomainDeleteResult,
+          proxyDeleteResult,
+          TerminateResponse,
+        ] = await Promise.all([
+          redis.del(proxyModelsKey),
+          redis.del(subdomainInstanceRedisKey),
+          redis.del(proxyRedisKey),
+          ec2.send(terminateCommand).catch((error) => {
+            console.error(
+              `[BATCH DELETE] EC2 termination failed for ${instanceId}:`,
+              error
+            );
+            return null;
+          }),
+        ]);
+
+        const terminationSuccess =
+          TerminateResponse?.TerminatingInstances?.some(
+            (instance) => instance.InstanceId === instanceId
+          ) ?? false;
+
+        try {
+          const records = await cloudflare.dns.records.list({
+            zone_id: CLOUDFLARE_ZONE_ID,
+            type: "A",
+            name: {
+              exact: subdomain,
+            },
+          });
+
+          if (records.result.length > 0) {
+            await Promise.all(
+              records.result.map((record) =>
+                cloudflare.dns.records
+                  .delete(record.id, {
+                    zone_id: CLOUDFLARE_ZONE_ID,
+                  })
+                  .catch((error) => {
+                    console.error(
+                      `[BATCH DELETE] Failed to delete DNS record ${record.id}:`,
+                      error
+                    );
+                  })
+              )
+            );
+          }
+        } catch (dnsError) {
+          console.error(
+            `[BATCH DELETE] DNS cleanup error for ${subdomain}:`,
+            dnsError
+          );
+        }
+
+        return {
+          success: terminationSuccess || !TerminateResponse,
+          proxyId,
+          instanceId,
+        };
+      } catch (error) {
+        console.error(`[BATCH DELETE] Error deleting proxy ${proxyId}:`, error);
+        return {
+          success: false,
+          proxyId,
+          error: error instanceof Error ? error.message : "Unknown error",
+        };
+      }
+    });
+
+    const results = await Promise.all(deletePromises);
+    results.forEach((res) => {
+      if (res.success) {
+        result.success++;
+      } else {
+        result.failed++;
+        if (res.error) {
+          result.errors.push(`${res.proxyId}: ${res.error}`);
+        }
+      }
+    });
+    console.log(
+      `[BATCH DELETE] Completed for user ${userId}: ${result.success} success, ${result.failed} failed out of ${result.total}`
+    );
+    return result;
+  } catch (error) {
+    console.error("Unexpected error in deleteAllPrivateProxyInstances:", error);
+    result.errors.push(
+      error instanceof Error ? error.message : "Unknown error"
+    );
+    return result;
+  }
+}
+
 export async function fetchConsoleLogs(
   subdomain: string
 ): Promise<undefined | string> {
