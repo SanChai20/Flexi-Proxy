@@ -12,6 +12,7 @@ import {
   AlertCircle,
   CheckCircle2,
   XCircle,
+  Info,
 } from "lucide-react";
 import { useState } from "react";
 import {
@@ -499,6 +500,26 @@ export default function SubscriptionClient({
             )}
           </Card>
         ))}
+      </div>
+
+      {/* Refund Policy Notice */}
+      <div className="mt-8">
+        <Card className="p-4 bg-muted/50 border-muted">
+          <div className="flex items-start gap-3">
+            <Info className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm text-muted-foreground">
+                <strong className="text-foreground">
+                  {dict?.subscription?.refundPolicy?.title ||
+                    "14-Day Refund Policy"}
+                  :
+                </strong>{" "}
+                {dict?.subscription?.refundPolicy?.description ||
+                  "We offer prorated refunds within 14 days of purchase or renewal. Contact us to request a refund."}
+              </p>
+            </div>
+          </div>
+        </Card>
       </div>
     </div>
   );

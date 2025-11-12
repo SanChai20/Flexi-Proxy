@@ -114,6 +114,10 @@
   "subscription": {
     "title": "订阅计划",
     "subtitle": "选择适合您的计划",
+    "refundPolicy": {
+      "title": "14天退款政策",
+      "description": "我们支持在购买或续订后14天内按比例退款。如需退款请联系我们。"
+    },
     "free": {
       "name": "免费版",
       "period": "/月",
