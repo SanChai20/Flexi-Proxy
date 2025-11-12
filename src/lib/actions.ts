@@ -1218,16 +1218,12 @@ export async function deleteAllPrivateProxyInstances(userId: string): Promise<{
     errors: [] as string[],
   };
 
-  if (!userId) {
-    console.error("deleteAllPrivateProxyInstances - Invalid userId");
+  if (userId === undefined || userId === null || userId === "") {
     result.errors.push("Invalid userId");
     return result;
   }
 
-  if (!process.env.PROXY_PRIVATE_PREFIX) {
-    console.error(
-      "deleteAllPrivateProxyInstances - PROXY_PRIVATE_PREFIX env not set"
-    );
+  if (undefined === process.env.PROXY_PRIVATE_PREFIX) {
     result.errors.push("Environment not configured");
     return result;
   }
@@ -1242,7 +1238,6 @@ export async function deleteAllPrivateProxyInstances(userId: string): Promise<{
 
     do {
       if (iterations++ > MAX_ITERATIONS) {
-        console.error("SCAN exceeded max iterations");
         result.errors.push("SCAN exceeded max iterations");
         break;
       }
@@ -1265,11 +1260,36 @@ export async function deleteAllPrivateProxyInstances(userId: string): Promise<{
       `[BATCH DELETE] Found ${allKeys.length} private proxies for user ${userId}`
     );
 
-    const proxyValues = await redis.mget<{ url: string; status: string }[]>(
-      ...allKeys
-    );
+    const proxyValues: { url: string; status: string }[] = await redis.mget<
+      { url: string; status: string }[]
+    >(...allKeys);
 
-    const deletePromises = allKeys.map(async (key, index) => {
+    const deletePromises: Promise<
+      | {
+          success: boolean;
+          proxyKey: string;
+          proxyId: string;
+          error: string;
+          warning?: undefined;
+          instanceId?: undefined;
+        }
+      | {
+          success: boolean;
+          proxyKey: string;
+          proxyId: string;
+          warning: string;
+          error?: undefined;
+          instanceId?: undefined;
+        }
+      | {
+          success: boolean;
+          proxyKey: string;
+          proxyId: string;
+          instanceId: string;
+          error?: undefined;
+          warning?: undefined;
+        }
+    >[] = allKeys.map(async (key, index) => {
       const proxyId = key.replace(searchPatternPrefix, "");
       const proxyInfo = proxyValues[index];
 
@@ -1277,6 +1297,7 @@ export async function deleteAllPrivateProxyInstances(userId: string): Promise<{
         console.error(`Invalid proxy info for key: ${key}`);
         return {
           success: false,
+          proxyKey: key,
           proxyId,
           error: "Invalid proxy info",
         };
@@ -1292,6 +1313,7 @@ export async function deleteAllPrivateProxyInstances(userId: string): Promise<{
         if (!CLOUDFLARE_ZONE_ID || !SUBDOMAIN_INSTANCE_PREFIX) {
           return {
             success: false,
+            proxyKey: key,
             proxyId,
             error: "Environment not configured",
           };
@@ -1325,6 +1347,7 @@ export async function deleteAllPrivateProxyInstances(userId: string): Promise<{
           ]);
           return {
             success: true,
+            proxyKey: key,
             proxyId,
             warning: "No instance found, Redis cleaned up",
           };
@@ -1391,6 +1414,7 @@ export async function deleteAllPrivateProxyInstances(userId: string): Promise<{
 
         return {
           success: terminationSuccess || !TerminateResponse,
+          proxyKey: key,
           proxyId,
           instanceId,
         };
@@ -1398,6 +1422,7 @@ export async function deleteAllPrivateProxyInstances(userId: string): Promise<{
         console.error(`[BATCH DELETE] Error deleting proxy ${proxyId}:`, error);
         return {
           success: false,
+          proxyKey: key,
           proxyId,
           error: error instanceof Error ? error.message : "Unknown error",
         };
@@ -1415,6 +1440,22 @@ export async function deleteAllPrivateProxyInstances(userId: string): Promise<{
         }
       }
     });
+
+    if (allKeys.length > 0) {
+      try {
+        console.log(
+          `[BATCH DELETE] Final cleanup: deleting all ${allKeys.length} keys with prefix ${searchPatternPrefix}`
+        );
+        await redis.del(...allKeys);
+      } catch (cleanupError) {
+        console.error(
+          "[BATCH DELETE] Error during final cleanup:",
+          cleanupError
+        );
+        result.errors.push("Final cleanup failed");
+      }
+    }
+
     console.log(
       `[BATCH DELETE] Completed for user ${userId}: ${result.success} success, ${result.failed} failed out of ${result.total}`
     );
