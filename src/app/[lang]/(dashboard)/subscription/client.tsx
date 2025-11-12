@@ -224,7 +224,7 @@ export default function SubscriptionClient({
         "Up to 10 access tokens",
         "Private gateways (based on subscribed counts)",
         "Priority support",
-        "Custom configurations",
+        "Enhanced security features",
       ],
       isCurrent: isPro,
     },
