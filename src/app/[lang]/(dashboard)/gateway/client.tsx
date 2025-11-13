@@ -322,14 +322,13 @@ export default function GatewayClient({
           </Tabs>
         </div>
       </div>
-
       {/* Gateway Cards */}
       <div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           {/* Add Card for Private Gateway - Always visible when in private mode */}
           {gatewayType === "private" && (
             <Card
-              className={`transition-all duration-200 hover:shadow-lg border-dashed border-2 ${
+              className={`transition-all duration-200 hover:shadow-lg border-dashed border-2 flex flex-col h-full ${
                 !privateCreating &&
                 permissions.adv &&
                 permissions.mppa >
@@ -384,19 +383,19 @@ export default function GatewayClient({
                 </div>
               </CardHeader>
 
-              <CardContent className="space-y-4">
-                <div className="flex flex-col items-center justify-center py-4 gap-3">
+              <CardContent className="flex-1 flex flex-col justify-center space-y-4">
+                <div className="flex flex-col items-center justify-center py-8 gap-4">
                   {privateCreating ? (
                     <>
-                      <div className="relative">
-                        <Loader2 className="w-4 h-4 text-primary animate-spin" />
+                      <div className="relative p-4 rounded-full bg-primary/10">
+                        <Loader2 className="w-8 h-8 text-primary animate-spin" />
                       </div>
-                      <div className="text-center space-y-1">
-                        <p className="text-sm font-medium">
+                      <div className="text-center space-y-2">
+                        <p className="text-base font-semibold">
                           {dict?.gateway?.creating || "Creating gateway..."}
                         </p>
-                        <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                          <Zap className="w-3 h-3" />
+                        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                          <Zap className="w-4 h-4" />
                           <span>
                             {dict?.gateway?.deployment ||
                               "Deployment takes about 5 minutes"}
@@ -406,17 +405,17 @@ export default function GatewayClient({
                     </>
                   ) : (
                     <>
-                      <div className="relative">
-                        <Plus className="w-4 h-4 text-muted-foreground/50" />
+                      <div className="relative p-4 rounded-full bg-muted/50 border-2 border-dashed border-muted-foreground/30">
+                        <Plus className="w-8 h-8 text-muted-foreground/50" />
                       </div>
-                      <div className="text-center space-y-1">
-                        <p className="text-sm font-medium">
+                      <div className="text-center space-y-2">
+                        <p className="text-base font-semibold">
                           {permissions.adv
                             ? dict?.gateway?.clickToCreate || "Click to create"
                             : dict?.gateway?.notAvailable || "Not Available"}
                         </p>
-                        <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                          <Zap className="w-3 h-3" />
+                        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                          <Zap className="w-4 h-4" />
                           <span>
                             {dict?.gateway?.deployment ||
                               "Deployment takes about 5 minutes"}
@@ -426,10 +425,13 @@ export default function GatewayClient({
                     </>
                   )}
                 </div>
+
+                {/* 添加占位空间，匹配其他卡片的按钮区域 */}
               </CardContent>
             </Card>
           )}
 
+          {/* Existing Gateway Cards - 美化版本 */}
           {filteredServers.map((server) => {
             const available = isServerAvailable(server);
             const isLoading = loadingProxyId === server.id;
@@ -439,70 +441,81 @@ export default function GatewayClient({
             return (
               <Card
                 key={server.id}
-                className="transition-all duration-200 hover:shadow-lg flex flex-col"
+                className="group relative transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 flex flex-col overflow-hidden border border-border/40 bg-gradient-to-br from-card via-card to-card/95"
               >
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <Hash className="w-5 h-5 text-muted-foreground flex-shrink-0" />
-                      <CardTitle
-                        className="text-lg font-semibold truncate direction-rtl"
-                        dir="rtl"
-                      >
-                        <span dir="ltr">{server.id}</span>
-                      </CardTitle>
+                {/* 顶部装饰渐变条 */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/60 via-primary to-primary/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                <CardHeader className="pb-4 relative z-10">
+                  {/* 标题行 */}
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                      <div className="p-1.5 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors duration-300">
+                        <Hash className="w-4 h-4" />
+                      </div>
+                      <div className="min-w-0 flex-shrink">
+                        <CardTitle className="text-base font-semibold truncate leading-tight text-left">
+                          <span
+                            dir="ltr"
+                            className="bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text"
+                          >
+                            {server.id}
+                          </span>
+                        </CardTitle>
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-2 flex-shrink-0">
+                      {/* 状态徽章 - 重新设计 */}
                       <span
-                        className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors ${getStatusStyle(
-                          server.status
-                        )}`}
+                        className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset backdrop-blur-sm transition-all duration-200 ${
+                          server.status === "running"
+                            ? "bg-emerald-500/10 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-400/10 dark:text-emerald-400 dark:ring-emerald-400/20"
+                            : server.status === "pending"
+                            ? "bg-amber-500/10 text-amber-700 ring-amber-600/20 dark:bg-amber-400/10 dark:text-amber-400 dark:ring-amber-400/20"
+                            : "bg-gray-500/10 text-gray-700 ring-gray-600/20 dark:bg-gray-400/10 dark:text-gray-400 dark:ring-gray-400/20"
+                        }`}
                       >
                         {getStatusText(server.status)}
                       </span>
 
-                      <div
-                        className={`w-3 h-3 rounded-full ${
-                          server.isHealthy
-                            ? "bg-green-500 animate-pulse"
-                            : "bg-gray-400"
-                        }`}
-                        title={
-                          server.isHealthy
-                            ? dict?.gateway?.healthy || "Healthy"
-                            : dict?.gateway?.unhealthy || "Unhealthy"
-                        }
-                      />
+                      {/* 健康状态指示器 - 重新设计 */}
+                      <div className="relative">
+                        <div
+                          className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                            server.isHealthy
+                              ? "bg-emerald-500 shadow-lg shadow-emerald-500/50"
+                              : "bg-gray-400"
+                          }`}
+                        />
+                        {server.isHealthy && (
+                          <div className="absolute inset-0 w-2 h-2 rounded-full bg-emerald-500 animate-ping opacity-75" />
+                        )}
+                      </div>
 
+                      {/* 设置菜单 */}
                       {gatewayType === "private" && (
                         <DropdownMenu>
-                          <DropdownMenuTrigger>
+                          <DropdownMenuTrigger className="p-1.5 rounded-md hover:bg-accent/50 transition-colors duration-200">
                             {operatingProxyId === server.id ? (
                               <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                             ) : (
-                              <Settings className="w-4 h-4 text-muted-foreground" />
+                              <Settings className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
                             )}
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
+                          <DropdownMenuContent align="end" className="w-56">
                             <DropdownMenuItem
                               onClick={() =>
                                 handleViewPrivateGateway(server.id, server.url)
                               }
                               disabled={operatingProxyId === server.id}
-                              className="cursor-pointer"
+                              className="cursor-pointer gap-2"
                             >
-                              <FileText className="w-4 h-4 mr-2" />
-                              {dict?.gateway?.viewLogs || "View Startup Logs"}
+                              <FileText className="w-4 h-4" />
+                              <span>
+                                {dict?.gateway?.viewLogs || "View Startup Logs"}
+                              </span>
                             </DropdownMenuItem>
-                            {/* <DropdownMenuItem
-                              onClick={() => handleCheckPrivateGateway(server)}
-                              disabled={operatingProxyId === server.id}
-                              className="cursor-pointer"
-                            >
-                              <Activity className="w-4 h-4 mr-2" />
-                              {dict?.gateway?.healthCheck || "Health Check"}
-                            </DropdownMenuItem> */}
                             <DropdownMenuItem
                               disabled={operatingProxyId === server.id}
                               onClick={() =>
@@ -511,11 +524,13 @@ export default function GatewayClient({
                                   server.url
                                 )
                               }
-                              className="cursor-pointer text-destructive focus:text-destructive"
+                              className="cursor-pointer text-destructive focus:text-destructive gap-2"
                             >
-                              <Trash2 className="w-4 h-4 mr-2" />
-                              {dict?.gateway?.deleteProxy ||
-                                "Delete Proxy Server"}
+                              <Trash2 className="w-4 h-4" />
+                              <span>
+                                {dict?.gateway?.deleteProxy ||
+                                  "Delete Proxy Server"}
+                              </span>
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -523,54 +538,84 @@ export default function GatewayClient({
                     </div>
                   </div>
 
-                  {/* Location Info */}
+                  {/* 位置信息 - 重新设计 */}
                   {region && direction && (
-                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-1">
-                      <MapPin className="w-4 h-4" />
-                      <span className="font-medium">{locationText}</span>
+                    <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-accent/30 w-fit mb-2 group-hover:bg-accent/50 transition-colors duration-300">
+                      <MapPin className="w-3.5 h-3.5 text-primary" />
+                      <span className="text-sm font-medium text-foreground/90">
+                        {locationText}
+                      </span>
                     </div>
                   )}
 
-                  {/* URL as secondary info */}
-                  <div className="text-xs text-muted-foreground break-all mt-1">
-                    {server.url.startsWith("https://")
-                      ? server.url
-                      : `https://${server.url}`}
+                  {/* URL 信息 - 更优雅的展示 */}
+                  <div className="flex items-start gap-2 mt-1 p-2 rounded-md bg-muted/30 group-hover:bg-muted/50 transition-colors duration-300">
+                    <div className="flex-1 min-w-0">
+                      <code className="text-xs text-muted-foreground break-all font-mono">
+                        {server.url.startsWith("https://")
+                          ? server.url
+                          : `https://${server.url}`}
+                      </code>
+                    </div>
                   </div>
                 </CardHeader>
 
-                <CardContent className="flex-1 flex flex-col justify-end space-y-4">
-                  {/* Health Check & Response Time */}
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <Activity className="w-4 h-4" />
-                      <span>
+                <CardContent className="flex-1 flex flex-col justify-end space-y-3 relative z-10 pt-0">
+                  {/* 性能指标卡片 */}
+                  <div className="grid grid-cols-2 gap-2">
+                    {/* 健康状态 */}
+                    <div className="flex flex-col gap-1.5 p-3 rounded-lg bg-gradient-to-br from-accent/40 to-accent/20 border border-border/40">
+                      <div className="flex items-center gap-1.5">
+                        <Activity className="w-3.5 h-3.5 text-muted-foreground" />
+                        <span className="text-xs font-medium text-muted-foreground">
+                          Status
+                        </span>
+                      </div>
+                      <span
+                        className={`text-sm font-semibold ${
+                          server.isHealthy
+                            ? "text-emerald-600 dark:text-emerald-400"
+                            : "text-gray-600 dark:text-gray-400"
+                        }`}
+                      >
                         {server.isHealthy
                           ? dict?.gateway?.healthy || "Healthy"
                           : dict?.gateway?.unhealthy || "Unhealthy"}
                       </span>
                     </div>
+
+                    {/* 响应时间 */}
                     {typeof server.responseTime === "number" && (
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="w-4 h-4 text-muted-foreground" />
+                      <div className="flex flex-col gap-1.5 p-3 rounded-lg bg-gradient-to-br from-accent/40 to-accent/20 border border-border/40">
+                        <div className="flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+                          <span className="text-xs font-medium text-muted-foreground">
+                            Latency
+                          </span>
+                        </div>
                         <span
-                          className={`font-medium ${
+                          className={`text-sm font-semibold tabular-nums ${
                             server.responseTime < 100
-                              ? "text-green-600 dark:text-green-400"
+                              ? "text-emerald-600 dark:text-emerald-400"
                               : server.responseTime < 300
-                              ? "text-yellow-600 dark:text-yellow-400"
+                              ? "text-amber-600 dark:text-amber-400"
                               : "text-red-600 dark:text-red-400"
                           }`}
                         >
-                          {server.responseTime}ms
+                          {server.responseTime}
+                          <span className="text-xs ml-0.5 font-normal">ms</span>
                         </span>
                       </div>
                     )}
                   </div>
 
-                  {/* Get Token Pass */}
+                  {/* 操作按钮 - 现代化设计 */}
                   <Button
-                    className="w-full"
+                    className={`w-full relative overflow-hidden group/btn transition-all duration-300 ${
+                      available
+                        ? "bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30"
+                        : ""
+                    }`}
                     variant={available ? "default" : "secondary"}
                     disabled={
                       !available ||
@@ -579,14 +624,28 @@ export default function GatewayClient({
                     }
                     onClick={() => handleGetToken(server.id)}
                   >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        {dict?.gateway?.loading || "Loading..."}
-                      </>
-                    ) : (
-                      dict?.gateway?.getToken || "Get Token Pass"
+                    {/* 按钮光效 */}
+                    {available && (
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700" />
                     )}
+
+                    <span className="relative z-10 flex items-center justify-center gap-2">
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          {dict?.gateway?.loading || "Loading..."}
+                        </>
+                      ) : (
+                        <>
+                          <span className="font-medium">
+                            {dict?.gateway?.getToken || "Get Token Pass"}
+                          </span>
+                          <span className="transform group-hover/btn:translate-x-0.5 transition-transform duration-200">
+                            →
+                          </span>
+                        </>
+                      )}
+                    </span>
                   </Button>
                 </CardContent>
               </Card>
