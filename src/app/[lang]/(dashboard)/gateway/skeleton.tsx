@@ -12,22 +12,18 @@ import { Hash, MapPin, Activity, Clock } from "lucide-react";
 
 export default function GatewaySkeleton({ dict }: { dict: any }) {
   return (
-    <>
-      {/* Header Card Skeleton */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">
-            {dict?.gateway?.title || "Proxy Gateways"}
-          </CardTitle>
-          <CardDescription className="text-base mt-2">
-            {dict?.gateway?.subtitle ||
-              "List all available proxy gateways and their features"}
-          </CardDescription>
-        </CardHeader>
-      </Card>
+    <div className="max-w-4xl mx-auto py-0 px-4">
+      {/* Header Skeleton */}
+      <div className="mb-12 text-center">
+        <Skeleton className="h-9 w-48 mx-auto mb-2" />
+        <Skeleton className="h-5 w-96 mx-auto mb-6" />
+        <div className="flex justify-center">
+          <Skeleton className="h-10 w-48" />
+        </div>
+      </div>
 
       {/* Gateway Cards Grid Skeleton */}
-      <div className="mt-6">
+      <div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           {/* Generate 6 skeleton cards */}
           {Array.from({ length: 6 }).map((_, index) => (
@@ -78,6 +74,6 @@ export default function GatewaySkeleton({ dict }: { dict: any }) {
           ))}
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -288,47 +288,43 @@ export default function GatewayClient({
   ];
 
   return (
-    <>
-      <Card>
-        <CardHeader>
-          <div className="flex items-end justify-between gap-4">
-            <div className="flex-1">
-              <CardTitle className="text-2xl">
-                {dict?.gateway?.title || "Proxy Gateways"}
-              </CardTitle>
-              <CardDescription className="text-base mt-2">
-                {dict?.gateway?.subtitle ||
-                  "List all available proxy gateways and their features"}
-              </CardDescription>
-            </div>
+    <div className="max-w-4xl mx-auto py-0 px-4">
+      {/* Header */}
+      <div className="mb-12 text-center">
+        <h1 className="text-3xl font-semibold mb-2">
+          {dict?.gateway?.title || "Proxy Gateways"}
+        </h1>
+        <p className="text-muted-foreground mb-6">
+          {dict?.gateway?.subtitle ||
+            "List all available proxy gateways and their features"}
+        </p>
+        <div className="flex justify-center">
+          <Tabs
+            value={gatewayType}
+            onValueChange={(value) =>
+              setGatewayType(value as "public" | "private")
+            }
+          >
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="public" className="gap-2 py-2">
+                <Globe className="w-3 h-3" />
+                <span className="text-xs">
+                  {dict?.gateway?.public || "Public"}
+                </span>
+              </TabsTrigger>
+              <TabsTrigger value="private" className="gap-2 py-2">
+                <Lock className="w-3 h-3" />
+                <span className="text-xs">
+                  {dict?.gateway?.private || "Private"}
+                </span>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+      </div>
 
-            <Tabs
-              value={gatewayType}
-              onValueChange={(value) =>
-                setGatewayType(value as "public" | "private")
-              }
-              className="flex-shrink-0"
-            >
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="public" className="gap-1">
-                  <Globe className="w-3 h-3" />
-                  <span className="text-xs">
-                    {dict?.gateway?.public || "Public"}
-                  </span>
-                </TabsTrigger>
-                <TabsTrigger value="private" className="gap-1">
-                  <Lock className="w-3 h-3" />
-                  <span className="text-xs">
-                    {dict?.gateway?.private || "Private"}
-                  </span>
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-        </CardHeader>
-      </Card>
-
-      <div className="mt-6">
+      {/* Gateway Cards */}
+      <div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           {/* Add Card for Private Gateway - Always visible when in private mode */}
           {gatewayType === "private" && (
@@ -679,6 +675,6 @@ export default function GatewayClient({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 }
