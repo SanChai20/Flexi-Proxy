@@ -1,5 +1,7 @@
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Check, Info } from "lucide-react";
 
 export default function SubscriptionSkeleton() {
   return (
@@ -10,13 +12,13 @@ export default function SubscriptionSkeleton() {
         <Skeleton className="h-5 w-80 mx-auto" />
       </div>
 
-      {/* Status Alert Skeleton (optional, shown conditionally) */}
+      {/* Subscription Status Alert Skeleton */}
       <div className="mb-6">
-        <Card className="p-4">
+        <Card className="p-4 border-green-500 bg-green-50 dark:bg-green-950">
           <div className="flex items-start gap-3">
             <Skeleton className="w-5 h-5 rounded-full shrink-0 mt-0.5" />
             <div className="flex-1 space-y-2">
-              <Skeleton className="h-5 w-32" />
+              <Skeleton className="h-5 w-24" />
               <Skeleton className="h-4 w-full" />
             </div>
           </div>
@@ -26,12 +28,14 @@ export default function SubscriptionSkeleton() {
       {/* Plans Grid Skeleton */}
       <div className="grid md:grid-cols-2 gap-6">
         {/* Free Plan Skeleton */}
-        <Card className="p-6">
+        <Card className="p-6 border-border">
           {/* Plan Header */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-1">
-              <Skeleton className="h-7 w-20" />
-              <Skeleton className="h-6 w-16 rounded-full" />
+              <Skeleton className="h-7 w-16" />
+              <Badge variant="secondary" className="shrink-0">
+                <Skeleton className="h-4 w-12" />
+              </Badge>
             </div>
             <Skeleton className="h-4 w-full mt-2" />
           </div>
@@ -39,8 +43,11 @@ export default function SubscriptionSkeleton() {
           {/* Pricing */}
           <div className="mb-8">
             <div className="flex items-end gap-3">
-              <Skeleton className="h-16 w-32" />
-              <Skeleton className="h-6 w-20 mb-2" />
+              <div className="flex items-baseline gap-1">
+                <Skeleton className="h-5 w-8" />
+                <Skeleton className="h-16 w-16" />
+              </div>
+              <Skeleton className="h-5 w-16 mb-2" />
             </div>
           </div>
 
@@ -48,20 +55,19 @@ export default function SubscriptionSkeleton() {
           <ul className="space-y-3 mb-6">
             {[1, 2, 3, 4].map((i) => (
               <li key={i} className="flex items-start gap-3">
-                <Skeleton className="w-5 h-5 rounded-full shrink-0 mt-0.5" />
-                <Skeleton className="h-4 flex-1" />
+                <Check className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
+                <Skeleton className="h-5 flex-1" />
               </li>
             ))}
           </ul>
         </Card>
 
         {/* Pro Plan Skeleton */}
-        <Card className="p-6">
+        <Card className="p-6 border-primary">
           {/* Plan Header */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-1">
-              <Skeleton className="h-7 w-16" />
-              <Skeleton className="h-6 w-16 rounded-full" />
+              <Skeleton className="h-7 w-12" />
             </div>
             <Skeleton className="h-4 w-full mt-2" />
           </div>
@@ -69,8 +75,11 @@ export default function SubscriptionSkeleton() {
           {/* Pricing */}
           <div className="mb-8">
             <div className="flex items-end gap-3">
-              <Skeleton className="h-16 w-32" />
-              <Skeleton className="h-6 w-20 mb-2" />
+              <div className="flex items-baseline gap-1">
+                <Skeleton className="h-5 w-8" />
+                <Skeleton className="h-16 w-24" />
+              </div>
+              <Skeleton className="h-5 w-16 mb-2" />
             </div>
           </div>
 
@@ -78,24 +87,27 @@ export default function SubscriptionSkeleton() {
           <ul className="space-y-3 mb-6">
             {[1, 2, 3, 4].map((i) => (
               <li key={i} className="flex items-start gap-3">
-                <Skeleton className="w-5 h-5 rounded-full shrink-0 mt-0.5" />
-                <Skeleton className="h-4 flex-1" />
+                <Check className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
+                <Skeleton className="h-5 flex-1" />
               </li>
             ))}
           </ul>
 
           {/* Instance Counter Skeleton */}
           <div className="mb-6">
-            <Skeleton className="h-4 w-48 mb-2" />
+            <Skeleton className="h-5 w-48 mb-2" />
             <div className="flex items-center gap-3">
               <Skeleton className="h-10 w-10 rounded-md" />
-              <Skeleton className="h-10 flex-1 rounded-md" />
+              <div className="flex-1">
+                <Skeleton className="h-10 w-full rounded-md" />
+              </div>
               <Skeleton className="h-10 w-10 rounded-md" />
             </div>
           </div>
 
           {/* CTA Buttons Skeleton */}
           <div className="space-y-2">
+            <Skeleton className="h-10 w-full rounded-md" />
             <Skeleton className="h-10 w-full rounded-md" />
           </div>
         </Card>
@@ -105,9 +117,9 @@ export default function SubscriptionSkeleton() {
       <div className="mt-8">
         <Card className="p-4 bg-muted/50 border-muted">
           <div className="flex items-start gap-3">
-            <Skeleton className="w-5 h-5 rounded-full shrink-0 mt-0.5" />
-            <div className="flex-1 space-y-2">
-              <Skeleton className="h-4 w-full" />
+            <Info className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <Skeleton className="h-4 w-full mb-2" />
               <Skeleton className="h-4 w-4/5" />
             </div>
           </div>
