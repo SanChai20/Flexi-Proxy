@@ -1,13 +1,9 @@
 "use client";
 
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import ClipboardButton from "@/components/ui/clipboard-button";
-import { Loader2, Settings, Copy, Check } from "lucide-react";
+import { Loader2, Settings, Key, Link as LinkIcon } from "lucide-react";
 import {
   CreateAdapterForm,
   DeleteAdapterDropdownForm,
@@ -95,136 +91,131 @@ export default function AccessTokenClient({
   };
 
   return (
-    <>
-      <Card>
-        <CardHeader>
-          <div className="flex flex-row items-center justify-between">
-            <CardTitle className="text-2xl">
-              {dict?.token?.title || "Token Pass Management"}
-            </CardTitle>
+    <div className="max-w-4xl mx-auto py-0 px-4">
+      {/* Header */}
+      <div className="mb-8 text-center">
+        <h1 className="text-3xl font-semibold mb-2">
+          {dict?.token?.title || "Token Pass Management"}
+        </h1>
+        <p className="text-muted-foreground">
+          {dict?.token?.subtitle || "Managing Token Pass of LLM Proxy Services"}
+        </p>
+      </div>
+
+      {/* Token Count Badge with Add Button */}
+      <div className="mb-6">
+        <Card className="p-4 border-primary/20 bg-primary/5">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <Key className="w-5 h-5 text-primary" />
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">
+                  {dict?.token?.totalTokens || "Total Access Tokens"}:
+                </span>
+                <Badge variant="secondary" className="font-semibold">
+                  {initialAdapters.length} / {permissions.maa}
+                </Badge>
+              </div>
+            </div>
             <CreateAdapterForm
               dict={dict}
               currentAdapterCount={initialAdapters.length}
               maxAdapterCountAllowed={permissions.maa}
             />
           </div>
-          <CardDescription className="text-base mt-2">
-            {dict?.token?.subtitle ||
-              "Managing Token Pass of LLM Proxy Services"}
-          </CardDescription>
-        </CardHeader>
-      </Card>
-
-      <div className="mt-6">
-        <div className="border border-border bg-card rounded-xl overflow-hidden shadow-md">
-          <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-transparent scrollbar-thumb-muted-foreground/30 xl:overflow-x-hidden">
-            <table className="w-full min-w-[220px] md:min-w-full">
-              <thead className="bg-muted/50 text-muted-foreground uppercase text-xs tracking-wider">
-                <tr>
-                  <th className="px-3 py-3 text-left sm:px-5 sm:py-4">
-                    {dict?.token?.proxy || "Proxy Gateway"}
-                  </th>
-                  <th className="px-3 py-3 text-left sm:px-5 sm:py-4">
-                    {dict?.token?.baseUrl || "Base URL"}
-                  </th>
-                  <th className="px-3 py-3 text-left sm:px-5 sm:py-4">
-                    {dict?.token?.note || "Note"}
-                  </th>
-                  <th className="px-3 py-3 text-right sm:px-5 sm:py-4">
-                    {dict?.token?.actions || "Actions"}
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody className="divide-y divide-border">
-                {initialAdapters.map((adapter) => {
-                  const isSubmitting = submittingAdapters.has(adapter.aid);
-                  const isTokenCopied = copiedToken === adapter.aid;
-
-                  return (
-                    <tr
-                      key={adapter.aid}
-                      className="hover:bg-muted/20 transition-colors duration-200"
-                    >
-                      <td className="px-3 py-3 sm:px-5 sm:py-3.5 text-sm text-left">
-                        <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-1.5">
-                            <span className="whitespace-nowrap text-[11px] xs:text-xs md:text-sm">
-                              {adapter.pid}
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-3 py-3 sm:px-5 sm:py-3.5 text-sm">
-                        <div className="flex items-center gap-1 xs:gap-2">
-                          <span
-                            className="font-mono text-[11px] xs:text-xs md:text-sm text-muted-foreground truncate max-w-[280px] xl:max-w-none"
-                            title={adapter.pul}
-                          >
-                            {adapter.pul}
-                          </span>
-                          <ClipboardButton text={adapter.pul} />
-                        </div>
-                      </td>
-                      <td className="px-3 py-3 sm:px-5 sm:py-3.5 text-sm">
-                        <span className="font-mono text-[11px] xs:text-xs md:text-sm text-muted-foreground truncate max-w-[240px] xl:max-w-none block">
-                          {adapter.not}
-                        </span>
-                      </td>
-                      <td className="px-3 py-3 text-sm text-right sm:px-5 sm:py-3.5">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger
-                            className="inline-flex items-center justify-center p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200"
-                            disabled={isSubmitting}
-                          >
-                            {isSubmitting ? (
-                              <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
-                            ) : (
-                              <Settings className="h-5 w-5" />
-                            )}
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent
-                            align="end"
-                            className="w-40 rounded-lg shadow-lg"
-                          >
-                            <DropdownMenuItem
-                              onClick={() =>
-                                copyToClipboard(adapter.tk, adapter.aid)
-                              }
-                              className="cursor-pointer text-xs xs:text-sm"
-                            >
-                              <span>
-                                {isTokenCopied
-                                  ? dict?.token?.copied || "Copied!"
-                                  : dict?.token?.copyToken || "Copy Token"}
-                              </span>
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <EditAdapterDropdownForm
-                              dict={dict}
-                              adapter_id={adapter.aid}
-                              onSubmitStart={() =>
-                                handleSubmitStart(adapter.aid)
-                              }
-                              onSubmitEnd={() => handleSubmitEnd(adapter.aid)}
-                            />
-                            <DeleteAdapterDropdownForm
-                              dict={dict}
-                              adapter_id={adapter.aid}
-                              onSubmitStart={() => handleSubmitEnd(adapter.aid)}
-                              onSubmitEnd={() => handleSubmitEnd(adapter.aid)}
-                            />
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        </Card>
       </div>
-    </>
+
+      {/* Tokens Grid */}
+      <div className="space-y-3">
+        {initialAdapters.map((adapter) => {
+          const isSubmitting = submittingAdapters.has(adapter.aid);
+          const isTokenCopied = copiedToken === adapter.aid;
+
+          return (
+            <Card
+              key={adapter.aid}
+              className="p-4 hover:border-primary/50 transition-all"
+            >
+              {/* Header Row */}
+              <div className="flex items-center justify-between gap-4 mb-3">
+                <div className="flex items-center gap-3">
+                  <Badge variant="outline" className="font-mono text-xs">
+                    {adapter.pid}
+                  </Badge>
+                  {adapter.not && (
+                    <span className="text-sm text-muted-foreground">
+                      {adapter.not}
+                    </span>
+                  )}
+                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    className="inline-flex items-center justify-center h-8 w-8 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                    ) : (
+                      <Settings className="h-4 w-4" />
+                    )}
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-40">
+                    <DropdownMenuItem
+                      onClick={() => copyToClipboard(adapter.tk, adapter.aid)}
+                      className="cursor-pointer text-xs xs:text-sm"
+                    >
+                      <span>
+                        {isTokenCopied
+                          ? dict?.token?.copied || "Copied!"
+                          : dict?.token?.copyToken || "Copy Token"}
+                      </span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <EditAdapterDropdownForm
+                      dict={dict}
+                      adapter_id={adapter.aid}
+                      onSubmitStart={() => handleSubmitStart(adapter.aid)}
+                      onSubmitEnd={() => handleSubmitEnd(adapter.aid)}
+                    />
+                    <DeleteAdapterDropdownForm
+                      dict={dict}
+                      adapter_id={adapter.aid}
+                      onSubmitStart={() => handleSubmitEnd(adapter.aid)}
+                      onSubmitEnd={() => handleSubmitEnd(adapter.aid)}
+                    />
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+
+              {/* Divider */}
+              <div className="border-t border-border mb-3"></div>
+
+              {/* Base URL */}
+              <div className="flex items-center gap-2 p-2.5 rounded-md bg-muted/30 border border-border/50">
+                <code className="flex-1 text-xs font-mono text-muted-foreground truncate">
+                  {adapter.pul}
+                </code>
+                <ClipboardButton text={adapter.pul} />
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* Empty State */}
+      {initialAdapters.length === 0 && (
+        <Card className="p-12 text-center border-dashed">
+          <Key className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+          <h3 className="text-lg font-semibold mb-2">
+            {dict?.token?.noTokens || "No Access Tokens"}
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            {dict?.token?.createFirst ||
+              "Create your first access token to get started"}
+          </p>
+        </Card>
+      )}
+    </div>
   );
 }
