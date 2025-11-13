@@ -17,6 +17,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
@@ -190,19 +191,15 @@ export default function AccessTokenClient({
                               onClick={() =>
                                 copyToClipboard(adapter.tk, adapter.aid)
                               }
-                              className="cursor-pointer"
+                              className="cursor-pointer text-xs xs:text-sm"
                             >
-                              {isTokenCopied ? (
-                                <Check className="mr-2 h-4 w-4 text-green-500" />
-                              ) : (
-                                <Copy className="mr-2 h-4 w-4" />
-                              )}
                               <span>
                                 {isTokenCopied
                                   ? dict?.token?.copied || "Copied!"
                                   : dict?.token?.copyToken || "Copy Token"}
                               </span>
                             </DropdownMenuItem>
+                            <DropdownMenuSeparator />
                             <EditAdapterDropdownForm
                               dict={dict}
                               adapter_id={adapter.aid}
