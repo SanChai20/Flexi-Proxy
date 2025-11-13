@@ -126,79 +126,85 @@ export default function AccessTokenClient({
         </Card>
       </div>
 
-      {/* Tokens Grid */}
-      <div className="space-y-3">
-        {initialAdapters.map((adapter) => {
-          const isSubmitting = submittingAdapters.has(adapter.aid);
-          const isTokenCopied = copiedToken === adapter.aid;
+      {/* Tokens List */}
+      <Card>
+        <div className="divide-y divide-border">
+          {initialAdapters.map((adapter) => {
+            const isSubmitting = submittingAdapters.has(adapter.aid);
+            const isTokenCopied = copiedToken === adapter.aid;
 
-          return (
-            <Card
-              key={adapter.aid}
-              className="p-4 hover:border-primary/50 transition-all"
-            >
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <Badge
-                    variant="outline"
-                    className="font-mono text-xs shrink-0"
-                  >
-                    {adapter.pid}
-                  </Badge>
-                  {adapter.not && (
-                    <span className="text-sm text-muted-foreground truncate">
-                      {adapter.not}
-                    </span>
-                  )}
-                </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger
-                    className="inline-flex items-center justify-center h-8 w-8 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                    ) : (
-                      <Settings className="h-4 w-4" />
-                    )}
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem
-                      onClick={() => copyToClipboard(adapter.tk, adapter.aid)}
-                      className="cursor-pointer text-xs xs:text-sm"
+            return (
+              <div
+                key={adapter.aid}
+                className="p-4 hover:bg-muted/50 transition-colors"
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <Badge
+                      variant="outline"
+                      className="font-mono text-xs shrink-0"
                     >
-                      <span>
-                        {isTokenCopied
-                          ? dict?.token?.copied || "Copied!"
-                          : dict?.token?.copyToken || "Copy Token"}
+                      {adapter.pid}
+                    </Badge>
+                    {adapter.not && (
+                      <span className="text-sm text-muted-foreground truncate">
+                        {adapter.not}
                       </span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => copyToClipboard(adapter.pul, adapter.aid)}
-                      className="cursor-pointer text-xs xs:text-sm"
+                    )}
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      className="inline-flex items-center justify-center h-8 w-8 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
+                      disabled={isSubmitting}
                     >
-                      <span>{dict?.token?.copyBaseUrl || "Copy Base URL"}</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <EditAdapterDropdownForm
-                      dict={dict}
-                      adapter_id={adapter.aid}
-                      onSubmitStart={() => handleSubmitStart(adapter.aid)}
-                      onSubmitEnd={() => handleSubmitEnd(adapter.aid)}
-                    />
-                    <DeleteAdapterDropdownForm
-                      dict={dict}
-                      adapter_id={adapter.aid}
-                      onSubmitStart={() => handleSubmitEnd(adapter.aid)}
-                      onSubmitEnd={() => handleSubmitEnd(adapter.aid)}
-                    />
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                      {isSubmitting ? (
+                        <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                      ) : (
+                        <Settings className="h-4 w-4" />
+                      )}
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuItem
+                        onClick={() => copyToClipboard(adapter.tk, adapter.aid)}
+                        className="cursor-pointer"
+                      >
+                        <span>
+                          {isTokenCopied
+                            ? dict?.token?.copied || "Copied!"
+                            : dict?.token?.copyToken || "Copy Token"}
+                        </span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          copyToClipboard(adapter.pul, adapter.aid)
+                        }
+                        className="cursor-pointer"
+                      >
+                        <span>
+                          {dict?.token?.copyBaseUrl || "Copy Base URL"}
+                        </span>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <EditAdapterDropdownForm
+                        dict={dict}
+                        adapter_id={adapter.aid}
+                        onSubmitStart={() => handleSubmitStart(adapter.aid)}
+                        onSubmitEnd={() => handleSubmitEnd(adapter.aid)}
+                      />
+                      <DeleteAdapterDropdownForm
+                        dict={dict}
+                        adapter_id={adapter.aid}
+                        onSubmitStart={() => handleSubmitEnd(adapter.aid)}
+                        onSubmitEnd={() => handleSubmitEnd(adapter.aid)}
+                      />
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
-            </Card>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      </Card>
 
       {/* Empty State */}
       {initialAdapters.length === 0 && (

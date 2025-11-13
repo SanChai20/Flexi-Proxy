@@ -26,20 +26,22 @@ export default function AccessTokenSkeleton({ dict }: { dict: any }) {
         </Card>
       </div>
 
-      {/* Tokens Grid Skeleton */}
-      <div className="space-y-3">
-        {[1, 2, 3].map((i) => (
-          <Card key={i} className="p-4">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3 flex-1 min-w-0">
-                <Skeleton className="h-6 w-20 rounded-md" />
-                <Skeleton className="h-4 w-32" />
+      {/* Tokens List Skeleton */}
+      <Card>
+        <div className="divide-y divide-border">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="p-4">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <Skeleton className="h-6 w-20 rounded-md" />
+                  <Skeleton className="h-4 w-32" />
+                </div>
+                <Skeleton className="h-8 w-8 rounded-md" />
               </div>
-              <Skeleton className="h-8 w-8 rounded-md" />
             </div>
-          </Card>
-        ))}
-      </div>
+          ))}
+        </div>
+      </Card>
     </div>
   );
 }
