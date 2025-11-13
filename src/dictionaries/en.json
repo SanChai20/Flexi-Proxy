@@ -177,7 +177,9 @@
     "regionPlaceholder": "Choose a region",
     "countryPlaceholder": "Choose a country",
     "confirmCreate": "Confirm & Create",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "status": "Status",
+    "latency": "Latency"
   },
   "token": {
     "providerPage": "config/providers.json",
@@ -225,7 +227,9 @@
     "free": "Free",
     "pro": "Pro",
     "copyToken": "Copy Token",
-    "copied": "Copied!"
+    "copied": "Copied!",
+    "copyBaseUrl": "Copy Base URL",
+    "totalTokens": "Total Tokens"
   },
   "settings": {
     "title": "Settings",

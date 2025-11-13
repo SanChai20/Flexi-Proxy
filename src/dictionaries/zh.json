@@ -109,7 +109,9 @@
     "regionPlaceholder": "请选择地域",
     "countryPlaceholder": "请选择国家",
     "confirmCreate": "确认创建",
-    "cancel": "取消"
+    "cancel": "取消",
+    "status": "状态",
+    "latency": "延迟"
   },
   "subscription": {
     "title": "订阅计划",
@@ -225,7 +227,9 @@
     "free": "免费版",
     "pro": "付费版",
     "copyToken": "复制通行令牌",
-    "copied": "已复制！"
+    "copied": "已复制！",
+    "copyBaseUrl": "复制 Base URL",
+    "totalTokens": "通行令牌总数"
   },
   "settings": {
     "title": "设置",

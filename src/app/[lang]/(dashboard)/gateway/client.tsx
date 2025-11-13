@@ -562,7 +562,7 @@ export default function GatewayClient({
                       <div className="flex items-center gap-1.5">
                         <Activity className="w-3.5 h-3.5 text-muted-foreground" />
                         <span className="text-xs font-medium text-muted-foreground">
-                          Status
+                          {dict?.gateway?.status || "Status"}
                         </span>
                       </div>
                       <span
@@ -584,7 +584,7 @@ export default function GatewayClient({
                         <div className="flex items-center gap-1.5">
                           <Clock className="w-3.5 h-3.5 text-muted-foreground" />
                           <span className="text-xs font-medium text-muted-foreground">
-                            Latency
+                            {dict?.gateway?.latency || "Latency"}
                           </span>
                         </div>
                         <span

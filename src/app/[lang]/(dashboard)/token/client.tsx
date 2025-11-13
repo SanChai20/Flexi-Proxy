@@ -166,7 +166,7 @@ export default function AccessTokenClient({
                     <DropdownMenuContent align="end" className="w-48">
                       <DropdownMenuItem
                         onClick={() => copyToClipboard(adapter.tk, adapter.aid)}
-                        className="cursor-pointer"
+                        className="cursor-pointer text-xs xs:text-sm"
                       >
                         <span>
                           {isTokenCopied
@@ -178,7 +178,7 @@ export default function AccessTokenClient({
                         onClick={() =>
                           copyToClipboard(adapter.pul, adapter.aid)
                         }
-                        className="cursor-pointer"
+                        className="cursor-pointer text-xs xs:text-sm"
                       >
                         <span>
                           {dict?.token?.copyBaseUrl || "Copy Base URL"}

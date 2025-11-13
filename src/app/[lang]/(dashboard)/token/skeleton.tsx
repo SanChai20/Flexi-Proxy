@@ -6,8 +6,8 @@ export default function AccessTokenSkeleton({ dict }: { dict: any }) {
     <div className="max-w-4xl mx-auto py-0 px-4">
       {/* Header Skeleton */}
       <div className="mb-8 text-center">
-        <Skeleton className="h-9 w-64 mx-auto mb-2" />
-        <Skeleton className="h-5 w-80 mx-auto" />
+        <Skeleton className="h-9 w-64 mx-auto mb-2 bg-muted/30" />
+        <Skeleton className="h-5 w-80 mx-auto bg-muted/30" />
       </div>
 
       {/* Token Count Badge Skeleton with Add Button */}
@@ -15,13 +15,13 @@ export default function AccessTokenSkeleton({ dict }: { dict: any }) {
         <Card className="p-4 border-primary/20 bg-primary/5">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <Skeleton className="w-5 h-5 rounded-full" />
+              <Skeleton className="w-5 h-5 rounded-full bg-muted/30" />
               <div className="flex items-center gap-2">
-                <Skeleton className="h-4 w-32" />
-                <Skeleton className="h-6 w-16 rounded-full" />
+                <Skeleton className="h-4 w-32 bg-muted/30" />
+                <Skeleton className="h-6 w-16 rounded-full bg-muted/30" />
               </div>
             </div>
-            <Skeleton className="h-10 w-24 rounded-md" />
+            <Skeleton className="h-10 w-24 rounded-md bg-muted/30" />
           </div>
         </Card>
       </div>
@@ -33,10 +33,10 @@ export default function AccessTokenSkeleton({ dict }: { dict: any }) {
             <div key={i} className="p-4">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <Skeleton className="h-6 w-20 rounded-md" />
-                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-6 w-20 rounded-md bg-muted/30" />
+                  <Skeleton className="h-4 w-32 bg-muted/30" />
                 </div>
-                <Skeleton className="h-8 w-8 rounded-md" />
+                <Skeleton className="h-8 w-8 rounded-md bg-muted/30" />
               </div>
             </div>
           ))}
