@@ -35,44 +35,47 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
     <section className="w-full max-w-6xl mx-auto overflow-x-auto px-4 py-8 select-none">
       {isLoggedIn ? (
         // Logged in view - User Dashboard
-        <div className="flex flex-col items-center justify-center mb-10">
-          <div className="relative">
+        <div className="flex flex-col items-center justify-center mb-12 animate-in fade-in duration-700">
+          <div className="relative group">
             {userAvatar ? (
               <img
                 src={userAvatar}
                 alt={userName}
-                className="w-24 h-24 rounded-full object-cover border-4 border-primary/20 shadow-lg"
+                className="w-28 h-28 rounded-full object-cover border-4 border-gradient-to-br from-blue-400/50 via-purple-400/50 to-pink-400/50 shadow-2xl ring-4 ring-blue-500/10 transition-transform group-hover:scale-105 duration-300"
               />
             ) : (
-              <div className="w-24 h-24 rounded-full bg-primary/10 border-4 border-primary/20 flex items-center justify-center shadow-lg">
-                <UserIcon className="w-12 h-12 text-primary/60" />
+              <div className="w-28 h-28 rounded-full bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 border-4 border-gradient-to-br from-blue-400/50 via-purple-400/50 to-pink-400/50 flex items-center justify-center shadow-2xl ring-4 ring-blue-500/10 transition-transform group-hover:scale-105 duration-300">
+                <UserIcon className="w-14 h-14 text-blue-500/80" />
               </div>
             )}
-            <div className="absolute bottom-0 right-0 w-6 h-6 bg-green-500 rounded-full border-2 border-background"></div>
+            <div className="absolute bottom-0 right-0 w-7 h-7 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full border-3 border-background shadow-lg animate-pulse"></div>
           </div>
 
-          <h1 className="text-3xl font-bold mt-6 text-center">{userName}</h1>
+          <h1 className="text-4xl font-bold mt-8 text-center bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-gray-100 dark:via-white dark:to-gray-100 bg-clip-text text-transparent">
+            {userName}
+          </h1>
 
           {userEmail && (
-            <p className="text-muted-foreground mt-2 text-center">
+            <p className="text-muted-foreground mt-3 text-center text-base">
               {userEmail}
             </p>
           )}
 
           <div
-            className={`mt-6 px-4 py-2 rounded-full ${
+            className={`mt-8 px-6 py-3 rounded-full backdrop-blur-sm border transition-all duration-300 hover:scale-105 ${
               userPermissions?.adv
-                ? "bg-gradient-to-r from-purple-500/10 to-pink-500/10"
-                : "bg-primary/10"
+                ? "bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-purple-500/20 border-purple-400/30 shadow-lg shadow-purple-500/20"
+                : "bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border-blue-400/30 shadow-lg shadow-blue-500/10"
             }`}
           >
             <p
-              className={`text-sm font-medium ${
+              className={`text-base font-semibold flex items-center gap-2 ${
                 userPermissions?.adv
-                  ? "bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
-                  : "text-primary"
+                  ? "bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent"
+                  : "bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent"
               }`}
             >
+              <span className="inline-block w-2 h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 animate-pulse"></span>
               {userPermissions?.adv
                 ? dict?.home?.pro || "Pro Plan"
                 : dict?.home?.free || "Free Plan"}
@@ -81,22 +84,25 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
         </div>
       ) : (
         // Not logged in view - Product Overview
-        <div className="flex flex-col items-center justify-center mb-12">
+        <div className="flex flex-col items-center justify-center mb-12 animate-in fade-in duration-700">
           {/* Hero Section */}
-          <div className="text-center mb-8">
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
+          <div className="text-center mb-10 relative">
+            <h1 className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-6 animate-in slide-in-from-bottom duration-1000">
               FlexiProxy
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               {dict?.home?.subtitle ||
                 "LLM Service Proxy Gateway, Breaking Regional & Pricing Barriers"}
             </p>
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex flex-wrap gap-4 justify-center mb-12">
+          <div className="flex flex-wrap gap-4 justify-center mb-14">
             <Link href={`/${lang}/verification`}>
-              <Button size="lg" className="font-semibold shadow-lg">
+              <Button
+                size="lg"
+                className="font-semibold shadow-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/30"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="w-5 h-5 mr-2"
@@ -113,7 +119,11 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
               </Button>
             </Link>
             <Link href={`/${lang}/documentation`}>
-              <Button variant="outline" size="lg" className="font-semibold">
+              <Button
+                variant="outline"
+                size="lg"
+                className="font-semibold border-2 hover:bg-accent/50 hover:scale-105 transition-all duration-300 hover:shadow-lg"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="w-5 h-5 mr-2"
@@ -137,16 +147,13 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
 
       {/* Features Section - Always shown */}
       <div className="mb-10">
-        {/* <h2 className="text-3xl font-bold text-center mb-8">
-          {dict?.home?.whyChoose || "Why Choose FlexiProxy"}
-        </h2> */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Feature 1 */}
-          <div className="group flex flex-col items-center text-center p-6 bg-gradient-to-br from-card to-card/50 rounded-xl border border-border hover:border-primary/50 hover:shadow-lg transition-all duration-300">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+          <div className="group flex flex-col items-center text-center p-6 bg-gradient-to-br from-card via-card to-card/80 rounded-xl border border-border hover:border-blue-400/50 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-xl shadow-blue-500/30">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-7 w-7 text-white"
+                className="h-8 w-8 text-white"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -159,7 +166,7 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2">
+            <h3 className="text-lg font-semibold mb-2 bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
               {dict?.home?.feature1Title || "Unified Interface"}
             </h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
@@ -169,11 +176,11 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
           </div>
 
           {/* Feature 2 */}
-          <div className="group flex flex-col items-center text-center p-6 bg-gradient-to-br from-card to-card/50 rounded-xl border border-border hover:border-primary/50 hover:shadow-lg transition-all duration-300">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+          <div className="group flex flex-col items-center text-center p-6 bg-gradient-to-br from-card via-card to-card/80 rounded-xl border border-border hover:border-purple-400/50 hover:shadow-2xl hover:shadow-purple-500/10 hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-xl shadow-purple-500/30">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-7 w-7 text-white"
+                className="h-8 w-8 text-white"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -186,7 +193,7 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2">
+            <h3 className="text-lg font-semibold mb-2 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               {dict?.home?.feature2Title || "Break Barriers"}
             </h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
@@ -196,11 +203,11 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
           </div>
 
           {/* Feature 3 */}
-          <div className="group flex flex-col items-center text-center p-6 bg-gradient-to-br from-card to-card/50 rounded-xl border border-border hover:border-primary/50 hover:shadow-lg transition-all duration-300">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+          <div className="group flex flex-col items-center text-center p-6 bg-gradient-to-br from-card via-card to-card/80 rounded-xl border border-border hover:border-green-400/50 hover:shadow-2xl hover:shadow-green-500/10 hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-xl shadow-green-500/30">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-7 w-7 text-white"
+                className="h-8 w-8 text-white"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -213,7 +220,7 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2">
+            <h3 className="text-lg font-semibold mb-2 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
               {dict?.home?.feature3Title || "Easy to Use"}
             </h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
@@ -223,11 +230,11 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
           </div>
 
           {/* Feature 4 */}
-          <div className="group flex flex-col items-center text-center p-6 bg-gradient-to-br from-card to-card/50 rounded-xl border border-border hover:border-primary/50 hover:shadow-lg transition-all duration-300">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+          <div className="group flex flex-col items-center text-center p-6 bg-gradient-to-br from-card via-card to-card/80 rounded-xl border border-border hover:border-orange-400/50 hover:shadow-2xl hover:shadow-orange-500/10 hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-xl shadow-orange-500/30">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-7 w-7 text-white"
+                className="h-8 w-8 text-white"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -240,7 +247,7 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2">
+            <h3 className="text-lg font-semibold mb-2 bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
               {dict?.home?.feature4Title || "High Performance"}
             </h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
@@ -250,11 +257,11 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
           </div>
 
           {/* Feature 5 */}
-          <div className="group flex flex-col items-center text-center p-6 bg-gradient-to-br from-card to-card/50 rounded-xl border border-border hover:border-primary/50 hover:shadow-lg transition-all duration-300">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+          <div className="group flex flex-col items-center text-center p-6 bg-gradient-to-br from-card via-card to-card/80 rounded-xl border border-border hover:border-indigo-400/50 hover:shadow-2xl hover:shadow-indigo-500/10 hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-xl shadow-indigo-500/30">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-7 w-7 text-white"
+                className="h-8 w-8 text-white"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -267,7 +274,7 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2">
+            <h3 className="text-lg font-semibold mb-2 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               {dict?.home?.feature5Title || "Secure & Reliable"}
             </h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
@@ -277,11 +284,11 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
           </div>
 
           {/* Feature 6 */}
-          <div className="group flex flex-col items-center text-center p-6 bg-gradient-to-br from-card to-card/50 rounded-xl border border-border hover:border-primary/50 hover:shadow-lg transition-all duration-300">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+          <div className="group flex flex-col items-center text-center p-6 bg-gradient-to-br from-card via-card to-card/80 rounded-xl border border-border hover:border-teal-400/50 hover:shadow-2xl hover:shadow-teal-500/10 hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-xl shadow-teal-500/30">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-7 w-7 text-white"
+                className="h-8 w-8 text-white"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -294,7 +301,7 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2">
+            <h3 className="text-lg font-semibold mb-2 bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
               {dict?.home?.feature6Title || "Flexible Pricing"}
             </h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
@@ -307,7 +314,7 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
 
       {/* Help Section */}
       <div className="mt-10 text-center">
-        <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-muted/50 border border-border">
+        <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-muted/50 to-muted/30 border border-border hover:border-primary/50 transition-all duration-300 hover:scale-105 backdrop-blur-sm">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-5 w-5 text-muted-foreground"
@@ -326,14 +333,14 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
             {dict?.home?.checkout || "Need help? Check out our"}{" "}
             <Link
               href={`/${lang}/documentation`}
-              className="text-primary hover:underline font-medium"
+              className="text-primary hover:text-primary/80 font-medium transition-colors hover:underline"
             >
               {dict?.home?.documentation || "Documentation"}
             </Link>{" "}
             {dict?.home?.faq && "& "}
             <Link
               href={`/${lang}/faq`}
-              className="text-primary hover:underline font-medium"
+              className="text-primary hover:text-primary/80 font-medium transition-colors hover:underline"
             >
               {dict?.home?.faq || "FAQ"}
             </Link>
