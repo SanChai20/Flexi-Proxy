@@ -223,7 +223,9 @@
     "busy": "繁忙",
     "full": "满载",
     "free": "免费版",
-    "pro": "付费版"
+    "pro": "付费版",
+    "copyToken": "复制通行令牌",
+    "copied": "已复制！"
   },
   "settings": {
     "title": "设置",

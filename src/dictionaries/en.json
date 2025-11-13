@@ -223,7 +223,9 @@
     "busy": "Busy",
     "full": "Full",
     "free": "Free",
-    "pro": "Pro"
+    "pro": "Pro",
+    "copyToken": "Copy Token",
+    "copied": "Copied!"
   },
   "settings": {
     "title": "Settings",
