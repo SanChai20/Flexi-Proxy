@@ -40,7 +40,7 @@ export default async function SubscriptionPage(
 
   return (
     <section className="w-full max-w-4xl mx-auto overflow-x-auto px-0 select-none">
-      <Suspense fallback={<SubscriptionSkeleton dict={dict} />}>
+      <Suspense fallback={<SubscriptionSkeleton />}>
         <SubscriptionContent dict={dict} />
       </Suspense>
     </section>
