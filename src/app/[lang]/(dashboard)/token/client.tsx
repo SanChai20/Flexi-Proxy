@@ -117,20 +117,20 @@ export default function AccessTokenClient({
 
       <div className="mt-6">
         <div className="border border-border bg-card rounded-xl overflow-hidden shadow-md">
-          <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-transparent scrollbar-thumb-muted-foreground/30">
-            <table className="w-full min-w-[200px] md:min-w-full">
+          <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-transparent scrollbar-thumb-muted-foreground/30 xl:overflow-x-hidden">
+            <table className="w-full min-w-[220px] md:min-w-full">
               <thead className="bg-muted/50 text-muted-foreground uppercase text-xs tracking-wider">
                 <tr>
-                  <th className="w-[15%] px-3 py-3 text-left sm:px-5 sm:py-4">
+                  <th className="px-3 py-3 text-left sm:px-5 sm:py-4">
                     {dict?.token?.proxy || "Proxy Gateway"}
                   </th>
-                  <th className="w-[40%] px-3 py-3 text-left sm:px-5 sm:py-4">
+                  <th className="px-3 py-3 text-left sm:px-5 sm:py-4">
                     {dict?.token?.baseUrl || "Base URL"}
                   </th>
-                  <th className="w-[30%] px-3 py-3 text-left sm:px-5 sm:py-4">
+                  <th className="px-3 py-3 text-left sm:px-5 sm:py-4">
                     {dict?.token?.note || "Note"}
                   </th>
-                  <th className="w-[10%] px-3 py-3 text-right sm:px-5 sm:py-4">
+                  <th className="px-3 py-3 text-right sm:px-5 sm:py-4">
                     {dict?.token?.actions || "Actions"}
                   </th>
                 </tr>
@@ -146,7 +146,7 @@ export default function AccessTokenClient({
                       key={adapter.aid}
                       className="hover:bg-muted/20 transition-colors duration-200"
                     >
-                      <td className="w-[15%] px-3 py-3 sm:px-5 sm:py-3.5 text-sm text-left">
+                      <td className="px-3 py-3 sm:px-5 sm:py-3.5 text-sm text-left">
                         <div className="flex items-center gap-2">
                           <div className="flex items-center gap-1.5">
                             <span className="whitespace-nowrap text-[11px] xs:text-xs md:text-sm">
@@ -155,10 +155,10 @@ export default function AccessTokenClient({
                           </div>
                         </div>
                       </td>
-                      <td className="w-[40%] px-3 py-3 sm:px-5 sm:py-3.5 text-sm">
+                      <td className="px-3 py-3 sm:px-5 sm:py-3.5 text-sm">
                         <div className="flex items-center gap-1 xs:gap-2">
                           <span
-                            className="font-mono text-[11px] xs:text-xs md:text-sm text-muted-foreground truncate max-w-[280px] lg:max-w-[420px]"
+                            className="font-mono text-[11px] xs:text-xs md:text-sm text-muted-foreground truncate max-w-[280px] xl:max-w-none"
                             title={adapter.pul}
                           >
                             {adapter.pul}
@@ -166,12 +166,12 @@ export default function AccessTokenClient({
                           <ClipboardButton text={adapter.pul} />
                         </div>
                       </td>
-                      <td className="w-[30%] px-3 py-3 sm:px-5 sm:py-3.5 text-sm">
-                        <span className="font-mono text-[11px] xs:text-xs md:text-sm text-muted-foreground truncate max-w-[240px] lg:max-w-[320px]">
+                      <td className="px-3 py-3 sm:px-5 sm:py-3.5 text-sm">
+                        <span className="font-mono text-[11px] xs:text-xs md:text-sm text-muted-foreground truncate max-w-[240px] xl:max-w-none block">
                           {adapter.not}
                         </span>
                       </td>
-                      <td className="w-[15%] px-3 py-3 text-sm text-right sm:px-5 sm:py-3.5">
+                      <td className="px-3 py-3 text-sm text-right sm:px-5 sm:py-3.5">
                         <DropdownMenu>
                           <DropdownMenuTrigger
                             className="inline-flex items-center justify-center p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200"
@@ -211,9 +211,7 @@ export default function AccessTokenClient({
                             <DeleteAdapterDropdownForm
                               dict={dict}
                               adapter_id={adapter.aid}
-                              onSubmitStart={() =>
-                                handleSubmitStart(adapter.aid)
-                              }
+                              onSubmitStart={() => handleSubmitEnd(adapter.aid)}
                               onSubmitEnd={() => handleSubmitEnd(adapter.aid)}
                             />
                           </DropdownMenuContent>
