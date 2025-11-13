@@ -137,21 +137,23 @@ export default function AccessTokenClient({
               key={adapter.aid}
               className="p-4 hover:border-primary/50 transition-all"
             >
-              {/* Header Row */}
-              <div className="flex items-center justify-between gap-4 mb-3">
-                <div className="flex items-center gap-3">
-                  <Badge variant="outline" className="font-mono text-xs">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <Badge
+                    variant="outline"
+                    className="font-mono text-xs shrink-0"
+                  >
                     {adapter.pid}
                   </Badge>
                   {adapter.not && (
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-sm text-muted-foreground truncate">
                       {adapter.not}
                     </span>
                   )}
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger
-                    className="inline-flex items-center justify-center h-8 w-8 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    className="inline-flex items-center justify-center h-8 w-8 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? (
@@ -160,7 +162,7 @@ export default function AccessTokenClient({
                       <Settings className="h-4 w-4" />
                     )}
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-40">
+                  <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem
                       onClick={() => copyToClipboard(adapter.tk, adapter.aid)}
                       className="cursor-pointer text-xs xs:text-sm"
@@ -170,6 +172,12 @@ export default function AccessTokenClient({
                           ? dict?.token?.copied || "Copied!"
                           : dict?.token?.copyToken || "Copy Token"}
                       </span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => copyToClipboard(adapter.pul, adapter.aid)}
+                      className="cursor-pointer text-xs xs:text-sm"
+                    >
+                      <span>{dict?.token?.copyBaseUrl || "Copy Base URL"}</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <EditAdapterDropdownForm
@@ -186,17 +194,6 @@ export default function AccessTokenClient({
                     />
                   </DropdownMenuContent>
                 </DropdownMenu>
-              </div>
-
-              {/* Divider */}
-              <div className="border-t border-border mb-3"></div>
-
-              {/* Base URL */}
-              <div className="flex items-center gap-2 p-2.5 rounded-md bg-muted/30 border border-border/50">
-                <code className="flex-1 text-xs font-mono text-muted-foreground truncate">
-                  {adapter.pul}
-                </code>
-                <ClipboardButton text={adapter.pul} />
               </div>
             </Card>
           );
