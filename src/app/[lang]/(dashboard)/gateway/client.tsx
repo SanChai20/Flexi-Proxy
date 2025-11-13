@@ -150,21 +150,6 @@ export default function GatewayClient({
     return `${regionText} ${directionText}`;
   };
 
-  const getStatusStyle = (status: string) => {
-    const styles: Record<string, string> = {
-      spare:
-        "bg-green-100 text-green-800 border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700",
-      busy: "bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-700",
-      full: "bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-700",
-      unavailable:
-        "bg-red-100 text-red-800 border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700",
-    };
-    if (status === undefined || status.length <= 0) {
-      return styles.unavailable;
-    }
-    return styles[status.toLowerCase()] || styles.unavailable;
-  };
-
   const getStatusText = (status: string) => {
     const texts: Record<string, string> = {
       spare: dict?.token?.spare || "Spare",
@@ -215,10 +200,19 @@ export default function GatewayClient({
     }
     try {
       setOperatingProxyId(proxyId);
+      setFilteredServers((prev) =>
+        prev.filter((server) => server.id !== proxyId)
+      );
       await deletePrivateProxyInstance(proxyId, subdomainName);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       router.refresh();
     } catch (error) {
       console.error(error);
+      // setFilteredServers(
+      //   proxyServers.filter(
+      //     (server) => (server.type || "public") === gatewayType
+      //   )
+      // );
       setOperatingProxyId(null);
     }
   };
