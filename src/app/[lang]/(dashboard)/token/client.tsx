@@ -104,23 +104,46 @@ export default function AccessTokenClient({
 
       {/* Token Count Badge with Add Button */}
       <div className="mb-6">
-        <Card className="p-4 border-primary/20 bg-primary/5">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <Key className="w-5 h-5 text-primary" />
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">
-                  {dict?.token?.totalTokens || "Total Access Tokens"}:
-                </span>
-                <Badge variant="secondary" className="font-semibold">
-                  {initialAdapters.length} / {permissions.maa}
-                </Badge>
+        <Card className="group relative overflow-hidden border-border/40 bg-gradient-to-br from-background via-background to-muted/20 transition-all hover:border-primary/30 hover:shadow-sm">
+          <div className="p-4">
+            <div className="flex items-center justify-between gap-4">
+              {/* Left Section - Token Info */}
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary ring-1 ring-primary/20">
+                  <Key className="h-5 w-5" />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                    {dict?.token?.totalTokens || "Total Access Tokens"}
+                  </span>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-2xl font-semibold tabular-nums">
+                      {initialAdapters.length}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      / {permissions.maa}
+                    </span>
+                  </div>
+                </div>
               </div>
+
+              {/* Right Section - Action Button */}
+              <CreateAdapterForm
+                dict={dict}
+                currentAdapterCount={initialAdapters.length}
+                maxAdapterCountAllowed={permissions.maa}
+              />
             </div>
-            <CreateAdapterForm
-              dict={dict}
-              currentAdapterCount={initialAdapters.length}
-              maxAdapterCountAllowed={permissions.maa}
+          </div>
+
+          {/* Optional: Progress indicator */}
+          <div className="absolute bottom-0 left-0 h-0.5 w-full bg-muted">
+            <div
+              className="h-full bg-gradient-to-r from-primary/60 to-primary transition-all duration-500"
+              style={{
+                width: `${(initialAdapters.length / permissions.maa) * 100}%`,
+              }}
             />
           </div>
         </Card>
@@ -194,7 +217,7 @@ export default function AccessTokenClient({
                       <DeleteAdapterDropdownForm
                         dict={dict}
                         adapter_id={adapter.aid}
-                        onSubmitStart={() => handleSubmitEnd(adapter.aid)}
+                        onSubmitStart={() => handleSubmitStart(adapter.aid)}
                         onSubmitEnd={() => handleSubmitEnd(adapter.aid)}
                       />
                     </DropdownMenuContent>

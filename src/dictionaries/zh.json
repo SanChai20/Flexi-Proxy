@@ -186,6 +186,7 @@
     "title": "令牌管理",
     "subtitle": "管理 LLM 服务代理网关通行令牌",
     "tokenCreate": "添加通行令牌",
+    "tokenCreating": "请稍等...",
     "tokenPassTitle": "创建通行令牌",
     "tokenPassSubtitle": "获取代理网关服务的通行令牌",
     "tokenPassSource": "源服务",

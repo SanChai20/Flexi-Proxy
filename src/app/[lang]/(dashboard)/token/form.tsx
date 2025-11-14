@@ -863,18 +863,21 @@ export function CreateAdapterForm({
             <Button
               type="submit"
               variant="outline"
-              size="icon"
               disabled={reachLimit || isSubmitting}
-              className="h-8 w-8 rounded-full sm:h-9 sm:w-9"
+              className="h-8 px-3 rounded-full sm:h-9 sm:px-4"
             >
               {isSubmitting ? (
-                <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <span className="text-sm">
+                    {dict?.token?.tokenCreating || "Creating..."}
+                  </span>
+                </>
               ) : (
-                <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+                <span className="text-sm">
+                  {dict?.token?.tokenCreate || "Create"}
+                </span>
               )}
-              <span className="sr-only">
-                {dict?.token?.tokenCreate || "Create Token Pass"}
-              </span>
             </Button>
           </form>
         </TooltipTrigger>

@@ -186,6 +186,7 @@
     "title": "Token Pass Management",
     "subtitle": "Managing Token Pass of LLM Proxy Services",
     "tokenCreate": "Add Token Pass",
+    "tokenCreating": "Creating...",
     "tokenPassTitle": "Create Token Pass",
     "tokenPassSubtitle": "Obtain an Access Token for the Proxy Gateway Service",
     "tokenPassSource": "SOURCE",
