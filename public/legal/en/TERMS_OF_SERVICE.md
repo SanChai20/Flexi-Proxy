@@ -1,4 +1,4 @@
-Last Updated: Nov. 12, 2025
+Last Updated: Nov. 14, 2025
 
 ## 1. Acceptance of Terms
 
@@ -38,7 +38,9 @@ FlexiProxy provides a proxy service that allows users to interface with and call
 
 **5.3 Automatic Renewal**: Your subscription will automatically renew unless you cancel it before the end of the current subscription period.
 
-**5.4 Refund Policy**: We offer a 14-day refund window for all paid subscriptions. If you are not satisfied with our Services for any reason, you may request a prorated refund within 14 days of your initial purchase or subscription renewal. The refund amount will be calculated based on the unused portion of your subscription period. To request a refund, please contact us through our contact page with your account information and order details. Refunds will be processed within 5-10 business days after approval. Please note that after the 14-day period has expired, all payments become non-refundable.
+**5.4 Cancellation**: If you cancel your subscription, the cancellation will take effect at the end of your current billing period, not immediately. You will continue to have access to paid features until the end of the period you have already paid for. During this time, you may reactivate your subscription at any time before the billing period ends, and your subscription will continue without interruption.
+
+**5.5 Refund Policy**: We offer a 14-day refund window for all paid subscriptions. If you are not satisfied with our Services for any reason, you may request a prorated refund within 14 days of your initial purchase or subscription renewal. The refund amount will be calculated based on the unused portion of your subscription period. To request a refund, please contact us through our contact page with your account information and order details. Refunds will be processed within 5-10 business days after approval. Please note that after the 14-day period has expired, all payments become non-refundable.
 
 ## 6. User Content
 
