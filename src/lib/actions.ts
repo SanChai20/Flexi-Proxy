@@ -909,7 +909,6 @@ export async function createPrivateProxyInstance(): Promise<
   const maxRetries = 10;
   const baseDelay = 3000;
   const batchSize = 5;
-  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
 
   const acquireLock = async (domain: string): Promise<boolean> => {
     const lockKey = [process.env.SUBDOMAIN_LOCK_PREFIX, domain].join(":");
@@ -922,22 +921,9 @@ export async function createPrivateProxyInstance(): Promise<
   };
 
   const generateRandomDomain = () => {
-    const timestamp = Date.now();
-    let timePart = "";
-    for (let i = 0; i < 4; i++) {
-      const index = (timestamp >> (i * 5)) % chars.length;
-      timePart += chars[index];
-    }
-    const randomArray = new Uint32Array(4);
-    crypto.getRandomValues(randomArray);
-    let randomPart = "";
-    for (let i = 0; i < 4; i++) {
-      randomPart += chars[randomArray[i] % chars.length];
-    }
-
-    return `gtw-${process.env.AWS_REGION}-${timePart + randomPart}.${
-      process.env.DOMAIN_NAME
-    }`;
+    const uuid = crypto.randomUUID().replace(/-/g, "");
+    const randomStr = uuid.substring(0, 8).toLowerCase();
+    return `gtw-${process.env.AWS_REGION}-${randomStr}.${process.env.DOMAIN_NAME}`;
   };
 
   let existingDomains: Set<string> | null = null;

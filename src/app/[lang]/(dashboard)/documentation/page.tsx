@@ -30,7 +30,7 @@ export default async function DocumentationPage(
   );
   const docContent = fs.readFileSync(docPath, "utf8");
   return (
-    <section className="w-full max-w-4xl mx-auto overflow-x-auto px-0">
+    <section className="w-full max-w-5xl mx-auto overflow-x-auto px-0">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">

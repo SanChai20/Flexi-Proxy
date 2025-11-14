@@ -77,7 +77,7 @@ export default async function AccessTokenModifyPage(
   const dict = await getTrans(lang as Locale);
 
   return (
-    <section className="w-full max-w-4xl mx-auto overflow-x-auto px-0 select-none">
+    <section className="w-full max-w-5xl mx-auto overflow-x-auto px-0 select-none">
       <Suspense fallback={<ModifyAccessTokenSkeleton dict={dict} />}>
         <ModifyAccessTokenContent lang={lang} dict={dict} aid={aid} />
       </Suspense>

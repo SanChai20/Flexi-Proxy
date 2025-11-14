@@ -47,7 +47,7 @@ export default async function AccessTokenPage(
   const dict = await getTrans(lang as Locale);
 
   return (
-    <section className="w-full mx-auto px-0 select-none">
+    <section className="w-full max-w-5xl mx-auto overflow-x-auto px-0 select-none">
       <Suspense fallback={<AccessTokenSkeleton dict={dict} />}>
         <AccessTokenContent lang={lang} dict={dict} />
       </Suspense>

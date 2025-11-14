@@ -32,7 +32,7 @@ export default async function HomePage(props: PageProps<"/[lang]">) {
   let userEmail = session?.user?.email;
 
   return (
-    <section className="w-full max-w-6xl mx-auto overflow-x-auto px-4 py-8 select-none">
+    <section className="w-full max-w-5xl mx-auto overflow-x-auto px-4 py-8 select-none">
       {isLoggedIn ? (
         // Logged in view - User Dashboard
         <div className="flex flex-col items-center justify-center mb-12 animate-in fade-in duration-700">

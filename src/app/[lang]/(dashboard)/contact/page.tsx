@@ -23,7 +23,7 @@ export default async function ContactPage(props: PageProps<"/[lang]/contact">) {
   const adminEmail = await getAdminEmail();
 
   return (
-    <section className="w-full max-w-4xl mx-auto overflow-x-auto px-0 select-none">
+    <section className="w-full max-w-5xl mx-auto overflow-x-auto px-0 select-none">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">

@@ -50,7 +50,7 @@ export default async function CheckoutPage(
     return null;
   }
   return (
-    <section className="w-full max-w-4xl mx-auto overflow-x-auto px-0 select-none">
+    <section className="w-full max-w-5xl mx-auto overflow-x-auto px-0 select-none">
       <CheckoutContent
         dict={dict}
         lang={lang}

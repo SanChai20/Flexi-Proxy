@@ -45,7 +45,7 @@ export default async function GatewayPage(props: PageProps<"/[lang]/gateway">) {
   const dict = await getTrans(lang as Locale);
   const { dft } = await props.searchParams;
   return (
-    <section className="w-full max-w-4xl mx-auto overflow-x-auto px-0 select-none">
+    <section className="w-full max-w-5xl mx-auto overflow-x-auto px-0 select-none">
       <Suspense fallback={<GatewaySkeleton dict={dict} />}>
         <GatewayContent
           dict={dict}

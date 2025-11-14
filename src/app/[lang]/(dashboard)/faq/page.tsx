@@ -23,7 +23,7 @@ export default async function FAQPage(props: PageProps<"/[lang]/faq">) {
   const docPath = path.join(process.cwd(), "public", dict.faq.faqPage);
   const docContent = await fs.readFile(docPath, "utf8");
   return (
-    <section className="w-full max-w-4xl mx-auto overflow-x-auto px-0">
+    <section className="w-full max-w-5xl mx-auto overflow-x-auto px-0">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">
