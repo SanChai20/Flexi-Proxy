@@ -79,11 +79,11 @@ export default function SubscriptionClient({
         router.push("/verification");
         return;
       }
-      router.push(
-        `/subscription/checkout?priceId=${encodeURIComponent(
-          price.id
-        )}&quantity=${encodeURIComponent(instanceCount.toString())}`
-      );
+      // router.push(
+      //   `/subscription/checkout?priceId=${encodeURIComponent(
+      //     price.id
+      //   )}&quantity=${encodeURIComponent(instanceCount.toString())}`
+      // );
     } catch (error) {
       console.error("Subscription error:", error);
       setIsLoading(false);
