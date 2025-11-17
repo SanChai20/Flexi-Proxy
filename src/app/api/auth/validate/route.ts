@@ -15,9 +15,6 @@ const ENV = {
 // Headers: 'X-API-Key': <Token start from 'fp-'>
 //          'X-Proxy-Id': From Proxy Server
 //          'Authorization': Bearer <Token>
-// Body: {
-//  public_key: <Public secret key issued from verified server>
-//}
 async function protectedPOST(req: AuthRequest) {
   if (ENV.ADAPTER_PREFIX === undefined || ENV.ENCRYPTION_KEY === undefined) {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
@@ -31,50 +28,17 @@ async function protectedPOST(req: AuthRequest) {
     if (pid === null) {
       return NextResponse.json({ error: "Missing Field" }, { status: 400 });
     }
-    const { public_key } = await req.json();
-    if (typeof public_key !== "string") {
-      return NextResponse.json({ error: "Missing Field" }, { status: 400 });
-    }
     const tokenData: {
       uid: string;
-      pro: string;
       mid: string;
-      llm: string;
     } | null = await redis.get<{
       uid: string;
-      pro: string;
       mid: string;
-      llm: string;
     }>([ENV.ADAPTER_PREFIX, tk].join(":"));
     if (tokenData === null) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
-    const tokenKeyData: {
-      kiv: string;
-      ken: string;
-      kau: string;
-    } | null = await redis.get<{
-      kiv: string;
-      ken: string;
-      kau: string;
-    }>([ENV.ADAPTER_PREFIX, pid, tk].join(":"));
-    if (tokenKeyData != null) {
-      const apiKey = symmetricDecrypt(
-        {
-          iv: tokenKeyData.kiv,
-          encryptedData: tokenKeyData.ken,
-          authTag: tokenKeyData.kau,
-        },
-        ENV.ENCRYPTION_KEY
-      );
-      const data = asymmetricEncrypt(apiKey, public_key);
-      return NextResponse.json(
-        { enc: data.encryptedData, ...tokenData },
-        { status: 200 }
-      );
-    } else {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
-    }
+    return NextResponse.json({ ...tokenData }, { status: 200 });
   } catch (error) {
     console.error("Failed to request key: ", error);
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });

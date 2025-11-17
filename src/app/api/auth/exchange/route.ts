@@ -1,14 +1,14 @@
 import { redis } from "@/lib/redis";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { AuthRequest, withAuth } from "@/lib/with-auth";
 import { jwtSign } from "@/lib/jwt";
-import { revalidateTag } from "next/cache";
 
 export const preferredRegion = ["iad1", "cle1"];
 
 const ENV = {
   AUTHTOKEN_PREFIX: process.env.AUTHTOKEN_PREFIX!,
   PROXY_PUBLIC_PREFIX: process.env.PROXY_PUBLIC_PREFIX!,
+  PROXY_PRIVATE_PREFIX: process.env.PROXY_PRIVATE_PREFIX!,
 } as const;
 
 // POST
@@ -17,21 +17,24 @@ const ENV = {
 // Body: {
 //  [string] url -> provider proxy url
 //  [string] status -> provider proxy status ["unavailable", "spare", "busy", "full"]
-//  [string] id -> provider id
+//  [string] id -> proxy id
+//  [string] owner -> owner id "admin" if public
 //}
 async function protectedPOST(req: AuthRequest) {
   if (
     ENV.AUTHTOKEN_PREFIX === undefined ||
-    ENV.PROXY_PUBLIC_PREFIX === undefined
+    ENV.PROXY_PUBLIC_PREFIX === undefined ||
+    ENV.PROXY_PRIVATE_PREFIX === undefined
   ) {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
   try {
-    const { url, status, id } = await req.json();
+    const { url, status, id, owner } = await req.json();
     if (
       typeof url !== "string" ||
       typeof status !== "string" ||
-      typeof id !== "string"
+      typeof id !== "string" ||
+      typeof owner !== "string"
     ) {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
@@ -46,12 +49,26 @@ async function protectedPOST(req: AuthRequest) {
       ex: 14400,
     });
     transaction.del([ENV.AUTHTOKEN_PREFIX, req.token].join(":"));
-    transaction.set<{
-      url: string;
-      status: string;
-    }>([ENV.PROXY_PUBLIC_PREFIX, id].join(":"), { url, status }, { ex: 14400 });
+    if (owner === "admin") {
+      transaction.set<{
+        url: string;
+        status: string;
+      }>(
+        [ENV.PROXY_PUBLIC_PREFIX, id].join(":"),
+        { url, status },
+        { ex: 14400 }
+      );
+    } else {
+      transaction.set<{
+        url: string;
+        status: string;
+      }>(
+        [ENV.PROXY_PRIVATE_PREFIX, owner, id].join(":"),
+        { url, status },
+        { ex: 14400 }
+      );
+    }
     await transaction.exec();
-    //revalidateTag("public-proxy-servers");
     return NextResponse.json({ token, expiresIn: 14400 }, { status: 200 });
   } catch (error) {
     console.error("Failed to exchange token: ", error);

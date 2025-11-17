@@ -278,9 +278,6 @@ export async function deleteAdapterAction(
     }>([process.env.ADAPTER_PREFIX, session.user.id, adapterId].join(":"));
     if (adapterRaw !== null) {
       let transaction = redis.multi();
-      transaction.del(
-        [process.env.ADAPTER_PREFIX, adapterRaw.pid, adapterRaw.tk].join(":")
-      );
       transaction.del([process.env.ADAPTER_PREFIX, adapterRaw.tk].join(":"));
       transaction.del(
         [process.env.ADAPTER_PREFIX, session.user.id, adapterId].join(":")
@@ -340,18 +337,10 @@ export async function updateAdapterAction(
       return false;
     }
 
-    const pro = formData.get("provider") as string;
-    const llm = formData.get("litellmParams") as string;
     const mid = formData.get("modelId") as string;
-    const apiKey = formData.get("apiKey") as string;
     const adapterId = formData.get("adapterId") as string;
     const commentNote: string | null = formData.get("commentNote") as string;
     const not = commentNote !== null ? commentNote : "";
-    const encodedKey: { iv: string; encryptedData: string; authTag: string } =
-      symmetricEncrypt(apiKey, process.env.ENCRYPTION_KEY);
-    const kiv = encodedKey.iv;
-    const ken = encodedKey.encryptedData;
-    const kau = encodedKey.authTag;
 
     const adapterRaw: {
       tk: string;
@@ -365,7 +354,7 @@ export async function updateAdapterAction(
       not: string;
     }>([process.env.ADAPTER_PREFIX, session.user.id, adapterId].join(":"));
 
-    let tokenKey = ["fp", crypto.randomUUID()].join("-");
+    let tokenKey = ["sk", crypto.randomUUID()].join("-");
     let transaction = redis.multi();
     transaction.incrby(
       [process.env.USER_MODIFY_VERSION_PREFIX, session.user.id].join(":"),
@@ -373,9 +362,6 @@ export async function updateAdapterAction(
     );
     if (adapterRaw !== null) {
       // Remove old make new
-      transaction.del(
-        [process.env.ADAPTER_PREFIX, adapterRaw.pid, adapterRaw.tk].join(":")
-      );
       transaction.del([process.env.ADAPTER_PREFIX, adapterRaw.tk].join(":"));
       transaction.set<{
         tk: string;
@@ -390,23 +376,10 @@ export async function updateAdapterAction(
       });
       transaction.set<{
         uid: string;
-        pro: string;
         mid: string;
-        llm: string;
       }>([process.env.ADAPTER_PREFIX, tokenKey].join(":"), {
         uid: session.user.id,
-        pro,
         mid,
-        llm,
-      });
-      transaction.set<{
-        kiv: string;
-        ken: string;
-        kau: string;
-      }>([process.env.ADAPTER_PREFIX, pid, tokenKey].join(":"), {
-        kiv,
-        ken,
-        kau,
       });
     } else {
       transaction.set<{
@@ -422,23 +395,10 @@ export async function updateAdapterAction(
       });
       transaction.set<{
         uid: string;
-        pro: string;
         mid: string;
-        llm: string;
       }>([process.env.ADAPTER_PREFIX, tokenKey].join(":"), {
         uid: session.user.id,
-        pro,
         mid,
-        llm,
-      });
-      transaction.set<{
-        kiv: string;
-        ken: string;
-        kau: string;
-      }>([process.env.ADAPTER_PREFIX, pid, tokenKey].join(":"), {
-        kiv,
-        ken,
-        kau,
       });
     }
     await transaction.exec();
@@ -472,17 +432,9 @@ export async function createAdapterAction(
   }
   try {
     const pid = formData.get("proxy") as string;
-    const pro = formData.get("provider") as string;
-    const llm = formData.get("litellmParams") as string;
     const mid = formData.get("modelId") as string;
-    const apiKey = formData.get("apiKey") as string;
     const commentNote: string | null = formData.get("commentNote") as string;
     const not = commentNote !== null ? commentNote : "";
-    const encodedKey: { iv: string; encryptedData: string; authTag: string } =
-      symmetricEncrypt(apiKey, process.env.ENCRYPTION_KEY);
-    const kiv = encodedKey.iv;
-    const ken = encodedKey.encryptedData;
-    const kau = encodedKey.authTag;
 
     type ProxyInfo = {
       url: string;
@@ -502,7 +454,7 @@ export async function createAdapterAction(
       console.error("createAdapterAction - Missing proxy");
       return false;
     }
-    let tokenKey = ["fp", crypto.randomUUID()].join("-");
+    let tokenKey = ["sk", crypto.randomUUID()].join("-");
     let transaction = redis.multi();
     transaction.incrby(
       [process.env.USER_MODIFY_VERSION_PREFIX, session.user.id].join(":"),
@@ -526,23 +478,10 @@ export async function createAdapterAction(
     );
     transaction.set<{
       uid: string;
-      pro: string;
       mid: string;
-      llm: string;
     }>([process.env.ADAPTER_PREFIX, tokenKey].join(":"), {
       uid: session.user.id,
-      pro,
       mid,
-      llm,
-    });
-    transaction.set<{
-      kiv: string;
-      ken: string;
-      kau: string;
-    }>([process.env.ADAPTER_PREFIX, pid, tokenKey].join(":"), {
-      kiv,
-      ken,
-      kau,
     });
     await transaction.exec();
     revalidateTag(`user-adapters:${session.user.id}`);
@@ -556,10 +495,7 @@ export async function createAdapterAction(
 
 export async function getAdapterAction(
   adapterId: string
-): Promise<
-  | { pro: string; mid: string; pid: string; not: string; llm: string }
-  | undefined
-> {
+): Promise<{ mid: string; pid: string; not: string } | undefined> {
   const session = await auth();
   if (!(session && session.user && session.user.id)) {
     console.error("getAdapterAction - Unauthorized");
@@ -587,22 +523,16 @@ export async function getAdapterAction(
         if (adapterRaw !== null) {
           const adapterTokenData: {
             uid: string;
-            pro: string;
             mid: string;
-            llm: string;
           } | null = await redis.get<{
             uid: string;
-            pro: string;
             mid: string;
-            llm: string;
           }>([process.env.ADAPTER_PREFIX, adapterRaw.tk].join(":"));
           if (adapterTokenData !== null) {
             return {
-              pro: adapterTokenData.pro,
               mid: adapterTokenData.mid,
               pid: adapterRaw.pid,
               not: adapterRaw.not,
-              llm: adapterTokenData.llm,
             };
           }
         }
