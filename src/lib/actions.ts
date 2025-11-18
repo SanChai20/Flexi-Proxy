@@ -800,6 +800,7 @@ export async function createPrivateProxyInstance(): Promise<
     process.env.AWS_KEY_NAME === undefined ||
     process.env.AWS_SECURITY_GROUP_ID === undefined ||
     process.env.AWS_INSTANCE_TYPE === undefined ||
+    process.env.AWS_IAM_INSTANCE_PROFILE === undefined ||
     process.env.CLOUDFLARE_TOKEN === undefined ||
     process.env.CLOUDFLARE_ZONE_ID === undefined ||
     process.env.AUTHTOKEN_PREFIX === undefined ||
@@ -809,7 +810,8 @@ export async function createPrivateProxyInstance(): Promise<
     process.env.GITHUB_GATEWAY_REPOSITORY_NAME === undefined ||
     process.env.SUBDOMAIN_LOCK_PREFIX === undefined ||
     process.env.SUBDOMAIN_INSTANCE_PREFIX === undefined ||
-    process.env.PROXY_PRIVATE_PREFIX === undefined
+    process.env.PROXY_PRIVATE_PREFIX === undefined ||
+    process.env.SSM_PARAMETER_PREFIX === undefined
   ) {
     console.error("env not set");
     return undefined;
@@ -905,6 +907,7 @@ export async function createPrivateProxyInstance(): Promise<
 
   const userDataScript = `#!/bin/bash
 set -e
+set +x
 
 cd /home/ubuntu
 git clone -b ${process.env.GITHUB_GATEWAY_REPOSITORY_BRANCH} ${
@@ -917,19 +920,29 @@ if [ "$EUID" -ne 0 ]; then
     exec sudo -E bash "$0" "$@"
 fi
 
+export SSM_PREFIX="${process.env.SSM_PARAMETER_PREFIX}"
 export ADMIN_EMAIL="${session.user?.email || process.env.ADMIN_EMAIL}"
 export APP_DOMAIN="${process.env.DOMAIN_NAME}"
 export APP_SUBDOMAIN_NAME="${randomGatewaySubDomain}"
-export CF_Token="${process.env.CLOUDFLARE_TOKEN}"
-export CF_Zone_ID="${process.env.CLOUDFLARE_ZONE_ID}"
-export FP_PROXY_SERVER_KEYPAIR_PWD="$(openssl rand -base64 8 | cut -c1-8)"
 export FP_APP_TOKEN_PASS="${token}"
-export FP_OWNER_USER_ID="${session.user.id}"
+export FP_PROXY_SERVER_OWNER="${session.user.id}"
+
+get_ssm_param() {
+  aws ssm get-parameter --name "$1" --with-decryption --query 'Parameter.Value' --output text 2>/dev/null || echo ""
+}
+
+export CF_Token=$(get_ssm_param "\${SSM_PREFIX}/cloudflare/token")
+export CF_Zone_ID=$(get_ssm_param "\${SSM_PREFIX}/cloudflare/zone-id")
+export FIREWORKS_AI_API_KEY=$(get_ssm_param "\${SSM_PREFIX}/fireworks/api-key")
 
 chmod +x admin/auto.sh
 admin/auto.sh
 
 echo "===============Deployment Success=============="
+
+rm -f /var/log/cloud-init-output.log
+rm -f /var/log/cloud-init.log
+history -c
 
 `;
 
@@ -942,6 +955,9 @@ echo "===============Deployment Success=============="
       .AWS_INSTANCE_TYPE as (typeof _InstanceType)[keyof typeof _InstanceType],
     KeyName: process.env.AWS_KEY_NAME,
     SecurityGroupIds: [process.env.AWS_SECURITY_GROUP_ID],
+    IamInstanceProfile: {
+      Name: process.env.AWS_IAM_INSTANCE_PROFILE,
+    },
     TagSpecifications: [
       {
         ResourceType: "instance",
