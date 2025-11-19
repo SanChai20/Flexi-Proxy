@@ -904,7 +904,6 @@ export async function createPrivateProxyInstance(): Promise<
   const userDataScript = `#!/bin/bash
 set -e
 
-# 创建日志文件
 LOG_FILE="/tmp/deployment.log"
 exec > >(tee -a $LOG_FILE)
 exec 2>&1
@@ -1042,7 +1041,6 @@ admin/auto.sh
 
 echo "===============Deployment Success=============="
 
-# 保留日志一段时间后再删除
 sleep 300
 rm -f /var/log/cloud-init-output.log
 rm -f /var/log/cloud-init.log
