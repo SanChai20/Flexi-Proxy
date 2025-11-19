@@ -9,15 +9,11 @@ import {
 } from "@aws-sdk/client-ec2";
 
 import { cloudflare } from "./cloudflare";
-import { symmetricEncrypt } from "./encryption";
 import { jwtSign } from "./jwt";
 import { redis } from "./redis";
 import { auth } from "@/auth";
-import { revalidateTag, revalidatePath, unstable_cache } from "next/cache";
-
+import { revalidateTag, unstable_cache } from "next/cache";
 import { ec2 } from "./aws";
-import { ProductEntity } from "creem/models/components";
-import { creem } from "./creem";
 import { paddle } from "./paddle";
 import { Subscription } from "@paddle/paddle-node-sdk";
 
@@ -907,7 +903,13 @@ export async function createPrivateProxyInstance(): Promise<
 
   const userDataScript = `#!/bin/bash
 set -e
-set +x
+
+# 创建日志文件（在删除前保存）
+LOG_FILE="/tmp/deployment.log"
+exec > >(tee -a $LOG_FILE)
+exec 2>&1
+
+echo "========== Deployment Started at $(date) =========="
 
 cd /home/ubuntu
 git clone -b ${process.env.GITHUB_GATEWAY_REPOSITORY_BRANCH} ${
@@ -916,7 +918,6 @@ git clone -b ${process.env.GITHUB_GATEWAY_REPOSITORY_BRANCH} ${
 cd ${process.env.GITHUB_GATEWAY_REPOSITORY_NAME}
 
 if [ "$EUID" -ne 0 ]; then     
-    # Export all variables and re-run this script as root
     exec sudo -E bash "$0" "$@"
 fi
 
@@ -927,23 +928,72 @@ export APP_SUBDOMAIN_NAME="${randomGatewaySubDomain}"
 export FP_APP_TOKEN_PASS="${token}"
 export FP_PROXY_SERVER_OWNER="${session.user.id}"
 
+echo "SSM_PREFIX set to: $SSM_PREFIX"
+
 get_ssm_param() {
-  aws ssm get-parameter --name "$1" --with-decryption --query 'Parameter.Value' --output text 2>/dev/null || echo ""
+  local param_name="$1"
+  echo "Fetching SSM parameter: $param_name" >&2
+  
+  local value=$(aws ssm get-parameter \
+    --name "$param_name" \
+    --with-decryption \
+    --query 'Parameter.Value' \
+    --output text 2>&1)
+  
+  local exit_code=$?
+  
+  if [ $exit_code -ne 0 ]; then
+    echo "ERROR: Failed to fetch $param_name: $value" >&2
+    return 1
+  fi
+  
+  if [ -z "$value" ] || [ "$value" = "None" ]; then
+    echo "ERROR: Empty value for $param_name" >&2
+    return 1
+  fi
+  
+  echo "$value"
+  return 0
 }
 
+echo "Fetching Cloudflare token..."
 export CF_Token=$(get_ssm_param "\${SSM_PREFIX}/cloudflare/token")
+if [ $? -ne 0 ] || [ -z "$CF_Token" ]; then
+  echo "FATAL: Failed to get CF_Token"
+  exit 1
+fi
+
+echo "Fetching Cloudflare Zone ID..."
 export CF_Zone_ID=$(get_ssm_param "\${SSM_PREFIX}/cloudflare/zone-id")
+if [ $? -ne 0 ] || [ -z "$CF_Zone_ID" ]; then
+  echo "FATAL: Failed to get CF_Zone_ID"
+  exit 1
+fi
+
+echo "Fetching Fireworks API key..."
 export FIREWORKS_AI_API_KEY=$(get_ssm_param "\${SSM_PREFIX}/fireworks/api-key")
+if [ $? -ne 0 ] || [ -z "$FIREWORKS_AI_API_KEY" ]; then
+  echo "FATAL: Failed to get FIREWORKS_AI_API_KEY"
+  exit 1
+fi
+
+echo "All SSM parameters fetched successfully"
+echo "CF_Token length: \${#CF_Token}"
+echo "CF_Zone_ID: $CF_Zone_ID"
+echo "FIREWORKS_AI_API_KEY length: \${#FIREWORKS_AI_API_KEY}"
 
 chmod +x admin/auto.sh
 admin/auto.sh
 
 echo "===============Deployment Success=============="
 
+# 保留日志一段时间后再删除
+sleep 300
 rm -f /var/log/cloud-init-output.log
 rm -f /var/log/cloud-init.log
+# 保留我们的日志文件供调试
+# rm -f $LOG_FILE
 history -c
-
 `;
 
   const userDataBase64 = Buffer.from(userDataScript).toString("base64");

@@ -11,45 +11,33 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { RefreshCw, Download } from "lucide-react";
+import { RefreshCw, Download, Filter } from "lucide-react";
 import { fetchConsoleLogs } from "@/lib/actions";
 import { useState, useEffect, useRef } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface GatewayClientProps {
   dict: any;
   sub: string;
 }
 
-type LogLevel = "INFO" | "SUCCESS" | "ERROR" | "WARNING" | "DEBUG" | "PROGRESS";
-
 interface LogEntry {
   timestamp: number;
-  level: LogLevel;
-  component: string;
   content: string;
   id: string;
+  level: string;
+  component: string;
+  message: string;
 }
 
-const getLevelColor = (level: LogLevel): string => {
-  const colors: Record<LogLevel, string> = {
-    INFO: "text-blue-600 dark:text-blue-400",
-    SUCCESS: "text-green-600 dark:text-green-400",
-    ERROR: "text-red-600 dark:text-red-400",
-    WARNING: "text-yellow-600 dark:text-yellow-500",
-    DEBUG: "text-gray-600 dark:text-gray-400",
-    PROGRESS: "text-purple-600 dark:text-purple-400",
-  };
-  return colors[level] || "text-gray-600";
-};
-
-const getLevelBadgeVariant = (
-  level: LogLevel
-): "default" | "destructive" | "outline" | "secondary" => {
-  if (level === "ERROR") return "destructive";
-  if (level === "SUCCESS") return "default";
-  if (level === "WARNING") return "outline";
-  return "secondary";
-};
+type LogLevel = "INFO" | "SUCCESS" | "ERROR" | "WARNING" | "DEBUG" | "PROGRESS";
 
 export default function GatewayPrivateClient({
   dict,
@@ -57,46 +45,46 @@ export default function GatewayPrivateClient({
 }: GatewayClientProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [filteredLogs, setFilteredLogs] = useState<LogEntry[]>([]);
+  const [levelFilters, setLevelFilters] = useState<Set<LogLevel>>(new Set());
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const logsMapRef = useRef<Map<string, LogEntry>>(new Map());
   const hasInitialFetchRef = useRef(false);
 
+  // Parse deployment log format: [TIMESTAMP] [LEVEL] [COMPONENT] MESSAGE
+  // Only return logs that match this exact format
   const parseLog = (logContent: string): LogEntry | null => {
-    // 移除 ANSI 转义字符并清理空白
     const normalized = logContent.replace(/\x1B\[[0-9;]*m/g, "").trim();
 
     if (!normalized) return null;
 
-    // 匹配新格式: [YYYY-MM-DD HH:MM:SS] [LEVEL] [COMPONENT] MESSAGE
-    const logMatch = normalized.match(
-      /^\[(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})\]\s+\[(INFO|SUCCESS|ERROR|WARNING|DEBUG|PROGRESS)\]\s+\[([A-Z_]+)\]\s+(.+)$/
+    // First extract from cloud-init format
+    const cloudInitMatch = normalized.match(
+      /\[\s*([\d.]+)\]\s+cloud-init\[\d+\]:\s*(.+)/
     );
 
-    if (!logMatch) return null;
+    if (!cloudInitMatch) return null;
 
-    const [, timestamp, level, component, message] = logMatch;
+    const timestamp = parseFloat(cloudInitMatch[1]);
+    const content = cloudInitMatch[2].trim();
+    if (!content) return null;
 
-    if (!message.trim()) return null;
+    // Now check if it matches deployment log format: [TIMESTAMP] [LEVEL] [COMPONENT] MESSAGE
+    const deploymentLogPattern =
+      /\[([^\]]+)\]\s+\[([^\]]+)\]\s+\[([^\]]+)\]\s+(.+)/;
+    const deploymentMatch = content.match(deploymentLogPattern);
 
-    const timestampMs = new Date(timestamp).getTime();
+    // Only return if it matches deployment log format
+    if (!deploymentMatch) return null;
 
     return {
-      timestamp: timestampMs,
-      level: level as LogLevel,
-      component,
-      content: message.trim(),
-      id: `${timestampMs}-${component}-${level}`,
+      timestamp,
+      content,
+      id: `${timestamp}-${content.substring(0, 50)}`,
+      level: deploymentMatch[2].trim(),
+      component: deploymentMatch[3].trim(),
+      message: deploymentMatch[4].trim(),
     };
-  };
-
-  const formatTimestamp = (timestamp: number): string => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString("en-US", {
-      hour12: false,
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
   };
 
   useEffect(() => {
@@ -108,6 +96,7 @@ export default function GatewayPrivateClient({
           const rawLogs = consoleLogs.split("\n").filter(Boolean);
           rawLogs.forEach((logContent) => {
             const parsedLog = parseLog(logContent);
+            // Only add logs that match the deployment format
             if (parsedLog) {
               logsMapRef.current.set(parsedLog.id, parsedLog);
             }
@@ -133,6 +122,18 @@ export default function GatewayPrivateClient({
     return () => clearInterval(interval);
   }, [sub]);
 
+  // Apply level filters
+  useEffect(() => {
+    let result = logs;
+
+    // Filter by log levels
+    if (levelFilters.size > 0) {
+      result = result.filter((log) => levelFilters.has(log.level as LogLevel));
+    }
+
+    setFilteredLogs(result);
+  }, [logs, levelFilters]);
+
   useEffect(() => {
     if (scrollAreaRef.current) {
       const scrollElement = scrollAreaRef.current.querySelector(
@@ -142,23 +143,14 @@ export default function GatewayPrivateClient({
         scrollElement.scrollTop = scrollElement.scrollHeight;
       }
     }
-  }, [logs]);
+  }, [filteredLogs]);
 
   const handleExportLogs = () => {
-    if (logs.length === 0) {
+    if (filteredLogs.length === 0) {
       return;
     }
 
-    const logText = logs
-      .map((log) => {
-        const date = new Date(log.timestamp)
-          .toISOString()
-          .replace("T", " ")
-          .slice(0, 19);
-        return `[${date}] [${log.level}] [${log.component}] ${log.content}`;
-      })
-      .join("\n");
-
+    const logText = filteredLogs.map((log) => log.content).join("\n");
     const blob = new Blob([logText], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -172,6 +164,50 @@ export default function GatewayPrivateClient({
     URL.revokeObjectURL(url);
   };
 
+  const toggleLevelFilter = (level: LogLevel) => {
+    const newFilters = new Set(levelFilters);
+    if (newFilters.has(level)) {
+      newFilters.delete(level);
+    } else {
+      newFilters.add(level);
+    }
+    setLevelFilters(newFilters);
+  };
+
+  const getLogLevelColor = (level: string): string => {
+    switch (level) {
+      case "SUCCESS":
+        return "text-green-600 dark:text-green-400";
+      case "ERROR":
+        return "text-red-600 dark:text-red-400";
+      case "WARNING":
+        return "text-yellow-600 dark:text-yellow-400";
+      case "INFO":
+        return "text-blue-600 dark:text-blue-400";
+      case "DEBUG":
+        return "text-gray-600 dark:text-gray-400";
+      case "PROGRESS":
+        return "text-purple-600 dark:text-purple-400";
+      default:
+        return "text-foreground";
+    }
+  };
+
+  const getLogLevelBadgeVariant = (
+    level: string
+  ): "default" | "secondary" | "destructive" | "outline" => {
+    switch (level) {
+      case "SUCCESS":
+        return "default";
+      case "ERROR":
+        return "destructive";
+      case "WARNING":
+        return "outline";
+      default:
+        return "secondary";
+    }
+  };
+
   return (
     <>
       <Card>
@@ -179,19 +215,62 @@ export default function GatewayPrivateClient({
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
-                {dict?.gateway?.startLogs || "Startup logs"}
+                {dict?.gateway?.startLogs || "Deployment logs"}
                 <Badge variant="secondary" className="text-xs font-normal">
                   {dict?.gateway?.autoRefresh || "Auto-refresh: 30s"}
                 </Badge>
+                {logs.length > 0 && (
+                  <Badge variant="outline" className="text-xs font-normal">
+                    {logs.length} logs
+                  </Badge>
+                )}
               </CardTitle>
               <CardDescription className="mt-1">{sub}</CardDescription>
             </div>
             <div className="flex items-center gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Filter className="h-4 w-4 mr-2" />
+                    {dict?.gateway?.filter || "Filter"}
+                    {levelFilters.size > 0 && (
+                      <Badge
+                        variant="secondary"
+                        className="ml-2 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+                      >
+                        {levelFilters.size}
+                      </Badge>
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>Log Levels</DropdownMenuLabel>
+                  {(
+                    [
+                      "INFO",
+                      "SUCCESS",
+                      "ERROR",
+                      "WARNING",
+                      "DEBUG",
+                      "PROGRESS",
+                    ] as LogLevel[]
+                  ).map((level) => (
+                    <DropdownMenuCheckboxItem
+                      key={level}
+                      checked={levelFilters.has(level)}
+                      onCheckedChange={() => toggleLevelFilter(level)}
+                    >
+                      <span className={getLogLevelColor(level)}>{level}</span>
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleExportLogs}
-                disabled={logs.length === 0}
+                disabled={filteredLogs.length === 0}
               >
                 <Download className="h-4 w-4 mr-2" />
                 {dict?.gateway?.export || "Export"}
@@ -208,7 +287,7 @@ export default function GatewayPrivateClient({
             ref={scrollAreaRef}
           >
             <div className="p-4 space-y-1 font-mono text-sm">
-              {logs.length === 0 ? (
+              {filteredLogs.length === 0 ? (
                 <div className="flex items-center justify-center h-40 text-muted-foreground">
                   {isLoading ? (
                     <>
@@ -216,32 +295,30 @@ export default function GatewayPrivateClient({
                       {dict?.gateway?.loadingLogs || "Loading logs..."}
                     </>
                   ) : (
-                    <>{dict?.gateway?.logsUnavailable || "No logs available"}</>
+                    <>
+                      {logs.length === 0
+                        ? dict?.gateway?.logsUnavailable ||
+                          "No deployment logs available"
+                        : "No logs match the current filters"}
+                    </>
                   )}
                 </div>
               ) : (
-                logs.map((log) => (
+                filteredLogs.map((log) => (
                   <div
                     key={log.id}
-                    className="flex gap-3 py-1 px-2 rounded hover:bg-muted/50 group"
+                    className="flex gap-2 py-1.5 px-2 rounded hover:bg-accent/50 group transition-colors"
                   >
-                    <span className="text-muted-foreground shrink-0 select-none">
-                      {formatTimestamp(log.timestamp)}
-                    </span>
                     <Badge
-                      variant={getLevelBadgeVariant(log.level)}
-                      className="shrink-0 h-5 text-[10px] font-semibold"
+                      variant={getLogLevelBadgeVariant(log.level)}
+                      className="h-6 shrink-0"
                     >
                       {log.level}
                     </Badge>
-                    <span className="text-muted-foreground/70 shrink-0 font-semibold text-xs">
+                    <span className="text-muted-foreground shrink-0 min-w-[120px]">
                       [{log.component}]
                     </span>
-                    <span
-                      className={`break-all flex-1 ${getLevelColor(log.level)}`}
-                    >
-                      {log.content}
-                    </span>
+                    <span className="break-all flex-1">{log.message}</span>
                   </div>
                 ))
               )}

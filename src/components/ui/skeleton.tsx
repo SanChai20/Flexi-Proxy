@@ -1,29 +1,28 @@
+// src/components/ui/skeleton.tsx
 import { cn } from "@/lib/utils";
+import React from "react";
 
-interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface SkeletonProps extends React.HTMLAttributes<HTMLElement> {
   pulse?: boolean;
-  variant?: "default" | "circular" | "text";
+  as?: "div" | "span"; // Add this prop
 }
 
-function Skeleton({
-  className,
-  pulse = true,
-  variant = "default",
-  ...props
-}: SkeletonProps) {
-  return (
-    <div
-      className={cn(
-        "bg-muted",
-        pulse && "animate-pulse",
-        variant === "circular" && "rounded-full",
-        variant === "text" && "rounded-sm h-4",
-        variant === "default" && "rounded-md",
-        className
-      )}
-      {...props}
-    />
-  );
-}
+const Skeleton = React.forwardRef<HTMLElement, SkeletonProps>(
+  ({ className, pulse = true, as: Component = "div", ...props }, ref) => {
+    return (
+      <Component
+        ref={ref as any}
+        className={cn(
+          "bg-muted",
+          pulse && "animate-pulse",
+          "rounded-md",
+          className
+        )}
+        {...props}
+      />
+    );
+  }
+);
+Skeleton.displayName = "Skeleton";
 
 export { Skeleton };
