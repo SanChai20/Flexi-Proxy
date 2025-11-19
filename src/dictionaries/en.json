@@ -219,6 +219,7 @@
     "noteTag": "NOTE",
     "noteTitle": "Add note information",
     "notePlaceHolder": "Create note for this pass...(20 words max)",
+    "create": "Create",
     "edit": "Edit",
     "note": "Note",
     "unavailable": "Unavailable",

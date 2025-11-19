@@ -23,17 +23,23 @@ interface AccessTokenClientProps {
   dict: any;
   permissions: any;
   initialAdapters: any[];
+  proxies: { id: string; url: string; status: string }[];
+  models: { id: string; name: string }[];
+  defaultMode: string | null;
+  version?: number;
 }
-
-// 定义 Dialog 模式类型
-type DialogMode = "create" | "edit" | null;
 
 export default function AccessTokenClient({
   dict,
   permissions,
   initialAdapters,
+  proxies,
+  models,
+
+  defaultMode,
+  version,
 }: AccessTokenClientProps) {
-  const [dialogMode, setDialogMode] = useState<DialogMode>(null);
+  const [dialogMode, setDialogMode] = useState<string | null>(defaultMode);
   const [editingAdapter, setEditingAdapter] = useState<any>(null);
   const [submittingAdapters, setSubmittingAdapters] = useState<Set<string>>(
     new Set()
@@ -270,15 +276,14 @@ export default function AccessTokenClient({
       {dialogMode && (
         <TokenDialog
           dict={dict}
-          proxies={[]} // 传入你的 proxies 数据
-          models={[]}
-          version={0} // 传入 version
+          proxies={proxies}
+          models={models}
+          version={version}
           open={!!dialogMode}
           onOpenChange={(open) => {
             if (!open) handleCloseDialog();
           }}
           dialogMode={dialogMode}
-          // 如果是编辑模式，传入默认值
           defaultValues={
             dialogMode === "edit" && editingAdapter
               ? {
