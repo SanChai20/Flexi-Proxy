@@ -24,7 +24,14 @@ import {
 } from "lucide-react";
 import { redirect, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import {
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import dynamic from "next/dynamic";
 import {
   Dialog,
@@ -738,37 +745,43 @@ export function CreateAdapterForm({
     </TooltipProvider>
   );
 }
-
 export function TokenDialog({
   dict,
-  proxies,
+  proxies, //available proxies
+  models, //available models
+  dialogMode,
   version,
   open,
   onOpenChange,
-  mode,
   defaultValues,
-  initProxyId,
 }: {
   dict: any;
   proxies: { id: string; url: string; status: string }[];
+  models: { id: string; name: string }[];
+  dialogMode: "edit" | "create";
   version: number;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  mode: "create" | "edit";
   defaultValues?: {
-    adapterId?: string;
+    proxyId?: string;
     modelId?: string;
+    adapterId?: string;
     commentNote?: string;
   };
-  initProxyId?: string;
 }) {
   const router = useRouter();
   const [selectedProxyId, setSelectedProxyId] = useState(
-    proxies.some((p) => p.id === initProxyId) ? initProxyId : ""
+    proxies.some((p) => p.id === defaultValues?.proxyId)
+      ? defaultValues?.proxyId
+      : ""
   );
-  const [modelId, setModelId] = useState(defaultValues?.modelId || "");
+  const [selectedModelId, setSelectedModelId] = useState(
+    defaultValues?.modelId || ""
+  );
   const [isProxyDropdownOpen, setIsProxyDropdownOpen] = useState(false);
+  const [isModelDropdownOpen, setIsModelDropdownOpen] = useState(false);
   const proxyDropdownRef = useRef<HTMLDivElement>(null);
+  const modelDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -778,25 +791,26 @@ export function TokenDialog({
       ) {
         setIsProxyDropdownOpen(false);
       }
+      if (
+        modelDropdownRef.current &&
+        !modelDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsModelDropdownOpen(false);
+      }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleProxyChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setSelectedProxyId(e.target.value);
-      setModelId("");
-    },
-    []
-  );
+  const handleProxyChange = useCallback((proxyId: string) => {
+    setSelectedProxyId(proxyId);
+  }, []);
 
-  useEffect(() => {
-    if (initProxyId) {
-      setSelectedProxyId(initProxyId);
-    }
-  }, [initProxyId]);
+  const handleModelChange = useCallback((modelId: string) => {
+    setSelectedModelId(modelId);
+    setIsModelDropdownOpen(false);
+  }, []);
 
   const onSubmit = useCallback(
     async (formData: FormData) => {
@@ -804,27 +818,38 @@ export function TokenDialog({
       if (currentVersion !== version) {
         router.replace("/token");
       } else {
-        let canJump: boolean = false;
-        if (defaultValues?.adapterId) {
-          canJump = await updateAdapterAction(formData);
+        let canRefresh: boolean = false;
+        if (dialogMode === "edit") {
+          canRefresh = await updateAdapterAction(formData);
         } else {
-          canJump = await createAdapterAction(formData);
+          canRefresh = await createAdapterAction(formData);
         }
-        if (canJump) {
+        if (canRefresh) {
           onOpenChange(false);
           router.refresh();
         }
       }
     },
-    [version, defaultValues, onOpenChange]
+    [version, dialogMode, onOpenChange, router]
   );
+
+  // Filter models based on input
+  const filteredModels = useMemo(() => {
+    if (!selectedModelId) return models;
+    return models.filter((model) =>
+      model.id.toLowerCase().includes(selectedModelId.toLowerCase())
+    );
+  }, [models, selectedModelId]);
+
+  // Check if form is valid for submission
+  const isFormValid = selectedProxyId && selectedModelId;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>
-            {defaultValues?.adapterId
+            {dialogMode === "edit"
               ? dict?.token?.editAdapter || "Edit Adapter"
               : dict?.token?.createAdapter || "Create Adapter"}
           </DialogTitle>
@@ -835,6 +860,13 @@ export function TokenDialog({
             type="hidden"
             name="adapterId"
             value={defaultValues?.adapterId}
+          />
+          <input type="hidden" name="proxy" value={selectedProxyId} required />
+          <input
+            type="hidden"
+            name="modelId"
+            value={selectedModelId}
+            required
           />
 
           {/* Proxy Section */}
@@ -861,25 +893,6 @@ export function TokenDialog({
             </div>
 
             <div className="relative" ref={proxyDropdownRef}>
-              <select
-                id="proxy"
-                name="proxy"
-                value={selectedProxyId}
-                onChange={handleProxyChange}
-                className="absolute inset-0 opacity-0 w-full h-full cursor-pointer z-10"
-                required
-                style={{ pointerEvents: "none" }}
-              >
-                <option value="">
-                  {dict.token?.selectProxy || "Select a proxy server"}
-                </option>
-                {proxies.map((option) => (
-                  <option key={option.id} value={option.id}>
-                    {option.id}
-                  </option>
-                ))}
-              </select>
-
               <button
                 type="button"
                 onClick={() => setIsProxyDropdownOpen(!isProxyDropdownOpen)}
@@ -959,9 +972,7 @@ export function TokenDialog({
                             type="button"
                             onClick={() => {
                               if (!isDisabled) {
-                                handleProxyChange({
-                                  target: { value: option.id },
-                                } as React.ChangeEvent<HTMLSelectElement>);
+                                handleProxyChange(option.id);
                                 setIsProxyDropdownOpen(false);
                               }
                             }}
@@ -1008,48 +1019,109 @@ export function TokenDialog({
             </div>
           </div>
 
-          {/* Model Selection Section */}
-          <div
-            className={`space-y-2 transition-opacity ${
-              selectedProxyId ? "opacity-100" : "opacity-50 pointer-events-none"
-            }`}
-          >
-            <fieldset disabled={!selectedProxyId}>
-              <div className="flex items-center gap-2">
-                <label
-                  htmlFor="modelId"
-                  className="text-sm font-medium flex items-center gap-1.5"
+          {/* Model Selection Section - Combobox (No longer dependent on proxy) */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <label
+                htmlFor="modelId"
+                className="text-sm font-medium flex items-center gap-1.5"
+              >
+                <span className="text-destructive">*</span>
+                {dict?.token?.modelId || "Model ID"}
+              </label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <HelpCircleIcon className="h-4 w-4 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs">
+                  <p>
+                    {dict?.token?.modelIdOptionsTip ||
+                      "Use any model ID from your provider. Follow the format shown - you're not limited to listed options."}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+
+            <div className="relative" ref={modelDropdownRef}>
+              <div className="relative">
+                <input
+                  type="text"
+                  id="modelId"
+                  value={selectedModelId}
+                  onChange={(e) => {
+                    setSelectedModelId(e.target.value);
+                    setIsModelDropdownOpen(true);
+                  }}
+                  onFocus={() => setIsModelDropdownOpen(true)}
+                  className="w-full px-3 py-2 pr-10 bg-background border border-input rounded-md 
+                           focus:outline-none focus:ring-2 focus:ring-ring text-sm"
+                  placeholder={
+                    dict?.token?.modelIdPlaceHolder ||
+                    "Select or enter Model ID..."
+                  }
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setIsModelDropdownOpen(!isModelDropdownOpen)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-accent rounded"
                 >
-                  <span className="text-destructive">*</span>
-                  {dict?.token?.modelId || "Model ID"}
-                </label>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <HelpCircleIcon className="h-4 w-4 text-muted-foreground cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-xs">
-                    <p>
-                      {dict?.token?.modelIdOptionsTip ||
-                        "Use any model ID from your provider. Follow the format shown - you're not limited to listed options."}
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
+                  <ChevronDown
+                    className={`h-4 w-4 text-muted-foreground transition-transform ${
+                      isModelDropdownOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
               </div>
 
-              <input
-                type="text"
-                id="modelId"
-                name="modelId"
-                value={modelId}
-                onChange={(e) => setModelId(e.target.value)}
-                className="w-full px-3 py-2 bg-background border border-input rounded-md 
-                         focus:outline-none focus:ring-2 focus:ring-ring text-sm"
-                placeholder={
-                  dict?.token?.modelIdPlaceHolder || "Select Model ID..."
-                }
-                required
-              />
-            </fieldset>
+              {isModelDropdownOpen && (
+                <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-md max-h-60 overflow-y-auto">
+                  {filteredModels.length === 0 ? (
+                    <div className="px-3 py-6 text-center">
+                      <p className="text-sm text-muted-foreground">
+                        {selectedModelId
+                          ? dict?.token?.noMatchingModels ||
+                            "No matching models found"
+                          : dict?.token?.noModelsAvailable ||
+                            "No models available"}
+                      </p>
+                      {selectedModelId && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {dict?.token?.pressEnterToUseCustom ||
+                            "Press Enter to use custom model ID"}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="py-1">
+                      {filteredModels.map((model) => {
+                        const isSelected = selectedModelId === model.id;
+                        return (
+                          <button
+                            key={model.id}
+                            type="button"
+                            onClick={() => handleModelChange(model.id)}
+                            className={`w-full px-3 py-2 text-left flex items-center gap-2 text-sm
+                              hover:bg-accent cursor-pointer
+                              ${isSelected ? "bg-accent" : ""}
+                            `}
+                          >
+                            <span className="font-medium flex-1 min-w-0 truncate">
+                              {model.id}
+                            </span>
+                            {model.name && (
+                              <span className="text-xs text-muted-foreground flex-shrink-0">
+                                {model.name}
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Note Section */}
@@ -1094,7 +1166,8 @@ export function TokenDialog({
               type="submit"
               className="flex-1 px-4 py-2 rounded-md bg-primary text-primary-foreground
                        hover:bg-primary/90 text-sm font-medium
-                       transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+                       transition-colors focus:outline-none focus:ring-2 focus:ring-ring
+                       disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary"
             >
               {dict?.token?.confirm || "Confirm"}
             </OnceButton>

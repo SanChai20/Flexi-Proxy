@@ -271,12 +271,13 @@ export default function AccessTokenClient({
         <TokenDialog
           dict={dict}
           proxies={[]} // 传入你的 proxies 数据
+          models={[]}
           version={0} // 传入 version
           open={!!dialogMode}
           onOpenChange={(open) => {
             if (!open) handleCloseDialog();
           }}
-          mode={dialogMode}
+          dialogMode={dialogMode}
           // 如果是编辑模式，传入默认值
           defaultValues={
             dialogMode === "edit" && editingAdapter
@@ -284,13 +285,8 @@ export default function AccessTokenClient({
                   adapterId: editingAdapter.aid,
                   modelId: editingAdapter.mid,
                   commentNote: editingAdapter.not,
+                  proxyId: editingAdapter.pid,
                 }
-              : undefined
-          }
-          // 如果是编辑模式，传入初始 proxyId
-          initProxyId={
-            dialogMode === "edit" && editingAdapter
-              ? editingAdapter.pid
               : undefined
           }
         />
