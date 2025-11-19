@@ -50,10 +50,8 @@ async function ModifyAccessTokenContent({
       defaultValues={{
         modelId: adapter.mid,
         proxyId: adapter.pid,
-        providerId: adapter.pro,
         commentNote: adapter.not,
         adapterId: aid,
-        litellmParams: adapter.llm,
       }}
     />
   );

@@ -6,9 +6,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { AdapterForm } from "../form";
+
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { TokenDialog } from "../dialog";
 
 interface CreateAccessTokenClientProps {
   dict: any;
@@ -32,6 +33,7 @@ export default function CreateAccessTokenClient({
   const [defaultProxyId, setDefaultProxyId] = useState<string | undefined>(
     undefined
   );
+  const [dialogOpen, setDialogOpen] = useState(false);
   useEffect(() => {
     const urlProxyId = searchParams.get("proxyId");
     if (urlProxyId) {
@@ -52,19 +54,21 @@ export default function CreateAccessTokenClient({
         </CardHeader>
       </Card>
       {typeof defaultProxyId === "string" && defaultProxyId.length > 0 ? (
-        <AdapterForm
+        <TokenDialog
           dict={dict}
           proxies={proxies}
-          providers={providers}
           version={version}
           initProxyId={defaultProxyId}
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
         />
       ) : (
-        <AdapterForm
+        <TokenDialog
           dict={dict}
           proxies={proxies}
-          providers={providers}
           version={version}
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
         />
       )}
     </>

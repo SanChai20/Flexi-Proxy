@@ -6,7 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { AdapterForm } from "../form";
+import { TokenDialog } from "../dialog";
+import { useState } from "react";
 
 interface ModifyAccessTokenClientProps {
   dict: any;
@@ -21,9 +22,7 @@ interface ModifyAccessTokenClientProps {
     adapterId: string;
     modelId: string;
     proxyId: string;
-    providerId: string;
     commentNote: string;
-    litellmParams: string;
   };
 }
 
@@ -34,6 +33,7 @@ export default function ModifyAccessTokenClient({
   version,
   defaultValues,
 }: ModifyAccessTokenClientProps) {
+  const [dialogOpen, setDialogOpen] = useState(false);
   return (
     <>
       <Card>
@@ -47,13 +47,14 @@ export default function ModifyAccessTokenClient({
           </CardDescription>
         </CardHeader>
       </Card>
-      <AdapterForm
+      <TokenDialog
         dict={dict}
         proxies={proxies}
-        providers={providers}
         version={version}
         defaultValues={defaultValues}
         initProxyId={defaultValues.proxyId}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
       />
     </>
   );
