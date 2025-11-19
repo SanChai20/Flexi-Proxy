@@ -157,7 +157,7 @@
     "createPrivate": "Create",
     "startLogs": "Startup logs",
     "export": "Export",
-    "autoRefresh": "Auto-refresh: 30s",
+    "autoRefresh": "Auto-refresh: 15s",
     "loadingLogs": "Loading logs...",
     "logsUnavailable": "No logs available",
     "viewLogs": "View Startup Logs",

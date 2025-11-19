@@ -904,23 +904,54 @@ export async function createPrivateProxyInstance(): Promise<
   const userDataScript = `#!/bin/bash
 set -e
 
-# 创建日志文件（在删除前保存）
+# 创建日志文件
 LOG_FILE="/tmp/deployment.log"
 exec > >(tee -a $LOG_FILE)
 exec 2>&1
 
 echo "========== Deployment Started at $(date) =========="
 
+# ========================================
+# Step 1: Install AWS CLI if not present
+# ========================================
+if ! command -v aws &> /dev/null; then
+    echo "AWS CLI not found. Installing..."
+    apt-get update -qq
+    apt-get install -y unzip curl
+    
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip -q awscliv2.zip
+    ./aws/install
+    rm -rf aws awscliv2.zip
+    
+    echo "AWS CLI installed successfully"
+else
+    echo "AWS CLI already installed"
+fi
+
+# Verify AWS CLI is working
+aws --version || {
+    echo "FATAL: AWS CLI installation failed"
+    exit 1
+}
+
+# ========================================
+# Step 2: Clone Repository
+# ========================================
 cd /home/ubuntu
 git clone -b ${process.env.GITHUB_GATEWAY_REPOSITORY_BRANCH} ${
     process.env.GITHUB_GATEWAY_REPOSITORY_URL
   }
 cd ${process.env.GITHUB_GATEWAY_REPOSITORY_NAME}
 
+# Ensure running as root
 if [ "$EUID" -ne 0 ]; then     
     exec sudo -E bash "$0" "$@"
 fi
 
+# ========================================
+# Step 3: Set Basic Environment Variables
+# ========================================
 export SSM_PREFIX="${process.env.SSM_PARAMETER_PREFIX}"
 export ADMIN_EMAIL="${session.user?.email || process.env.ADMIN_EMAIL}"
 export APP_DOMAIN="${process.env.DOMAIN_NAME}"
@@ -930,6 +961,9 @@ export FP_PROXY_SERVER_OWNER="${session.user.id}"
 
 echo "SSM_PREFIX set to: $SSM_PREFIX"
 
+# ========================================
+# Step 4: Function to Fetch SSM Parameters
+# ========================================
 get_ssm_param() {
   local param_name="$1"
   echo "Fetching SSM parameter: $param_name" >&2
@@ -938,12 +972,14 @@ get_ssm_param() {
     --name "$param_name" \
     --with-decryption \
     --query 'Parameter.Value' \
-    --output text 2>&1)
+    --output text \
+    --region ${process.env.AWS_REGION || "us-east-1"} 2>&1)
   
   local exit_code=$?
   
   if [ $exit_code -ne 0 ]; then
-    echo "ERROR: Failed to fetch $param_name: $value" >&2
+    echo "ERROR: Failed to fetch $param_name" >&2
+    echo "AWS CLI Error: $value" >&2
     return 1
   fi
   
@@ -956,12 +992,16 @@ get_ssm_param() {
   return 0
 }
 
+# ========================================
+# Step 5: Fetch All SSM Parameters
+# ========================================
 echo "Fetching Cloudflare token..."
 export CF_Token=$(get_ssm_param "\${SSM_PREFIX}/cloudflare/token")
 if [ $? -ne 0 ] || [ -z "$CF_Token" ]; then
   echo "FATAL: Failed to get CF_Token"
   exit 1
 fi
+echo "✓ CF_Token fetched (length: \${#CF_Token})"
 
 echo "Fetching Cloudflare Zone ID..."
 export CF_Zone_ID=$(get_ssm_param "\${SSM_PREFIX}/cloudflare/zone-id")
@@ -969,6 +1009,7 @@ if [ $? -ne 0 ] || [ -z "$CF_Zone_ID" ]; then
   echo "FATAL: Failed to get CF_Zone_ID"
   exit 1
 fi
+echo "✓ CF_Zone_ID fetched (length: \${#CF_Zone_ID})"
 
 echo "Fetching Fireworks API key..."
 export FIREWORKS_AI_API_KEY=$(get_ssm_param "\${SSM_PREFIX}/fireworks/api-key")
@@ -976,12 +1017,26 @@ if [ $? -ne 0 ] || [ -z "$FIREWORKS_AI_API_KEY" ]; then
   echo "FATAL: Failed to get FIREWORKS_AI_API_KEY"
   exit 1
 fi
+echo "✓ FIREWORKS_AI_API_KEY fetched (length: \${#FIREWORKS_AI_API_KEY})"
 
 echo "All SSM parameters fetched successfully"
-echo "CF_Token length: \${#CF_Token}"
-echo "CF_Zone_ID: $CF_Zone_ID"
-echo "FIREWORKS_AI_API_KEY length: \${#FIREWORKS_AI_API_KEY}"
 
+# ========================================
+# Step 6: Validate Critical Variables
+# ========================================
+if [[ "$CF_Zone_ID" == *"not found"* ]] || [[ "$CF_Zone_ID" == *"error"* ]]; then
+  echo "FATAL: CF_Zone_ID contains error message: $CF_Zone_ID"
+  exit 1
+fi
+
+if [[ "$CF_Token" == *"not found"* ]] || [[ "$CF_Token" == *"error"* ]]; then
+  echo "FATAL: CF_Token contains error message"
+  exit 1
+fi
+
+# ========================================
+# Step 7: Run Deployment Script
+# ========================================
 chmod +x admin/auto.sh
 admin/auto.sh
 
@@ -991,8 +1046,6 @@ echo "===============Deployment Success=============="
 sleep 300
 rm -f /var/log/cloud-init-output.log
 rm -f /var/log/cloud-init.log
-# 保留我们的日志文件供调试
-# rm -f $LOG_FILE
 history -c
 `;
 
