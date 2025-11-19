@@ -8,6 +8,7 @@ import {
   CreateAdapterForm,
   DeleteAdapterDropdownForm,
   EditAdapterDropdownForm,
+  TokenDialog,
 } from "./form";
 import {
   DropdownMenu,
@@ -24,11 +25,16 @@ interface AccessTokenClientProps {
   initialAdapters: any[];
 }
 
+// 定义 Dialog 模式类型
+type DialogMode = "create" | "edit" | null;
+
 export default function AccessTokenClient({
   dict,
   permissions,
   initialAdapters,
 }: AccessTokenClientProps) {
+  const [dialogMode, setDialogMode] = useState<DialogMode>(null);
+  const [editingAdapter, setEditingAdapter] = useState<any>(null);
   const [submittingAdapters, setSubmittingAdapters] = useState<Set<string>>(
     new Set()
   );
@@ -44,6 +50,21 @@ export default function AccessTokenClient({
       newSet.delete(adapterId);
       return newSet;
     });
+  };
+
+  const handleCreateClick = () => {
+    setDialogMode("create");
+    setEditingAdapter(null);
+  };
+
+  const handleEditClick = (adapter: any) => {
+    setDialogMode("edit");
+    setEditingAdapter(adapter);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogMode(null);
+    setEditingAdapter(null);
   };
 
   const copyToClipboard = async (text: string, adapterId: string) => {
@@ -133,6 +154,7 @@ export default function AccessTokenClient({
                 dict={dict}
                 currentAdapterCount={initialAdapters.length}
                 maxAdapterCountAllowed={permissions.maa}
+                onOpenDialog={handleCreateClick}
               />
             </div>
           </div>
@@ -208,12 +230,13 @@ export default function AccessTokenClient({
                         </span>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <EditAdapterDropdownForm
-                        dict={dict}
-                        adapter_id={adapter.aid}
-                        onSubmitStart={() => handleSubmitStart(adapter.aid)}
-                        onSubmitEnd={() => handleSubmitEnd(adapter.aid)}
-                      />
+                      {/* 修改 Edit 按钮 */}
+                      <DropdownMenuItem
+                        onClick={() => handleEditClick(adapter)}
+                        className="cursor-pointer text-xs xs:text-sm"
+                      >
+                        <span>{dict?.token?.edit || "Edit"}</span>
+                      </DropdownMenuItem>
                       <DeleteAdapterDropdownForm
                         dict={dict}
                         adapter_id={adapter.aid}
@@ -241,6 +264,36 @@ export default function AccessTokenClient({
               "Create your first access token to get started"}
           </p>
         </Card>
+      )}
+
+      {/* Token Dialog - 根据 mode 显示 */}
+      {dialogMode && (
+        <TokenDialog
+          dict={dict}
+          proxies={[]} // 传入你的 proxies 数据
+          version={0} // 传入 version
+          open={!!dialogMode}
+          onOpenChange={(open) => {
+            if (!open) handleCloseDialog();
+          }}
+          mode={dialogMode}
+          // 如果是编辑模式，传入默认值
+          defaultValues={
+            dialogMode === "edit" && editingAdapter
+              ? {
+                  adapterId: editingAdapter.aid,
+                  modelId: editingAdapter.mid,
+                  commentNote: editingAdapter.not,
+                }
+              : undefined
+          }
+          // 如果是编辑模式，传入初始 proxyId
+          initProxyId={
+            dialogMode === "edit" && editingAdapter
+              ? editingAdapter.pid
+              : undefined
+          }
+        />
       )}
     </div>
   );

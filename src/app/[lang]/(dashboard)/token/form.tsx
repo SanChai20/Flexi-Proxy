@@ -745,6 +745,7 @@ export function TokenDialog({
   version,
   open,
   onOpenChange,
+  mode,
   defaultValues,
   initProxyId,
 }: {
@@ -753,6 +754,7 @@ export function TokenDialog({
   version: number;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  mode: "create" | "edit";
   defaultValues?: {
     adapterId?: string;
     modelId?: string;
@@ -819,332 +821,283 @@ export function TokenDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">
+          <DialogTitle>
             {defaultValues?.adapterId
               ? dict?.token?.editAdapter || "Edit Adapter"
               : dict?.token?.createAdapter || "Create Adapter"}
           </DialogTitle>
         </DialogHeader>
 
-        <form action={onSubmit} className="mt-4">
+        <form action={onSubmit} className="space-y-4">
           <input
             type="hidden"
             name="adapterId"
             value={defaultValues?.adapterId}
           />
 
-          <div className="space-y-6">
-            {/* Proxy Section */}
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-md shadow-sm">
-                  {dict?.token?.proxyServer || "PROXY SERVER"}
-                </div>
-                <h3 className="text-lg font-semibold text-foreground">
-                  {dict?.token?.targetTitle || "Select Proxy Service"}
-                </h3>
-              </div>
+          {/* Proxy Section */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <label
+                htmlFor="proxy"
+                className="text-sm font-medium flex items-center gap-1.5"
+              >
+                <span className="text-destructive">*</span>
+                {dict?.token?.proxy || "Proxy Gateway"}
+              </label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <HelpCircleIcon className="h-4 w-4 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs">
+                  <p>
+                    {dict?.token?.proxyTip ||
+                      "You can choose a LiteLLM proxy service based on your location and server load."}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
 
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <label
-                    htmlFor="proxy"
-                    className="text-sm font-medium text-foreground flex items-center gap-1.5"
-                  >
-                    <span className="text-destructive">*</span>
-                    {dict?.token?.proxy || "Proxy Gateway"}
-                  </label>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <HelpCircleIcon className="h-4 w-4 text-muted-foreground cursor-help hover:text-foreground transition-colors" />
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="max-w-xs">
-                      <p>
-                        {dict?.token?.proxyTip ||
-                          "You can choose a LiteLLM proxy service based on your location and server load."}
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
+            <div className="relative" ref={proxyDropdownRef}>
+              <select
+                id="proxy"
+                name="proxy"
+                value={selectedProxyId}
+                onChange={handleProxyChange}
+                className="absolute inset-0 opacity-0 w-full h-full cursor-pointer z-10"
+                required
+                style={{ pointerEvents: "none" }}
+              >
+                <option value="">
+                  {dict.token?.selectProxy || "Select a proxy server"}
+                </option>
+                {proxies.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.id}
+                  </option>
+                ))}
+              </select>
 
-                <div className="relative" ref={proxyDropdownRef}>
-                  <select
-                    id="proxy"
-                    name="proxy"
-                    value={selectedProxyId}
-                    onChange={handleProxyChange}
-                    className="absolute inset-0 opacity-0 w-full h-full cursor-pointer z-10"
-                    required
-                    style={{ pointerEvents: "none" }}
-                  >
-                    <option value="">
+              <button
+                type="button"
+                onClick={() => setIsProxyDropdownOpen(!isProxyDropdownOpen)}
+                className="w-full px-3 py-2 text-left bg-background border border-input rounded-md 
+                          focus:outline-none focus:ring-2 focus:ring-ring 
+                          hover:border-ring/50 flex items-center justify-between gap-2"
+              >
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  {selectedProxyId ? (
+                    <>
+                      {(() => {
+                        const proxy = proxies.find(
+                          (p) => p.id === selectedProxyId
+                        );
+                        if (!proxy) return null;
+                        const config = getProxyStatusConfig(proxy.status);
+                        return (
+                          <>
+                            <span className={`flex-shrink-0 ${config.color}`}>
+                              {config.icon}
+                            </span>
+                            <span className="font-medium truncate text-sm">
+                              {proxy.id}
+                            </span>
+                            <span
+                              className={`px-1.5 py-0.5 rounded text-xs font-medium ${config.color} ${config.bg} ${config.border} border flex-shrink-0`}
+                            >
+                              {proxy.status === "spare" &&
+                                (dict?.token?.spare || "Spare")}
+                              {proxy.status === "busy" &&
+                                (dict?.token?.busy || "Busy")}
+                              {proxy.status === "full" &&
+                                (dict?.token?.full || "Full")}
+                              {(proxy.status === "" ||
+                                proxy.status === "unavailable") &&
+                                (dict?.token?.unavailable || "Unavailable")}
+                            </span>
+                          </>
+                        );
+                      })()}
+                    </>
+                  ) : (
+                    <span className="text-muted-foreground text-sm">
                       {dict.token?.selectProxy || "Select a proxy server"}
-                    </option>
-                    {proxies.map((option) => (
-                      <option key={option.id} value={option.id}>
-                        {option.id}
-                      </option>
-                    ))}
-                  </select>
+                    </span>
+                  )}
+                </div>
+                <ChevronDown
+                  className={`h-4 w-4 text-muted-foreground transition-transform flex-shrink-0 ${
+                    isProxyDropdownOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
 
-                  <button
-                    type="button"
-                    onClick={() => setIsProxyDropdownOpen(!isProxyDropdownOpen)}
-                    className="w-full px-4 py-3 text-left text-foreground bg-background border border-input rounded-lg 
-                              focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring 
-                              transition-all duration-200 hover:border-ring/50 shadow-sm
-                              flex items-center justify-between gap-3 group relative z-0"
-                  >
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      {selectedProxyId ? (
-                        <div className="flex items-center gap-2 flex-1 min-w-0">
-                          {(() => {
-                            const proxy = proxies.find(
-                              (p) => p.id === selectedProxyId
-                            );
-                            if (!proxy) return null;
-                            const config = getProxyStatusConfig(proxy.status);
-                            return (
-                              <>
-                                <span
-                                  className={`flex-shrink-0 ${config.color}`}
-                                >
-                                  {config.icon}
-                                </span>
-                                <span className="font-medium truncate">
-                                  {proxy.id}
-                                </span>
-                                <div className="flex items-center gap-1.5 flex-shrink-0">
-                                  <span
-                                    className={`px-2 py-0.5 rounded text-xs font-medium ${config.color} ${config.bg} ${config.border} border`}
-                                  >
-                                    {proxy.status === "spare" &&
-                                      (dict?.token?.spare || "Spare")}
-                                    {proxy.status === "busy" &&
-                                      (dict?.token?.busy || "Busy")}
-                                    {proxy.status === "full" &&
-                                      (dict?.token?.full || "Full")}
-                                    {(proxy.status === "" ||
-                                      proxy.status === "unavailable") &&
-                                      (dict?.token?.unavailable ||
-                                        "Unavailable")}
-                                  </span>
-                                </div>
-                              </>
-                            );
-                          })()}
-                        </div>
-                      ) : (
-                        <span className="text-muted-foreground">
-                          {dict.token?.selectProxy || "Select a proxy server"}
-                        </span>
-                      )}
+              {isProxyDropdownOpen && (
+                <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-md max-h-60 overflow-y-auto">
+                  {proxies.length === 0 ? (
+                    <div className="px-3 py-6 text-center">
+                      <Server className="h-6 w-6 text-muted-foreground/50 mx-auto mb-2" />
+                      <p className="text-sm text-muted-foreground">
+                        {dict?.token?.noProxyAvailable ||
+                          "No proxy servers available"}
+                      </p>
                     </div>
-                    <ChevronDown
-                      className={`h-4 w-4 text-muted-foreground transition-transform duration-200 flex-shrink-0 ${
-                        isProxyDropdownOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
+                  ) : (
+                    <div className="py-1">
+                      {proxies.map((option) => {
+                        const isDisabled =
+                          option.status === "" ||
+                          option.status === "unavailable";
+                        const config = getProxyStatusConfig(option.status);
+                        const isSelected = selectedProxyId === option.id;
 
-                  {isProxyDropdownOpen && (
-                    <div className="absolute z-50 w-full mt-2 bg-background border border-border rounded-lg shadow-lg max-h-64 overflow-y-auto animate-in fade-in-0 zoom-in-95">
-                      <div className="py-1">
-                        {proxies.length === 0 ? (
-                          <div className="px-4 py-8 text-center">
-                            <div className="flex flex-col items-center gap-2">
-                              <Server className="h-8 w-8 text-muted-foreground/50" />
-                              <p className="text-sm text-muted-foreground">
-                                {dict?.token?.noProxyAvailable ||
-                                  "No proxy servers available"}
-                              </p>
-                            </div>
-                          </div>
-                        ) : (
-                          proxies.map((option) => {
-                            const isDisabled =
-                              option.status === "" ||
-                              option.status === "unavailable";
-                            const config = getProxyStatusConfig(option.status);
-                            const isSelected = selectedProxyId === option.id;
-
-                            return (
-                              <button
-                                key={option.id}
-                                type="button"
-                                onClick={() => {
-                                  if (!isDisabled) {
-                                    handleProxyChange({
-                                      target: { value: option.id },
-                                    } as React.ChangeEvent<HTMLSelectElement>);
-                                    setIsProxyDropdownOpen(false);
-                                  }
-                                }}
-                                disabled={isDisabled}
-                                className={`w-full px-4 py-3 text-left flex items-center gap-3 transition-colors
-                                  ${
-                                    isDisabled
-                                      ? "opacity-50 cursor-not-allowed"
-                                      : "hover:bg-muted cursor-pointer"
-                                  }
-                                  ${isSelected ? "bg-muted/50" : ""}
-                                `}
-                              >
-                                <span
-                                  className={`flex-shrink-0 ${config.color}`}
-                                >
-                                  {config.icon}
-                                </span>
-                                <span
-                                  className={`font-medium flex-1 min-w-0 truncate ${
-                                    isDisabled
-                                      ? "text-muted-foreground"
-                                      : "text-foreground"
-                                  }`}
-                                >
-                                  {option.id}
-                                </span>
-                                <div className="flex items-center gap-1.5 flex-shrink-0">
-                                  <span
-                                    className={`px-2 py-0.5 rounded text-xs font-medium ${config.color} ${config.bg} ${config.border} border`}
-                                  >
-                                    {option.status === "spare" &&
-                                      (dict?.token?.spare || "Spare")}
-                                    {option.status === "busy" &&
-                                      (dict?.token?.busy || "Busy")}
-                                    {option.status === "full" &&
-                                      (dict?.token?.full || "Full")}
-                                    {(option.status === "" ||
-                                      option.status === "unavailable") &&
-                                      (dict?.token?.unavailable ||
-                                        "Unavailable")}
-                                  </span>
-                                </div>
-                              </button>
-                            );
-                          })
-                        )}
-                      </div>
+                        return (
+                          <button
+                            key={option.id}
+                            type="button"
+                            onClick={() => {
+                              if (!isDisabled) {
+                                handleProxyChange({
+                                  target: { value: option.id },
+                                } as React.ChangeEvent<HTMLSelectElement>);
+                                setIsProxyDropdownOpen(false);
+                              }
+                            }}
+                            disabled={isDisabled}
+                            className={`w-full px-3 py-2 text-left flex items-center gap-2 text-sm
+                              ${
+                                isDisabled
+                                  ? "opacity-50 cursor-not-allowed"
+                                  : "hover:bg-accent cursor-pointer"
+                              }
+                              ${isSelected ? "bg-accent" : ""}
+                            `}
+                          >
+                            <span className={`flex-shrink-0 ${config.color}`}>
+                              {config.icon}
+                            </span>
+                            <span
+                              className={`font-medium flex-1 min-w-0 truncate ${
+                                isDisabled ? "text-muted-foreground" : ""
+                              }`}
+                            >
+                              {option.id}
+                            </span>
+                            <span
+                              className={`px-1.5 py-0.5 rounded text-xs font-medium ${config.color} ${config.bg} ${config.border} border flex-shrink-0`}
+                            >
+                              {option.status === "spare" &&
+                                (dict?.token?.spare || "Spare")}
+                              {option.status === "busy" &&
+                                (dict?.token?.busy || "Busy")}
+                              {option.status === "full" &&
+                                (dict?.token?.full || "Full")}
+                              {(option.status === "" ||
+                                option.status === "unavailable") &&
+                                (dict?.token?.unavailable || "Unavailable")}
+                            </span>
+                          </button>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
-              </div>
+              )}
             </div>
+          </div>
 
-            {/* Model Selection Section */}
-            <div
-              className={`bg-card border border-border rounded-lg p-6 transition-all duration-300 ${
-                selectedProxyId
-                  ? "opacity-100"
-                  : "opacity-40 pointer-events-none select-none"
-              }`}
+          {/* Model Selection Section */}
+          <div
+            className={`space-y-2 transition-opacity ${
+              selectedProxyId ? "opacity-100" : "opacity-50 pointer-events-none"
+            }`}
+          >
+            <fieldset disabled={!selectedProxyId}>
+              <div className="flex items-center gap-2">
+                <label
+                  htmlFor="modelId"
+                  className="text-sm font-medium flex items-center gap-1.5"
+                >
+                  <span className="text-destructive">*</span>
+                  {dict?.token?.modelId || "Model ID"}
+                </label>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircleIcon className="h-4 w-4 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-xs">
+                    <p>
+                      {dict?.token?.modelIdOptionsTip ||
+                        "Use any model ID from your provider. Follow the format shown - you're not limited to listed options."}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+
+              <input
+                type="text"
+                id="modelId"
+                name="modelId"
+                value={modelId}
+                onChange={(e) => setModelId(e.target.value)}
+                className="w-full px-3 py-2 bg-background border border-input rounded-md 
+                         focus:outline-none focus:ring-2 focus:ring-ring text-sm"
+                placeholder={
+                  dict?.token?.modelIdPlaceHolder || "Select Model ID..."
+                }
+                required
+              />
+            </fieldset>
+          </div>
+
+          {/* Note Section */}
+          <div className="space-y-2">
+            <label htmlFor="commentNote" className="text-sm font-medium">
+              {dict?.token?.noteTitle || "Note"}{" "}
+              <span className="text-muted-foreground font-normal">
+                ({dict?.common?.optional || "Optional"})
+              </span>
+            </label>
+
+            <textarea
+              id="commentNote"
+              name="commentNote"
+              defaultValue={defaultValues?.commentNote}
+              rows={3}
+              className="w-full px-3 py-2 bg-background border border-input rounded-md 
+                       focus:outline-none focus:ring-2 focus:ring-ring resize-none text-sm"
+              placeholder={
+                dict?.token?.notePlaceHolder ||
+                "Create note for this pass...(20 words max)"
+              }
+              maxLength={20}
+            />
+            <p className="text-xs text-muted-foreground">
+              {dict?.token?.noteHint || "Maximum 20 characters"}
+            </p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={() => onOpenChange(false)}
+              className="flex-1 px-4 py-2 rounded-md border border-input bg-background
+                       hover:bg-accent hover:text-accent-foreground text-sm font-medium
+                       transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
             >
-              <fieldset disabled={!selectedProxyId}>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-md shadow-sm">
-                    {dict?.token?.tokenPassSource || "SOURCE"}
-                  </div>
-                  <h3 className="text-lg font-semibold text-foreground">
-                    {dict?.token?.sourceTitle || "Configure Model"}
-                  </h3>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <label
-                      htmlFor="modelId"
-                      className="text-sm font-medium text-foreground flex items-center gap-1.5"
-                    >
-                      <span className="text-destructive">*</span>
-                      {dict?.token?.modelId || "Model ID"}
-                    </label>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <HelpCircleIcon className="h-4 w-4 text-muted-foreground cursor-help hover:text-foreground transition-colors" />
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-xs">
-                        <p>
-                          {dict?.token?.modelIdOptionsTip ||
-                            "Use any model ID from your provider. Follow the format shown - you're not limited to listed options."}
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-
-                  <input
-                    type="text"
-                    id="modelId"
-                    name="modelId"
-                    value={modelId}
-                    onChange={(e) => setModelId(e.target.value)}
-                    className="w-full px-4 py-3 text-foreground bg-background border border-input rounded-lg 
-                             focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring 
-                             transition-all duration-200 hover:border-ring/50 shadow-sm"
-                    placeholder={
-                      dict?.token?.modelIdPlaceHolder || "Select Model ID..."
-                    }
-                    required
-                  />
-                </div>
-              </fieldset>
-            </div>
-
-            {/* Note Section */}
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="bg-primary text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-md shadow-sm">
-                  {dict?.token?.noteTag || "NOTE"}
-                </div>
-                <h3 className="text-lg font-semibold text-foreground">
-                  {dict?.token?.noteTitle || "Add note information"}
-                </h3>
-              </div>
-
-              <div className="space-y-3">
-                <textarea
-                  id="commentNote"
-                  name="commentNote"
-                  defaultValue={defaultValues?.commentNote}
-                  rows={3}
-                  className="w-full px-4 py-3 text-foreground bg-background border border-input rounded-lg 
-                           focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring 
-                           transition-all duration-200 hover:border-ring/50 resize-none shadow-sm"
-                  placeholder={
-                    dict?.token?.notePlaceHolder ||
-                    "Create note for this pass...(20 words max)"
-                  }
-                  maxLength={20}
-                ></textarea>
-                <p className="text-xs text-muted-foreground">
-                  {dict?.token?.noteHint || "Maximum 20 characters"}
-                </p>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => onOpenChange(false)}
-                className="flex-1 rounded-lg bg-secondary text-secondary-foreground px-6 py-3
-                         font-medium shadow-sm hover:shadow
-                         transition-all duration-200 hover:opacity-90
-                         focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring"
-              >
-                {dict?.common?.cancel || "Cancel"}
-              </button>
-              <OnceButton
-                type="submit"
-                className="flex-1 rounded-lg bg-primary text-primary-foreground px-6 py-3
-                         font-medium shadow-md hover:shadow-lg
-                         transition-all duration-200 hover:opacity-90
-                         focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring"
-              >
-                {dict?.token?.confirm || "Confirm"}
-              </OnceButton>
-            </div>
+              {dict?.common?.cancel || "Cancel"}
+            </button>
+            <OnceButton
+              type="submit"
+              className="flex-1 px-4 py-2 rounded-md bg-primary text-primary-foreground
+                       hover:bg-primary/90 text-sm font-medium
+                       transition-colors focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+              {dict?.token?.confirm || "Confirm"}
+            </OnceButton>
           </div>
         </form>
       </DialogContent>
