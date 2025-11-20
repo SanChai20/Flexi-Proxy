@@ -130,17 +130,14 @@ export async function getAllModels(): Promise<
     state: string;
   }[]
 > {
-  if (
-    process.env.FIREWORKS_API_KEY === undefined ||
-    process.env.FIREWORKS_MODELS_QUERY_URL === undefined
-  ) {
+  if (process.env.OPENROUTER_API_KEY === undefined) {
     console.error("env not set.");
     return [];
   }
 
   try {
     const headers = {
-      Authorization: `Bearer ${process.env.FIREWORKS_API_KEY}`,
+      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
       "Content-Type": "application/json",
     };
     const allModels: {
@@ -1089,13 +1086,13 @@ if [ $? -ne 0 ] || [ -z "$CF_Zone_ID" ]; then
 fi
 echo "✓ CF_Zone_ID fetched (length: \${#CF_Zone_ID})"
 
-echo "Fetching Fireworks API key..."
-export FIREWORKS_AI_API_KEY=$(get_ssm_param "\${SSM_PREFIX}/fireworks/api-key")
-if [ $? -ne 0 ] || [ -z "$FIREWORKS_AI_API_KEY" ]; then
-  echo "FATAL: Failed to get FIREWORKS_AI_API_KEY"
+echo "Fetching API key..."
+export OPENROUTER_KEY=$(get_ssm_param "\${SSM_PREFIX}/openrouter/api-key")
+if [ $? -ne 0 ] || [ -z "$OPENROUTER_KEY" ]; then
+  echo "FATAL: Failed to get OPENROUTER_KEY"
   exit 1
 fi
-echo "✓ FIREWORKS_AI_API_KEY fetched (length: \${#FIREWORKS_AI_API_KEY})"
+echo "✓ OPENROUTER_KEY fetched (length: \${#OPENROUTER_KEY})"
 
 echo "All SSM parameters fetched successfully"
 
