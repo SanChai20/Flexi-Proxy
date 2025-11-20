@@ -235,11 +235,8 @@ export function TokenDialog({
   dict: any;
   proxies: { id: string; url: string; status: string }[];
   models: {
+    id: string;
     name: string;
-    displayName: string;
-    description?: string;
-    createTime: string;
-    state: string;
   }[];
   dialogMode: string;
   version: number;
@@ -318,7 +315,7 @@ export function TokenDialog({
   const filteredModels = useMemo(() => {
     if (!selectedModelId) return models;
     return models.filter((model) =>
-      model.name.toLowerCase().includes(selectedModelId.toLowerCase())
+      model.id.toLowerCase().includes(selectedModelId.toLowerCase())
     );
   }, [models, selectedModelId]);
 
@@ -569,12 +566,12 @@ export function TokenDialog({
                   ) : (
                     <div className="py-1">
                       {filteredModels.map((model) => {
-                        const isSelected = selectedModelId === model.name;
+                        const isSelected = selectedModelId === model.id;
                         return (
                           <button
-                            key={model.name}
+                            key={model.id}
                             type="button"
-                            onClick={() => handleModelChange(model.name)}
+                            onClick={() => handleModelChange(model.id)}
                             className={`w-full px-3 py-2 text-left flex items-center gap-2 text-sm
                               hover:bg-accent cursor-pointer
                               ${isSelected ? "bg-accent" : ""}
@@ -583,11 +580,9 @@ export function TokenDialog({
                             <span className="font-medium flex-1 min-w-0 truncate">
                               {model.name}
                             </span>
-                            {model.displayName && (
-                              <span className="text-xs text-muted-foreground flex-shrink-0">
-                                {model.displayName}
-                              </span>
-                            )}
+                            <span className="text-xs text-muted-foreground flex-shrink-0">
+                              {model.id}
+                            </span>
                           </button>
                         );
                       })}

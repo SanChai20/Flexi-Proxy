@@ -123,14 +123,19 @@ export async function getAllPrivateProxyServers(): Promise<
 // Get all available models
 export async function getAllModels(): Promise<
   {
+    id: string;
     name: string;
-    displayName: string;
-    description?: string;
-    createTime: string;
-    state: string;
+    description?: string | null;
+    pricing: {
+      prompt: number | string;
+      completion: number | string;
+    };
   }[]
 > {
-  if (process.env.OPENROUTER_API_KEY === undefined) {
+  if (
+    process.env.OPENROUTER_API_KEY === undefined ||
+    process.env.OPENROUTER_MODELS_URL === undefined
+  ) {
     console.error("env not set.");
     return [];
   }
@@ -138,57 +143,49 @@ export async function getAllModels(): Promise<
   try {
     const headers = {
       Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-      "Content-Type": "application/json",
     };
-    const allModels: {
-      name: string;
-      displayName: string;
-      description?: string;
-      createTime: string;
-      state: string;
-    }[] = [];
-    let pageToken: string | undefined;
 
-    do {
-      let filter = "public=true";
-      const params = new URLSearchParams({
-        pageSize: "200",
-        ...(pageToken && { pageToken }),
-        ...(filter && { filter }),
-      });
+    const response = await fetch(process.env.OPENROUTER_MODELS_URL, {
+      method: "GET",
+      headers,
+    });
 
-      const response = await fetch(
-        `${process.env.FIREWORKS_MODELS_QUERY_URL}?${params}`,
-        {
-          method: "GET",
-          headers,
-        }
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data: { data: any[] } = await response.json();
+    const pureTextLLMs = data.data.filter((model) => {
+      const arch = model.architecture;
+      return (
+        arch.input_modalities.includes("text") &&
+        arch.output_modalities.includes("text") &&
+        !arch.input_modalities.includes("image") &&
+        !arch.input_modalities.includes("audio") &&
+        !arch.input_modalities.includes("video") &&
+        !arch.output_modalities.includes("image") &&
+        !arch.output_modalities.includes("embeddings")
       );
+    });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data: { models: any[]; nextPageToken: string; totalSize: number } =
-        await response.json();
-      const mappedModels: {
-        name: string;
-        displayName: string;
-        description?: string;
-        createTime: string;
-        state: string;
-      }[] = (data.models || []).map((model: any) => ({
-        name: model.name,
-        displayName: model.displayName,
-        description: model.description || "", // 提供默认值
-        createTime: model.createTime,
-        state: model.state,
-      }));
+    const mappedModels: {
+      id: string;
+      name: string;
+      description?: string | null;
+      pricing: {
+        prompt: number | string;
+        completion: number | string;
+      };
+    }[] = (pureTextLLMs || []).map((model: any) => ({
+      id: model.id,
+      name: model.name,
+      description: model.description || "",
+      pricing: {
+        prompt: model.pricing.prompt,
+        completion: model.pricing.completion,
+      },
+    }));
 
-      allModels.push(...mappedModels);
-      pageToken = data.nextPageToken;
-    } while (pageToken);
-
-    return allModels;
+    return mappedModels;
   } catch (error) {
     console.error;
   }

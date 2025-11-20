@@ -26,11 +26,8 @@ interface AccessTokenClientProps {
   initialAdapters: any[];
   proxies: { id: string; url: string; status: string }[];
   models: {
+    id: string;
     name: string;
-    displayName: string;
-    description?: string;
-    createTime: string;
-    state: string;
   }[];
   version: number;
 }
