@@ -2,6 +2,9 @@ import { getTrans } from "@/lib/dictionary";
 import { Locale } from "i18n-config";
 import {
   createShortTimeToken,
+  getAllModels,
+  getAllPrivateProxyServers,
+  getAllPublicProxyServers,
   getAllUserAdapters,
   getCachedUserPermissions,
   getUserAdapterModifyVersion,
@@ -16,29 +19,25 @@ export const metadata: Metadata = {
   title: "FlexiProxy - Token Pass Management",
 };
 
-async function AccessTokenContent({
-  lang,
-  dict,
-  open,
-  pid,
-  mid,
-  mode,
-}: {
-  lang: string;
-  dict: any;
-  open?: any;
-  pid?: any;
-  mid?: any;
-  mode?: any;
-}) {
-  const [permissions, adapters, vNumber] = await Promise.all([
+async function AccessTokenContent({ lang, dict }: { lang: string; dict: any }) {
+  const [
+    permissions,
+    adapters,
+    vNumber,
+    allPublicProxies,
+    allPrivateProxies,
+    allModels,
+  ] = await Promise.all([
     getCachedUserPermissions(),
     getAllUserAdapters(),
     getUserAdapterModifyVersion(),
+    getAllPublicProxyServers(),
+    getAllPrivateProxyServers(),
+    getAllModels(),
   ]);
 
   if (!adapters || adapters.length === 0) {
-    redirect(`/${lang}/token?open=true&mode=create`);
+    redirect(`/${lang}/token?mode=create`);
   }
 
   return (
@@ -51,10 +50,9 @@ async function AccessTokenContent({
           ? adapter.pul
           : `https://${adapter.pul}`,
       }))}
-      proxies={}
-      models={}
-      version={vNumber}
-      defaultMode={mode || null}
+      proxies={[...allPublicProxies, ...allPrivateProxies]}
+      models={allModels}
+      version={vNumber ?? 0}
     />
   );
 }
@@ -63,20 +61,12 @@ export default async function AccessTokenPage(
   props: PageProps<"/[lang]/token">
 ) {
   const { lang } = await props.params;
-  const { open, mode, pid, mid } = await props.searchParams; // open dialog or not & mode & proxy id & model id
   const dict = await getTrans(lang as Locale);
 
   return (
     <section className="w-full max-w-5xl mx-auto overflow-x-auto px-0 select-none">
       <Suspense fallback={<AccessTokenSkeleton dict={dict} />}>
-        <AccessTokenContent
-          lang={lang}
-          dict={dict}
-          open={open}
-          mode={mode}
-          pid={pid}
-          mid={mid}
-        />
+        <AccessTokenContent lang={lang} dict={dict} />
       </Suspense>
     </section>
   );

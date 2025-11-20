@@ -176,12 +176,7 @@ export default function GatewayClient({
   const handleGetToken = async (proxyId: string) => {
     try {
       setLoadingProxyId(proxyId);
-      const token = await createShortTimeToken(3600);
-      router.push(
-        `/token/create?token=${encodeURIComponent(
-          token
-        )}&proxyId=${encodeURIComponent(proxyId)}`
-      );
+      router.push(`/token?pid=${encodeURIComponent(proxyId)}`);
     } catch (error) {
       console.error("Failed to create token:", error);
       setLoadingProxyId(null);

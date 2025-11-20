@@ -18,15 +18,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 interface AccessTokenClientProps {
   dict: any;
   permissions: any;
   initialAdapters: any[];
   proxies: { id: string; url: string; status: string }[];
-  models: { id: string; name: string }[];
-  defaultMode: string | null;
-  version?: number;
+  models: {
+    name: string;
+    displayName: string;
+    description?: string;
+    createTime: string;
+    state: string;
+  }[];
+  version: number;
 }
 
 export default function AccessTokenClient({
@@ -35,11 +41,12 @@ export default function AccessTokenClient({
   initialAdapters,
   proxies,
   models,
-
-  defaultMode,
   version,
 }: AccessTokenClientProps) {
-  const [dialogMode, setDialogMode] = useState<string | null>(defaultMode);
+  const searchParams = useSearchParams();
+  const [dialogMode, setDialogMode] = useState<string | null>(
+    searchParams.get("mode") ?? null
+  );
   const [editingAdapter, setEditingAdapter] = useState<any>(null);
   const [submittingAdapters, setSubmittingAdapters] = useState<Set<string>>(
     new Set()
@@ -272,7 +279,6 @@ export default function AccessTokenClient({
         </Card>
       )}
 
-      {/* Token Dialog - 根据 mode 显示 */}
       {dialogMode && (
         <TokenDialog
           dict={dict}
@@ -285,14 +291,19 @@ export default function AccessTokenClient({
           }}
           dialogMode={dialogMode}
           defaultValues={
-            dialogMode === "edit" && editingAdapter
+            dialogMode === "edit"
               ? {
-                  adapterId: editingAdapter.aid,
-                  modelId: editingAdapter.mid,
-                  commentNote: editingAdapter.not,
-                  proxyId: editingAdapter.pid,
+                  aid: editingAdapter?.aid,
+                  mid: editingAdapter?.mid ?? searchParams.get("mid"),
+                  pid: editingAdapter?.pid ?? searchParams.get("pid"),
+                  not: editingAdapter.not,
                 }
-              : undefined
+              : {
+                  aid: undefined,
+                  mid: searchParams.get("mid") ?? undefined,
+                  pid: searchParams.get("pid") ?? undefined,
+                  not: undefined,
+                }
           }
         />
       )}

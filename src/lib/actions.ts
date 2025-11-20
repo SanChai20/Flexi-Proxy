@@ -120,6 +120,85 @@ export async function getAllPrivateProxyServers(): Promise<
   return [];
 }
 
+// Get all available models
+export async function getAllModels(): Promise<
+  {
+    name: string;
+    displayName: string;
+    description?: string;
+    createTime: string;
+    state: string;
+  }[]
+> {
+  if (
+    process.env.FIREWORKS_API_KEY === undefined ||
+    process.env.FIREWORKS_MODELS_QUERY_URL === undefined
+  ) {
+    console.error("env not set.");
+    return [];
+  }
+
+  try {
+    const headers = {
+      Authorization: `Bearer ${process.env.FIREWORKS_API_KEY}`,
+      "Content-Type": "application/json",
+    };
+    const allModels: {
+      name: string;
+      displayName: string;
+      description?: string;
+      createTime: string;
+      state: string;
+    }[] = [];
+    let pageToken: string | undefined;
+
+    do {
+      let filter = "public=true";
+      const params = new URLSearchParams({
+        pageSize: "200",
+        ...(pageToken && { pageToken }),
+        ...(filter && { filter }),
+      });
+
+      const response = await fetch(
+        `${process.env.FIREWORKS_MODELS_QUERY_URL}?${params}`,
+        {
+          method: "GET",
+          headers,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data: { models: any[]; nextPageToken: string; totalSize: number } =
+        await response.json();
+      const mappedModels: {
+        name: string;
+        displayName: string;
+        description?: string;
+        createTime: string;
+        state: string;
+      }[] = (data.models || []).map((model: any) => ({
+        name: model.name,
+        displayName: model.displayName,
+        description: model.description || "", // 提供默认值
+        createTime: model.createTime,
+        state: model.state,
+      }));
+
+      allModels.push(...mappedModels);
+      pageToken = data.nextPageToken;
+    } while (pageToken);
+
+    return allModels;
+  } catch (error) {
+    console.error;
+  }
+
+  return [];
+}
+
 // Get all adapters for the authenticated user
 export async function getAllUserAdapters(): Promise<
   {
@@ -1532,6 +1611,38 @@ export async function fetchConsoleLogs(
   } catch (error) {
     console.error("Error fetching logs:", error);
   }
+}
+
+export async function fetchDeploymentProgress(
+  subdomain: string
+): Promise<null | {
+  stp: number;
+  tot: number;
+  sts: string;
+  msg: string[];
+}> {
+  if (process.env.DEPLOYMENT_PROGRESS_PREFIX === undefined) {
+    return null;
+  }
+  try {
+    const deploymentStatus: {
+      stp: number;
+      tot: number;
+      sts: string;
+      msg: string[];
+    } | null = await redis.get<{
+      stp: number;
+      tot: number;
+      sts: string;
+      msg: string[];
+    }>([process.env.DEPLOYMENT_PROGRESS_PREFIX, subdomain].join(":"));
+    if (deploymentStatus !== null) {
+      return deploymentStatus;
+    }
+  } catch (error) {
+    console.error("Error fetching logs:", error);
+  }
+  return null;
 }
 
 export async function getPriceDetails(): Promise<{

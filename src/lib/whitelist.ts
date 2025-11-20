@@ -9,8 +9,6 @@ export const i18nRouteWhitelist = [
   "contact/feedback",
   "documentation",
   "token",
-  "token/create",
-  "token/modify",
   "settings",
   "faq",
   "gateway",

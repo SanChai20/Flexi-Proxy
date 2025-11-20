@@ -234,26 +234,30 @@ export function TokenDialog({
 }: {
   dict: any;
   proxies: { id: string; url: string; status: string }[];
-  models: { id: string; name: string }[];
+  models: {
+    name: string;
+    displayName: string;
+    description?: string;
+    createTime: string;
+    state: string;
+  }[];
   dialogMode: string;
   version: number;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  defaultValues?: {
-    proxyId?: string;
-    modelId?: string;
-    adapterId?: string;
-    commentNote?: string;
+  defaultValues: {
+    pid?: string; // proxy id
+    mid?: string; // model id
+    aid?: string; // adapter id
+    not?: string; // custom note
   };
 }) {
   const router = useRouter();
   const [selectedProxyId, setSelectedProxyId] = useState(
-    proxies.some((p) => p.id === defaultValues?.proxyId)
-      ? defaultValues?.proxyId
-      : ""
+    proxies.some((p) => p.id === defaultValues?.pid) ? defaultValues?.pid : ""
   );
   const [selectedModelId, setSelectedModelId] = useState(
-    defaultValues?.modelId || ""
+    defaultValues?.mid || ""
   );
   const [isProxyDropdownOpen, setIsProxyDropdownOpen] = useState(false);
   const [isModelDropdownOpen, setIsModelDropdownOpen] = useState(false);
@@ -314,7 +318,7 @@ export function TokenDialog({
   const filteredModels = useMemo(() => {
     if (!selectedModelId) return models;
     return models.filter((model) =>
-      model.id.toLowerCase().includes(selectedModelId.toLowerCase())
+      model.name.toLowerCase().includes(selectedModelId.toLowerCase())
     );
   }, [models, selectedModelId]);
 
@@ -330,11 +334,7 @@ export function TokenDialog({
         </DialogHeader>
 
         <form action={onSubmit} className="space-y-4">
-          <input
-            type="hidden"
-            name="adapterId"
-            value={defaultValues?.adapterId}
-          />
+          <input type="hidden" name="adapterId" value={defaultValues?.aid} />
           <input type="hidden" name="proxy" value={selectedProxyId} required />
           <input
             type="hidden"
@@ -569,23 +569,23 @@ export function TokenDialog({
                   ) : (
                     <div className="py-1">
                       {filteredModels.map((model) => {
-                        const isSelected = selectedModelId === model.id;
+                        const isSelected = selectedModelId === model.name;
                         return (
                           <button
-                            key={model.id}
+                            key={model.name}
                             type="button"
-                            onClick={() => handleModelChange(model.id)}
+                            onClick={() => handleModelChange(model.name)}
                             className={`w-full px-3 py-2 text-left flex items-center gap-2 text-sm
                               hover:bg-accent cursor-pointer
                               ${isSelected ? "bg-accent" : ""}
                             `}
                           >
                             <span className="font-medium flex-1 min-w-0 truncate">
-                              {model.id}
+                              {model.name}
                             </span>
-                            {model.name && (
+                            {model.displayName && (
                               <span className="text-xs text-muted-foreground flex-shrink-0">
-                                {model.name}
+                                {model.displayName}
                               </span>
                             )}
                           </button>
@@ -610,7 +610,7 @@ export function TokenDialog({
             <textarea
               id="commentNote"
               name="commentNote"
-              defaultValue={defaultValues?.commentNote}
+              defaultValue={defaultValues?.not}
               rows={3}
               className="w-full px-3 py-2 bg-background border border-input rounded-md 
                        focus:outline-none focus:ring-2 focus:ring-ring resize-none text-sm"
