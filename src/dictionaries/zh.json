@@ -89,7 +89,7 @@
     "createPrivate": "创建",
     "startLogs": "启动日志",
     "export": "导出",
-    "autoRefresh": "自动刷新: 15秒",
+    "autoRefresh": "自动刷新: 5秒",
     "loadingLogs": "正在加载日志...",
     "logsUnavailable": "暂无日志",
     "viewLogs": "查看启动日志",
