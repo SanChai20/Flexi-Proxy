@@ -121,53 +121,9 @@ export async function getAllPrivateProxyServers(): Promise<
 }
 
 // Get all available models
-export async function getAllModels(): Promise<
-  {
-    id: string;
-    name: string;
-    description?: string | null;
-    pricing: {
-      prompt: number | string;
-      completion: number | string;
-    };
-  }[]
-> {
-  if (
-    process.env.OPENROUTER_API_KEY === undefined ||
-    process.env.OPENROUTER_MODELS_URL === undefined
-  ) {
-    console.error("env not set.");
-    return [];
-  }
-
-  try {
-    const headers = {
-      Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-    };
-
-    const response = await fetch(process.env.OPENROUTER_MODELS_URL, {
-      method: "GET",
-      headers,
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data: { data: any[] } = await response.json();
-    const pureTextLLMs = data.data.filter((model) => {
-      const arch = model.architecture;
-      return (
-        arch.input_modalities.includes("text") &&
-        arch.output_modalities.includes("text") &&
-        !arch.input_modalities.includes("image") &&
-        !arch.input_modalities.includes("audio") &&
-        !arch.input_modalities.includes("video") &&
-        !arch.output_modalities.includes("image") &&
-        !arch.output_modalities.includes("embeddings")
-      );
-    });
-
-    const mappedModels: {
+export const getAllModels = unstable_cache(
+  async (): Promise<
+    {
       id: string;
       name: string;
       description?: string | null;
@@ -175,23 +131,74 @@ export async function getAllModels(): Promise<
         prompt: number | string;
         completion: number | string;
       };
-    }[] = (pureTextLLMs || []).map((model: any) => ({
-      id: model.id,
-      name: model.name,
-      description: model.description || "",
-      pricing: {
-        prompt: model.pricing.prompt,
-        completion: model.pricing.completion,
-      },
-    }));
+    }[]
+  > => {
+    if (
+      process.env.OPENROUTER_API_KEY === undefined ||
+      process.env.OPENROUTER_MODELS_URL === undefined
+    ) {
+      console.error("env not set.");
+      return [];
+    }
 
-    return mappedModels;
-  } catch (error) {
-    console.error;
+    try {
+      const headers = {
+        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      };
+
+      const response = await fetch(process.env.OPENROUTER_MODELS_URL, {
+        method: "GET",
+        headers,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data: { data: any[] } = await response.json();
+      const pureTextLLMs = data.data.filter((model) => {
+        const arch = model.architecture;
+        return (
+          arch.input_modalities.includes("text") &&
+          arch.output_modalities.includes("text") &&
+          !arch.input_modalities.includes("image") &&
+          !arch.input_modalities.includes("audio") &&
+          !arch.input_modalities.includes("video") &&
+          !arch.output_modalities.includes("image") &&
+          !arch.output_modalities.includes("embeddings")
+        );
+      });
+
+      const mappedModels: {
+        id: string;
+        name: string;
+        description?: string | null;
+        pricing: {
+          prompt: number | string;
+          completion: number | string;
+        };
+      }[] = (pureTextLLMs || []).map((model: any) => ({
+        id: model.id,
+        name: model.name,
+        description: model.description || "",
+        pricing: {
+          prompt: model.pricing.prompt,
+          completion: model.pricing.completion,
+        },
+      }));
+
+      return mappedModels;
+    } catch (error) {
+      console.error(error);
+    }
+
+    return [];
+  },
+  ["external-models"], // Cache key
+  {
+    revalidate: 3600, // Revalidate every hour (3600 seconds)
+    tags: ["external-models"],
   }
-
-  return [];
-}
+);
 
 // Get all adapters for the authenticated user
 export async function getAllUserAdapters(): Promise<
