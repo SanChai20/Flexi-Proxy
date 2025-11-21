@@ -35,7 +35,7 @@ import {
   fetchDeploymentProgress,
 } from "@/lib/actions";
 import { redirect, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -289,27 +289,13 @@ export default function GatewayClient({
   const [showConfigDialog, setShowConfigDialog] = useState<boolean>(false);
   const [selectedRegion, setSelectedRegion] = useState<string>("");
 
-  const [filteredServers, setFilteredServers] = useState<
-    {
-      url: string;
-      status: string;
-      id: string;
-      isHealthy: boolean;
-      responseTime: number | undefined;
-      type: string;
-      error?: string | undefined;
-    }[]
-  >(
-    proxyServers.filter(
-      (server) => (server.type || "public") === defaultGatewayType
-    )
+  const filteredServers = useMemo(
+    () =>
+      proxyServers.filter(
+        (server) => (server.type || "public") === gatewayType
+      ),
+    [proxyServers, gatewayType]
   );
-
-  useEffect(() => {
-    setFilteredServers(
-      proxyServers.filter((server) => (server.type || "public") === gatewayType)
-    );
-  }, [proxyServers, gatewayType]);
 
   const parseGatewayLocation = (id: string) => {
     // Format: gateway-xx-yy-zz
@@ -376,70 +362,82 @@ export default function GatewayClient({
     return server.isHealthy && server.status.toLowerCase() !== "unavailable";
   };
 
-  const handleGetToken = async (proxyId: string) => {
-    try {
-      setLoadingProxyId(proxyId);
-      router.push(`/token?pid=${encodeURIComponent(proxyId)}`);
-    } catch (error) {
-      console.error("Failed to create token:", error);
-      setLoadingProxyId(null);
-    }
-  };
+  const handleGetToken = useCallback(
+    async (proxyId: string) => {
+      if (loadingProxyId !== null) {
+        console.warn("Another operation is in progress");
+        return;
+      }
 
-  const handleDeletePrivateGateway = async (
-    proxyId: string,
-    subdomainName: string
-  ) => {
-    if (subdomainName === undefined) {
-      return;
-    }
-    if (subdomainName.startsWith("https://")) {
-      subdomainName = subdomainName.substring(8);
-    }
-    try {
-      setOperatingProxyId(proxyId);
-      await deletePrivateProxyInstance(proxyId, subdomainName);
-      setFilteredServers((prev) =>
-        prev.filter((server) => server.id !== proxyId)
-      );
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      router.refresh();
-    } catch (error) {
-      console.error(error);
-      setOperatingProxyId(null);
-    }
-  };
+      try {
+        setLoadingProxyId(proxyId);
+        router.push(`/token?pid=${encodeURIComponent(proxyId)}`);
+      } catch (error) {
+        console.error("Failed to create token:", error);
+      } finally {
+        setLoadingProxyId(null);
+      }
+    },
+    [loadingProxyId, router]
+  );
+
+  const handleDeletePrivateGateway = useCallback(
+    async (proxyId: string, subdomainName: string) => {
+      if (operatingProxyId !== null) {
+        console.warn("Another operation is in progress");
+        return;
+      }
+
+      if (!subdomainName) return;
+
+      const cleanSubdomain = subdomainName.startsWith("https://")
+        ? subdomainName.substring(8)
+        : subdomainName;
+
+      try {
+        setOperatingProxyId(proxyId);
+        await deletePrivateProxyInstance(proxyId, cleanSubdomain);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        router.refresh();
+      } catch (error) {
+        console.error("Failed to delete gateway:", error);
+      } finally {
+        setOperatingProxyId(null);
+      }
+    },
+    [operatingProxyId, router]
+  );
 
   const handleOpenConfigDialog = () => {
     setShowConfigDialog(true);
   };
 
-  const handleConfirmCreate = async () => {
+  const handleConfirmCreate = useCallback(async () => {
+    if (
+      !permissions.adv ||
+      permissions.mppa <=
+        proxyServers.filter((proxy) => proxy.type === "private").length
+    ) {
+      router.push("/subscription");
+      return;
+    }
+
     setShowConfigDialog(false);
+    setPrivateCreating(true);
+
     try {
-      setPrivateCreating(true);
-      if (
-        !permissions.adv ||
-        permissions.mppa <=
-          proxyServers.filter((proxy) => proxy.type === "private").length
-      ) {
-        setPrivateCreating(false);
-        return;
-      }
-      const [subdomainName, token] = await Promise.all([
-        createPrivateProxyInstance(),
-        createShortTimeToken(3600),
-      ]);
-      setPrivateCreating(false);
-      if (subdomainName === undefined) {
-        return;
+      const subdomainName = await createPrivateProxyInstance();
+      if (!subdomainName) {
+        throw new Error("Failed to create subdomain");
       }
       router.refresh();
     } catch (error) {
-      console.error(error);
+      console.error("Failed to create private gateway:", error);
+    } finally {
       setPrivateCreating(false);
+      setSelectedRegion("");
     }
-  };
+  }, [permissions, proxyServers, router]);
 
   // Currently only supports us-east-2
   const regionOptions = [
