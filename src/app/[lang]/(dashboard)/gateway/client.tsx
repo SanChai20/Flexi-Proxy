@@ -178,29 +178,30 @@ export function DeploymentStatus({
       case "pending":
         return {
           variant: "secondary" as const,
-          className: "bg-yellow-600 hover:bg-yellow-700",
-          icon: <Clock className="h-3 w-3 mr-1" />,
+          className: "bg-amber-500/90 hover:bg-amber-600 border-amber-500/20",
+          icon: <Clock className="h-2.5 w-2.5 mr-1" />,
           text: dict?.gateway?.pending || "Pending",
         };
       case "running":
         return {
           variant: "secondary" as const,
-          className: "bg-blue-600 hover:bg-blue-700",
-          icon: <Loader2 className="h-3 w-3 mr-1 animate-spin" />,
+          className: "bg-blue-500/90 hover:bg-blue-600 border-blue-500/20",
+          icon: <Loader2 className="h-2.5 w-2.5 mr-1 animate-spin" />,
           text: dict?.gateway?.deploying || "Deploying",
         };
       case "success":
         return {
           variant: "default" as const,
-          className: "bg-green-600 hover:bg-green-700",
-          icon: <CheckCircle2 className="h-3 w-3 mr-1" />,
+          className:
+            "bg-emerald-500/90 hover:bg-emerald-600 border-emerald-500/20",
+          icon: <CheckCircle2 className="h-2.5 w-2.5 mr-1" />,
           text: dict?.gateway?.completed || "Completed",
         };
       case "error":
         return {
           variant: "destructive" as const,
-          className: "",
-          icon: <AlertCircle className="h-3 w-3 mr-1" />,
+          className: "bg-red-500/90 hover:bg-red-600 border-red-500/20",
+          icon: <AlertCircle className="h-2.5 w-2.5 mr-1" />,
           text: dict?.gateway?.failed || "Failed",
         };
       default:
@@ -213,20 +214,20 @@ export function DeploymentStatus({
 
   if (!deploymentStatus) {
     return (
-      <div className="flex items-center justify-center py-4">
-        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center py-2">
+        <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-3 w-full">
-      {/* Status Badges */}
-      <div className="flex items-center gap-2 flex-wrap">
+    <div className="space-y-2 w-full">
+      {/* Status Badge */}
+      <div className="flex items-center gap-1.5">
         {statusBadge && (
           <Badge
             variant={statusBadge.variant}
-            className={`text-xs font-normal ${statusBadge.className}`}
+            className={`text-[10px] font-medium px-1.5 py-0.5 ${statusBadge.className} shadow-sm`}
           >
             {statusBadge.icon}
             {statusBadge.text}
@@ -235,30 +236,38 @@ export function DeploymentStatus({
       </div>
 
       {/* Progress Section */}
-      <div className="space-y-2 w-full">
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">
+      <div className="space-y-1.5 w-full">
+        <div className="flex items-center justify-between text-[11px]">
+          <span className="text-muted-foreground font-medium">
             {deploymentStatus.deploymentStatus === "pending"
               ? dict?.gateway?.waiting || "Waiting to start..."
               : `${dict?.gateway?.step || "Step"} ${
                   deploymentStatus.currentStep
                 } / ${deploymentStatus.totalStep}`}
           </span>
-          <span className="font-medium">{progressPercentage}%</span>
+          <span className="font-semibold tabular-nums">
+            {progressPercentage}%
+          </span>
         </div>
-        <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
+        <div className="h-1.5 w-full bg-secondary/50 rounded-full overflow-hidden ring-1 ring-border/30">
           <div
-            className={`h-full transition-all duration-500 ease-out ${
+            className={`h-full transition-all duration-500 ease-out relative ${
               deploymentStatus.deploymentStatus === "error"
-                ? "bg-red-600"
+                ? "bg-gradient-to-r from-red-500 to-red-600"
                 : deploymentStatus.deploymentStatus === "success"
-                ? "bg-green-600"
+                ? "bg-gradient-to-r from-emerald-500 to-emerald-600"
                 : deploymentStatus.deploymentStatus === "pending"
-                ? "bg-yellow-600"
-                : "bg-blue-600"
+                ? "bg-gradient-to-r from-amber-500 to-amber-600"
+                : "bg-gradient-to-r from-blue-500 to-blue-600"
             }`}
             style={{ width: `${progressPercentage}%` }}
-          />
+          >
+            {/* 进度条光效 */}
+            {deploymentStatus.deploymentStatus === "running" &&
+              progressPercentage > 0 && (
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse" />
+              )}
+          </div>
         </div>
       </div>
     </div>
@@ -438,13 +447,13 @@ export default function GatewayClient({
   ];
 
   return (
-    <div className="max-w-4xl mx-auto py-0 px-4">
+    <div className="max-w-6xl mx-auto py-0 px-4">
       {/* Header */}
-      <div className="mb-12 text-center">
-        <h1 className="text-3xl font-semibold mb-2">
+      <div className="mb-8 text-center">
+        <h1 className="text-2xl font-bold mb-1.5 bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
           {dict?.gateway?.title || "Proxy Gateways"}
         </h1>
-        <p className="text-muted-foreground mb-6">
+        <p className="text-sm text-muted-foreground/80 mb-5">
           {dict?.gateway?.subtitle ||
             "List all available proxy gateways and their features"}
         </p>
@@ -455,36 +464,39 @@ export default function GatewayClient({
               setGatewayType(value as "public" | "private")
             }
           >
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="public" className="gap-2 py-2">
+            <TabsList className="grid w-full grid-cols-2 h-9 bg-muted/40 backdrop-blur-sm">
+              <TabsTrigger
+                value="public"
+                className="gap-1.5 text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
                 <Globe className="w-3 h-3" />
-                <span className="text-xs">
-                  {dict?.gateway?.public || "Public"}
-                </span>
+                <span>{dict?.gateway?.public || "Public"}</span>
               </TabsTrigger>
-              <TabsTrigger value="private" className="gap-2 py-2">
+              <TabsTrigger
+                value="private"
+                className="gap-1.5 text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
                 <Lock className="w-3 h-3" />
-                <span className="text-xs">
-                  {dict?.gateway?.private || "Private"}
-                </span>
+                <span>{dict?.gateway?.private || "Private"}</span>
               </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
       </div>
+
       {/* Gateway Cards */}
       <div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-          {/* Add Card for Private Gateway - Always visible when in private mode */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {/* Add Card for Private Gateway */}
           {gatewayType === "private" && (
             <Card
-              className={`transition-all duration-200 hover:shadow-lg border-dashed border-2 flex flex-col h-full ${
+              className={`group relative transition-all duration-300 hover:shadow-lg border-dashed border-[1.5px] flex flex-col h-full overflow-hidden ${
                 !privateCreating &&
                 permissions.adv &&
                 permissions.mppa >
                   proxyServers.filter((proxy) => proxy.type === "private")
                     .length
-                  ? "cursor-pointer hover:border-primary hover:bg-accent/50"
+                  ? "cursor-pointer hover:border-primary/60 hover:bg-accent/30"
                   : "cursor-pointer opacity-60"
               }`}
               onClick={() => {
@@ -501,18 +513,20 @@ export default function GatewayClient({
                 }
               }}
             >
-              <CardHeader className="pb-3">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+              <CardHeader className="pb-2.5 relative z-10">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 min-w-0 flex-1">
-                    <CardTitle className="text-lg font-semibold">
+                    <CardTitle className="text-sm font-semibold">
                       {dict?.gateway?.createNew || "Create New Gateway"}
                     </CardTitle>
                   </div>
                   <span
-                    className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors ${
+                    className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold ring-1 ring-inset backdrop-blur-sm ${
                       permissions.adv
-                        ? "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-700"
-                        : "bg-gray-100 text-gray-800 border-gray-300 dark:bg-gray-900/30 dark:text-gray-400 dark:border-gray-700"
+                        ? "bg-blue-500/10 text-blue-700 ring-blue-500/20 dark:bg-blue-400/10 dark:text-blue-400 dark:ring-blue-400/20"
+                        : "bg-muted text-muted-foreground ring-border"
                     }`}
                   >
                     {permissions.adv
@@ -524,7 +538,7 @@ export default function GatewayClient({
                       : dict?.gateway?.notAvailable || "Not Available"}
                   </span>
                 </div>
-                <div className="text-xs text-muted-foreground mt-1">
+                <div className="text-[11px] text-muted-foreground/70 mt-0.5 leading-tight">
                   {permissions.adv
                     ? dict?.gateway?.createDescription ||
                       "Click to create a new private proxy gateway"
@@ -533,19 +547,19 @@ export default function GatewayClient({
                 </div>
               </CardHeader>
 
-              <CardContent className="flex-1 flex flex-col justify-center space-y-4">
-                <div className="flex flex-col items-center justify-center py-8 gap-4">
+              <CardContent className="flex-1 flex flex-col justify-center pt-0 pb-3 relative z-10">
+                <div className="flex flex-col items-center justify-center py-4 gap-2.5">
                   {privateCreating ? (
                     <>
-                      <div className="relative p-4 rounded-full bg-primary/10">
-                        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                      <div className="relative p-2.5 rounded-xl bg-primary/10 ring-1 ring-primary/20">
+                        <Loader2 className="w-6 h-6 text-primary animate-spin" />
                       </div>
-                      <div className="text-center space-y-2">
-                        <p className="text-base font-semibold">
+                      <div className="text-center space-y-1">
+                        <p className="text-sm font-semibold">
                           {dict?.gateway?.creating || "Creating gateway..."}
                         </p>
-                        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                          <Zap className="w-4 h-4" />
+                        <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+                          <Zap className="w-3 h-3" />
                           <span>
                             {dict?.gateway?.deployment ||
                               "Deployment takes about 5 minutes"}
@@ -555,17 +569,17 @@ export default function GatewayClient({
                     </>
                   ) : (
                     <>
-                      <div className="relative p-4 rounded-full bg-muted/50 border-2 border-dashed border-muted-foreground/30">
-                        <Plus className="w-8 h-8 text-muted-foreground/50" />
+                      <div className="relative p-2.5 rounded-xl bg-muted/40 ring-1 ring-border/50 group-hover:ring-primary/30 group-hover:bg-primary/5 transition-all duration-300">
+                        <Plus className="w-6 h-6 text-muted-foreground/60 group-hover:text-primary/80 transition-colors duration-300" />
                       </div>
-                      <div className="text-center space-y-2">
-                        <p className="text-base font-semibold">
+                      <div className="text-center space-y-1">
+                        <p className="text-sm font-semibold">
                           {permissions.adv
                             ? dict?.gateway?.clickToCreate || "Click to create"
                             : dict?.gateway?.notAvailable || "Not Available"}
                         </p>
-                        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                          <Zap className="w-4 h-4" />
+                        <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+                          <Zap className="w-3 h-3" />
                           <span>
                             {dict?.gateway?.deployment ||
                               "Deployment takes about 5 minutes"}
@@ -575,13 +589,11 @@ export default function GatewayClient({
                     </>
                   )}
                 </div>
-
-                {/* 添加占位空间，匹配其他卡片的按钮区域 */}
               </CardContent>
             </Card>
           )}
 
-          {/* Existing Gateway Cards - 美化版本 */}
+          {/* Existing Gateway Cards */}
           {filteredServers.map((server) => {
             const available = isServerAvailable(server);
             const isLoading = loadingProxyId === server.id;
@@ -591,20 +603,18 @@ export default function GatewayClient({
             return (
               <Card
                 key={server.id}
-                className="group relative transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 flex flex-col overflow-hidden border border-border/40 bg-gradient-to-br from-card via-card to-card/95"
+                className="group relative transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 flex flex-col overflow-hidden border border-border/50 bg-gradient-to-br from-card via-card to-card/95 backdrop-blur-sm"
               >
-                {/* 顶部装饰渐变条 */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/60 via-primary to-primary/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-primary/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                <CardHeader className="pb-4 relative z-10">
-                  {/* 标题行 */}
-                  <div className="flex items-start justify-between gap-3 mb-3">
-                    <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                      <div className="p-1.5 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors duration-300">
-                        <Hash className="w-4 h-4" />
+                <CardHeader className="pb-2.5 relative z-10">
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="flex items-center gap-2 min-w-0 flex-1">
+                      <div className="p-1 rounded-md bg-primary/10 text-primary group-hover:bg-primary/15 transition-colors duration-300 shrink-0">
+                        <Hash className="w-3.5 h-3.5" />
                       </div>
                       <div className="min-w-0 flex-shrink">
-                        <CardTitle className="text-base font-semibold truncate leading-tight text-left">
+                        <CardTitle className="text-sm font-semibold truncate leading-tight text-left">
                           <span
                             dir="ltr"
                             className="bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text"
@@ -615,45 +625,42 @@ export default function GatewayClient({
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      {/* 状态徽章 - 重新设计 */}
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
                       <span
-                        className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset backdrop-blur-sm transition-all duration-200 ${
+                        className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold ring-1 ring-inset backdrop-blur-sm ${
                           server.status === "running"
-                            ? "bg-emerald-500/10 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-400/10 dark:text-emerald-400 dark:ring-emerald-400/20"
+                            ? "bg-emerald-500/10 text-emerald-700 ring-emerald-500/20 dark:bg-emerald-400/10 dark:text-emerald-400 dark:ring-emerald-400/20"
                             : server.status === "pending"
-                            ? "bg-amber-500/10 text-amber-700 ring-amber-600/20 dark:bg-amber-400/10 dark:text-amber-400 dark:ring-amber-400/20"
-                            : "bg-gray-500/10 text-gray-700 ring-gray-600/20 dark:bg-gray-400/10 dark:text-gray-400 dark:ring-gray-400/20"
+                            ? "bg-amber-500/10 text-amber-700 ring-amber-500/20 dark:bg-amber-400/10 dark:text-amber-400 dark:ring-amber-400/20"
+                            : "bg-muted text-muted-foreground ring-border"
                         }`}
                       >
                         {getStatusText(server.status)}
                       </span>
 
-                      {/* 健康状态指示器 - 重新设计 */}
-                      <div className="relative">
+                      <div className="relative shrink-0">
                         <div
-                          className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                          className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
                             server.isHealthy
-                              ? "bg-emerald-500 shadow-lg shadow-emerald-500/50"
-                              : "bg-gray-400"
+                              ? "bg-emerald-500 shadow-md shadow-emerald-500/50"
+                              : "bg-muted-foreground/30"
                           }`}
                         />
                         {server.isHealthy && (
-                          <div className="absolute inset-0 w-2 h-2 rounded-full bg-emerald-500 animate-ping opacity-75" />
+                          <div className="absolute inset-0 w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping opacity-75" />
                         )}
                       </div>
 
-                      {/* 设置菜单 */}
                       {gatewayType === "private" && (
                         <DropdownMenu>
-                          <DropdownMenuTrigger className="p-1.5 rounded-md hover:bg-accent/50 transition-colors duration-200">
+                          <DropdownMenuTrigger className="p-1 rounded-md hover:bg-accent/50 transition-colors duration-200 shrink-0">
                             {operatingProxyId === server.id ? (
-                              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                              <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
                             ) : (
-                              <Settings className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
+                              <Settings className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground transition-colors" />
                             )}
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-56">
+                          <DropdownMenuContent align="end" className="w-48">
                             <DropdownMenuItem
                               disabled={operatingProxyId === server.id}
                               onClick={() =>
@@ -662,9 +669,9 @@ export default function GatewayClient({
                                   server.url
                                 )
                               }
-                              className="cursor-pointer text-destructive focus:text-destructive gap-2"
+                              className="cursor-pointer text-destructive focus:text-destructive gap-2 text-sm"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-3.5 h-3.5" />
                               <span>
                                 {dict?.gateway?.deleteProxy ||
                                   "Delete Proxy Server"}
@@ -676,20 +683,18 @@ export default function GatewayClient({
                     </div>
                   </div>
 
-                  {/* 位置信息 - 重新设计 */}
                   {region && direction && (
-                    <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-accent/30 w-fit mb-2 group-hover:bg-accent/50 transition-colors duration-300">
-                      <MapPin className="w-3.5 h-3.5 text-primary" />
-                      <span className="text-sm font-medium text-foreground/90">
+                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-accent/30 w-fit mb-1.5 group-hover:bg-accent/50 transition-colors duration-300">
+                      <MapPin className="w-3 h-3 text-primary" />
+                      <span className="text-[11px] font-medium text-foreground/90">
                         {locationText}
                       </span>
                     </div>
                   )}
 
-                  {/* URL 信息 - 更优雅的展示 */}
-                  <div className="flex items-start gap-2 mt-1 p-2 rounded-md bg-muted/30 group-hover:bg-muted/50 transition-colors duration-300">
+                  <div className="flex items-start gap-1.5 p-1.5 rounded-md bg-muted/30 group-hover:bg-muted/50 transition-colors duration-300">
                     <div className="flex-1 min-w-0">
-                      <code className="text-xs text-muted-foreground break-all font-mono">
+                      <code className="text-[10px] text-muted-foreground break-all font-mono leading-relaxed">
                         {server.url.startsWith("https://")
                           ? server.url
                           : `https://${server.url}`}
@@ -698,10 +703,9 @@ export default function GatewayClient({
                   </div>
                 </CardHeader>
 
-                <CardContent className="flex-1 flex flex-col justify-end space-y-3 relative z-10 pt-0">
-                  {/* Deployment Status - Only for private pending servers */}
+                <CardContent className="flex-1 flex flex-col justify-end space-y-2 relative z-10 pt-0 pb-3">
                   {gatewayType === "private" && (
-                    <div className="rounded-lg border bg-muted/30 p-3">
+                    <div className="rounded-md border bg-muted/30 p-2">
                       <DeploymentStatus
                         sub={
                           server.url.startsWith("https://")
@@ -710,7 +714,6 @@ export default function GatewayClient({
                         }
                         dict={dict}
                         onStatusChange={(status) => {
-                          // Optionally refresh the page when deployment completes
                           if (status.deploymentStatus === "success") {
                             setTimeout(() => {
                               router.refresh();
@@ -721,21 +724,19 @@ export default function GatewayClient({
                     </div>
                   )}
 
-                  {/* 性能指标卡片 */}
-                  <div className="grid grid-cols-2 gap-2">
-                    {/* 健康状态 */}
-                    <div className="flex flex-col gap-1.5 p-3 rounded-lg bg-gradient-to-br from-accent/40 to-accent/20 border border-border/40">
-                      <div className="flex items-center gap-1.5">
-                        <Activity className="w-3.5 h-3.5 text-muted-foreground" />
-                        <span className="text-xs font-medium text-muted-foreground">
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <div className="flex flex-col gap-1 p-2 rounded-md bg-gradient-to-br from-accent/40 to-accent/20 border border-border/40">
+                      <div className="flex items-center gap-1">
+                        <Activity className="w-3 h-3 text-muted-foreground" />
+                        <span className="text-[10px] font-medium text-muted-foreground">
                           {dict?.gateway?.status || "Status"}
                         </span>
                       </div>
                       <span
-                        className={`text-sm font-semibold ${
+                        className={`text-xs font-semibold ${
                           server.isHealthy
                             ? "text-emerald-600 dark:text-emerald-400"
-                            : "text-gray-600 dark:text-gray-400"
+                            : "text-muted-foreground"
                         }`}
                       >
                         {server.isHealthy
@@ -744,17 +745,16 @@ export default function GatewayClient({
                       </span>
                     </div>
 
-                    {/* 响应时间 */}
                     {typeof server.responseTime === "number" && (
-                      <div className="flex flex-col gap-1.5 p-3 rounded-lg bg-gradient-to-br from-accent/40 to-accent/20 border border-border/40">
-                        <div className="flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5 text-muted-foreground" />
-                          <span className="text-xs font-medium text-muted-foreground">
+                      <div className="flex flex-col gap-1 p-2 rounded-md bg-gradient-to-br from-accent/40 to-accent/20 border border-border/40">
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-3 h-3 text-muted-foreground" />
+                          <span className="text-[10px] font-medium text-muted-foreground">
                             {dict?.gateway?.latency || "Latency"}
                           </span>
                         </div>
                         <span
-                          className={`text-sm font-semibold tabular-nums ${
+                          className={`text-xs font-semibold tabular-nums ${
                             server.responseTime < 100
                               ? "text-emerald-600 dark:text-emerald-400"
                               : server.responseTime < 300
@@ -763,17 +763,18 @@ export default function GatewayClient({
                           }`}
                         >
                           {server.responseTime}
-                          <span className="text-xs ml-0.5 font-normal">ms</span>
+                          <span className="text-[10px] ml-0.5 font-normal">
+                            ms
+                          </span>
                         </span>
                       </div>
                     )}
                   </div>
 
-                  {/* 操作按钮 - 现代化设计 */}
                   <Button
-                    className={`w-full relative overflow-hidden group/btn transition-all duration-300 ${
+                    className={`w-full relative overflow-hidden group/btn transition-all duration-300 h-8 text-xs font-medium ${
                       available
-                        ? "bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30"
+                        ? "bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/25"
                         : ""
                     }`}
                     variant={available ? "default" : "secondary"}
@@ -784,20 +785,19 @@ export default function GatewayClient({
                     }
                     onClick={() => handleGetToken(server.id)}
                   >
-                    {/* 按钮光效 */}
                     {available && (
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700" />
                     )}
 
-                    <span className="relative z-10 flex items-center justify-center gap-2">
+                    <span className="relative z-10 flex items-center justify-center gap-1.5">
                       {isLoading ? (
                         <>
-                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
                           {dict?.gateway?.loading || "Loading..."}
                         </>
                       ) : (
                         <>
-                          <span className="font-medium">
+                          <span>
                             {dict?.gateway?.getToken || "Get Token Pass"}
                           </span>
                           <span className="transform group-hover/btn:translate-x-0.5 transition-transform duration-200">
@@ -816,27 +816,26 @@ export default function GatewayClient({
 
       {/* Configuration Dialog */}
       <Dialog open={showConfigDialog} onOpenChange={setShowConfigDialog}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-semibold flex items-center gap-2">
-              <Globe className="w-5 h-5 text-primary" />
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="space-y-2">
+            <DialogTitle className="text-lg font-semibold flex items-center gap-2">
+              <Globe className="w-4 h-4 text-primary" />
               {dict?.gateway?.configureGateway || "Configure New Gateway"}
             </DialogTitle>
-            <DialogDescription className="text-base">
+            <DialogDescription className="text-sm leading-relaxed">
               {dict?.gateway?.configureDescription ||
                 "Select region and country to deploy your private proxy gateway"}
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-6 py-4">
-            {/* Region Selection */}
+          <div className="space-y-4 py-3">
             <div className="space-y-2">
-              <label className="text-sm font-medium flex items-center gap-2">
-                <MapPin className="w-4 h-4" />
+              <label className="text-sm font-medium flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5" />
                 {dict?.gateway?.selectRegion || "Select Region"}
               </label>
               <Select value={selectedRegion} onValueChange={setSelectedRegion}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full h-9">
                   <SelectValue
                     placeholder={
                       dict?.gateway?.regionPlaceholder || "Choose a region"
@@ -847,8 +846,8 @@ export default function GatewayClient({
                   {regionOptions.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
                       <div className="flex items-center gap-2">
-                        <Globe className="w-4 h-4 text-muted-foreground" />
-                        <span>{option.label}</span>
+                        <Globe className="w-3.5 h-3.5 text-muted-foreground" />
+                        <span className="text-sm">{option.label}</span>
                       </div>
                     </SelectItem>
                   ))}
@@ -856,17 +855,16 @@ export default function GatewayClient({
               </Select>
             </div>
 
-            {/* Preview */}
             {selectedRegion && (
-              <div className="rounded-lg border bg-muted/50 p-4">
-                <div className="flex items-center gap-2 text-sm">
-                  <Zap className="w-4 h-4 text-primary" />
+              <div className="rounded-md border bg-muted/40 p-3 space-y-1.5">
+                <div className="flex items-center gap-1.5 text-sm">
+                  <Zap className="w-3.5 h-3.5 text-primary" />
                   <span className="font-medium">
                     {dict?.gateway?.deployment ||
                       "Deployment takes about 5 minutes"}
                   </span>
                 </div>
-                <p className="text-sm text-muted-foreground mt-2">
+                <p className="text-sm text-muted-foreground">
                   {regionOptions.find((r) => r.value === selectedRegion)?.label}
                 </p>
               </div>
@@ -880,15 +878,16 @@ export default function GatewayClient({
                 setShowConfigDialog(false);
                 setSelectedRegion("");
               }}
+              className="h-9 text-sm"
             >
               {dict?.gateway?.cancel || "Cancel"}
             </Button>
             <Button
               onClick={handleConfirmCreate}
               disabled={!selectedRegion}
-              className="gap-2"
+              className="gap-1.5 h-9 text-sm"
             >
-              <Zap className="w-4 h-4" />
+              <Zap className="w-3.5 h-3.5" />
               {dict?.gateway?.confirmCreate || "Confirm & Create"}
             </Button>
           </DialogFooter>
