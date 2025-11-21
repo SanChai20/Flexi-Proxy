@@ -212,17 +212,34 @@ export const getAllModels = unstable_cache(
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data: { data: any[] } = await response.json();
-      const pureTextLLMs = data.data.filter((model) => {
-        const arch = model.architecture;
-        return (
-          arch.input_modalities.includes("text") &&
-          arch.output_modalities.includes("text") &&
-          !arch.input_modalities.includes("image") &&
-          !arch.input_modalities.includes("audio") &&
-          !arch.input_modalities.includes("video") &&
-          !arch.output_modalities.includes("image") &&
-          !arch.output_modalities.includes("embeddings")
-        );
+      // const pureTextLLMs = data.data.filter((model) => {
+      //   const arch = model.architecture;
+      //   return (
+      //     arch.input_modalities.includes("text") &&
+      //     arch.output_modalities.includes("text") &&
+      //     !arch.input_modalities.includes("image") &&
+      //     !arch.input_modalities.includes("audio") &&
+      //     !arch.input_modalities.includes("video") &&
+      //     !arch.output_modalities.includes("image") &&
+      //     !arch.output_modalities.includes("embeddings")
+      //   );
+      // });
+
+      // Filter out free models - only keep models with pricing greater than 0
+      const paidTextLLMs = data.data.filter((model) => {
+        const pricing = model.pricing;
+        // Convert pricing values to numbers and check if they're greater than 0
+        const promptPrice =
+          typeof pricing.prompt === "string"
+            ? parseFloat(pricing.prompt)
+            : pricing.prompt;
+        const completionPrice =
+          typeof pricing.completion === "string"
+            ? parseFloat(pricing.completion)
+            : pricing.completion;
+
+        // Keep model if either prompt or completion pricing is greater than 0
+        return promptPrice > 0 || completionPrice > 0;
       });
 
       const mappedModels: {
@@ -233,7 +250,7 @@ export const getAllModels = unstable_cache(
           prompt: number | string;
           completion: number | string;
         };
-      }[] = (pureTextLLMs || []).map((model: any) => ({
+      }[] = (paidTextLLMs || []).map((model: any) => ({
         id: model.id,
         name: model.name,
         description: model.description || "",
