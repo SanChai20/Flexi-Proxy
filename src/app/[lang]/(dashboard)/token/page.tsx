@@ -36,10 +36,6 @@ async function AccessTokenContent({ lang, dict }: { lang: string; dict: any }) {
     getAllModels(),
   ]);
 
-  if (!adapters || adapters.length === 0) {
-    redirect(`/${lang}/token?mode=create`);
-  }
-
   return (
     <AccessTokenClient
       dict={dict}

@@ -33,6 +33,7 @@ export async function getAllPublicProxyServers(): Promise<
     console.error("getAllPublicProxyServers - PROXY_PUBLIC_PREFIX env not set");
     return [];
   }
+
   try {
     const searchPatternPrefix = `${process.env.PROXY_PUBLIC_PREFIX}:`;
     // Scan all keys with the prefix
