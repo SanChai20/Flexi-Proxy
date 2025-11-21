@@ -107,7 +107,7 @@ export function DeploymentStatus({
     totalStep: number;
     deploymentStatus: string;
   } | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+
   const hasInitialFetchRef = useRef(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -125,7 +125,6 @@ export function DeploymentStatus({
 
   // Fetch deployment progress
   const fetchProgress = async () => {
-    setIsLoading(true);
     try {
       const status: null | {
         currentMsg: string;
@@ -150,8 +149,6 @@ export function DeploymentStatus({
       }
     } catch (error) {
       console.error("Failed to fetch deployment progress:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -451,7 +448,7 @@ export default function GatewayClient({
       try {
         const subdomainName = await createPrivateProxyInstance();
         if (!subdomainName) {
-          throw new Error("Failed to create subdomain");
+          alert("Failed to create.");
         }
         router.refresh();
       } catch (error) {
@@ -728,7 +725,7 @@ export default function GatewayClient({
 
                 <CardContent className="flex-1 flex flex-col justify-end space-y-2 relative z-10 pt-0 pb-3">
                   {gatewayType === "private" && (
-                    <div className="rounded-md border bg-muted/30 p-2">
+                    <div className="rounded-md border p-2">
                       <DeploymentStatus
                         sub={
                           server.url.startsWith("https://")
@@ -746,63 +743,6 @@ export default function GatewayClient({
                       />
                     </div>
                   )}
-
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {
-                      <div className="flex flex-col gap-1 p-2 rounded-md bg-gradient-to-br from-accent/40 to-accent/20 border border-border/40">
-                        <div className="flex items-center gap-1">
-                          <Activity className="w-3 h-3 text-muted-foreground" />
-                          <span className="text-[10px] font-medium text-muted-foreground">
-                            {dict?.gateway?.status || "Status"}
-                          </span>
-                        </div>
-                        <span
-                          className={`text-xs font-semibold ${
-                            server.isHealthy
-                              ? "text-emerald-600 dark:text-emerald-400"
-                              : "text-muted-foreground"
-                          }`}
-                        >
-                          {server.isHealthy
-                            ? dict?.gateway?.healthy || "Healthy"
-                            : dict?.gateway?.unhealthy || "Unhealthy"}
-                        </span>
-                      </div>
-                    }
-
-                    {
-                      <div className="flex flex-col gap-1 p-2 rounded-md bg-gradient-to-br from-accent/40 to-accent/20 border border-border/40">
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-muted-foreground" />
-                          <span className="text-[10px] font-medium text-muted-foreground">
-                            {dict?.gateway?.latency || "Latency"}
-                          </span>
-                        </div>
-                        <span
-                          className={`text-xs font-semibold tabular-nums ${
-                            typeof server.responseTime === "number"
-                              ? server.responseTime < 100
-                                ? "text-emerald-600 dark:text-emerald-400"
-                                : server.responseTime < 300
-                                ? "text-amber-600 dark:text-amber-400"
-                                : "text-red-600 dark:text-red-400"
-                              : "text-gray-400 dark:text-gray-500"
-                          }`}
-                        >
-                          {typeof server.responseTime === "number" ? (
-                            <>
-                              {server.responseTime}
-                              <span className="text-[10px] ml-0.5 font-normal">
-                                ms
-                              </span>
-                            </>
-                          ) : (
-                            "-"
-                          )}
-                        </span>
-                      </div>
-                    }
-                  </div>
 
                   <Button
                     className={`w-full relative overflow-hidden group/btn transition-all duration-300 h-8 text-xs font-medium ${

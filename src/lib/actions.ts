@@ -26,7 +26,10 @@ export async function getAllPublicProxyServers(): Promise<
     type: string;
   }[]
 > {
-  if (process.env.PROXY_PUBLIC_PREFIX === undefined) {
+  if (
+    process.env.PROXY_PUBLIC_PREFIX === undefined ||
+    undefined === process.env.PROXY_STATUS_PREFIX
+  ) {
     console.error("getAllPublicProxyServers - PROXY_PUBLIC_PREFIX env not set");
     return [];
   }
@@ -51,13 +54,18 @@ export async function getAllPublicProxyServers(): Promise<
     } while (cursor !== 0);
     if (allKeys.length > 0) {
       const ids = allKeys.map((key) => key.replace(searchPatternPrefix, ""));
-      const values = await redis.mget<{ url: string; status: string }[]>(
-        ...allKeys
+      const statusKeys = ids.map((id) =>
+        [process.env.PROXY_STATUS_PREFIX, id].join(":")
       );
+      const [proxyUrls, proxyStatuses] = await Promise.all([
+        redis.mget<string[]>(...allKeys),
+        redis.mget<string[]>(...statusKeys),
+      ]);
       return ids.map((id, index) => ({
         id,
         type: "public",
-        ...(values[index] || { status: "unavailable", url: "" }),
+        url: proxyUrls[index],
+        status: proxyStatuses[index] || "unavailable",
       }));
     }
   } catch (error) {
@@ -80,7 +88,10 @@ export async function getAllPrivateProxyServers(): Promise<
     return [];
   }
   const userId = session.user.id;
-  if (process.env.PROXY_PRIVATE_PREFIX === undefined) {
+  if (
+    process.env.PROXY_PRIVATE_PREFIX === undefined ||
+    undefined === process.env.PROXY_STATUS_PREFIX
+  ) {
     console.error("getAllPrivateProxyServers - env not set");
     return [];
   }
@@ -105,13 +116,19 @@ export async function getAllPrivateProxyServers(): Promise<
     } while (cursor !== 0);
     if (allKeys.length > 0) {
       const ids = allKeys.map((key) => key.replace(searchPatternPrefix, ""));
-      const values = await redis.mget<{ url: string; status: string }[]>(
-        ...allKeys
+      const statusKeys = ids.map((id) =>
+        [process.env.PROXY_STATUS_PREFIX, id].join(":")
       );
+      const [proxyUrls, proxyStatuses] = await Promise.all([
+        redis.mget<string[]>(...allKeys),
+        redis.mget<string[]>(...statusKeys),
+      ]);
+
       return ids.map((id, index) => ({
         id,
         type: "private",
-        ...(values[index] || { status: "unavailable", url: "" }),
+        url: proxyUrls[index],
+        status: proxyStatuses[index] || "unavailable",
       }));
     }
   } catch (error) {
@@ -434,19 +451,15 @@ export async function updateAdapterAction(
 
   try {
     const pid = formData.get("proxy") as string;
-    type ProxyInfo = {
-      url: string;
-      status: string;
-    };
     const pipe = redis.pipeline();
-    pipe.get<ProxyInfo>([process.env.PROXY_PUBLIC_PREFIX, pid].join(":"));
-    pipe.get<ProxyInfo>(
+    pipe.get<string>([process.env.PROXY_PUBLIC_PREFIX, pid].join(":"));
+    pipe.get<string>(
       [process.env.PROXY_PRIVATE_PREFIX, session.user.id, pid].join(":")
     );
     const [publicCheckResult, privateCheckResult] = await pipe.exec<
-      [ProxyInfo | null, ProxyInfo | null]
+      [string | null, string | null]
     >();
-    const proxy: ProxyInfo | null = privateCheckResult ?? publicCheckResult;
+    const proxy: string | null = privateCheckResult ?? publicCheckResult;
     if (proxy === null) {
       console.error("updateAdapterAction - Missing proxy");
       return false;
@@ -486,7 +499,7 @@ export async function updateAdapterAction(
       }>([process.env.ADAPTER_PREFIX, session.user.id, adapterId].join(":"), {
         tk: tokenKey,
         pid,
-        pul: proxy.url,
+        pul: proxy,
         not,
       });
       transaction.set<{
@@ -505,7 +518,7 @@ export async function updateAdapterAction(
       }>([process.env.ADAPTER_PREFIX, session.user.id, adapterId].join(":"), {
         tk: tokenKey,
         pid,
-        pul: proxy.url,
+        pul: proxy,
         not,
       });
       transaction.set<{
@@ -551,19 +564,15 @@ export async function createAdapterAction(
     const commentNote: string | null = formData.get("commentNote") as string;
     const not = commentNote !== null ? commentNote : "";
 
-    type ProxyInfo = {
-      url: string;
-      status: string;
-    };
     const pipe = redis.pipeline();
-    pipe.get<ProxyInfo>([process.env.PROXY_PUBLIC_PREFIX, pid].join(":"));
-    pipe.get<ProxyInfo>(
+    pipe.get<string>([process.env.PROXY_PUBLIC_PREFIX, pid].join(":"));
+    pipe.get<string>(
       [process.env.PROXY_PRIVATE_PREFIX, session.user.id, pid].join(":")
     );
     const [publicCheckResult, privateCheckResult] = await pipe.exec<
-      [ProxyInfo | null, ProxyInfo | null]
+      [string | null, string | null]
     >();
-    const proxy: ProxyInfo | null = privateCheckResult ?? publicCheckResult;
+    const proxy: string | null = privateCheckResult ?? publicCheckResult;
 
     if (proxy === null) {
       console.error("createAdapterAction - Missing proxy");
@@ -587,7 +596,7 @@ export async function createAdapterAction(
       {
         tk: tokenKey,
         pid,
-        pul: proxy.url,
+        pul: proxy,
         not,
       }
     );
@@ -1093,7 +1102,6 @@ export ADMIN_EMAIL="${session.user?.email || process.env.ADMIN_EMAIL}"
 export APP_DOMAIN="${process.env.DOMAIN_NAME}"
 export APP_SUBDOMAIN_NAME="${randomGatewaySubDomain}"
 export FP_APP_TOKEN_PASS="${token}"
-export FP_PROXY_SERVER_OWNER="${session.user.id}"
 
 echo "SSM_PREFIX set to: $SSM_PREFIX"
 
@@ -1222,17 +1230,13 @@ history -c
     ) {
       const match = randomGatewaySubDomain.match(/^([^.]*)\..*/);
       const transaction = redis.multi();
-      transaction.set<{
-        url: string;
-        status: string;
-      }>(
+      transaction.set<string>(
         [
           process.env.PROXY_PRIVATE_PREFIX,
           session.user.id,
           match ? match[1] : randomGatewaySubDomain,
         ].join(":"),
-        { url: randomGatewaySubDomain, status: "unavailable" },
-        { ex: 600 }
+        randomGatewaySubDomain
       );
       transaction.set<string>(
         [
@@ -1441,9 +1445,7 @@ export async function deleteAllPrivateProxyInstances(userId: string): Promise<{
       `[BATCH DELETE] Found ${allKeys.length} private proxies for user ${userId}`
     );
 
-    const proxyValues: { url: string; status: string }[] = await redis.mget<
-      { url: string; status: string }[]
-    >(...allKeys);
+    const proxyUrls: string[] = await redis.mget<string[]>(...allKeys);
 
     const deletePromises: Promise<
       | {
@@ -1472,9 +1474,9 @@ export async function deleteAllPrivateProxyInstances(userId: string): Promise<{
         }
     >[] = allKeys.map(async (key, index) => {
       const proxyId = key.replace(searchPatternPrefix, "");
-      const proxyInfo = proxyValues[index];
+      const proxyUrl = proxyUrls[index];
 
-      if (!proxyInfo || !proxyInfo.url) {
+      if (!proxyUrl) {
         console.error(`Invalid proxy info for key: ${key}`);
         return {
           success: false,
@@ -1484,7 +1486,7 @@ export async function deleteAllPrivateProxyInstances(userId: string): Promise<{
         };
       }
 
-      let subdomain = proxyInfo.url;
+      let subdomain = proxyUrl;
       if (subdomain.startsWith("https://")) {
         subdomain = subdomain.substring(8);
       }
