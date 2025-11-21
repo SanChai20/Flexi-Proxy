@@ -120,6 +120,45 @@ export async function getAllPrivateProxyServers(): Promise<
   return [];
 }
 
+export async function getAllPrivateProxyServersCount(): Promise<
+  number | undefined
+> {
+  const session = await auth();
+  if (!(session && session.user && session.user.id)) {
+    console.error("getAllPrivateProxyServers - Unauthorized");
+    return undefined;
+  }
+  const userId = session.user.id;
+  if (process.env.PROXY_PRIVATE_PREFIX === undefined) {
+    console.error("getAllPrivateProxyServers - env not set");
+    return undefined;
+  }
+  try {
+    const searchPatternPrefix = `${process.env.PROXY_PRIVATE_PREFIX}:${userId}:`;
+    // Scan all keys with the prefix
+    let allKeys: string[] = [];
+    let cursor = 0;
+    let iterations = 0;
+    const MAX_ITERATIONS = 100; // Prevent infinite loops
+    do {
+      if (iterations++ > MAX_ITERATIONS) {
+        console.error("SCAN exceeded max iterations");
+        break;
+      }
+      const [newCursor, keys] = await redis.scan(cursor, {
+        match: `${searchPatternPrefix}*`,
+        count: 100,
+      });
+      allKeys.push(...keys);
+      cursor = Number(newCursor);
+    } while (cursor !== 0);
+    return allKeys.length;
+  } catch (error) {
+    console.error("Error fetching providers:", error);
+    return undefined;
+  }
+}
+
 // Get all available models
 export const getAllModels = unstable_cache(
   async (): Promise<
@@ -888,7 +927,8 @@ export async function createPrivateProxyInstance(): Promise<
     process.env.SUBDOMAIN_INSTANCE_PREFIX === undefined ||
     process.env.PROXY_PRIVATE_PREFIX === undefined ||
     process.env.SSM_PARAMETER_PREFIX === undefined ||
-    process.env.DEPLOYMENT_PROGRESS_PREFIX === undefined
+    process.env.DEPLOYMENT_PROGRESS_PREFIX === undefined ||
+    process.env.PERMISSIONS_PREFIX === undefined
   ) {
     console.error("env not set");
     return undefined;
@@ -897,6 +937,22 @@ export async function createPrivateProxyInstance(): Promise<
   const session = await auth();
   if (!(session && session.user && session.user.id)) {
     console.error("Unauthorized");
+    return undefined;
+  }
+
+  // check limit
+  const [existCount, userPermission] = await Promise.all([
+    getAllPrivateProxyServersCount(),
+    redis.get<UserPermissions>(
+      `${process.env.PERMISSIONS_PREFIX}:${session.user.id}`
+    ),
+  ]);
+
+  if (
+    existCount === undefined ||
+    userPermission === null ||
+    existCount >= userPermission.mppa
+  ) {
     return undefined;
   }
 

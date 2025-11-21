@@ -35,7 +35,14 @@ import {
   fetchDeploymentProgress,
 } from "@/lib/actions";
 import { redirect, useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -282,13 +289,15 @@ export default function GatewayClient({
   defaultGatewayType,
 }: GatewayClientProps) {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const [operatingProxyId, setOperatingProxyId] = useState<string | null>(null);
   const [privateCreating, setPrivateCreating] = useState<boolean>(false);
+  const creatingRef = useRef<boolean>(false);
   const [loadingProxyId, setLoadingProxyId] = useState<string | null>(null);
   const [gatewayType, setGatewayType] = useState<string>(defaultGatewayType);
   const [showConfigDialog, setShowConfigDialog] = useState<boolean>(false);
   const [selectedRegion, setSelectedRegion] = useState<string>("");
-
+  const isCreating = isPending || privateCreating || creatingRef.current;
   const filteredServers = useMemo(
     () =>
       proxyServers.filter(
@@ -413,6 +422,10 @@ export default function GatewayClient({
   };
 
   const handleConfirmCreate = useCallback(async () => {
+    if (isCreating) {
+      console.warn("Creation already in progress");
+      return;
+    }
     if (
       !permissions.adv ||
       permissions.mppa <=
@@ -422,22 +435,26 @@ export default function GatewayClient({
       return;
     }
 
+    creatingRef.current = true;
     setShowConfigDialog(false);
-    setPrivateCreating(true);
 
-    try {
-      const subdomainName = await createPrivateProxyInstance();
-      if (!subdomainName) {
-        throw new Error("Failed to create subdomain");
+    startTransition(async () => {
+      setPrivateCreating(true);
+      try {
+        const subdomainName = await createPrivateProxyInstance();
+        if (!subdomainName) {
+          throw new Error("Failed to create subdomain");
+        }
+        router.refresh();
+      } catch (error) {
+        console.error("Failed to create private gateway:", error);
+      } finally {
+        setPrivateCreating(false);
+        creatingRef.current = false;
+        setSelectedRegion("");
       }
-      router.refresh();
-    } catch (error) {
-      console.error("Failed to create private gateway:", error);
-    } finally {
-      setPrivateCreating(false);
-      setSelectedRegion("");
-    }
-  }, [permissions, proxyServers, router]);
+    });
+  }, [permissions, proxyServers, router, isCreating]);
 
   // Currently only supports us-east-2
   const regionOptions = [
@@ -489,7 +506,7 @@ export default function GatewayClient({
           {gatewayType === "private" && (
             <Card
               className={`group relative transition-all duration-300 hover:shadow-lg border-dashed border-[1.5px] flex flex-col h-full overflow-hidden ${
-                !privateCreating &&
+                !isCreating &&
                 permissions.adv &&
                 permissions.mppa >
                   proxyServers.filter((proxy) => proxy.type === "private")
@@ -499,7 +516,7 @@ export default function GatewayClient({
               }`}
               onClick={() => {
                 if (
-                  !privateCreating &&
+                  !isCreating &&
                   permissions.adv &&
                   permissions.mppa >
                     proxyServers.filter((proxy) => proxy.type === "private")
@@ -547,7 +564,7 @@ export default function GatewayClient({
 
               <CardContent className="flex-1 flex flex-col justify-center pt-0 pb-3 relative z-10">
                 <div className="flex flex-col items-center justify-center py-4 gap-2.5">
-                  {privateCreating ? (
+                  {isCreating ? (
                     <>
                       <div className="relative p-2.5 rounded-xl bg-primary/10 ring-1 ring-primary/20">
                         <Loader2 className="w-6 h-6 text-primary animate-spin" />
@@ -682,7 +699,7 @@ export default function GatewayClient({
                   </div>
 
                   {region && direction && (
-                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-accent/30 w-fit mb-1.5 group-hover:bg-accent/50 transition-colors duration-300">
+                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-md w-fit mb-1.5 transition-colors duration-300">
                       <MapPin className="w-3 h-3 text-primary" />
                       <span className="text-[11px] font-medium text-foreground/90">
                         {locationText}
@@ -690,7 +707,7 @@ export default function GatewayClient({
                     </div>
                   )}
 
-                  <div className="flex items-start gap-1.5 p-1.5 rounded-md bg-muted/30 group-hover:bg-muted/50 transition-colors duration-300">
+                  <div className="flex items-start gap-1.5 p-1.5 rounded-md transition-colors duration-300">
                     <div className="flex-1 min-w-0">
                       <code className="text-[10px] text-muted-foreground break-all font-mono leading-relaxed">
                         {server.url.startsWith("https://")
