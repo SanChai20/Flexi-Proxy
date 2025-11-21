@@ -17,7 +17,6 @@ const ENV = {
 //  [string] url -> provider proxy url
 //  [string] status -> provider proxy status ["unavailable", "spare", "busy", "full"]
 //  [string] id -> proxy id
-//  [string] owner -> owner id "admin" if public
 //}
 async function protectedPOST(req: AuthRequest) {
   if (
@@ -27,12 +26,11 @@ async function protectedPOST(req: AuthRequest) {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
   try {
-    const { url, status, id, owner } = await req.json();
+    const { url, status, id } = await req.json();
     if (
       typeof url !== "string" ||
       typeof status !== "string" ||
-      typeof id !== "string" ||
-      typeof owner !== "string"
+      typeof id !== "string"
     ) {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
