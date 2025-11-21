@@ -415,7 +415,6 @@ export default function GatewayClient({
         router.refresh();
       } catch (error) {
         console.error("Failed to delete gateway:", error);
-      } finally {
         setOperatingProxyId(null);
       }
     },
@@ -706,7 +705,7 @@ export default function GatewayClient({
                   </div>
 
                   {region && direction && (
-                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-md w-fit mb-1.5 transition-colors duration-300">
+                    <div className="flex items-center gap-1.5 rounded-md w-fit mb-1.5 transition-colors duration-300">
                       <MapPin className="w-3 h-3 text-primary" />
                       <span className="text-[11px] font-medium text-foreground/90">
                         {locationText}
@@ -714,7 +713,7 @@ export default function GatewayClient({
                     </div>
                   )}
 
-                  <div className="flex items-start gap-1.5 p-1.5 rounded-md transition-colors duration-300">
+                  <div className="flex items-start gap-1.5 rounded-md transition-colors duration-300">
                     <div className="flex-1 min-w-0">
                       <code className="text-[10px] text-muted-foreground break-all font-mono leading-relaxed">
                         {server.url.startsWith("https://")
@@ -725,9 +724,9 @@ export default function GatewayClient({
                   </div>
                 </CardHeader>
 
-                <CardContent className="flex-1 flex flex-col justify-end space-y-2 relative z-10 pt-0 pb-3">
+                <CardContent className="flex-1 flex flex-col justify-end space-y-6 relative z-10 pt-0 pb-6">
                   {gatewayType === "private" && (
-                    <div className="rounded-md border p-2">
+                    <div className="rounded-md p-0">
                       <DeploymentStatus
                         sub={
                           server.url.startsWith("https://")
