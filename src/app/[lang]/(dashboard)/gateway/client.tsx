@@ -408,17 +408,32 @@ export default function GatewayClient({
         ? subdomainName.substring(8)
         : subdomainName;
 
+      const confirmed = window.confirm(
+        dict?.gateway?.confirmDelete ||
+          `Are you sure you want to delete gateway ${cleanSubdomain}?`
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
       try {
         setOperatingProxyId(proxyId);
         await deletePrivateProxyInstance(proxyId, cleanSubdomain);
-        await new Promise((resolve) => setTimeout(resolve, 1000));
         router.refresh();
+        setTimeout(() => {
+          setOperatingProxyId(null);
+        }, 3000);
       } catch (error) {
         console.error("Failed to delete gateway:", error);
+        alert(
+          dict?.gateway?.deleteError ||
+            "Failed to delete gateway. Please try again."
+        );
         setOperatingProxyId(null);
       }
     },
-    [operatingProxyId, router]
+    [operatingProxyId, router, dict]
   );
 
   const handleOpenConfigDialog = () => {
