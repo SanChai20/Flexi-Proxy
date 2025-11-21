@@ -385,7 +385,7 @@ export default function GatewayClient({
 
       try {
         setLoadingProxyId(proxyId);
-        router.push(`/token?pid=${encodeURIComponent(proxyId)}`);
+        router.push(`/token?pid=${encodeURIComponent(proxyId)}&mode=create`);
       } catch (error) {
         console.error("Failed to create token:", error);
       } finally {
