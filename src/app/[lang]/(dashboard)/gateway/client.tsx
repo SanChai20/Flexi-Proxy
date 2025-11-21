@@ -511,25 +511,27 @@ export default function GatewayClient({
           {gatewayType === "private" && (
             <Card
               className={`group relative transition-all duration-300 hover:shadow-lg border-dashed border-[1.5px] flex flex-col h-full overflow-hidden ${
-                !isCreating &&
-                permissions.adv &&
-                permissions.mppa >
-                  proxyServers.filter((proxy) => proxy.type === "private")
-                    .length
+                isCreating
+                  ? "opacity-60"
+                  : permissions.adv &&
+                    permissions.mppa >
+                      proxyServers.filter((proxy) => proxy.type === "private")
+                        .length
                   ? "cursor-pointer hover:border-primary/60 hover:bg-accent/30"
                   : "cursor-pointer opacity-60"
               }`}
               onClick={() => {
-                if (
-                  !isCreating &&
-                  permissions.adv &&
-                  permissions.mppa >
-                    proxyServers.filter((proxy) => proxy.type === "private")
-                      .length
-                ) {
-                  handleOpenConfigDialog();
-                } else {
-                  router.push("/subscription");
+                if (!isCreating) {
+                  if (
+                    permissions.adv &&
+                    permissions.mppa >
+                      proxyServers.filter((proxy) => proxy.type === "private")
+                        .length
+                  ) {
+                    handleOpenConfigDialog();
+                  } else {
+                    router.push("/subscription");
+                  }
                 }
               }}
             >
