@@ -725,27 +725,29 @@ export default function GatewayClient({
                   )}
 
                   <div className="grid grid-cols-2 gap-1.5">
-                    <div className="flex flex-col gap-1 p-2 rounded-md bg-gradient-to-br from-accent/40 to-accent/20 border border-border/40">
-                      <div className="flex items-center gap-1">
-                        <Activity className="w-3 h-3 text-muted-foreground" />
-                        <span className="text-[10px] font-medium text-muted-foreground">
-                          {dict?.gateway?.status || "Status"}
+                    {
+                      <div className="flex flex-col gap-1 p-2 rounded-md bg-gradient-to-br from-accent/40 to-accent/20 border border-border/40">
+                        <div className="flex items-center gap-1">
+                          <Activity className="w-3 h-3 text-muted-foreground" />
+                          <span className="text-[10px] font-medium text-muted-foreground">
+                            {dict?.gateway?.status || "Status"}
+                          </span>
+                        </div>
+                        <span
+                          className={`text-xs font-semibold ${
+                            server.isHealthy
+                              ? "text-emerald-600 dark:text-emerald-400"
+                              : "text-muted-foreground"
+                          }`}
+                        >
+                          {server.isHealthy
+                            ? dict?.gateway?.healthy || "Healthy"
+                            : dict?.gateway?.unhealthy || "Unhealthy"}
                         </span>
                       </div>
-                      <span
-                        className={`text-xs font-semibold ${
-                          server.isHealthy
-                            ? "text-emerald-600 dark:text-emerald-400"
-                            : "text-muted-foreground"
-                        }`}
-                      >
-                        {server.isHealthy
-                          ? dict?.gateway?.healthy || "Healthy"
-                          : dict?.gateway?.unhealthy || "Unhealthy"}
-                      </span>
-                    </div>
+                    }
 
-                    {typeof server.responseTime === "number" && (
+                    {
                       <div className="flex flex-col gap-1 p-2 rounded-md bg-gradient-to-br from-accent/40 to-accent/20 border border-border/40">
                         <div className="flex items-center gap-1">
                           <Clock className="w-3 h-3 text-muted-foreground" />
@@ -755,20 +757,28 @@ export default function GatewayClient({
                         </div>
                         <span
                           className={`text-xs font-semibold tabular-nums ${
-                            server.responseTime < 100
-                              ? "text-emerald-600 dark:text-emerald-400"
-                              : server.responseTime < 300
-                              ? "text-amber-600 dark:text-amber-400"
-                              : "text-red-600 dark:text-red-400"
+                            typeof server.responseTime === "number"
+                              ? server.responseTime < 100
+                                ? "text-emerald-600 dark:text-emerald-400"
+                                : server.responseTime < 300
+                                ? "text-amber-600 dark:text-amber-400"
+                                : "text-red-600 dark:text-red-400"
+                              : "text-gray-400 dark:text-gray-500"
                           }`}
                         >
-                          {server.responseTime}
-                          <span className="text-[10px] ml-0.5 font-normal">
-                            ms
-                          </span>
+                          {typeof server.responseTime === "number" ? (
+                            <>
+                              {server.responseTime}
+                              <span className="text-[10px] ml-0.5 font-normal">
+                                ms
+                              </span>
+                            </>
+                          ) : (
+                            "-"
+                          )}
                         </span>
                       </div>
-                    )}
+                    }
                   </div>
 
                   <Button
