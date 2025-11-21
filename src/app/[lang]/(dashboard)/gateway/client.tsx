@@ -86,6 +86,7 @@ interface DeploymentStatusProps {
   sub: string;
   dict: any;
   onStatusChange?: (status: {
+    currentMsg: string;
     currentStep: number;
     totalStep: number;
     deploymentStatus: string;
@@ -101,6 +102,7 @@ export function DeploymentStatus({
   refreshInterval = 5000,
 }: DeploymentStatusProps) {
   const [deploymentStatus, setDeploymentStatus] = useState<{
+    currentMsg: string;
     currentStep: number;
     totalStep: number;
     deploymentStatus: string;
@@ -126,6 +128,7 @@ export function DeploymentStatus({
     setIsLoading(true);
     try {
       const status: null | {
+        currentMsg: string;
         currentStep: number;
         totalStep: number;
         deploymentStatus: string;
@@ -232,13 +235,18 @@ export function DeploymentStatus({
       {/* Status Badge */}
       <div className="flex items-center gap-1.5">
         {statusBadge && (
-          <Badge
-            variant={statusBadge.variant}
-            className={`text-[10px] font-medium px-1.5 py-0.5 ${statusBadge.className} shadow-sm`}
-          >
-            {statusBadge.icon}
-            {statusBadge.text}
-          </Badge>
+          <>
+            <Badge
+              variant={statusBadge.variant}
+              className={`text-[10px] font-medium px-1.5 py-0.5 ${statusBadge.className} shadow-sm flex-shrink-0`}
+            >
+              {statusBadge.icon}
+              {statusBadge.text}
+            </Badge>
+            <span className="text-[10px] text-muted-foreground truncate">
+              {deploymentStatus.currentMsg}
+            </span>
+          </>
         )}
       </div>
 

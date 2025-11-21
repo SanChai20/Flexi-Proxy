@@ -1242,7 +1242,7 @@ history -c
         ].join(":"),
         response.Instances[0].InstanceId
       );
-      transaction.set<{ stp: number; tot: number; sts: string }>(
+      transaction.set<{ stp: number; tot: number; sts: string; msg: string }>(
         [process.env.DEPLOYMENT_PROGRESS_PREFIX, randomGatewaySubDomain].join(
           ":"
         ),
@@ -1250,6 +1250,7 @@ history -c
           stp: 0,
           tot: 0,
           sts: "pending",
+          msg: "Cloud service initiating..",
         }
       );
       await transaction.exec();
@@ -1684,6 +1685,7 @@ export async function fetchConsoleLogs(
 export async function fetchDeploymentProgress(
   subdomain: string
 ): Promise<null | {
+  currentMsg: string;
   currentStep: number;
   totalStep: number;
   deploymentStatus: string;
@@ -1696,13 +1698,16 @@ export async function fetchDeploymentProgress(
       stp: number;
       tot: number;
       sts: string;
+      msg: string;
     } | null = await redis.get<{
       stp: number;
       tot: number;
       sts: string;
+      msg: string;
     }>([process.env.DEPLOYMENT_PROGRESS_PREFIX, subdomain].join(":"));
     if (deploymentStatus !== null) {
       return {
+        currentMsg: deploymentStatus.msg,
         currentStep: deploymentStatus.stp,
         totalStep: deploymentStatus.tot,
         deploymentStatus: deploymentStatus.sts,

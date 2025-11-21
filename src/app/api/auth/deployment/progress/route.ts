@@ -35,6 +35,7 @@ async function protectedPOST(req: AuthRequest) {
       stp: step,
       tot: total_steps,
       sts: status,
+      msg: message,
     };
     await redis.set(key, updated);
     return NextResponse.json({ message: "ok" }, { status: 200 });
