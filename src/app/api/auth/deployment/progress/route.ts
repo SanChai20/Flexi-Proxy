@@ -12,7 +12,6 @@ export const preferredRegion = ["iad1", "cle1"];
 //  [number] step -> current deployment step
 //  [number] total_steps -> total deployment steps
 //  [string] status -> success, error, running
-//  [string] message -> deployment message
 //  [string] timestamp -> timestamp
 //}
 async function protectedPOST(req: AuthRequest) {
@@ -27,24 +26,15 @@ async function protectedPOST(req: AuthRequest) {
       typeof step !== "number" ||
       typeof total_steps !== "number" ||
       typeof status !== "string" ||
-      typeof message !== "string" ||
       typeof timestamp !== "string"
     ) {
       return NextResponse.json({ error: "Missing field" }, { status: 400 });
     }
-
     const key = [process.env.DEPLOYMENT_PROGRESS_PREFIX, domain].join(":");
-    const existing = await redis.get<{
-      stp: number;
-      tot: number;
-      sts: string;
-      msg: string[];
-    }>(key);
     const updated = {
       stp: step,
       tot: total_steps,
       sts: status,
-      msg: [...(existing?.msg ?? []), message],
     };
     await redis.set(key, updated);
     return NextResponse.json({ message: "ok" }, { status: 200 });

@@ -887,7 +887,8 @@ export async function createPrivateProxyInstance(): Promise<
     process.env.SUBDOMAIN_LOCK_PREFIX === undefined ||
     process.env.SUBDOMAIN_INSTANCE_PREFIX === undefined ||
     process.env.PROXY_PRIVATE_PREFIX === undefined ||
-    process.env.SSM_PARAMETER_PREFIX === undefined
+    process.env.SSM_PARAMETER_PREFIX === undefined ||
+    process.env.DEPLOYMENT_PROGRESS_PREFIX === undefined
   ) {
     console.error("env not set");
     return undefined;
@@ -1184,6 +1185,16 @@ history -c
           randomGatewaySubDomain,
         ].join(":"),
         response.Instances[0].InstanceId
+      );
+      transaction.set<{ stp: number; tot: number; sts: string }>(
+        [process.env.DEPLOYMENT_PROGRESS_PREFIX, randomGatewaySubDomain].join(
+          ":"
+        ),
+        {
+          stp: 0,
+          tot: 0,
+          sts: "pending",
+        }
       );
       await transaction.exec();
 
@@ -1617,10 +1628,9 @@ export async function fetchConsoleLogs(
 export async function fetchDeploymentProgress(
   subdomain: string
 ): Promise<null | {
-  stp: number;
-  tot: number;
-  sts: string;
-  msg: string[];
+  currentStep: number;
+  totalStep: number;
+  deploymentStatus: string;
 }> {
   if (process.env.DEPLOYMENT_PROGRESS_PREFIX === undefined) {
     return null;
@@ -1630,15 +1640,17 @@ export async function fetchDeploymentProgress(
       stp: number;
       tot: number;
       sts: string;
-      msg: string[];
     } | null = await redis.get<{
       stp: number;
       tot: number;
       sts: string;
-      msg: string[];
     }>([process.env.DEPLOYMENT_PROGRESS_PREFIX, subdomain].join(":"));
     if (deploymentStatus !== null) {
-      return deploymentStatus;
+      return {
+        currentStep: deploymentStatus.stp,
+        totalStep: deploymentStatus.tot,
+        deploymentStatus: deploymentStatus.sts,
+      };
     }
   } catch (error) {
     console.error("Error fetching logs:", error);

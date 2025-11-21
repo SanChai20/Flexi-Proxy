@@ -12,7 +12,6 @@ export const i18nRouteWhitelist = [
   "settings",
   "faq",
   "gateway",
-  "gateway/private",
   "subscription",
   "subscription/checkout",
   "subscription/success",

@@ -24,15 +24,18 @@ import {
   Settings,
   FileText,
   Trash2,
+  CheckCircle2,
+  AlertCircle,
 } from "lucide-react";
 import {
   checkProxyServerHealth,
   createPrivateProxyInstance,
   createShortTimeToken,
   deletePrivateProxyInstance,
+  fetchDeploymentProgress,
 } from "@/lib/actions";
 import { redirect, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -54,6 +57,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 interface GatewayClientProps {
   dict: any;
@@ -69,6 +73,210 @@ interface GatewayClientProps {
     error?: string | undefined;
   }[];
   defaultGatewayType: string;
+}
+
+interface DeploymentStatusProps {
+  sub: string;
+  dict?: {
+    step?: string;
+    pending?: string;
+    running?: string;
+    completed?: string;
+    failed?: string;
+    autoRefresh?: string;
+  };
+  onStatusChange?: (status: {
+    currentStep: number;
+    totalStep: number;
+    deploymentStatus: string;
+  }) => void;
+  refreshInterval?: number; // milliseconds, default 5000
+}
+
+// 显示部署状态和进度
+export function DeploymentStatus({
+  sub,
+  dict = {},
+  onStatusChange,
+  refreshInterval = 5000,
+}: DeploymentStatusProps) {
+  const [deploymentStatus, setDeploymentStatus] = useState<{
+    currentStep: number;
+    totalStep: number;
+    deploymentStatus: string;
+  } | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const hasInitialFetchRef = useRef(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Calculate progress percentage
+  const getProgressPercentage = () => {
+    if (!deploymentStatus || deploymentStatus.totalStep === 0) return 0;
+
+    // For pending status, show 0% progress
+    if (deploymentStatus.deploymentStatus === "pending") return 0;
+
+    return Math.round(
+      (deploymentStatus.currentStep / deploymentStatus.totalStep) * 100
+    );
+  };
+
+  // Fetch deployment progress
+  const fetchProgress = async () => {
+    setIsLoading(true);
+    try {
+      const status: null | {
+        currentStep: number;
+        totalStep: number;
+        deploymentStatus: string;
+      } = await fetchDeploymentProgress(sub);
+
+      if (status) {
+        setDeploymentStatus(status);
+        onStatusChange?.(status);
+
+        // Stop auto-refresh when deployment is complete or failed
+        if (
+          (status.deploymentStatus === "success" ||
+            status.deploymentStatus === "error") &&
+          intervalRef.current
+        ) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch deployment progress:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Initial fetch and setup auto-refresh
+  useEffect(() => {
+    if (!hasInitialFetchRef.current) {
+      hasInitialFetchRef.current = true;
+      fetchProgress();
+    }
+
+    // Set up interval for pending and running states
+    if (
+      !intervalRef.current &&
+      (!deploymentStatus ||
+        deploymentStatus.deploymentStatus === "pending" ||
+        deploymentStatus.deploymentStatus === "running")
+    ) {
+      intervalRef.current = setInterval(fetchProgress, refreshInterval);
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [sub, deploymentStatus?.deploymentStatus, refreshInterval]);
+
+  // Get status badge configuration
+  const getStatusBadge = () => {
+    if (!deploymentStatus) return null;
+
+    switch (deploymentStatus.deploymentStatus) {
+      case "pending":
+        return {
+          variant: "secondary" as const,
+          className: "bg-yellow-600 hover:bg-yellow-700",
+          icon: <Clock className="h-3 w-3 mr-1" />,
+          text: dict?.pending || "Pending",
+        };
+      case "running":
+        return {
+          variant: "secondary" as const,
+          className: "bg-blue-600 hover:bg-blue-700",
+          icon: <Loader2 className="h-3 w-3 mr-1 animate-spin" />,
+          text: dict?.running || "Running",
+        };
+      case "success":
+        return {
+          variant: "default" as const,
+          className: "bg-green-600 hover:bg-green-700",
+          icon: <CheckCircle2 className="h-3 w-3 mr-1" />,
+          text: dict?.completed || "Completed",
+        };
+      case "error":
+        return {
+          variant: "destructive" as const,
+          className: "",
+          icon: <AlertCircle className="h-3 w-3 mr-1" />,
+          text: dict?.failed || "Failed",
+        };
+      default:
+        return null;
+    }
+  };
+
+  const statusBadge = getStatusBadge();
+  const progressPercentage = getProgressPercentage();
+
+  if (!deploymentStatus) {
+    return (
+      <div className="flex items-center justify-center py-4">
+        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3 w-full">
+      {/* Status Badges */}
+      <div className="flex items-center gap-2 flex-wrap">
+        {(deploymentStatus.deploymentStatus === "pending" ||
+          deploymentStatus.deploymentStatus === "running") && (
+          <Badge variant="secondary" className="text-xs font-normal">
+            {dict?.autoRefresh || "Auto-refresh: 5s"}
+          </Badge>
+        )}
+
+        {statusBadge && (
+          <Badge
+            variant={statusBadge.variant}
+            className={`text-xs font-normal ${statusBadge.className}`}
+          >
+            {statusBadge.icon}
+            {statusBadge.text}
+          </Badge>
+        )}
+      </div>
+
+      {/* Progress Section */}
+      <div className="space-y-2 w-full">
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">
+            {deploymentStatus.deploymentStatus === "pending"
+              ? dict?.pending || "Waiting to start..."
+              : `${dict?.step || "Step"} ${deploymentStatus.currentStep} / ${
+                  deploymentStatus.totalStep
+                }`}
+          </span>
+          <span className="font-medium">{progressPercentage}%</span>
+        </div>
+        <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
+          <div
+            className={`h-full transition-all duration-500 ease-out ${
+              deploymentStatus.deploymentStatus === "error"
+                ? "bg-red-600"
+                : deploymentStatus.deploymentStatus === "success"
+                ? "bg-green-600"
+                : deploymentStatus.deploymentStatus === "pending"
+                ? "bg-yellow-600"
+                : "bg-blue-600"
+            }`}
+            style={{ width: `${progressPercentage}%` }}
+          />
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function GatewayClient({
@@ -550,6 +758,31 @@ export default function GatewayClient({
                 </CardHeader>
 
                 <CardContent className="flex-1 flex flex-col justify-end space-y-3 relative z-10 pt-0">
+                  {/* Deployment Status - Only for private pending servers */}
+                  {gatewayType === "private" && (
+                    <div className="rounded-lg border bg-muted/30 p-3">
+                      <DeploymentStatus
+                        sub={server.url}
+                        dict={{
+                          step: dict?.deployment?.step || "Step",
+                          running: dict?.deployment?.running || "Running",
+                          completed: dict?.deployment?.completed || "Completed",
+                          failed: dict?.deployment?.failed || "Failed",
+                          autoRefresh:
+                            dict?.deployment?.autoRefresh || "Auto-refresh: 5s",
+                        }}
+                        onStatusChange={(status) => {
+                          // Optionally refresh the page when deployment completes
+                          if (status.deploymentStatus === "success") {
+                            setTimeout(() => {
+                              router.refresh();
+                            }, 2000);
+                          }
+                        }}
+                      />
+                    </div>
+                  )}
+
                   {/* 性能指标卡片 */}
                   <div className="grid grid-cols-2 gap-2">
                     {/* 健康状态 */}

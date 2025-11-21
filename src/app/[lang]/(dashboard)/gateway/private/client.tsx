@@ -17,7 +17,7 @@ import {
   CheckCircle2,
   Loader2,
 } from "lucide-react";
-import { fetchDeploymentProgress } from "@/lib/actions";
+import { fetchConsoleLogs, fetchDeploymentProgress } from "@/lib/actions";
 import { useState, useEffect, useRef } from "react";
 
 interface GatewayClientProps {
@@ -31,10 +31,9 @@ export default function GatewayPrivateClient({
 }: GatewayClientProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [deploymentStatus, setDeploymentStatus] = useState<{
-    stp: number;
-    tot: number;
-    sts: string;
-    msg: string[];
+    currentStep: number;
+    totalStep: number;
+    deploymentStatus: string;
   } | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const hasInitialFetchRef = useRef(false);
@@ -42,21 +41,30 @@ export default function GatewayPrivateClient({
 
   // Calculate progress percentage
   const getProgressPercentage = () => {
-    if (!deploymentStatus || deploymentStatus.tot === 0) return 0;
-    return Math.round((deploymentStatus.stp / deploymentStatus.tot) * 100);
+    if (!deploymentStatus || deploymentStatus.totalStep === 0) return 0;
+    return Math.round(
+      (deploymentStatus.currentStep / deploymentStatus.totalStep) * 100
+    );
   };
 
   // Fetch deployment progress
   const fetchProgress = async () => {
     setIsLoading(true);
     try {
-      const status = await fetchDeploymentProgress(sub);
+      // const aaa = await fetchConsoleLogs(sub);
+      // console.log(aaa);
+      const status: null | {
+        currentStep: number;
+        totalStep: number;
+        deploymentStatus: string;
+      } = await fetchDeploymentProgress(sub);
       if (status) {
         setDeploymentStatus(status);
 
         // Stop auto-refresh when deployment is complete (success or error)
         if (
-          (status.sts === "success" || status.sts === "error") &&
+          (status.deploymentStatus === "success" ||
+            status.deploymentStatus === "error") &&
           intervalRef.current
         ) {
           clearInterval(intervalRef.current);
@@ -80,7 +88,7 @@ export default function GatewayPrivateClient({
     // Only set up interval if deployment is still running
     if (
       !intervalRef.current &&
-      (!deploymentStatus || deploymentStatus.sts === "running")
+      (!deploymentStatus || deploymentStatus.deploymentStatus === "running")
     ) {
       intervalRef.current = setInterval(fetchProgress, 5000);
     }
@@ -91,45 +99,13 @@ export default function GatewayPrivateClient({
         intervalRef.current = null;
       }
     };
-  }, [sub, deploymentStatus?.sts]);
-
-  // Auto-scroll to bottom when new logs arrive
-  useEffect(() => {
-    if (scrollAreaRef.current && deploymentStatus?.msg) {
-      const scrollElement = scrollAreaRef.current.querySelector(
-        "[data-radix-scroll-area-viewport]"
-      );
-      if (scrollElement) {
-        scrollElement.scrollTop = scrollElement.scrollHeight;
-      }
-    }
-  }, [deploymentStatus?.msg]);
-
-  // Export logs
-  const handleExportLogs = () => {
-    if (!deploymentStatus?.msg || deploymentStatus.msg.length === 0) {
-      return;
-    }
-
-    const logText = deploymentStatus.msg.join("\n");
-    const blob = new Blob([logText], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `deployment-logs-${sub}-${new Date()
-      .toISOString()
-      .replace(/[:.]/g, "-")}.txt`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
+  }, [sub, deploymentStatus?.deploymentStatus]);
 
   // Get status badge configuration
   const getStatusBadge = () => {
     if (!deploymentStatus) return null;
 
-    switch (deploymentStatus.sts) {
+    switch (deploymentStatus.deploymentStatus) {
       case "success":
         return {
           variant: "default" as const,
@@ -168,7 +144,7 @@ export default function GatewayPrivateClient({
               <CardTitle className="flex items-center gap-2 flex-wrap">
                 {dict?.gateway?.deploymentLogs || "Deployment Logs"}
 
-                {deploymentStatus?.sts === "running" && (
+                {deploymentStatus?.deploymentStatus === "running" && (
                   <Badge variant="secondary" className="text-xs font-normal">
                     {dict?.gateway?.autoRefresh || "Auto-refresh: 5s"}
                   </Badge>
@@ -183,33 +159,8 @@ export default function GatewayPrivateClient({
                     {statusBadge.text}
                   </Badge>
                 )}
-
-                {deploymentStatus?.msg && deploymentStatus.msg.length > 0 && (
-                  <Badge variant="outline" className="text-xs font-normal">
-                    {deploymentStatus.msg.length}{" "}
-                    {dict?.gateway?.logs || "logs"}
-                  </Badge>
-                )}
               </CardTitle>
               <CardDescription className="mt-1">{sub}</CardDescription>
-            </div>
-
-            <div className="flex items-center gap-2 ml-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleExportLogs}
-                disabled={
-                  !deploymentStatus?.msg || deploymentStatus.msg.length === 0
-                }
-              >
-                <Download className="h-4 w-4 mr-2" />
-                {dict?.gateway?.export || "Export"}
-              </Button>
-
-              {isLoading && (
-                <RefreshCw className="h-4 w-4 animate-spin text-muted-foreground" />
-              )}
             </div>
           </div>
 
@@ -218,17 +169,17 @@ export default function GatewayPrivateClient({
             <div className="space-y-2 w-full">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">
-                  {dict?.gateway?.step || "Step"} {deploymentStatus.stp} /{" "}
-                  {deploymentStatus.tot}
+                  {dict?.gateway?.step || "Step"} {deploymentStatus.currentStep}{" "}
+                  / {deploymentStatus.totalStep}
                 </span>
                 <span className="font-medium">{progressPercentage}%</span>
               </div>
               <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
                 <div
                   className={`h-full transition-all duration-500 ease-out ${
-                    deploymentStatus.sts === "error"
+                    deploymentStatus.deploymentStatus === "error"
                       ? "bg-red-600"
-                      : deploymentStatus.sts === "success"
+                      : deploymentStatus.deploymentStatus === "success"
                       ? "bg-green-600"
                       : "bg-primary"
                   }`}
@@ -239,44 +190,6 @@ export default function GatewayPrivateClient({
           )}
         </div>
       </CardHeader>
-
-      <CardContent className="p-0">
-        <ScrollArea
-          className="h-[calc(100vh-300px)] w-full"
-          ref={scrollAreaRef}
-        >
-          <div className="p-4 font-mono text-sm">
-            {!deploymentStatus ||
-            !deploymentStatus.msg ||
-            deploymentStatus.msg.length === 0 ? (
-              <div className="flex items-center justify-center h-40 text-muted-foreground">
-                {isLoading ? (
-                  <>
-                    <RefreshCw className="h-5 w-5 animate-spin mr-2" />
-                    {dict?.gateway?.loadingLogs || "Loading logs..."}
-                  </>
-                ) : (
-                  dict?.gateway?.noLogs || "No deployment logs available"
-                )}
-              </div>
-            ) : (
-              <div className="space-y-1">
-                {deploymentStatus.msg.map((logMessage, index) => (
-                  <div
-                    key={index}
-                    className="py-1.5 px-3 rounded hover:bg-accent/50 transition-colors break-words"
-                  >
-                    <span className="text-muted-foreground mr-2">
-                      [{index + 1}]
-                    </span>
-                    {logMessage}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </ScrollArea>
-      </CardContent>
     </Card>
   );
 }
