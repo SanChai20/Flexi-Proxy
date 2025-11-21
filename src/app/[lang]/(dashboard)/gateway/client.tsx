@@ -77,14 +77,7 @@ interface GatewayClientProps {
 
 interface DeploymentStatusProps {
   sub: string;
-  dict?: {
-    step?: string;
-    pending?: string;
-    running?: string;
-    completed?: string;
-    failed?: string;
-    autoRefresh?: string;
-  };
+  dict: any;
   onStatusChange?: (status: {
     currentStep: number;
     totalStep: number;
@@ -96,7 +89,7 @@ interface DeploymentStatusProps {
 // 显示部署状态和进度
 export function DeploymentStatus({
   sub,
-  dict = {},
+  dict,
   onStatusChange,
   refreshInterval = 5000,
 }: DeploymentStatusProps) {
@@ -187,28 +180,28 @@ export function DeploymentStatus({
           variant: "secondary" as const,
           className: "bg-yellow-600 hover:bg-yellow-700",
           icon: <Clock className="h-3 w-3 mr-1" />,
-          text: dict?.pending || "Pending",
+          text: dict?.gateway?.pending || "Pending",
         };
       case "running":
         return {
           variant: "secondary" as const,
           className: "bg-blue-600 hover:bg-blue-700",
           icon: <Loader2 className="h-3 w-3 mr-1 animate-spin" />,
-          text: dict?.running || "Running",
+          text: dict?.gateway?.deploying || "Deploying",
         };
       case "success":
         return {
           variant: "default" as const,
           className: "bg-green-600 hover:bg-green-700",
           icon: <CheckCircle2 className="h-3 w-3 mr-1" />,
-          text: dict?.completed || "Completed",
+          text: dict?.gateway?.completed || "Completed",
         };
       case "error":
         return {
           variant: "destructive" as const,
           className: "",
           icon: <AlertCircle className="h-3 w-3 mr-1" />,
-          text: dict?.failed || "Failed",
+          text: dict?.gateway?.failed || "Failed",
         };
       default:
         return null;
@@ -230,13 +223,6 @@ export function DeploymentStatus({
     <div className="space-y-3 w-full">
       {/* Status Badges */}
       <div className="flex items-center gap-2 flex-wrap">
-        {(deploymentStatus.deploymentStatus === "pending" ||
-          deploymentStatus.deploymentStatus === "running") && (
-          <Badge variant="secondary" className="text-xs font-normal">
-            {dict?.autoRefresh || "Auto-refresh: 5s"}
-          </Badge>
-        )}
-
         {statusBadge && (
           <Badge
             variant={statusBadge.variant}
@@ -253,10 +239,10 @@ export function DeploymentStatus({
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">
             {deploymentStatus.deploymentStatus === "pending"
-              ? dict?.pending || "Waiting to start..."
-              : `${dict?.step || "Step"} ${deploymentStatus.currentStep} / ${
-                  deploymentStatus.totalStep
-                }`}
+              ? dict?.gateway?.waiting || "Waiting to start..."
+              : `${dict?.gateway?.step || "Step"} ${
+                  deploymentStatus.currentStep
+                } / ${deploymentStatus.totalStep}`}
           </span>
           <span className="font-medium">{progressPercentage}%</span>
         </div>
@@ -403,19 +389,14 @@ export default function GatewayClient({
     }
     try {
       setOperatingProxyId(proxyId);
+      await deletePrivateProxyInstance(proxyId, subdomainName);
       setFilteredServers((prev) =>
         prev.filter((server) => server.id !== proxyId)
       );
-      await deletePrivateProxyInstance(proxyId, subdomainName);
       await new Promise((resolve) => setTimeout(resolve, 1000));
       router.refresh();
     } catch (error) {
       console.error(error);
-      // setFilteredServers(
-      //   proxyServers.filter(
-      //     (server) => (server.type || "public") === gatewayType
-      //   )
-      // );
       setOperatingProxyId(null);
     }
   };
@@ -440,8 +421,8 @@ export default function GatewayClient({
         createPrivateProxyInstance(),
         createShortTimeToken(3600),
       ]);
+      setPrivateCreating(false);
       if (subdomainName === undefined) {
-        setPrivateCreating(false);
         return;
       }
       router.refresh();
@@ -722,21 +703,18 @@ export default function GatewayClient({
                   {gatewayType === "private" && (
                     <div className="rounded-lg border bg-muted/30 p-3">
                       <DeploymentStatus
-                        sub={server.url}
-                        dict={{
-                          step: dict?.deployment?.step || "Step",
-                          running: dict?.deployment?.running || "Running",
-                          completed: dict?.deployment?.completed || "Completed",
-                          failed: dict?.deployment?.failed || "Failed",
-                          autoRefresh:
-                            dict?.deployment?.autoRefresh || "Auto-refresh: 5s",
-                        }}
+                        sub={
+                          server.url.startsWith("https://")
+                            ? server.url.substring(8)
+                            : server.url
+                        }
+                        dict={dict}
                         onStatusChange={(status) => {
                           // Optionally refresh the page when deployment completes
                           if (status.deploymentStatus === "success") {
                             setTimeout(() => {
                               router.refresh();
-                            }, 2000);
+                            }, 3000);
                           }
                         }}
                       />

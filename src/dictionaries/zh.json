@@ -111,7 +111,13 @@
     "confirmCreate": "确认创建",
     "cancel": "取消",
     "status": "状态",
-    "latency": "延迟"
+    "latency": "延迟",
+    "pending": "待处理",
+    "deploying": "部署中",
+    "completed": "部署完成",
+    "failed": "部署失败",
+    "waiting": "等待启动...",
+    "step": "步骤"
   },
   "subscription": {
     "title": "订阅计划",

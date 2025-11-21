@@ -179,7 +179,13 @@
     "confirmCreate": "Confirm & Create",
     "cancel": "Cancel",
     "status": "Status",
-    "latency": "Latency"
+    "latency": "Latency",
+    "pending": "Pending",
+    "deploying": "Deploying",
+    "completed": "Completed",
+    "failed": "Failed",
+    "waiting": "Waiting to start...",
+    "step": "Step"
   },
   "token": {
     "providerPage": "config/providers.json",
